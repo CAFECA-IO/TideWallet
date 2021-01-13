@@ -1,11 +1,11 @@
-<mxfile host="app.diagrams.net" modified="2021-01-13T05:55:04.420Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36" etag="UsGF2KBTS2PwW7iU4_yS" version="14.1.9" type="github">
+<mxfile host="app.diagrams.net" modified="2021-01-13T06:28:20.334Z" agent="5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36" etag="ywra-rXf2sg_uPKVe6ao" version="14.1.9" type="github">
   <diagram id="96HYZf4xcGUfBk-wR1JX" name="Page-1">
-    <mxGraphModel dx="1188" dy="-459" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="5577" dy="3869" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="Q27JY28-GFssJ0mxqY8--2" value="Backup&lt;br&gt;Wallet" style="shape=umlFrame;whiteSpace=wrap;html=1;rounded=0;shadow=0;comic=0;labelBackgroundColor=none;strokeWidth=1;fontFamily=Verdana;fontSize=10;align=center;width=80;height=30;" vertex="1" parent="1">
-          <mxGeometry x="110" y="1350" width="800" height="630" as="geometry" />
+          <mxGeometry x="1720" y="1330" width="800" height="630" as="geometry" />
         </mxCell>
         <mxCell id="Q27JY28-GFssJ0mxqY8--3" value="" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;verticalAlign=top;spacingTop=36;outlineConnect=0;" vertex="1" parent="1">
           <mxGeometry x="1805" y="1425" width="20" height="485" as="geometry" />
