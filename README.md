@@ -1,3 +1,8 @@
+## Flutter
+- version: 1.22.5
+
+
+
 ### DB Schema
 > ./doc/TideWallet_DBSchema_Diagram.drawio
 ![](./doc/TideWallet_DBSchema_Diagram.png)
