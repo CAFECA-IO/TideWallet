@@ -1,4 +1,6 @@
+import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -6,10 +8,17 @@ import './screens/home.screen.dart';
 import './screens/landing.screen.dart';
 import './screens/wallet_connect.screen.dart';
 import './helpers/i18n.dart';
+import './blocs/delegate.dart';
 import 'theme.dart';
 
 void main() {
+  Bloc.observer = ObserverDelegate();
+
   runApp(MyApp());
+
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
 }
 
 class MyApp extends StatelessWidget {

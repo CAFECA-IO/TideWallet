@@ -19,6 +19,7 @@ class MyColors {
 }
 
 TextTheme myTextTheme = TextTheme(
+  headline1: TextStyle(color: MyColors.secondary_01, fontSize: 20.0, letterSpacing: 0.4, fontWeight: FontWeight.bold),
   bodyText1: TextStyle(color: MyColors.secondary_01),
   button: TextStyle(color: MyColors.font_01),
 );
@@ -26,9 +27,18 @@ TextTheme myTextTheme = TextTheme(
 ThemeData myThemeData = ThemeData(
   primaryColor: MyColors.primary_02,
   primaryColorLight: MyColors.primary_01,
+  accentColor: MyColors.primary_03,
   errorColor: MyColors.primary_05,
   hintColor: MyColors.primary_04,
-  textTheme: myTextTheme
+  textTheme: myTextTheme,
+  cursorColor: MyColors.secondary_03
 );
 
 ThemeData myDarkThemeData = ThemeData();
+
+ShapeBorder bottomSheetShape = RoundedRectangleBorder(
+  borderRadius: BorderRadius.only(
+    topLeft: Radius.circular(10.0),
+    topRight: Radius.circular(10.0),
+  ),
+);
