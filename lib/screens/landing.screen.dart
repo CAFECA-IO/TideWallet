@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 import './welcome.screen.dart';
 import './home.screen.dart';
+import '../repositories/user_repository.dart';
 import '../blocs/user/user_bloc.dart';
-import '../cores/user.dart';
 
 class LandingScreen extends StatefulWidget {
   
@@ -14,8 +15,11 @@ class LandingScreen extends StatefulWidget {
 
 class _LandingScreenState extends State<LandingScreen> {
   UserBloc _bloc;
+  UserRepository _repo;
+  
   @override
   void didChangeDependencies() {
+    _repo = Provider.of<UserRepository>(context);
     _bloc = BlocProvider.of<UserBloc>(context);
 
     super.didChangeDependencies();
@@ -36,7 +40,7 @@ class _LandingScreenState extends State<LandingScreen> {
           return HomeScreen();
         }
 
-        if (User.hasWallet()) {
+        if (_repo.user.hasWallet) {
           return HomeScreen();
         } else {
           return WelcomeScreen();

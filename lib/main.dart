@@ -4,9 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
 
 import './screens/landing.screen.dart';
 import './screens/wallet_connect.screen.dart';
+import './repositories/user_repository.dart';
 import './helpers/i18n.dart';
 import './blocs/delegate.dart';
 import './blocs/user/user_bloc.dart';
@@ -30,13 +32,21 @@ class MyApp extends StatelessWidget {
       onTap: () {
         WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
       },
-      child: MultiBlocProvider(
+      child: MultiProvider(
         providers: [
-          BlocProvider<UserBloc>(
-            create: (BuildContext context) => UserBloc(),
+          Provider<UserRepository>(
+            create: (_) => UserRepository(),
           ),
         ],
-        child: _material,
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider<UserBloc>(
+              create: (BuildContext context) =>
+                  UserBloc(Provider.of<UserRepository>(context, listen: false)),
+            ),
+          ],
+          child: _material,
+        ),
       ),
     );
   }

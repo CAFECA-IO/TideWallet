@@ -1,5 +1,11 @@
 class User {
-  static bool hasWallet() {
-    return false;
+  bool _isCreated = false;
+
+  bool get hasWallet {
+    return this._isCreated;
+  }
+
+  createUser() {
+    this._isCreated = true;
   }
 }
