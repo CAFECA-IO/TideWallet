@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import './screens/home.screen.dart';
 import './screens/landing.screen.dart';
 import './screens/wallet_connect.screen.dart';
 import './helpers/i18n.dart';
@@ -38,7 +37,6 @@ MaterialApp _material = MaterialApp(
   theme: myThemeData,
   routes: {
     '/': (context) => LandingScreen(),
-    // '/': (context) => HomeScreen(),
     WalletConnectScreen.routeName: (context) => WalletConnectScreen()
   },
   localizationsDelegates: [

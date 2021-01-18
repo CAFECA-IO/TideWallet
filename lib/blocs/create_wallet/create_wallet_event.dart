@@ -22,3 +22,5 @@ class InputRePassword extends CreateWalletEvent {
 }
 
 class SubmitCreateWallet extends CreateWalletEvent {}
+
+class CleanCreateWalletError extends CreateWalletEvent {}

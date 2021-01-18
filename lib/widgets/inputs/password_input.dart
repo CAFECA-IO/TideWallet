@@ -26,6 +26,7 @@ class _PasswordInputState extends State<PasswordInput> {
       onChanged: (String v) {
         widget.onChanged(v);
       },
+      obscureText: !show,
       textInputAction: TextInputAction.done,
       style: TextStyle(fontSize: 16.0),
       controller: widget.controller,
@@ -46,18 +47,19 @@ class _PasswordInputState extends State<PasswordInput> {
 
         // errorStyle: TextStyle(color: Colors.red, fontSize: 10.0),
         suffixIcon: GestureDetector(
-          onLongPressStart: (LongPressStartDetails detail) {
-            setState(() {
-              show = true;
-            });
-          },
-          onLongPressEnd: (LongPressEndDetails detail) {
-            setState(() {
-              show = false;
-            });
-          },
-          child: show ? ImageIcon(AssetImage('assets/images/icons/ic_openeye.png')) : ImageIcon(AssetImage('assets/images/icons/ic_closeeye.png'))
-        ),
+            onLongPressStart: (LongPressStartDetails detail) {
+              setState(() {
+                show = true;
+              });
+            },
+            onLongPressEnd: (LongPressEndDetails detail) {
+              setState(() {
+                show = false;
+              });
+            },
+            child: show
+                ? ImageIcon(AssetImage('assets/images/icons/ic_openeye.png'))
+                : ImageIcon(AssetImage('assets/images/icons/ic_closeeye.png'))),
       ),
     );
   }

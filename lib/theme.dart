@@ -26,12 +26,15 @@ TextTheme myTextTheme = TextTheme(
 
 ThemeData myThemeData = ThemeData(
   primaryColor: MyColors.primary_02,
-  primaryColorLight: MyColors.primary_01,
+  primaryColorLight: MyColors.primary_02,
+  primaryColorDark: MyColors.primary_01,
   accentColor: MyColors.primary_03,
   errorColor: MyColors.primary_05,
   hintColor: MyColors.primary_04,
+  dividerColor: MyColors.secondary_04,
   textTheme: myTextTheme,
-  cursorColor: MyColors.secondary_03
+  cursorColor: MyColors.secondary_03,
+  disabledColor: MyColors.secondary_05
 );
 
 ThemeData myDarkThemeData = ThemeData();
