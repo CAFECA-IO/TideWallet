@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 import '../theme.dart';
 import '../widgets/forms/create_wallet_form.dart';
 import '../widgets/buttons/primary_button.dart';
+import '../helpers/i18n.dart';
 
 class WelcomeScreen extends StatelessWidget {
   static const routeName = '/landing';
+
+  final t = I18n.t;
   
   @override
   Widget build(BuildContext context) {
@@ -28,7 +31,7 @@ class WelcomeScreen extends StatelessWidget {
             ),
             Spacer(),
             PrimaryButton(
-              'Create Wallet',
+              t('create_wallet'),
               () {
                 showModalBottomSheet(
                   isScrollControlled: true,

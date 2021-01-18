@@ -6,6 +6,7 @@ import '../../blocs/user/user_bloc.dart';
 import '../inputs/input.dart';
 import '../inputs/password_input.dart';
 import '../buttons/secondary_button.dart';
+import '../../helpers/i18n.dart';
 
 class CreateWalletForm extends StatefulWidget {
   @override
@@ -15,6 +16,8 @@ class CreateWalletForm extends StatefulWidget {
 class _CreateWalletFormState extends State<CreateWalletForm> {
   CreateWalletBloc _bloc = CreateWalletBloc();
   UserBloc _userBloc;
+
+  final t = I18n.t;
 
   @override
   void didChangeDependencies() {
@@ -40,13 +43,13 @@ class _CreateWalletFormState extends State<CreateWalletForm> {
 
           switch (_state.error) {
             case CreateFormError.nameEmpty:
-              _text = '未輸入錢包名稱';
+              _text = t('create_wallet_name_empty');
               break;
             case CreateFormError.passwordInvalid:
-              _text = '未達到密碼強度';
+              _text = t('create_wallet_invalid_password');
               break;
             case CreateFormError.passwordNotMatch:
-              _text = '密碼不相同';
+              _text = t('create_wallet_password_unmatch');
               break;
             default:
           }
@@ -106,12 +109,14 @@ class _CheckingViewState extends State<CheckingView> {
   final TextEditingController _repwdController = TextEditingController();
   final _form = GlobalKey<FormState>();
 
+  final t = I18n.t;
+
   List<Widget> checkList(List<bool> rules) {
     List<Widget> list = [
       Padding(
         padding: const EdgeInsets.only(bottom: 8.0),
         child: Text(
-          '您的密碼必須包含：',
+          t('create_wallet_rule'),
           style: TextStyle(fontSize: 12.0),
         ),
       )
@@ -122,16 +127,16 @@ class _CheckingViewState extends State<CheckingView> {
 
       switch (i) {
         case 0:
-          title = '8 ~ 20 個字元';
+          title = t('create_wallet_rule_1');
           break;
         case 1:
-          title = '至少 1 個數字';
+          title = t('create_wallet_rule_2');
           break;
         case 2:
-          title = '大寫與小寫英文字母';
+          title = t('create_wallet_rule_3');
           break;
         case 3:
-          title = '與錢包名稱不同';
+          title = t('create_wallet_rule_4');
           break;
         default:
       }
@@ -154,7 +159,7 @@ class _CheckingViewState extends State<CheckingView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '創建熱錢包',
+                t('create_hot_wallet'),
                 style: Theme.of(context).textTheme.headline1,
               ),
               Container(
@@ -164,12 +169,12 @@ class _CheckingViewState extends State<CheckingView> {
                 padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
                 margin: EdgeInsets.symmetric(vertical: 16.0),
                 child: Text(
-                  '任何交易行為都將受到自訂密碼保護，請妥善保管密碼並請勿將您的密碼提供給他人，TideWallet 不存儲密碼，也無法幫您找回。',
+                  t('create_wallet_message'),
                   style: TextStyle(color: Colors.white),
                 ),
               ),
               Input(
-                labelText: '錢包名稱',
+                labelText: t('wallet_name'),
                 autovalidate: AutovalidateMode.disabled,
                 controller: _nameController,
                 onChanged: (String v) {
@@ -178,7 +183,7 @@ class _CheckingViewState extends State<CheckingView> {
               ),
               SizedBox(height: 16.0),
               PasswordInput(
-                label: '密碼',
+                label: t('password'),
                 controller: _pwdController,
                 validator: (String v) => '',
                 onChanged: (String v) {
@@ -198,7 +203,7 @@ class _CheckingViewState extends State<CheckingView> {
               ),
               SizedBox(height: 16.0),
               PasswordInput(
-                label: '再次確認密碼',
+                label: t('re_password'),
                 controller: _repwdController,
                 validator: (String v) => '',
                 onChanged: (String v) {
@@ -209,7 +214,7 @@ class _CheckingViewState extends State<CheckingView> {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 36.0),
                 child: SecondaryButton(
-                  '確認',
+                  t('confirm'),
                   () {
                     widget._bloc.add(SubmitCreateWallet());
                   },
