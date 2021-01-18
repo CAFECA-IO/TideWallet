@@ -18,7 +18,7 @@ abstract class BaseButton extends StatelessWidget {
     this.borderColor,
     this.textColor,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return FlatButton(
@@ -37,8 +37,16 @@ abstract class BaseButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            this.iconImg != null ? ImageIcon(this.iconImg, color: Theme.of(context).textTheme.button.color, size: 20.0,) : SizedBox(width: 0), 
-            SizedBox(width: 14.0,),
+            this.iconImg != null
+                ? ImageIcon(
+                    this.iconImg,
+                    color: Theme.of(context).textTheme.button.color,
+                    size: 20.0,
+                  )
+                : SizedBox(width: 0),
+            SizedBox(
+              width: this.iconImg != null ? 14.0 : 0,
+            ),
             Text(
               _text,
               style: TextStyle(fontSize: 16.0, color: this.textColor),

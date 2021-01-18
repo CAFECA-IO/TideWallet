@@ -7,6 +7,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import './screens/home.screen.dart';
 import './screens/landing.screen.dart';
 import './screens/wallet_connect.screen.dart';
+import './screens/create_transaction.screen.dart';
+import './screens/transaction_preview.screen.dart';
 import './helpers/i18n.dart';
 import './blocs/delegate.dart';
 import 'theme.dart';
@@ -37,9 +39,11 @@ MaterialApp _material = MaterialApp(
   title: 'TideWallet3',
   theme: myThemeData,
   routes: {
-    '/': (context) => LandingScreen(),
+    '/': (context) => CreateTransactionScreen(),
     // '/': (context) => HomeScreen(),
-    WalletConnectScreen.routeName: (context) => WalletConnectScreen()
+    // WalletConnectScreen.routeName: (context) => WalletConnectScreen(),
+    CreateTransactionScreen.routeName: (context) => CreateTransactionScreen(),
+    TransactionPreviewScreen.routeName: (context) => TransactionPreviewScreen()
   },
   localizationsDelegates: [
     const I18nDelegate(),

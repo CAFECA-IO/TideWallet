@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tidewallet3/screens/create_transaction.screen.dart';
+import 'package:tidewallet3/screens/transaction_preview.screen.dart';
 
 import '../theme.dart';
 import '../screens/wallet_connect.screen.dart';
@@ -25,6 +27,8 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
       Widget leading = SizedBox();
       switch (routeName) {
         case WalletConnectScreen.routeName:
+        case CreateTransactionScreen.routeName:
+        case TransactionPreviewScreen.routeName:
           leading = GestureDetector(
             behavior: HitTestBehavior.translucent,
             child: Icon(
@@ -55,16 +59,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
         //         },
         //   );
         //   break;
-        // case TransferScreen.routeName:
-        //   leading = GestureDetector(
-        //       behavior: HitTestBehavior.translucent,
-        //       child: Icon(
-        //         Icons.format_list_bulleted,
-        //         color: MyColors.ui_01,
-        //         size: 28,
-        //       ),
-        //       onTap: leadingFunc);
-        //   break;
+
         default:
       }
 
