@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../blocs/create_wallet/create_wallet_bloc.dart';
+import '../../blocs/user/user_bloc.dart';
 import '../inputs/input.dart';
 import '../inputs/password_input.dart';
 import '../buttons/secondary_button.dart';
@@ -12,12 +13,12 @@ class CreateWalletForm extends StatefulWidget {
 }
 
 class _CreateWalletFormState extends State<CreateWalletForm> {
-  CreateWalletBloc _bloc;
+  CreateWalletBloc _bloc = CreateWalletBloc();
+  UserBloc _userBloc;
 
   @override
   void didChangeDependencies() {
-    _bloc = CreateWalletBloc();
-
+    _userBloc = BlocProvider.of<UserBloc>(context);
     super.didChangeDependencies();
   }
 
@@ -25,6 +26,7 @@ class _CreateWalletFormState extends State<CreateWalletForm> {
   void dispose() {
     super.dispose();
     _bloc.close();
+    _userBloc.close();
   }
 
   @override
@@ -72,16 +74,10 @@ class _CreateWalletFormState extends State<CreateWalletForm> {
         }
 
         if (_state.error == CreateFormError.none) {
-          Navigator.of(context).pushReplacementNamed('/');
+          Navigator.of(context).pop();
+          _userBloc.add(UserCreate());
         }
       },
-      // listenWhen: (CreateWalletState previous, CreateWalletState current) {
-      //   if (previous is CreateWalletCheck && current is CreateWalletCheck) {
-      //     return true;
-      //   }
-
-      //   return true;
-      // },
       child: BlocBuilder<CreateWalletBloc, CreateWalletState>(
           cubit: _bloc,
           builder: (BuildContext ctx, CreateWalletState state) {
@@ -258,6 +254,6 @@ class PasswordItem extends StatelessWidget {
               color: _color,
             ))
       ],
-    ));
+    ),);
   }
 }

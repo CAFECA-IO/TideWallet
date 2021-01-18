@@ -6,6 +6,7 @@ import '../widgets/buttons/primary_button.dart';
 
 class WelcomeScreen extends StatelessWidget {
   static const routeName = '/landing';
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(

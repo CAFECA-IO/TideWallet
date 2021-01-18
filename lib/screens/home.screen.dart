@@ -28,7 +28,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   PageController _pageController = PageController();
   int _selectedIndex = 0;
-  bool _isInit = true;
+  // bool _isInit = true;
   // HDWalletRepository _hdWalletRepository;
   
 
