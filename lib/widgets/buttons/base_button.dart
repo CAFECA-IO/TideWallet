@@ -6,6 +6,7 @@ abstract class BaseButton extends StatelessWidget {
   final Color backgroundColor;
   final Color borderColor;
   final Color disableColor;
+  final Color textColor;
   final AssetImage iconImg;
 
   BaseButton(
@@ -15,6 +16,7 @@ abstract class BaseButton extends StatelessWidget {
     this.backgroundColor,
     this.disableColor,
     this.borderColor,
+    this.textColor,
   });
   
   @override
@@ -39,7 +41,7 @@ abstract class BaseButton extends StatelessWidget {
             SizedBox(width: 14.0,),
             Text(
               _text,
-              style: TextStyle(fontSize: 16.0),
+              style: TextStyle(fontSize: 16.0, color: this.textColor),
             ),
           ],
         ),

@@ -19,8 +19,17 @@ class CreateWalletBloc extends Bloc<CreateWalletEvent, CreateWalletState> {
     CreateWalletEvent event,
   ) async* {
      CreateWalletCheck _state = state;
+    if (event is InputWalletName) {
+      yield _state.copyWith(name: event.name);
+    }
+
+
     if (event is InputPassword) {
       yield _state.copyWith(password: event.password, rules: _validator.validPassword(event.password, _state.name));
+    }
+
+    if (event is InputRePassword) {
+      yield _state.copyWith(rePassword: event.password);
     }
   }
 }

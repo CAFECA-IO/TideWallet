@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class PasswordInput extends StatefulWidget {
   final String label;
   final Function validator;
-  final Function onChange;
+  final Function onChanged;
   final TextEditingController controller;
 
   PasswordInput(
       {@required this.label,
       @required this.validator,
-      @required this.onChange,
+      @required this.onChanged,
       @required this.controller});
 
   @override
@@ -24,10 +24,9 @@ class _PasswordInputState extends State<PasswordInput> {
     return TextFormField(
       // onFieldSubmitted: ,
       onChanged: (String v) {
-        widget.onChange(v);
+        widget.onChanged(v);
       },
       textInputAction: TextInputAction.done,
-      obscureText: !show,
       style: TextStyle(fontSize: 16.0),
       controller: widget.controller,
       validator: widget.validator,
@@ -57,10 +56,7 @@ class _PasswordInputState extends State<PasswordInput> {
               show = false;
             });
           },
-          child: Icon(
-            Icons.remove_red_eye,
-            color: Colors.black,
-          ),
+          child: show ? ImageIcon(AssetImage('assets/images/icons/ic_openeye.png')) : ImageIcon(AssetImage('assets/images/icons/ic_closeeye.png'))
         ),
       ),
     );

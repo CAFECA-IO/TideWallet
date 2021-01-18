@@ -3,6 +3,12 @@ part of 'create_wallet_bloc.dart';
 @immutable
 abstract class CreateWalletEvent {}
 
+class InputWalletName extends CreateWalletEvent {
+  final String name;
+
+  InputWalletName(this.name);
+}
+
 class InputPassword extends CreateWalletEvent {
   final String password;
 

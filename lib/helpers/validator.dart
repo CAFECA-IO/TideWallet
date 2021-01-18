@@ -15,7 +15,7 @@ class Validator {
   }
 
   bool _validPasswordLeastOneNumber(String pwd) {
-    RegExp regex = new RegExp('(?=.*\d)');
+    RegExp regex = new RegExp('.*[0-9].*');
 
     return regex.hasMatch(pwd);
   }

@@ -1,5 +1,12 @@
 part of 'create_wallet_bloc.dart';
 
+enum CreateFormError {
+  nameEmpty,
+  passwordInvalid,
+  passwordNotMatch,
+  none
+}
+
 @immutable
 abstract class CreateWalletState extends Equatable {}
 
@@ -13,7 +20,7 @@ class CreateWalletCheck extends CreateWalletState {
   final String password;
   final String rePassword;
   final List<bool> rules;
-  final String errorMsg;
+  final CreateFormError error;
 
   bool get isEqualed => password == rePassword;
 
@@ -22,16 +29,22 @@ class CreateWalletCheck extends CreateWalletState {
     this.password,
     this.rePassword,
     this.rules,
-    this.errorMsg,
+    this.error,
   });
 
-  CreateWalletState copyWith({name, password, rePassword, rules, rePasswordValid}) {
+  CreateWalletState copyWith({
+    String name,
+    String password,
+    String rePassword,
+    List<bool> rules,
+    CreateFormError error,
+  }) {
     return CreateWalletCheck(
       name: name ?? this.name,
       password: password ?? this.password,
       rePassword: rePassword ?? this.rePassword,
       rules: rules ?? this.rules,
-      errorMsg: rePasswordValid ?? this.errorMsg,
+      error: error ?? this.error,
     );
   }
 
