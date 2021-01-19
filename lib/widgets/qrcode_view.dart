@@ -3,6 +3,10 @@ import 'dart:io';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class QRCodeView extends StatefulWidget {
+  final Function scanCallback;
+
+  QRCodeView({ this.scanCallback });
+
   @override
   _QRCodeViewState createState() => _QRCodeViewState();
 }
@@ -63,9 +67,7 @@ class _QRCodeViewState extends State<QRCodeView> {
       this.controller = controller;
     });
     controller.scannedDataStream.listen((scanData) {
-      setState(() {
-        result = scanData;
-      });
+      widget.scanCallback(scanData.code);
     });
   }
 

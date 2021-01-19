@@ -5,7 +5,12 @@ class User {
     return this._isCreated;
   }
 
-  createUser() {
+  void createUser() {
     this._isCreated = true;
+  }
+
+  bool validPaperWallet(String wallet) {
+    // TODO: The result should be modified
+    return wallet.length > 50;
   }
 }

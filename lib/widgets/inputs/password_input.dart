@@ -5,12 +5,14 @@ class PasswordInput extends StatefulWidget {
   final Function validator;
   final Function onChanged;
   final TextEditingController controller;
+  final bool showBtn;
 
   PasswordInput(
       {@required this.label,
       @required this.validator,
       @required this.onChanged,
-      @required this.controller});
+      @required this.controller,
+      this.showBtn = true});
 
   @override
   _PasswordInputState createState() => _PasswordInputState();
@@ -46,7 +48,7 @@ class _PasswordInputState extends State<PasswordInput> {
         labelText: widget.label,
 
         // errorStyle: TextStyle(color: Colors.red, fontSize: 10.0),
-        suffixIcon: GestureDetector(
+        suffixIcon: widget.showBtn ? GestureDetector(
             onTap: () {
               setState(() {
                 show = !show;
@@ -54,7 +56,7 @@ class _PasswordInputState extends State<PasswordInput> {
             },
             child: show
                 ? ImageIcon(AssetImage('assets/images/icons/ic_openeye.png'))
-                : ImageIcon(AssetImage('assets/images/icons/ic_closeeye.png'))),
+                : ImageIcon(AssetImage('assets/images/icons/ic_closeeye.png'))) : null,
       ),
     );
   }

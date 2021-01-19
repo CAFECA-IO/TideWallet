@@ -8,4 +8,8 @@ class UserRepository {
   createUser() {
     _user.createUser();  
   }
+
+  validPaperWallet(String wallet) {
+    return _user.validPaperWallet(wallet);
+  }
 }
