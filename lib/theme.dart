@@ -13,7 +13,7 @@ class MyColors {
   static const secondary_03 = Color(0xFFC2C2C2);
   static const secondary_04 = Color(0xFFCECECE);
   static const secondary_05 = Color(0xFFECECEC);
-  static const secondary_06 = Color(0xFFF7F8F9);
+  static const secondary_06 = Color(0xFFEEEEEE);
 
   static const font_01 = Colors.white;
 }
@@ -26,12 +26,15 @@ TextTheme myTextTheme = TextTheme(
 
 ThemeData myThemeData = ThemeData(
   primaryColor: MyColors.primary_02,
-  primaryColorLight: MyColors.primary_01,
+  primaryColorLight: MyColors.primary_02,
+  primaryColorDark: MyColors.primary_01,
   accentColor: MyColors.primary_03,
   errorColor: MyColors.primary_05,
   hintColor: MyColors.primary_04,
+  dividerColor: MyColors.secondary_06,
   textTheme: myTextTheme,
-  cursorColor: MyColors.secondary_03
+  cursorColor: MyColors.secondary_03,
+  disabledColor: MyColors.secondary_05
 );
 
 ThemeData myDarkThemeData = ThemeData();

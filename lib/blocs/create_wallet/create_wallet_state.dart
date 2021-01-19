@@ -23,12 +23,14 @@ class CreateWalletCheck extends CreateWalletState {
   final CreateFormError error;
 
   bool get isEqualed => password == rePassword;
+  
+  static const defaultValid = [false, false, false, false];
 
   CreateWalletCheck({
     this.name = '',
-    this.password,
-    this.rePassword,
-    this.rules,
+    this.password = '',
+    this.rePassword = '',
+    this.rules = defaultValid,
     this.error,
   });
 
@@ -44,10 +46,10 @@ class CreateWalletCheck extends CreateWalletState {
       password: password ?? this.password,
       rePassword: rePassword ?? this.rePassword,
       rules: rules ?? this.rules,
-      error: error ?? this.error,
+      error: error,
     );
   }
 
   @override
-  List<Object> get props => [password, rePassword];
+  List<Object> get props => [name, password, rePassword, rules, error];
 }
