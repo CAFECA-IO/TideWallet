@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 
+import '../helpers/i18n.dart';
+import '../theme.dart';
 import '../widgets/appBar.dart';
 import '../widgets/buttons/secondary_button.dart';
 
 class TransactionPreviewScreen extends StatelessWidget {
   static const routeName = '/transaction-preview';
-
+  final t = I18n.t;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: GeneralAppbar(
-        title: "Preview",
+        title: t('preview'),
         routeName: routeName,
       ),
       body: Container(
@@ -23,7 +25,10 @@ class TransactionPreviewScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Align(
-                    child: Text("To"),
+                    child: Text(
+                      t('to'),
+                      style: Theme.of(context).textTheme.caption,
+                    ),
                     alignment: Alignment.centerLeft,
                   ),
                   SizedBox(height: 7),
@@ -39,7 +44,10 @@ class TransactionPreviewScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Align(
-                    child: Text("Amount"),
+                    child: Text(
+                      t('amount'),
+                      style: Theme.of(context).textTheme.caption,
+                    ),
                     alignment: Alignment.centerLeft,
                   ),
                   SizedBox(height: 7),
@@ -55,7 +63,10 @@ class TransactionPreviewScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Align(
-                    child: Text("Transaction Fee"),
+                    child: Text(
+                      t('transaction_fee'),
+                      style: Theme.of(context).textTheme.caption,
+                    ),
                     alignment: Alignment.centerLeft,
                   ),
                   SizedBox(height: 7),
@@ -65,14 +76,25 @@ class TransactionPreviewScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 4),
                   Align(
-                    child: Text("≈ 10 USD"),
+                    child: Text(
+                      "≈ 10 USD",
+                      style: Theme.of(context).textTheme.caption,
+                    ),
                     alignment: Alignment.centerLeft,
                   ),
                 ],
               ),
             ),
             SizedBox(height: 261),
-            SecondaryButton("Confirm", () {}),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 36),
+              child: SecondaryButton(
+                "Confirm",
+                () {},
+                textColor: MyColors.primary_03,
+                borderColor: MyColors.primary_03,
+              ),
+            ),
           ],
         ),
       ),

@@ -6,34 +6,42 @@ abstract class BaseButton extends StatelessWidget {
   final Color backgroundColor;
   final Color borderColor;
   final Color disableColor;
+  final Color disabledTextColor;
   final Color textColor;
   final AssetImage iconImg;
+  final EdgeInsetsGeometry padding;
+  final bool isEnabled;
 
-  BaseButton(
-    this._text,
-    this._onPressed, {
-    this.iconImg,
-    this.backgroundColor,
-    this.disableColor,
-    this.borderColor,
-    this.textColor,
-  });
+  BaseButton(this._text, this._onPressed,
+      {this.iconImg,
+      this.backgroundColor,
+      this.disableColor,
+      this.disabledTextColor,
+      this.borderColor,
+      this.textColor,
+      this.padding,
+      this.isEnabled = true});
 
   @override
   Widget build(BuildContext context) {
     return FlatButton(
         disabledColor: this.disableColor,
-        color: backgroundColor,
-        padding: const EdgeInsets.symmetric(horizontal: 32.5, vertical: 13.0),
+        disabledTextColor: this.disabledTextColor,
+        color: isEnabled ? backgroundColor : disableColor,
+        padding: this.padding != null
+            ? this.padding
+            : const EdgeInsets.symmetric(horizontal: 32.5, vertical: 13.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(200.0),
           side: BorderSide(
-            color: this.borderColor,
+            color: isEnabled ? this.borderColor : this.disableColor,
             width: 1,
             style: BorderStyle.solid,
           ),
         ),
-        textColor: Theme.of(context).textTheme.button.color,
+        textColor: isEnabled
+            ? Theme.of(context).textTheme.button.color
+            : this.disabledTextColor,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

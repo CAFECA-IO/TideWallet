@@ -13,5 +13,21 @@
     "wallet_name": "錢包名稱",
     "password": "密碼",
     "re_password": "再次確認密碼",
-    "confirm": "確認"
+    "confirm": "確認",
+    "send_coin": "Send Coin",
+    "send_to": "發送至",
+    "amount": "金額",
+    "balance": "餘額",
+    "transaction_fee": "交易手續費",
+    "processing_time": "處理時間",
+    "minute": "分鐘",
+    "higher_fees_faster_transaction": "付手越高的續費，交易速度越快",
+    "estimated": "預估",
+    "advanced_settings": "進階設定",
+    "next": "下一步",
+    "slow": "Slow",
+    "standard": "Standard",
+    "fast": "Fast",
+    "preview": "預覽",
+    "to": "發送至"
 }

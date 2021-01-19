@@ -58,7 +58,8 @@ MaterialApp _material = MaterialApp(
   title: 'TideWallet3',
   theme: myThemeData,
   routes: {
-    '/': (context) => LandingScreen(),
+    // '/': (context) => LandingScreen(),
+    '/': (context) => CreateTransactionScreen(),
     WalletConnectScreen.routeName: (context) => WalletConnectScreen(),
     CreateTransactionScreen.routeName: (context) => CreateTransactionScreen(),
     TransactionPreviewScreen.routeName: (context) => TransactionPreviewScreen()

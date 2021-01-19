@@ -8,13 +8,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.5.0-nullsafety"
-  barcode_scan:
-    dependency: "direct main"
-    description:
-      name: barcode_scan
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.1"
   bloc:
     dependency: "direct main"
     description:
@@ -64,6 +57,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  custom_radio_grouped_button:
+    dependency: "direct main"
+    description:
+      name: custom_radio_grouped_button
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.6+1"
   equatable:
     dependency: "direct main"
     description:
@@ -78,13 +78,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0-nullsafety"
-  fixnum:
-    dependency: transitive
-    description:
-      name: fixnum
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.10.11"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -142,13 +135,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.8.0-nullsafety"
-  protobuf:
-    dependency: transitive
-    description:
-      name: protobuf
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.1.0"
   provider:
     dependency: transitive
     description:

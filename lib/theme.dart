@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-
 class MyColors {
   static const primary_01 = Color(0xFF3BB3AB);
   static const primary_02 = Color(0xFF4ECDC4);
   static const primary_03 = Color(0xFF446CB3);
   static const primary_04 = Color(0xFFFF5730);
   static const primary_05 = Color(0xFFFF1212);
+  static const primary_06 = Color(0xFF4A4A4A);
 
   static const secondary_01 = Color(0xFF555555);
   static const secondary_02 = Color(0xFF9B9B9B);
@@ -14,28 +14,50 @@ class MyColors {
   static const secondary_04 = Color(0xFFCECECE);
   static const secondary_05 = Color(0xFFECECEC);
   static const secondary_06 = Color(0xFFEEEEEE);
+  static const secondary_07 = Color(0xFFEEF2F6);
 
   static const font_01 = Colors.white;
 }
 
 TextTheme myTextTheme = TextTheme(
-  headline1: TextStyle(color: MyColors.secondary_01, fontSize: 20.0, letterSpacing: 0.4, fontWeight: FontWeight.bold),
-  bodyText1: TextStyle(color: MyColors.secondary_01),
+  headline1: TextStyle(
+      color: MyColors.secondary_01,
+      fontSize: 20.0,
+      letterSpacing: 0.4,
+      fontWeight: FontWeight.bold),
+  bodyText1: TextStyle(
+    color: MyColors.secondary_01,
+  ),
+  bodyText2: TextStyle(
+    color: MyColors.primary_06,
+    fontSize: 13,
+  ),
+  subtitle1: TextStyle(
+    color: MyColors.primary_03,
+    fontSize: 14.0,
+  ),
+  caption: TextStyle(
+    color: MyColors.secondary_02,
+    fontSize: 13.0,
+  ),
+  headline6: TextStyle(
+    color: MyColors.secondary_02,
+    fontSize: 13.0,
+  ),
   button: TextStyle(color: MyColors.font_01),
 );
 
 ThemeData myThemeData = ThemeData(
-  primaryColor: MyColors.primary_02,
-  primaryColorLight: MyColors.primary_02,
-  primaryColorDark: MyColors.primary_01,
-  accentColor: MyColors.primary_03,
-  errorColor: MyColors.primary_05,
-  hintColor: MyColors.primary_04,
-  dividerColor: MyColors.secondary_06,
-  textTheme: myTextTheme,
-  cursorColor: MyColors.secondary_03,
-  disabledColor: MyColors.secondary_05
-);
+    primaryColor: MyColors.primary_02,
+    primaryColorLight: MyColors.primary_02,
+    primaryColorDark: MyColors.primary_01,
+    accentColor: MyColors.primary_03,
+    errorColor: MyColors.primary_05,
+    hintColor: MyColors.primary_04,
+    dividerColor: MyColors.secondary_06,
+    textTheme: myTextTheme,
+    cursorColor: MyColors.secondary_03,
+    disabledColor: MyColors.secondary_05);
 
 ThemeData myDarkThemeData = ThemeData();
 

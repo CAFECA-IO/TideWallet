@@ -28,8 +28,8 @@ dependencies:
   intl: ^0.16.1
 
   # UI
-  barcode_scan: ^3.0.1
-  
+  # barcode_scan: ^3.0.1
+  custom_radio_grouped_button: ^1.0.6+1
 
   # Bloc
   bloc: ^6.1.1
