@@ -7,7 +7,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import './screens/landing.screen.dart';
+import './screens/restore_wallet.screen.dart';
 import './screens/wallet_connect.screen.dart';
+import './screens/scan_wallet.screen.dart';
 import './repositories/user_repository.dart';
 import './helpers/i18n.dart';
 import './blocs/delegate.dart';
@@ -57,7 +59,9 @@ MaterialApp _material = MaterialApp(
   theme: myThemeData,
   routes: {
     '/': (context) => LandingScreen(),
-    WalletConnectScreen.routeName: (context) => WalletConnectScreen()
+    RestoreWalletScreen.routeName: (context) => RestoreWalletScreen(),
+    ScanWalletScreen.routeName: (conte) => ScanWalletScreen(),
+    WalletConnectScreen.routeName: (context) => WalletConnectScreen(),
   },
   localizationsDelegates: [
     const I18nDelegate(),

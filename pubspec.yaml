@@ -35,6 +35,8 @@ dependencies:
   equatable: ^1.2.4
   
   rxdart: ^0.24.1
+  # flutter_barcode_scanner: ^1.0.2
+  qr_code_scanner: ^0.3.0
 
 
   # The following adds the Cupertino Icons font to your application.

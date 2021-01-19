@@ -20,8 +20,10 @@ class MyColors {
 
 TextTheme myTextTheme = TextTheme(
   headline1: TextStyle(color: MyColors.secondary_01, fontSize: 20.0, letterSpacing: 0.4, fontWeight: FontWeight.bold),
+  headline5: TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),
   bodyText1: TextStyle(color: MyColors.secondary_01),
   button: TextStyle(color: MyColors.font_01),
+  subtitle2: TextStyle(fontSize: 12.0, color: MyColors.secondary_02)
 );
 
 ThemeData myThemeData = ThemeData(
