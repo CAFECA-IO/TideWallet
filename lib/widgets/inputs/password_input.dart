@@ -47,14 +47,9 @@ class _PasswordInputState extends State<PasswordInput> {
 
         // errorStyle: TextStyle(color: Colors.red, fontSize: 10.0),
         suffixIcon: GestureDetector(
-            onLongPressStart: (LongPressStartDetails detail) {
+            onTap: () {
               setState(() {
-                show = true;
-              });
-            },
-            onLongPressEnd: (LongPressEndDetails detail) {
-              setState(() {
-                show = false;
+                show = !show;
               });
             },
             child: show
