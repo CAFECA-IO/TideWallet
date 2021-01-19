@@ -1,0 +1,61 @@
+import 'package:flutter/material.dart';
+
+class Input extends StatelessWidget {
+  final TextEditingController controller;
+  final String labelText;
+  final String suffixText;
+  final Function validator;
+  final bool readOnly;
+  final Function onTap;
+  final Widget suffix;
+  final Widget suffixIcon;
+  final Function onChanged;
+  final FocusNode focusNode;
+  final String hintText;
+  final AutovalidateMode autovalidate;
+
+  Input({
+    this.controller,
+    this.labelText,
+    this.suffixText,
+    this.validator,
+    this.readOnly: false,
+    this.onTap,
+    this.suffix,
+    this.suffixIcon,
+    this.onChanged,
+    this.focusNode,
+    this.hintText,
+    this.autovalidate: AutovalidateMode.always,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+        focusNode: focusNode,
+        controller: controller,
+        // textAlignVertical: TextAlignVertical.bottom,
+        decoration: InputDecoration(
+          contentPadding: suffixIcon == null
+              ? EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0)
+              : EdgeInsets.only(left: 8.0, bottom: 8.0),
+          labelText: labelText,
+          labelStyle: TextStyle(color: Theme.of(context).accentColor),
+          suffixText: suffixText,
+          suffix: suffix,
+          suffixIcon: suffixIcon,
+          hintText: hintText,
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Theme.of(context).primaryColorLight),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Theme.of(context).cursorColor),
+          ),
+        ),
+        validator: validator,
+        readOnly: readOnly,
+        onTap: onTap,
+        onChanged: onChanged,
+        autovalidateMode: AutovalidateMode.always);
+  }
+}

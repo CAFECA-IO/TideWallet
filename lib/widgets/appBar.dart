@@ -29,7 +29,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
             behavior: HitTestBehavior.translucent,
             child: Icon(
               Icons.arrow_back_ios,
-              color: MyColors.text_01,
+              color: MyColors.secondary_01,
               size: 28,
             ),
             onTap: leadingFunc ??

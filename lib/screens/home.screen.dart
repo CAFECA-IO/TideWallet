@@ -5,7 +5,6 @@ import './wallet_connect.screen.dart';
 import './settings.screen.dart';
 import '../widgets/appBar.dart';
 import '../widgets/bottom_nav_bar.dart';
-
 class HomeScreenContent {
   final String routeName;
   final Widget widget;
@@ -29,7 +28,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   PageController _pageController = PageController();
   int _selectedIndex = 0;
-  bool _isInit = true;
+  // bool _isInit = true;
   // HDWalletRepository _hdWalletRepository;
   
 
@@ -75,6 +74,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+   
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: GeneralAppbar(
