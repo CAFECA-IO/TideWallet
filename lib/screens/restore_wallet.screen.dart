@@ -10,6 +10,7 @@ import '../widgets/buttons/secondary_button.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/loading_dialog.dart';
 import '../helpers/i18n.dart';
+import '../widgets/dialogs/verify_password_dialog.dart';
 
 final t = I18n.t;
 
@@ -39,7 +40,21 @@ class _RestoreWalletScreenState extends State<RestoreWalletScreen> {
         routeName: RestoreWalletScreen.routeName,
       ),
       body: BlocListener<RestoreWalletBloc, RestoreWalletState>(
-        listener: (context, state) {
+        listener: (context, state) async {
+          if (state is PaperWalletSuccess) {
+            // Wait for Navigator back from Scan Screen
+            await Future.delayed(Duration(milliseconds: 300));
+            DialogContorller.showUnDissmissible(
+              context,
+              VerifyPasswordDialog((String password) {
+                _bloc.add(RestorePapaerWallet(password));
+              }, (String password) {
+                _bloc.add(CleanWalletResult());
+                DialogContorller.dismiss(context);
+              }),
+            );
+          }
+
           if (state is PaperWalletRestored) {
             Navigator.of(context).popUntil(
               (ModalRoute.withName('/')),

@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../blocs/restore_wallet/restore_wallet_bloc.dart';
-import '../widgets/dialogs/verify_password_dialog.dart';
 import '../widgets/appBar.dart';
 import '../widgets/qrcode_view.dart';
-import '../widgets/dialogs/dialog_controller.dart';
 import '../helpers/i18n.dart';
 
 final t = I18n.t;
@@ -21,7 +19,8 @@ class _ScanWalletScreenState extends State<ScanWalletScreen> {
 
   @override
   void didChangeDependencies() {
-    _bloc = BlocProvider.of<RestoreWalletBloc>(context)..add(CleanWalletResult());
+    _bloc = BlocProvider.of<RestoreWalletBloc>(context)
+      ..add(CleanWalletResult());
 
     super.didChangeDependencies();
   }
@@ -37,16 +36,6 @@ class _ScanWalletScreenState extends State<ScanWalletScreen> {
       listener: (context, state) {
         if (state is PaperWalletSuccess) {
           Navigator.of(context).pop();
-
-          DialogContorller.showUnDissmissible(
-            context,
-            VerifyPasswordDialog((String password) {
-              _bloc.add(RestorePapaerWallet(password));
-            }, (String password) {
-              _bloc.add(CleanWalletResult());
-              Navigator.of(context).pop();
-            }),
-          );
         }
       },
       child: Scaffold(
