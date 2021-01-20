@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../theme.dart';
+import '../screens/restore_wallet.screen.dart';
+import '../screens/scan_wallet.screen.dart';
 import '../screens/wallet_connect.screen.dart';
 
 class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
@@ -25,12 +27,14 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
       Widget leading = SizedBox();
       switch (routeName) {
         case WalletConnectScreen.routeName:
+        case ScanWalletScreen.routeName:
+        case RestoreWalletScreen.routeName:
           leading = GestureDetector(
             behavior: HitTestBehavior.translucent,
-            child: Icon(
-              Icons.arrow_back_ios,
-              color: MyColors.secondary_01,
-              size: 28,
+            child: ImageIcon(
+              AssetImage('assets/images/icons/btn_back_black_normal.png'),
+              color: Colors.white,
+              size: 40.0,
             ),
             onTap: leadingFunc ??
                 () {
@@ -160,6 +164,11 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
       return _actions;
     }
 
+    bool showBackground() {
+      if (routeName == ScanWalletScreen.routeName) return false;
+      return true;
+    }
+
     return AppBar(
       centerTitle: true,
       elevation: 0,
@@ -168,7 +177,19 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
         style: Theme.of(context).textTheme.headline5,
         textAlign: TextAlign.center,
       ),
-      backgroundColor: Theme.of(context).accentColor,
+      backgroundColor: Colors.transparent,
+      flexibleSpace: showBackground() ? Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: <Color>[
+              Theme.of(context).primaryColor,
+              Theme.of(context).accentColor
+            ],
+          ),
+        ),
+      ) : null,
       leading: genLeading(routeName),
       actions: genActions(routeName),
     );

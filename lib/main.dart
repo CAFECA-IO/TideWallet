@@ -7,11 +7,14 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import './screens/landing.screen.dart';
+import './screens/restore_wallet.screen.dart';
 import './screens/wallet_connect.screen.dart';
+import './screens/scan_wallet.screen.dart';
 import './repositories/user_repository.dart';
 import './helpers/i18n.dart';
 import './blocs/delegate.dart';
 import './blocs/user/user_bloc.dart';
+import './blocs/restore_wallet/restore_wallet_bloc.dart';
 import 'theme.dart';
 
 void main() {
@@ -41,9 +44,15 @@ class MyApp extends StatelessWidget {
         child: MultiBlocProvider(
           providers: [
             BlocProvider<UserBloc>(
-              create: (BuildContext context) =>
-                  UserBloc(Provider.of<UserRepository>(context, listen: false)),
+              create: (BuildContext context) => UserBloc(
+                Provider.of<UserRepository>(context, listen: false),
+              ),
             ),
+            BlocProvider<RestoreWalletBloc>(
+              create: (BuildContext context) => RestoreWalletBloc(
+                Provider.of<UserRepository>(context, listen: false),
+              ),
+            )
           ],
           child: _material,
         ),
@@ -57,7 +66,9 @@ MaterialApp _material = MaterialApp(
   theme: myThemeData,
   routes: {
     '/': (context) => LandingScreen(),
-    WalletConnectScreen.routeName: (context) => WalletConnectScreen()
+    RestoreWalletScreen.routeName: (context) => RestoreWalletScreen(),
+    ScanWalletScreen.routeName: (conte) => ScanWalletScreen(),
+    WalletConnectScreen.routeName: (context) => WalletConnectScreen(),
   },
   localizationsDelegates: [
     const I18nDelegate(),

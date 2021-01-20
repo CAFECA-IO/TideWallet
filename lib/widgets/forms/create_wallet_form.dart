@@ -6,6 +6,8 @@ import '../../blocs/user/user_bloc.dart';
 import '../inputs/input.dart';
 import '../inputs/password_input.dart';
 import '../buttons/secondary_button.dart';
+import '../dialogs/dialog_controller.dart';
+import '../dialogs/error_dialog.dart';
 import '../../helpers/i18n.dart';
 
 class CreateWalletForm extends StatefulWidget {
@@ -53,27 +55,11 @@ class _CreateWalletFormState extends State<CreateWalletForm> {
               break;
             default:
           }
-          showDialog(
-              barrierColor: Colors.transparent,
-              context: context,
-              builder: (context) {
-                return Center(
-                  child: AlertDialog(
-                    backgroundColor: Theme.of(context).disabledColor.withOpacity(0.95),
-                    content: Container(
-                      width: 170.0,
-                      height: 170.0,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Image.asset('assets/images/ic_fingerprint_error.png'),
-                          Text(_text),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              }).then((value) => _bloc.add(CleanCreateWalletError()));
+          DialogContorller.show(context, ErrorDialog(_text), onDismiss: () {
+             _bloc.add(
+              CleanCreateWalletError(),
+            );
+          });
         }
 
         if (_state.error == CreateFormError.none) {
@@ -241,24 +227,25 @@ class PasswordItem extends StatelessWidget {
     final _color = Theme.of(context).primaryColor;
 
     return Container(
-        child: Row(
-      children: [
-        Container(
-          width: 16.0,
-          child: this._isValid
-              ? Icon(Icons.check_circle_sharp, color: _color, size: 16.0)
-              : Icon(
-                  Icons.circle,
-                  color: _color,
-                  size: 6.0,
-                ),
-          margin: EdgeInsets.only(right: 4.0),
-        ),
-        Text(this._title,
-            style: TextStyle(
-              color: _color,
-            ))
-      ],
-    ),);
+      child: Row(
+        children: [
+          Container(
+            width: 16.0,
+            child: this._isValid
+                ? Icon(Icons.check_circle_sharp, color: _color, size: 16.0)
+                : Icon(
+                    Icons.circle,
+                    color: _color,
+                    size: 6.0,
+                  ),
+            margin: EdgeInsets.only(right: 4.0),
+          ),
+          Text(this._title,
+              style: TextStyle(
+                color: _color,
+              ))
+        ],
+      ),
+    );
   }
 }

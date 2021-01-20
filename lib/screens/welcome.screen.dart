@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme.dart';
+import './restore_wallet.screen.dart';
 import '../widgets/forms/create_wallet_form.dart';
 import '../widgets/buttons/primary_button.dart';
 import '../helpers/i18n.dart';
@@ -9,7 +10,7 @@ class WelcomeScreen extends StatelessWidget {
   static const routeName = '/landing';
 
   final t = I18n.t;
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,11 +51,76 @@ class WelcomeScreen extends StatelessWidget {
             PrimaryButton(
               'Restore Wallet',
               () {
-               
+                showModalBottomSheet(
+                  // isScrollControlled: true,
+                  shape: bottomSheetShape,
+                  context: context,
+                  builder: (context) => Container(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 22.0, horizontal: 16.0),
+                    child: Container(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 50.0),
+                          Text(
+                            t('select_import'),
+                            style: Theme.of(context).textTheme.headline1,
+                          ),
+                          SizedBox(height: 84.0),
+                          RestoreNav(),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
               },
               backgroundColor: Colors.transparent.withOpacity(0.2),
               borderColor: Colors.transparent,
               iconImg: AssetImage('assets/images/icons/ic_import_wallet.png'),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class RestoreNav extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).pushNamed(RestoreWalletScreen.routeName);
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 50.0),
+        decoration: BoxDecoration(
+          border: Border.all(color: Theme.of(context).dividerColor),
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ImageIcon(
+              AssetImage('assets/images/icons/ic_import_wallet.png'),
+              color: Colors.black,
+              size: 36.0,
+            ),
+            SizedBox(width: 20.0),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  t('import_paperwallet'),
+                  style: Theme.of(context).textTheme.headline1,
+                ),
+                Text(
+                  t('paperwallet_intro'),
+                  style: Theme.of(context).textTheme.subtitle2,
+                )
+              ],
             )
           ],
         ),
