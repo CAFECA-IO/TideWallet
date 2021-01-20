@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 class DialogContorller {
   static const Color _barrierColor = Colors.transparent;
 
-  static show(BuildContext ctx, Widget dialog,) {
+  static show(BuildContext ctx, Widget dialog, {Function onDismiss}) {
     showDialog(
         barrierColor: _barrierColor,
         context: ctx,
-        builder: (context) => dialog);
+        builder: (context) => dialog).then(
+      (value) {
+        onDismiss();
+      },
+    );
   }
 
   static showUnDissmissible(BuildContext ctx, Widget dialog) {

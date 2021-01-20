@@ -55,11 +55,11 @@ class _CreateWalletFormState extends State<CreateWalletForm> {
               break;
             default:
           }
-          DialogContorller.show(context, ErrorDialog(_text)).then(
-            (value) => _bloc.add(
+          DialogContorller.show(context, ErrorDialog(_text), onDismiss: () {
+             _bloc.add(
               CleanCreateWalletError(),
-            ),
-          );
+            );
+          });
         }
 
         if (_state.error == CreateFormError.none) {
