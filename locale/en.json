@@ -17,6 +17,13 @@
     "scan": "掃描",
     "scan_title": "Scan your Keystore",
     "restore_message": "Ethereum’s official wallet uses keystore format to store encrypted private key information, you can copy and paste the content into the input field, or with the help of QR code generate.",
+    "select_import": "選擇匯入方式",
+    "import_paperwallet": "匯入 PaperWallet",
+    "paperwallet_intro": "存儲私鑰的一種加密格式",
+    "dialog_password": "請輸入密碼",
+    "dialog_loading": "Loading",
+    "cancel": "Cancel",
+    "ok": "OK",
     "error_password": "密碼錯誤",
     "error_format": "格式錯誤"
 }

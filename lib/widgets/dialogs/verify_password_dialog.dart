@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:tidewallet3/widgets/inputs/password_input.dart';
 
+import '../inputs/password_input.dart';
+import '../../helpers/i18n.dart';
+
+final t = I18n.t;
 class VerifyPasswordDialog extends StatefulWidget {
   final Function _cancel;
   final Function _confirm;
@@ -73,7 +76,7 @@ class _VerifyPasswordDialogState extends State<VerifyPasswordDialog> {
                 Padding(
                   padding: const EdgeInsets.all(18.0),
                   child: Text(
-                    "請輸入密碼",
+                    t('dialog_password'),
                     style: TextStyle(fontSize: 14.0, color: Colors.white),
                   ),
                 ),
@@ -102,8 +105,8 @@ class _VerifyPasswordDialogState extends State<VerifyPasswordDialog> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      btn('Cancel', widget._cancel),
-                      btn('OK', widget._confirm),
+                      btn(t('cancel'), widget._cancel),
+                      btn(t('ok'), widget._confirm),
                     ],
                   ),
                 )

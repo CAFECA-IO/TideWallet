@@ -64,7 +64,7 @@ class WelcomeScreen extends StatelessWidget {
                         children: [
                           SizedBox(height: 50.0),
                           Text(
-                            '選擇匯入方式',
+                            t('select_import'),
                             style: Theme.of(context).textTheme.headline1,
                           ),
                           SizedBox(height: 84.0),
@@ -113,11 +113,11 @@ class RestoreNav extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '匯入 PaperWallet',
+                  t('import_paperwallet'),
                   style: Theme.of(context).textTheme.headline1,
                 ),
                 Text(
-                  '存儲私鑰的一種加密格式',
+                  t('paperwallet_intro'),
                   style: Theme.of(context).textTheme.subtitle2,
                 )
               ],
