@@ -47,6 +47,7 @@ class _RestoreWalletScreenState extends State<RestoreWalletScreen> {
             DialogContorller.showUnDissmissible(
               context,
               VerifyPasswordDialog((String password) {
+                DialogContorller.dismiss(context);
                 _bloc.add(RestorePapaerWallet(password));
               }, (String password) {
                 _bloc.add(CleanWalletResult());
@@ -67,7 +68,7 @@ class _RestoreWalletScreenState extends State<RestoreWalletScreen> {
           }
 
           if (state is PaperWalletRestoreFail) {
-            Navigator.of(context).pop();
+            DialogContorller.dismiss(context);
 
             DialogContorller.show(context, ErrorDialog(t('error_password')));
           }
