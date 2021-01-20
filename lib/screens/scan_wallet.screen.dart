@@ -5,6 +5,10 @@ import '../blocs/restore_wallet/restore_wallet_bloc.dart';
 import '../widgets/dialogs/verify_password_dialog.dart';
 import '../widgets/appBar.dart';
 import '../widgets/qrcode_view.dart';
+import '../widgets/dialogs/dialog_controller.dart';
+import '../helpers/i18n.dart';
+
+final t = I18n.t;
 
 class ScanWalletScreen extends StatefulWidget {
   static const routeName = '/scan-wallet';
@@ -17,7 +21,7 @@ class _ScanWalletScreenState extends State<ScanWalletScreen> {
 
   @override
   void didChangeDependencies() {
-    _bloc = BlocProvider.of<RestoreWalletBloc>(context);
+    _bloc = BlocProvider.of<RestoreWalletBloc>(context)..add(CleanWalletResult());
 
     super.didChangeDependencies();
   }
@@ -31,14 +35,12 @@ class _ScanWalletScreenState extends State<ScanWalletScreen> {
     return BlocListener<RestoreWalletBloc, RestoreWalletState>(
       cubit: _bloc,
       listener: (context, state) {
-
         if (state is PaperWalletSuccess) {
           Navigator.of(context).pop();
-          showDialog(
-            barrierDismissible: false,
-            barrierColor: Colors.transparent,
-            context: context,
-            builder: (context) => VerifyPasswordDialog((String password) {
+
+          DialogContorller.showUnDissmissible(
+            context,
+            VerifyPasswordDialog((String password) {
               _bloc.add(RestorePapaerWallet(password));
             }, (String password) {
               _bloc.add(CleanWalletResult());
@@ -46,14 +48,12 @@ class _ScanWalletScreenState extends State<ScanWalletScreen> {
             }),
           );
         }
-
-      
       },
       child: Scaffold(
         extendBodyBehindAppBar: true,
         appBar: GeneralAppbar(
           routeName: ScanWalletScreen.routeName,
-          title: 'Scan your Keystore',
+          title: t('scan_title'),
         ),
         body: Stack(
           alignment: Alignment.center,
@@ -70,7 +70,7 @@ class _ScanWalletScreenState extends State<ScanWalletScreen> {
                       padding: const EdgeInsets.symmetric(
                           vertical: 20.0, horizontal: 40.0),
                       child: Text(
-                        '格式錯誤',
+                        t('error_format'),
                         style: Theme.of(context).textTheme.headline5,
                       ),
                       decoration: BoxDecoration(

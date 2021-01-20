@@ -36,7 +36,7 @@ ThemeData myThemeData = ThemeData(
   dividerColor: MyColors.secondary_06,
   textTheme: myTextTheme,
   cursorColor: MyColors.secondary_03,
-  disabledColor: MyColors.secondary_05
+  disabledColor: MyColors.secondary_05,
 );
 
 ThemeData myDarkThemeData = ThemeData();

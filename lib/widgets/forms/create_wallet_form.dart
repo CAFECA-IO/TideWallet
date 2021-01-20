@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tidewallet3/widgets/dialogs/dialog_controller.dart';
 
 import '../../blocs/create_wallet/create_wallet_bloc.dart';
 import '../../blocs/user/user_bloc.dart';
@@ -54,10 +55,11 @@ class _CreateWalletFormState extends State<CreateWalletForm> {
               break;
             default:
           }
-          showDialog(
-              barrierColor: Colors.transparent,
-              context: context,
-              builder: (context) => ErrorDialog(_text)).then((value) => _bloc.add(CleanCreateWalletError()));
+          DialogContorller.show(context, ErrorDialog(_text)).then(
+            (value) => _bloc.add(
+              CleanCreateWalletError(),
+            ),
+          );
         }
 
         if (_state.error == CreateFormError.none) {

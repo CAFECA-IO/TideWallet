@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tidewallet3/widgets/appBar.dart';
-// import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
 import '../blocs/restore_wallet/restore_wallet_bloc.dart';
 import '../blocs/user/user_bloc.dart';
 import './scan_wallet.screen.dart';
 import '../widgets/dialogs/error_dialog.dart';
 import '../widgets/buttons/secondary_button.dart';
+import '../widgets/dialogs/dialog_controller.dart';
+import '../widgets/dialogs/loading_dialog.dart';
+import '../helpers/i18n.dart';
+
+final t = I18n.t;
 
 class RestoreWalletScreen extends StatefulWidget {
   static const routeName = '/restore-wallet';
@@ -43,9 +47,14 @@ class _RestoreWalletScreenState extends State<RestoreWalletScreen> {
             _userBloc.add(UserRestore());
           }
 
+          if (state is PaperWallletRestoring) {
+            DialogContorller.showUnDissmissible(context, LoadingDialog());
+          }
+
           if (state is PaperWalletRestoreFail) {
             Navigator.of(context).pop();
-            showDialog(context: context, child: ErrorDialog('密碼錯誤'), barrierColor: Colors.transparent);
+
+            DialogContorller.show(context, ErrorDialog(t('error_password')));
           }
         },
         child: Container(
@@ -59,7 +68,7 @@ class _RestoreWalletScreenState extends State<RestoreWalletScreen> {
                   color: Color(0xFFBEEFF0),
                 ),
                 child: Text(
-                  'Ethereum’s official wallet uses keystore format to store encrypted private key information, you can copy and paste the content into the input field, or with the help of QR code generate.',
+                  t('restore_message'),
                   style: Theme.of(context).textTheme.bodyText1,
                 ),
               ),
@@ -67,7 +76,7 @@ class _RestoreWalletScreenState extends State<RestoreWalletScreen> {
                 padding: const EdgeInsets.symmetric(
                     horizontal: 36.0, vertical: 12.0),
                 child: SecondaryButton(
-                  '掃描',
+                  t('scan'),
                   () {
                     Navigator.of(context).pushNamed(ScanWalletScreen.routeName);
                   },

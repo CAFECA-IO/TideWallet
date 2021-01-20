@@ -13,5 +13,10 @@
     "wallet_name": "錢包名稱",
     "password": "密碼",
     "re_password": "再次確認密碼",
-    "confirm": "確認"
+    "confirm": "確認",
+    "scan": "掃描",
+    "scan_title": "Scan your Keystore",
+    "restore_message": "Ethereum’s official wallet uses keystore format to store encrypted private key information, you can copy and paste the content into the input field, or with the help of QR code generate.",
+    "error_password": "密碼錯誤",
+    "error_format": "格式錯誤"
 }

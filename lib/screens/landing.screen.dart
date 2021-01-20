@@ -8,7 +8,6 @@ import '../repositories/user_repository.dart';
 import '../blocs/user/user_bloc.dart';
 
 class LandingScreen extends StatefulWidget {
-  
   @override
   _LandingScreenState createState() => _LandingScreenState();
 }
@@ -16,7 +15,7 @@ class LandingScreen extends StatefulWidget {
 class _LandingScreenState extends State<LandingScreen> {
   UserBloc _bloc;
   UserRepository _repo;
-  
+
   @override
   void didChangeDependencies() {
     _repo = Provider.of<UserRepository>(context);
@@ -30,11 +29,10 @@ class _LandingScreenState extends State<LandingScreen> {
     _bloc.close();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<UserBloc, UserState>(
-      cubit: _bloc,
       builder: (context, state) {
         if (state is UserSuccess) {
           return HomeScreen();
