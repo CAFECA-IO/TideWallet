@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../repositories/user_repository.dart';
+import '../../cores/user.dart';
 
 part 'restore_wallet_event.dart';
 part 'restore_wallet_state.dart';
@@ -31,6 +32,24 @@ class RestoreWalletBloc extends Bloc<RestoreWalletEvent, RestoreWalletState> {
         } else {
           yield PaperWalletFail();
         }
+      }
+    }
+
+    if (event is CleanWalletResult) {
+      yield RestoreWalletInitial();
+    }
+
+    if (event is RestorePapaerWallet) {
+      PaperWalletSuccess _state = state;
+
+      yield PaperWallletRestoring();
+      User _user = await _repo.restorePaperWallet(_state.paperWallet, event.password);
+      if (_user == null) {
+        yield PaperWalletRestoreFail();
+
+        this.add(CleanWalletResult());
+      } else {
+        yield PaperWalletRestored();
       }
     }
   }

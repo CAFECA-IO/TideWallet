@@ -31,7 +31,7 @@ class _VerifyPasswordDialogState extends State<VerifyPasswordDialog> {
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 18.0),
         ),
         onTap: () {
-          _onClick();
+          _onClick(_controller.text);
         },
       );
 
@@ -85,6 +85,8 @@ class _VerifyPasswordDialogState extends State<VerifyPasswordDialog> {
                     onChanged: (String v) {},
                     controller: _controller,
                     showBtn: false,
+                    textStyle: TextStyle(color: Colors.white, fontSize: 27.0),
+                    autofocus: true,
                   ),
                 ),
                 SizedBox(height: 24.0),

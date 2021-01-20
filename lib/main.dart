@@ -14,6 +14,7 @@ import './repositories/user_repository.dart';
 import './helpers/i18n.dart';
 import './blocs/delegate.dart';
 import './blocs/user/user_bloc.dart';
+import './blocs/restore_wallet/restore_wallet_bloc.dart';
 import 'theme.dart';
 
 void main() {
@@ -43,9 +44,15 @@ class MyApp extends StatelessWidget {
         child: MultiBlocProvider(
           providers: [
             BlocProvider<UserBloc>(
-              create: (BuildContext context) =>
-                  UserBloc(Provider.of<UserRepository>(context, listen: false)),
+              create: (BuildContext context) => UserBloc(
+                Provider.of<UserRepository>(context, listen: false),
+              ),
             ),
+            BlocProvider<RestoreWalletBloc>(
+              create: (BuildContext context) => RestoreWalletBloc(
+                Provider.of<UserRepository>(context, listen: false),
+              ),
+            )
           ],
           child: _material,
         ),

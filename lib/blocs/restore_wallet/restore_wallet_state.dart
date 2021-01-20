@@ -20,3 +20,9 @@ class PaperWalletSuccess extends RestoreWalletState {
 }
 
 class PaperWalletFail extends RestoreWalletState {}
+
+class PaperWallletRestoring extends RestoreWalletState {}
+
+class PaperWalletRestored extends RestoreWalletState {}
+
+class PaperWalletRestoreFail extends RestoreWalletState {}

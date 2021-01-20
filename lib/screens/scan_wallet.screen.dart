@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 
-import '../repositories/user_repository.dart';
 import '../blocs/restore_wallet/restore_wallet_bloc.dart';
 import '../widgets/dialogs/verify_password_dialog.dart';
 import '../widgets/appBar.dart';
@@ -15,13 +13,11 @@ class ScanWalletScreen extends StatefulWidget {
 }
 
 class _ScanWalletScreenState extends State<ScanWalletScreen> {
-  UserRepository _repo;
   RestoreWalletBloc _bloc;
 
   @override
   void didChangeDependencies() {
-    _repo = Provider.of<UserRepository>(context);
-    _bloc = RestoreWalletBloc(_repo);
+    _bloc = BlocProvider.of<RestoreWalletBloc>(context);
 
     super.didChangeDependencies();
   }
@@ -35,14 +31,23 @@ class _ScanWalletScreenState extends State<ScanWalletScreen> {
     return BlocListener<RestoreWalletBloc, RestoreWalletState>(
       cubit: _bloc,
       listener: (context, state) {
+
         if (state is PaperWalletSuccess) {
+          Navigator.of(context).pop();
           showDialog(
-            // barrierDismissible: false,
+            barrierDismissible: false,
             barrierColor: Colors.transparent,
             context: context,
-            builder: (context) => VerifyPasswordDialog(() {}, () {}),
+            builder: (context) => VerifyPasswordDialog((String password) {
+              _bloc.add(RestorePapaerWallet(password));
+            }, (String password) {
+              _bloc.add(CleanWalletResult());
+              Navigator.of(context).pop();
+            }),
           );
         }
+
+      
       },
       child: Scaffold(
         extendBodyBehindAppBar: true,

@@ -12,3 +12,11 @@ class GetPaperWallet extends RestoreWalletEvent {
 
   GetPaperWallet(this.paperWallet);
 }
+
+class CleanWalletResult extends RestoreWalletEvent {}
+
+class RestorePapaerWallet extends RestoreWalletEvent {
+  final String password;
+
+  RestorePapaerWallet(this.password);
+}
