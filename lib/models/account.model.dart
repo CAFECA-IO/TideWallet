@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 
+enum ACCOUNT_TYPE {
+  currency,
+  token
+}
+
 enum ACCOUNT_EVT { 
   OnUpdateAccount,
-  OnBalanceChanged }
+  OnBalanceChanged, }
 
 class Account {
   final int cointype;

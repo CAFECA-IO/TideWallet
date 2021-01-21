@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:decimal/decimal.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 
@@ -39,14 +40,21 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
       
       AccountState _state = state;
 
-      int index = _state.accounts.indexWhere((account) => account.name == event.account.name);
+      int index = _state.accounts.indexWhere((account) => account.symbol == event.account.symbol);
       List<Account> _accounts = [..._state.accounts];
       if (index < 0) {
         _accounts.add(event.account);
       } else {
         _accounts[index] = event.account;
       }
-      yield AccountLoaded(_accounts);
+
+      Decimal _total = Decimal.zero;
+
+      _accounts.forEach((acc) {
+        _total += Decimal.tryParse(acc.fiat);
+      });
+
+      yield AccountLoaded(_accounts, total: _total);
     }
   }
 }

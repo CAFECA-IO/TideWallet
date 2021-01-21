@@ -13,38 +13,59 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-
   @override
   didChangeDependencies() {
-
     super.didChangeDependencies();
   }
-
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AccountBloc, AccountState>(
       builder: (context, state) {
-        return Column(children: [
-          Container(
-            width: double.infinity,
-            height: 200.0,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: <Color>[
-                  Theme.of(context).primaryColor,
-                  Theme.of(context).accentColor
-                ],
+        return Container(
+          decoration: BoxDecoration(color: Color(0xFFF7F8F9)),
+          child: Column(children: [
+            Container(
+              alignment: Alignment.bottomCenter,
+              padding: const EdgeInsets.only(bottom: 58.0),
+              width: double.infinity,
+              height: 200.0,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: <Color>[
+                    Theme.of(context).primaryColor,
+                    Theme.of(context).accentColor
+                  ],
+                ),
+              ),
+              child: RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                    text: '≈',
+                    children: [
+                      TextSpan(text: state.total.toString(), style: Theme.of(context).textTheme.headline5.copyWith(fontSize: 36.0, letterSpacing: 20.0)),
+                      TextSpan(text: 'USD')
+                    ],
+                    style: Theme.of(context).textTheme.bodyText1.copyWith(color: Colors.white)),
               ),
             ),
-            child: Column(children: [Text('≈ ')]),
-          ),
-          Expanded(
-            child: ListView(children: state.accounts.map((Account acc) => AccountItem(acc)).toList()),
-          )
-        ]);
+            Expanded(
+              child: GridView(
+                physics: NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    childAspectRatio: 1.0,
+                    crossAxisSpacing: 4.0),
+                children: state.accounts
+                    .map((Account acc) => AccountItem(acc))
+                    .toList(),
+              ),
+            )
+          ]),
+        );
       },
     );
   }

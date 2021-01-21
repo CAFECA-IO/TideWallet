@@ -3,11 +3,13 @@ part of 'account_bloc.dart';
 @immutable
 abstract class AccountState extends Equatable {
   final List<Account> accounts;
-  AccountState(this.accounts);
+  final Decimal total; 
+
+  AccountState(this.accounts, { this.total });
 }
 
 class AccountInitial extends AccountState {
-  AccountInitial() : super([]);
+  AccountInitial() : super([], total: Decimal.zero);
   @override
   List<Object> get props => [];
 }
@@ -15,7 +17,9 @@ class AccountInitial extends AccountState {
 
 class AccountLoaded extends AccountState {
   final List<Account> accounts;
-  AccountLoaded(this.accounts) : super([]);
+  final Decimal total; 
+
+  AccountLoaded(this.accounts, { this.total }) : super([]);
 
   @override
   List<Object> get props => [accounts];
