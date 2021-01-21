@@ -2,6 +2,7 @@ import 'package:rxdart/subjects.dart';
 
 import '../models/account.model.dart';
 import '../cores/account.dart';
+import '../constants/account_config.dart';
 
 class AccountRepository {
   PublishSubject<AccountMessage> get listener => AccountCore().messenger;
@@ -20,5 +21,7 @@ class AccountRepository {
 
   get accounts => AccountCore().accounts;
 
-
+  List<Currency> getTokenList(ACCOUNT acc) {
+    return AccountCore().tokens[acc];
+  }
 }

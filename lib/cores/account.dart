@@ -1,4 +1,5 @@
 import 'package:rxdart/rxdart.dart';
+import 'package:tidewallet3/mock/endpoint.dart';
 
 import '../constants/account_config.dart';
 import '../models/account.model.dart';
@@ -8,8 +9,8 @@ class AccountCore {
   PublishSubject<AccountMessage> messenger;
   bool _isInit = false;
   List<AccountService> _services;
-  List<Account> accounts = [];
-  Map<ACCOUNT, List<Account>> tokens;
+  List<Currency> accounts = [];
+  Map<ACCOUNT, List<Currency>> tokens = {};
 
   static final AccountCore _instance = AccountCore._internal();
   factory AccountCore() => _instance;
@@ -31,13 +32,19 @@ class AccountCore {
   _initAccounts() async {
     // TODO: Get amount in DB
     for (var value in ACCOUNT.values) {
-      print('$value: ${ACCOUNT_LIST[value]}');
-      print(this.messenger);
       if (ACCOUNT_LIST[value] != null) {
-        this.messenger.add(AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: Account.fromMap(ACCOUNT_LIST[value])));
+        Currency _currency = Currency.fromMap(ACCOUNT_LIST[value]);
+        tokens[value] = [];
+        tokens[value].add(_currency);
+        this.messenger.add(AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: _currency));
       }
-    }
 
+      // if (value == ACCOUNT.ETH) {
+      //   List<Map> result = await getETHTokens();
+      //   List<Currency> tokenList = result.map((e) => Currency.fromMap(e)).toList();
+      //   tokens[value] = tokens[value].sublist(0, 1) + tokenList;
+      // }
+    }
   }
 
 

@@ -2,7 +2,7 @@ part of 'account_bloc.dart';
 
 @immutable
 abstract class AccountState extends Equatable {
-  final List<Account> accounts;
+  final List<Currency> accounts;
   final Decimal total; 
 
   AccountState(this.accounts, { this.total });
@@ -16,7 +16,7 @@ class AccountInitial extends AccountState {
 
 
 class AccountLoaded extends AccountState {
-  final List<Account> accounts;
+  final List<Currency> accounts;
   final Decimal total; 
 
   AccountLoaded(this.accounts, { this.total }) : super([]);

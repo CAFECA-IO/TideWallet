@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tidewallet3/screens/currency.screen.dart';
 
 import '../blocs/account/account_bloc.dart';
 import '../models/account.model.dart';
@@ -60,7 +61,11 @@ class _AccountScreenState extends State<AccountScreen> {
                     childAspectRatio: 1.0,
                     crossAxisSpacing: 4.0),
                 children: state.accounts
-                    .map((Account acc) => AccountItem(acc))
+                    .map((Currency acc) => AccountItem(acc, () {
+                      Navigator.of(context).pushNamed(CurrencyScreen.routeName, arguments: {
+                        "account": acc
+                      });
+                    }))
                     .toList(),
               ),
             )

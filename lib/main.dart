@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
+import './screens/currency.screen.dart';
 import './screens/landing.screen.dart';
 import './screens/restore_wallet.screen.dart';
 import './screens/wallet_connect.screen.dart';
@@ -78,6 +79,7 @@ MaterialApp _material = MaterialApp(
     '/': (context) => LandingScreen(),
     RestoreWalletScreen.routeName: (context) => RestoreWalletScreen(),
     ScanWalletScreen.routeName: (conte) => ScanWalletScreen(),
+    CurrencyScreen.routeName: (context) => CurrencyScreen(),
     WalletConnectScreen.routeName: (context) => WalletConnectScreen(),
   },
   localizationsDelegates: [

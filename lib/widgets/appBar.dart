@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tidewallet3/screens/currency.screen.dart';
 
 import '../theme.dart';
 import '../screens/account.screen.dart';
@@ -30,6 +31,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
         case WalletConnectScreen.routeName:
         case ScanWalletScreen.routeName:
         case RestoreWalletScreen.routeName:
+        case CurrencyScreen.routeName:
           leading = GestureDetector(
             behavior: HitTestBehavior.translucent,
             child: ImageIcon(
@@ -93,7 +95,13 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
       switch (routeName) {
         case AccountScreen.routeName:
           _actions = [
-            actionItem(ImageIcon(AssetImage('assets/images/icons/ic_notification_tip.png'), size: 44.0, color: Colors.white,), () {})
+            actionItem(
+                ImageIcon(
+                  AssetImage('assets/images/icons/ic_notification_tip.png'),
+                  size: 44.0,
+                  color: Colors.white,
+                ),
+                () {})
           ];
           break;
 
@@ -174,6 +182,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
     bool showBackground() {
       if (routeName == ScanWalletScreen.routeName) return false;
       if (routeName == AccountScreen.routeName) return false;
+      if (routeName == CurrencyScreen.routeName) return false;
       return true;
     }
 
@@ -186,18 +195,20 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
         textAlign: TextAlign.center,
       ),
       backgroundColor: Colors.transparent,
-      flexibleSpace: showBackground() ? Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: <Color>[
-              Theme.of(context).primaryColor,
-              Theme.of(context).accentColor
-            ],
-          ),
-        ),
-      ) : null,
+      flexibleSpace: showBackground()
+          ? Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: <Color>[
+                    Theme.of(context).primaryColor,
+                    Theme.of(context).accentColor
+                  ],
+                ),
+              ),
+            )
+          : null,
       leading: genLeading(routeName),
       actions: genActions(routeName),
     );

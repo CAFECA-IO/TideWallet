@@ -10,7 +10,7 @@ abstract class AccountEvent extends Equatable {}
 // }
 
 class UpdateAccount extends AccountEvent {
-  final Account account;
+  final Currency account;
 
   UpdateAccount(this.account);
 

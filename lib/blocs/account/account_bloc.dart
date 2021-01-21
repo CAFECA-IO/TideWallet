@@ -41,7 +41,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
       AccountState _state = state;
 
       int index = _state.accounts.indexWhere((account) => account.symbol == event.account.symbol);
-      List<Account> _accounts = [..._state.accounts];
+      List<Currency> _accounts = [..._state.accounts];
       if (index < 0) {
         _accounts.add(event.account);
       } else {

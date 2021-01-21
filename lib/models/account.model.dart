@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-
-enum ACCOUNT_TYPE {
-  currency,
-  token
-}
+import 'package:tidewallet3/constants/account_config.dart';
 
 enum ACCOUNT_EVT { 
   OnUpdateAccount,
-  OnBalanceChanged, }
+  OnUpdateToken,
+}
 
-class Account {
+class Currency {
   final int cointype;
   final int purpose;
   final int accountIndex;
@@ -18,8 +15,9 @@ class Account {
   final String amount;
   final String fiat;
   final String name;
+  final ACCOUNT accountType;
 
-  Account({
+  Currency({
     this.cointype,
     this.purpose,
     this.amount,
@@ -28,6 +26,7 @@ class Account {
     this.symbol,
     this.name,
     this.accountIndex,
+    this.accountType
   });
 
   copyWith(
@@ -38,19 +37,21 @@ class Account {
     String amount,
     String fiat,
     String name,
+    ACCOUNT accountType,
   ) {
-    return Account(
+    return Currency(
       cointype: cointype ?? this.cointype,
       purpose: purpose ?? this.purpose,
       amount: amount ?? this.amount,
       fiat: fiat ?? this.fiat,
       symbol: symbol ?? this.symbol,
       imgPath: imgPath ?? this.imgPath,
-      name: name ?? this.name
+      name: name ?? this.name,
+      accountType: accountType ?? this.accountType
     );
   }
 
-  Account.fromMap(
+  Currency.fromMap(
     Map map,
   )   : cointype = map['cointype'],
         purpose = map['purpose'],
@@ -59,7 +60,8 @@ class Account {
         name = map['name'],
         imgPath = map['imgPath'],
         amount = map['amount'] ?? '0',
-        fiat = map['fiat'] ?? '0';
+        fiat = map['fiat'] ?? '0',
+        accountType = map['accountType'];
 }
 
 class AccountMessage {
