@@ -83,3 +83,9 @@ class TransactionInitial extends TransactionState {
         error
       ];
 }
+
+class CreateTransactionFail extends TransactionState {}
+
+class TransactionSent extends TransactionState {}
+
+class TransactionPublishing extends TransactionState {}

@@ -9,7 +9,7 @@ class DialogContorller {
         context: ctx,
         builder: (context) => dialog).then(
       (value) {
-        onDismiss();
+        if (onDismiss != null) onDismiss();
       },
     );
   }

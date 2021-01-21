@@ -5,6 +5,7 @@ import 'package:tidewallet3/screens/transaction_preview.screen.dart';
 import '../theme.dart';
 import '../screens/restore_wallet.screen.dart';
 import '../screens/scan_wallet.screen.dart';
+import '../screens/scan_address.screen.dart';
 import '../screens/wallet_connect.screen.dart';
 
 class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
@@ -32,6 +33,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
         case CreateTransactionScreen.routeName:
         case TransactionPreviewScreen.routeName:
         case ScanWalletScreen.routeName:
+        case ScanAddressScreen.routeName:
         case RestoreWalletScreen.routeName:
           leading = GestureDetector(
             behavior: HitTestBehavior.translucent,

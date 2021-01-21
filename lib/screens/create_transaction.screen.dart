@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import './transaction_preview.screen.dart';
+import './scan_wallet.screen.dart';
 import '../models/transaction.model.dart';
 // import '../blocs/user/user_bloc.dart';
 import '../blocs/transaction/transaction_bloc.dart';
@@ -84,7 +85,10 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                         autovalidate: AutovalidateMode.disabled,
                         controller: _addressController,
                         suffixIcon: GestureDetector(
-                            onTap: () async {},
+                            onTap: () {
+                              Navigator.of(context)
+                                  .pushNamed(ScanWalletScreen.routeName);
+                            },
                             child: ImageIcon(AssetImage(
                                 'assets/images/icons/ic_qrcode.png'))),
                       ),
@@ -317,6 +321,8 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                   ),
                 ),
               );
+            } else {
+              return SizedBox();
             }
           }),
     );

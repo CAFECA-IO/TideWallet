@@ -7,6 +7,11 @@ abstract class TransactionEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class ScanQRCode extends TransactionEvent {
+  final String address;
+  ScanQRCode(this.address);
+}
+
 class ValidAddress extends TransactionEvent {
   final String address;
   ValidAddress(this.address);
@@ -36,24 +41,6 @@ class InputGasPrice extends TransactionEvent {
   InputGasPrice(this.gasPrice);
 }
 
-class CreateTransaction extends TransactionEvent {}
-
-class ConfirmTransaction extends TransactionEvent {
-  final String address;
-  final String amount;
-  final TransactionPriority priority;
-  final String gasLimit;
-  final String gasPrice;
-  final Function onConfirm;
-  final Function onCancel;
-
-  ConfirmTransaction(
-    this.address,
-    this.amount,
-    this.priority,
-    this.gasLimit,
-    this.gasPrice,
-    this.onConfirm,
-    this.onCancel,
-  );
+class CreateTransaction extends TransactionEvent {
+  CreateTransaction();
 }

@@ -5,10 +5,14 @@ import '../cores/user.dart';
 class UserRepository {
   User _user = new User();
 
-  User get user => _user; 
+  User get user => _user;
 
   createUser() {
-    _user.createUser();  
+    _user.createUser();
+  }
+
+  bool verifyPassword(String password) {
+    return _user.verifyPassword(password);
   }
 
   bool validPaperWallet(String wallet) {
@@ -18,9 +22,9 @@ class UserRepository {
   Future<User> restorePaperWallet(String wallet, String pwd) async {
     final bool reault = await _user.restorePaperWallet(wallet, pwd);
     if (reault) {
-        return _user;
-      } else {
-        return null;
-      }
+      return _user;
+    } else {
+      return null;
+    }
   }
 }

@@ -2,7 +2,7 @@ part of 'user_bloc.dart';
 
 abstract class UserState extends Equatable {
   const UserState();
-  
+
   @override
   List<Object> get props => [];
 }
@@ -10,3 +10,9 @@ abstract class UserState extends Equatable {
 class UserInitial extends UserState {}
 
 class UserSuccess extends UserState {}
+
+class VerifyingPassword extends UserState {}
+
+class PasswordVerified extends UserState {}
+
+class PasswordInvalid extends UserState {}

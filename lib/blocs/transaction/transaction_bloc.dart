@@ -25,6 +25,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     TransactionEvent event,
   ) async* {
     print("event: $event");
+    if (state is TransactionSent) return;
+    if (state is TransactionPublishing) return;
+    if (state is CreateTransactionFail) return;
+
     TransactionInitial _state = state;
     if (event is FetchTransactionFee) {
       _gasPrice = await _accountRepo.fetchGasPrice();
@@ -39,6 +43,18 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         feeToFiat: '$feeToFiat',
         gasLimit: _gasLimit,
         gasPrice: _gasPrice[_state.priority],
+      );
+    }
+    if (event is ScanQRCode) {
+      print("ValidAddress address: ${event.address}");
+      List<bool> _rules = [
+        _accountRepo.validAddress(event.address),
+        _state.rules[1]
+      ];
+      print(_rules);
+      yield _state.copyWith(
+        address: event.address,
+        rules: _rules,
       );
     }
     if (event is ValidAddress) {
@@ -110,7 +126,15 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         rules: _rules,
       );
     }
-    if (event is ConfirmTransaction) {}
-    if (event is CreateTransaction) {}
+
+    if (event is CreateTransaction) {
+      yield TransactionPublishing();
+      bool result = await _accountRepo.createTransaction(_state.props);
+      if (result) {
+        yield TransactionSent();
+      } else {
+        yield CreateTransactionFail();
+      }
+    }
   }
 }
