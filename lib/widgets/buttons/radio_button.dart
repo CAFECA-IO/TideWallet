@@ -24,14 +24,21 @@ class _RadioGroupButtonState extends State<RadioGroupButton> {
           direction: Axis.horizontal,
           children: widget.function
               .asMap()
-              .map((index, element) => MapEntry(
+              .map(
+                (index, element) => MapEntry(
                   index,
                   RadioButton(element[0], () {
                     setState(() {
                       _isSelectedIndex = index;
                     });
                     element[1]();
-                  }, isEnabled: _isSelectedIndex == index ? true : false)))
+                  },
+                      isEnabled: _isSelectedIndex == index ? true : false,
+                      minWidth:
+                          (MediaQuery.of(context).size.width - 32 - 8.5 * 2) /
+                              3),
+                ),
+              )
               .values
               .toList()),
     );
@@ -46,13 +53,20 @@ class RadioButton extends BaseButton {
       Color borderColor,
       AssetImage iconImg,
       Color textColor,
-      bool isEnabled})
+      bool isEnabled,
+      TextStyle textStyle,
+      Padding padding,
+      double minWidth})
       : super(_text, _onPressed,
             backgroundColor: backgroundColor ?? MyColors.primary_01,
             disabledTextColor: disabledTextColor ?? MyColors.secondary_02,
             disableColor: disableColor ?? MyColors.secondary_05,
             borderColor: borderColor ?? MyColors.primary_01,
+            textStyle: textStyle ?? TextStyle(fontSize: 14.0, color: textColor),
+            padding:
+                padding ?? EdgeInsets.symmetric(horizontal: 0, vertical: 12.0),
             iconImg: iconImg,
             textColor: textColor,
-            isEnabled: isEnabled ?? true);
+            isEnabled: isEnabled ?? true,
+            minWidth: minWidth ?? 0);
 }

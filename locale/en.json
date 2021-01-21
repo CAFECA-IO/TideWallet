@@ -29,5 +29,8 @@
     "standard": "Standard",
     "fast": "Fast",
     "preview": "Preview",
-    "to": "To"
+    "to": "To",
+    "custom": "Custom",
+    "invalid_address": "Invalid Address",
+    "invalid_amount": "Amount Insufficient"
 }

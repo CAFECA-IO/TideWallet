@@ -11,6 +11,8 @@ abstract class BaseButton extends StatelessWidget {
   final AssetImage iconImg;
   final EdgeInsetsGeometry padding;
   final bool isEnabled;
+  final TextStyle textStyle;
+  final double minWidth;
 
   BaseButton(this._text, this._onPressed,
       {this.iconImg,
@@ -20,11 +22,14 @@ abstract class BaseButton extends StatelessWidget {
       this.borderColor,
       this.textColor,
       this.padding,
-      this.isEnabled = true});
+      this.isEnabled = true,
+      this.textStyle,
+      this.minWidth});
 
   @override
   Widget build(BuildContext context) {
     return FlatButton(
+        minWidth: minWidth ?? 0,
         disabledColor: this.disableColor,
         disabledTextColor: this.disabledTextColor,
         color: isEnabled ? backgroundColor : disableColor,
@@ -57,7 +62,8 @@ abstract class BaseButton extends StatelessWidget {
             ),
             Text(
               _text,
-              style: TextStyle(fontSize: 16.0, color: this.textColor),
+              style: this.textStyle ??
+                  TextStyle(fontSize: 16.0, color: this.textColor),
             ),
           ],
         ),

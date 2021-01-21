@@ -10,10 +10,13 @@ import './screens/landing.screen.dart';
 import './screens/wallet_connect.screen.dart';
 import './screens/create_transaction.screen.dart';
 import './screens/transaction_preview.screen.dart';
+import './repositories/account_repository.dart';
+import './repositories/transaction_repository.dart';
 import './repositories/user_repository.dart';
 import './helpers/i18n.dart';
 import './blocs/delegate.dart';
 import './blocs/user/user_bloc.dart';
+import './blocs/transaction/transaction_bloc.dart';
 import 'theme.dart';
 
 void main() {
@@ -39,12 +42,23 @@ class MyApp extends StatelessWidget {
           Provider<UserRepository>(
             create: (_) => UserRepository(),
           ),
+          Provider<AccountRepository>(
+            create: (_) => AccountRepository(),
+          ),
+          Provider<TransactionRepository>(
+            create: (_) => TransactionRepository(),
+          )
         ],
         child: MultiBlocProvider(
           providers: [
             BlocProvider<UserBloc>(
               create: (BuildContext context) =>
                   UserBloc(Provider.of<UserRepository>(context, listen: false)),
+            ),
+            BlocProvider<TransactionBloc>(
+              create: (BuildContext context) => TransactionBloc(
+                  Provider.of<TransactionRepository>(context, listen: false),
+                  Provider.of<AccountRepository>(context, listen: false)),
             ),
           ],
           child: _material,

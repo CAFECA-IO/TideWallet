@@ -1,27 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../helpers/i18n.dart';
-import '../theme.dart';
+import '../blocs/user/user_bloc.dart';
+import '../blocs/transaction/transaction_bloc.dart';
 import '../widgets/appBar.dart';
 import '../widgets/buttons/secondary_button.dart';
 
-class TransactionPreviewScreen extends StatelessWidget {
+class TransactionPreviewScreen extends StatefulWidget {
   static const routeName = '/transaction-preview';
+
+  @override
+  _TransactionPreviewScreenState createState() =>
+      _TransactionPreviewScreenState();
+}
+
+class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
+  TransactionBloc _bloc;
+  UserBloc _userBloc;
   final t = I18n.t;
+
+  @override
+  void didChangeDependencies() {
+    _bloc = BlocProvider.of<TransactionBloc>(context);
+    _userBloc = BlocProvider.of<UserBloc>(context);
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _bloc.close();
+    _userBloc.close();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: GeneralAppbar(
         title: t('preview'),
-        routeName: routeName,
+        routeName: TransactionPreviewScreen.routeName,
       ),
       body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16.0),
+        padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+        margin: EdgeInsets.symmetric(vertical: 16.0),
         child: Column(
           children: [
             Container(
-              // alignment: Alignment.centerLeft,
-              padding: EdgeInsets.symmetric(vertical: 15),
               child: Column(
                 children: [
                   Align(
@@ -85,14 +110,19 @@ class TransactionPreviewScreen extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 261),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 36),
-              child: SecondaryButton(
-                "Confirm",
-                () {},
-                textColor: MyColors.primary_03,
-                borderColor: MyColors.primary_03,
+            Spacer(),
+            BlocListener<TransactionBloc, TransactionState>(
+              cubit: _bloc,
+              listener: (context, state) {},
+              child: Container(
+                padding: EdgeInsets.only(bottom: 48),
+                margin: EdgeInsets.symmetric(horizontal: 36),
+                child: SecondaryButton(
+                  "Confirm",
+                  () {},
+                  textColor: Theme.of(context).accentColor,
+                  borderColor: Theme.of(context).accentColor,
+                ),
               ),
             ),
           ],
