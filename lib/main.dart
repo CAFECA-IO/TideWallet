@@ -11,10 +11,12 @@ import './screens/restore_wallet.screen.dart';
 import './screens/wallet_connect.screen.dart';
 import './screens/scan_wallet.screen.dart';
 import './repositories/user_repository.dart';
-import './helpers/i18n.dart';
+import './repositories/account_repository.dart';
+import './blocs/account/account_bloc.dart';
 import './blocs/delegate.dart';
 import './blocs/user/user_bloc.dart';
 import './blocs/restore_wallet/restore_wallet_bloc.dart';
+import './helpers/i18n.dart';
 import 'theme.dart';
 
 void main() {
@@ -40,6 +42,9 @@ class MyApp extends StatelessWidget {
           Provider<UserRepository>(
             create: (_) => UserRepository(),
           ),
+          Provider<AccountRepository>(
+            create: (_) => AccountRepository(),
+          ),
         ],
         child: MultiBlocProvider(
           providers: [
@@ -52,7 +57,12 @@ class MyApp extends StatelessWidget {
               create: (BuildContext context) => RestoreWalletBloc(
                 Provider.of<UserRepository>(context, listen: false),
               ),
-            )
+            ),
+            BlocProvider<AccountBloc>(
+              create: (BuildContext context) => AccountBloc(
+                Provider.of<AccountRepository>(context, listen: false),
+              ),
+            ),
           ],
           child: _material,
         ),
