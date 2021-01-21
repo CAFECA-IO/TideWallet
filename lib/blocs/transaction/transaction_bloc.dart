@@ -1,8 +1,9 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/semantics.dart';
+import 'package:decimal/decimal.dart';
 
 import '../../repositories/account_repository.dart';
 import '../../repositories/transaction_repository.dart';
@@ -14,15 +15,34 @@ part 'transaction_state.dart';
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   TransactionRepository _repo;
   AccountRepository _accountRepo;
+  Map<TransactionPriority, String> _gasPrice;
+  String _gasLimit;
 
-  TransactionBloc(this._repo, this._accountRepo) : super(TransactionCheck());
+  TransactionBloc(this._repo, this._accountRepo) : super(TransactionInitial());
 
   @override
   Stream<TransactionState> mapEventToState(
     TransactionEvent event,
   ) async* {
-    TransactionCheck _state = state;
+    print("event: $event");
+    TransactionInitial _state = state;
+    if (event is FetchTransactionFee) {
+      _gasPrice = await _accountRepo.fetchGasPrice();
+      _gasLimit = await _accountRepo.fetchGasLimit();
+      Decimal fee = Decimal.parse(_gasPrice[_state.priority]) *
+          Decimal.parse(_gasLimit) /
+          Decimal.fromInt(BigInt.from(10).pow(9).toInt());
+      Decimal feeToFiat = fee * Decimal.fromInt(68273);
+      // TODO toEther()
+      yield _state.copyWith(
+        fee: '$fee',
+        feeToFiat: '$feeToFiat',
+        gasLimit: _gasLimit,
+        gasPrice: _gasPrice[_state.priority],
+      );
+    }
     if (event is ValidAddress) {
+      print("ValidAddress address: ${event.address}");
       List<bool> _rules = [
         _accountRepo.validAddress(event.address),
         _state.rules[1]
@@ -51,10 +71,16 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         _state.rules[0],
         _accountRepo.validAmount(_state.amount, priority: event.priority)
       ];
+      Decimal fee = Decimal.parse(_gasPrice[event.priority]) *
+          Decimal.parse(_gasLimit) /
+          Decimal.fromInt(BigInt.from(10).pow(9).toInt());
+      Decimal feeToFiat = fee * Decimal.fromInt(68273);
       yield _state.copyWith(
         priority: event.priority,
-        gasLimit: '2100',
-        gasPrice: '34.2',
+        fee: '$fee',
+        feeToFiat: '$feeToFiat',
+        gasLimit: _gasLimit,
+        gasPrice: _gasPrice[event.priority],
         rules: _rules,
       );
     }

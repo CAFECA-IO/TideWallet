@@ -119,7 +119,9 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
                 margin: EdgeInsets.symmetric(horizontal: 36),
                 child: SecondaryButton(
                   "Confirm",
-                  () {},
+                  () {
+                    print(_bloc.state.props);
+                  },
                   textColor: Theme.of(context).accentColor,
                   borderColor: Theme.of(context).accentColor,
                 ),

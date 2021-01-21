@@ -4,11 +4,11 @@ extension TransactionPriorityExt on TransactionPriority {
   int get value {
     switch (this) {
       case TransactionPriority.slow:
-        return 1;
+        return 0;
       case TransactionPriority.standard:
-        return 2;
+        return 1;
       case TransactionPriority.fast:
-        return 3;
+        return 2;
     }
   }
 }

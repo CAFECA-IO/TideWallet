@@ -7,14 +7,15 @@ import 'primary_button.dart';
 
 class RadioGroupButton extends StatefulWidget {
   final List<List<dynamic>> function;
-  RadioGroupButton(this.function);
+  final int selectIndex;
+  RadioGroupButton(this.selectIndex, this.function);
   @override
   _RadioGroupButtonState createState() => _RadioGroupButtonState();
 }
 
 class _RadioGroupButtonState extends State<RadioGroupButton> {
   final t = I18n.t;
-  int _isSelectedIndex = 1;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -27,13 +28,8 @@ class _RadioGroupButtonState extends State<RadioGroupButton> {
               .map(
                 (index, element) => MapEntry(
                   index,
-                  RadioButton(element[0], () {
-                    setState(() {
-                      _isSelectedIndex = index;
-                    });
-                    element[1]();
-                  },
-                      isEnabled: _isSelectedIndex == index ? true : false,
+                  RadioButton(element[0], element[1],
+                      isEnabled: widget.selectIndex == index ? true : false,
                       minWidth:
                           (MediaQuery.of(context).size.width - 32 - 8.5 * 2) /
                               3),

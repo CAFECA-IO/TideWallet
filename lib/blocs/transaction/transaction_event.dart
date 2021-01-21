@@ -17,6 +17,10 @@ class ValidAmount extends TransactionEvent {
   ValidAmount(this.amount);
 }
 
+class FetchTransactionFee extends TransactionEvent {
+  FetchTransactionFee();
+}
+
 class ChangePriority extends TransactionEvent {
   final TransactionPriority priority;
   ChangePriority(this.priority);
@@ -35,7 +39,21 @@ class InputGasPrice extends TransactionEvent {
 class CreateTransaction extends TransactionEvent {}
 
 class ConfirmTransaction extends TransactionEvent {
+  final String address;
+  final String amount;
+  final TransactionPriority priority;
+  final String gasLimit;
+  final String gasPrice;
   final Function onConfirm;
   final Function onCancel;
-  ConfirmTransaction(this.onConfirm, this.onCancel);
+
+  ConfirmTransaction(
+    this.address,
+    this.amount,
+    this.priority,
+    this.gasLimit,
+    this.gasPrice,
+    this.onConfirm,
+    this.onCancel,
+  );
 }

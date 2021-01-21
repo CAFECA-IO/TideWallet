@@ -12,87 +12,74 @@ abstract class TransactionState extends Equatable {
   List<Object> get props => [];
 }
 
-class TransactionInitial extends TransactionState {}
-
-class TransactionCheck extends TransactionState {
+class TransactionInitial extends TransactionState {
   final String address;
   final String amount;
+  final String spandable;
   final TransactionPriority priority;
   final String gasLimit;
   final String gasPrice;
+  final String fee;
+  final String feeToFiat;
+  final String estimatedTime;
   final List<bool> rules;
   final TransactionFormError error;
 
   static const defaultValid = [false, false];
 
-  TransactionCheck(
+  TransactionInitial(
       {this.address = "",
       this.amount = "",
+      this.spandable = "13.2",
       this.priority = TransactionPriority.standard,
       this.gasLimit = "",
       this.gasPrice = "",
+      this.fee = "",
+      this.feeToFiat = "",
+      this.estimatedTime = "10~30",
       this.rules = defaultValid,
       this.error});
 
   TransactionState copyWith({
     String address,
     String amount,
+    String spandable,
     TransactionPriority priority,
     String gasLimit,
     String gasPrice,
+    String fee,
+    String feeToFiat,
+    String estimatedTime,
     List<bool> rules,
     TransactionFormError error,
   }) {
-    return TransactionCheck(
+    return TransactionInitial(
       address: address ?? this.address,
       amount: amount ?? this.amount,
+      spandable: spandable ?? this.spandable,
       priority: priority ?? this.priority,
       gasLimit: gasLimit ?? this.gasLimit,
       gasPrice: gasPrice ?? this.gasPrice,
+      fee: fee ?? this.fee,
+      feeToFiat: feeToFiat ?? this.feeToFiat,
+      estimatedTime: estimatedTime ?? this.estimatedTime,
       rules: rules ?? this.rules,
       error: error,
     );
   }
 
   @override
-  List<Object> get props =>
-      [address, amount, priority, gasLimit, gasPrice, rules, error];
+  List<Object> get props => [
+        address,
+        amount,
+        spandable,
+        priority,
+        gasLimit,
+        gasPrice,
+        fee,
+        feeToFiat,
+        estimatedTime,
+        rules,
+        error
+      ];
 }
-
-class TransactionCheckSuccess extends TransactionState {
-  final String address;
-  final String amount;
-  final TransactionPriority priority;
-  final String gasLimit;
-  final String gasPrice;
-
-  TransactionCheckSuccess({
-    this.address,
-    this.amount,
-    this.priority,
-    this.gasLimit,
-    this.gasPrice,
-  });
-
-  TransactionState copyWith({
-    String address,
-    String amount,
-    TransactionPriority priority,
-    String gasLimit,
-    String gasPrice,
-    List<bool> rules,
-    TransactionFormError error,
-  }) {
-    return TransactionCheckSuccess(
-        address: address ?? this.address,
-        amount: amount ?? this.amount,
-        priority: priority ?? this.priority,
-        gasLimit: gasLimit ?? this.gasLimit,
-        gasPrice: gasPrice ?? this.gasPrice);
-  }
-
-  @override
-  List<Object> get props => [address, amount, priority, gasLimit, gasPrice];
-}
-
-class TransactionCheckFail extends TransactionState {}

@@ -30,6 +30,7 @@ dependencies:
   # UI
   # barcode_scan: ^3.0.1
   custom_radio_grouped_button: ^1.0.6+1
+  decimal: ^0.3.0
 
   # Bloc
   bloc: ^6.1.1

@@ -11,6 +11,7 @@ import '../widgets/buttons/radio_button.dart';
 import '../widgets/buttons/secondary_button.dart';
 import '../widgets/inputs/input.dart';
 import '../helpers/i18n.dart';
+import '../helpers/formatter.dart';
 
 class CreateTransactionScreen extends StatefulWidget {
   static const routeName = '/create-transaction';
@@ -33,18 +34,13 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
   bool _isSelected = false;
 
   @override
-  void initState() {
-    // TODO: implement
+  void didChangeDependencies() {
     _addressController = TextEditingController();
     _amountController = TextEditingController();
     _gasController = TextEditingController();
     _gasPriceController = TextEditingController();
-    super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    _bloc = BlocProvider.of<TransactionBloc>(context);
+    _bloc = BlocProvider.of<TransactionBloc>(context)
+      ..add(FetchTransactionFee());
     // _userBloc = BlocProvider.of<UserBloc>(context);
     super.didChangeDependencies();
   }
@@ -71,9 +67,8 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
       body: BlocBuilder<TransactionBloc, TransactionState>(
           cubit: _bloc,
           builder: (context, state) {
-            print(state.runtimeType);
-            print(state.props);
-            if (state is TransactionCheck)
+            if (state is TransactionInitial) {
+              print(state.props);
               return Container(
                 padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
                 margin: EdgeInsets.symmetric(vertical: 16.0),
@@ -149,7 +144,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                       Container(
                         child: Align(
                           child: Text(
-                            '${t('balance')}: 3930 btc',
+                            '${t('balance')}: ${Formatter.formaDecimal(state.spandable)} ETH',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                           alignment: Alignment.centerRight,
@@ -175,7 +170,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                                 Container(
                                   child: Align(
                                     child: Text(
-                                      '${t('processing_time')} 10 ~ 30 ${t('minute')}',
+                                      '${t('processing_time')} ${state.estimatedTime} ${t('minute')}',
                                       style:
                                           Theme.of(context).textTheme.bodyText2,
                                     ),
@@ -230,12 +225,13 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                                 ],
                               ),
                             )
-                          : RadioGroupButton([
+                          : RadioGroupButton(state.priority.value, [
                               [
                                 t('slow'),
                                 () {
                                   _bloc.add(
                                       ChangePriority(TransactionPriority.slow));
+                                  print(state.priority);
                                 }
                               ],
                               [
@@ -243,6 +239,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                                 () {
                                   _bloc.add(ChangePriority(
                                       TransactionPriority.standard));
+                                  print(state.priority);
                                 }
                               ],
                               [
@@ -250,6 +247,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                                 () {
                                   _bloc.add(
                                       ChangePriority(TransactionPriority.fast));
+                                  print(state.priority);
                                 }
                               ]
                             ]),
@@ -258,14 +256,21 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '${t('estimated')}:  … ',
+                            '${t('estimated')}:',
                             style: Theme.of(context).textTheme.headline6,
                           ),
                           Text(
-                            '${t('balance')}: 0.0945 btc',
+                            '${state.fee.isEmpty ? "loading..." : Formatter.formaDecimal(state.fee) + " ETH"}',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                         ],
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          '${String.fromCharCode(0x2248)} ${state.feeToFiat.isEmpty ? "" : Formatter.formaDecimal(state.feeToFiat) + " USD"}',
+                          style: Theme.of(context).textTheme.caption,
+                        ),
                       ),
                       Spacer(),
                       Row(
@@ -282,6 +287,8 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                             onChanged: (bool newValue) {
                               setState(() {
                                 _isSelected = newValue;
+                                _gasPriceController.text = state.gasPrice;
+                                _gasController.text = state.gasLimit;
                               });
                             },
                           ),
@@ -310,6 +317,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                   ),
                 ),
               );
+            }
           }),
     );
   }
