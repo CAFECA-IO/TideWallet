@@ -19,5 +19,9 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       _repo.createUser();
       yield UserSuccess();
     }
+
+    if (event is UserRestore) {
+      yield UserSuccess();
+    }
   }
 }

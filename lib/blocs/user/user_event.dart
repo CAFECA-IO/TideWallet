@@ -8,3 +8,5 @@ abstract class UserEvent extends Equatable {
 }
 
 class UserCreate extends UserEvent {}
+
+class UserRestore extends UserEvent {}

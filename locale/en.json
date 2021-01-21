@@ -13,7 +13,6 @@
     "wallet_name": "錢包名稱",
     "password": "密碼",
     "re_password": "再次確認密碼",
-    "confirm": "Confirm",
     "send_coin": "Send Coin",
     "send_to": "Send to",
     "amount": "Amount",
@@ -32,5 +31,18 @@
     "to": "To",
     "custom": "Custom",
     "invalid_address": "Invalid Address",
-    "invalid_amount": "Amount Insufficient"
+    "invalid_amount": "Amount Insufficient",
+    "confirm": "確認",
+    "scan": "掃描",
+    "scan_title": "Scan your Keystore",
+    "restore_message": "Ethereum’s official wallet uses keystore format to store encrypted private key information, you can copy and paste the content into the input field, or with the help of QR code generate.",
+    "select_import": "選擇匯入方式",
+    "import_paperwallet": "匯入 PaperWallet",
+    "paperwallet_intro": "存儲私鑰的一種加密格式",
+    "dialog_password": "請輸入密碼",
+    "dialog_loading": "Loading",
+    "cancel": "Cancel",
+    "ok": "OK",
+    "error_password": "密碼錯誤",
+    "error_format": "格式錯誤"
 }

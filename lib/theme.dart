@@ -20,44 +20,33 @@ class MyColors {
 }
 
 TextTheme myTextTheme = TextTheme(
-  headline1: TextStyle(
-      color: MyColors.secondary_01,
-      fontSize: 20.0,
-      letterSpacing: 0.4,
-      fontWeight: FontWeight.bold),
-  bodyText1: TextStyle(
-    color: MyColors.secondary_01,
-  ),
-  bodyText2: TextStyle(
-    color: MyColors.primary_06,
-    fontSize: 13,
-  ),
-  subtitle1: TextStyle(
-    color: MyColors.primary_03,
-    fontSize: 14.0,
-  ),
-  caption: TextStyle(
-    color: MyColors.secondary_02,
-    fontSize: 13.0,
-  ),
-  headline6: TextStyle(
-    color: MyColors.secondary_02,
-    fontSize: 13.0,
-  ),
-  button: TextStyle(color: MyColors.font_01),
-);
+    headline1: TextStyle(
+        color: MyColors.secondary_01,
+        fontSize: 20.0,
+        letterSpacing: 0.4,
+        fontWeight: FontWeight.bold),
+    headline5: TextStyle(
+        color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),
+    headline6: TextStyle(color: MyColors.secondary_02, fontSize: 13.0),
+    bodyText1: TextStyle(color: MyColors.secondary_01),
+    bodyText2: TextStyle(color: MyColors.primary_06, fontSize: 13),
+    button: TextStyle(color: MyColors.font_01),
+    caption: TextStyle(color: MyColors.secondary_02, fontSize: 13.0),
+    subtitle1: TextStyle(color: MyColors.primary_03, fontSize: 14.0),
+    subtitle2: TextStyle(fontSize: 12.0, color: MyColors.secondary_02));
 
 ThemeData myThemeData = ThemeData(
-    primaryColor: MyColors.primary_02,
-    primaryColorLight: MyColors.primary_02,
-    primaryColorDark: MyColors.primary_01,
-    accentColor: MyColors.primary_03,
-    errorColor: MyColors.primary_05,
-    hintColor: MyColors.primary_04,
-    dividerColor: MyColors.secondary_06,
-    textTheme: myTextTheme,
-    cursorColor: MyColors.secondary_03,
-    disabledColor: MyColors.secondary_05);
+  primaryColor: MyColors.primary_02,
+  primaryColorLight: MyColors.primary_02,
+  primaryColorDark: MyColors.primary_01,
+  accentColor: MyColors.primary_03,
+  errorColor: MyColors.primary_05,
+  hintColor: MyColors.primary_04,
+  dividerColor: MyColors.secondary_06,
+  textTheme: myTextTheme,
+  cursorColor: MyColors.secondary_03,
+  disabledColor: MyColors.secondary_05,
+);
 
 ThemeData myDarkThemeData = ThemeData();
 
