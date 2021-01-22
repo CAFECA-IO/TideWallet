@@ -68,11 +68,12 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
                       text: '≈',
                       children: [
                         TextSpan(
-                            text: state.total.toString(),
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline5
-                                .copyWith(fontSize: 36.0, letterSpacing: 20.0)),
+                          text: ' ${state.total.toString()} ',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline5
+                              .copyWith(fontSize: 36.0),
+                        ),
                         TextSpan(text: 'USD')
                       ],
                       style: Theme.of(context)
@@ -89,7 +90,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
                       crossAxisCount: 3,
                       childAspectRatio: 1.0,
                       crossAxisSpacing: 4.0),
-                  children: state.tokens
+                  children: state.currencies
                       .map((Currency acc) => AccountItem(
                             acc,
                             () {},

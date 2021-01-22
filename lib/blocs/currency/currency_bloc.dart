@@ -14,8 +14,8 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
   AccountRepository _repo;
   StreamSubscription _subscription;
 
-  CurrencyBloc(this._repo) : super(TokenInitial([], total: Decimal.zero)) {
-     _subscription?.cancel();
+  CurrencyBloc(this._repo) : super(CurrencyInitial([], total: Decimal.zero)) {
+    _subscription?.cancel();
     this._repo.listener.listen((msg) {
       if (msg.evt == ACCOUNT_EVT.OnUpdateToken) {
         this.add(UpdateCurrency(msg.value));
@@ -23,12 +23,10 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
     });
 
     this._repo.coreInit();
-
   }
 
-    @override
+  @override
   Future<void> close() {
-    _repo.listener.close();
     return super.close();
   }
 
@@ -37,8 +35,12 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
     CurrencyEvent event,
   ) async* {
     if (event is GetCurrencyList) {
-      final List<Currency> list = _repo.getTokenList(event.account);
-      
-    } 
+      final List<Currency> list = _repo.getCurrencies(event.account);
+      Decimal _total = Decimal.zero;
+      list.forEach((curr) {
+        _total += Decimal.tryParse(curr.fiat);
+      });
+      yield CurrencyLoaded(list, total: _total);
+    }
   }
 }

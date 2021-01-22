@@ -51,7 +51,10 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
       Decimal _total = Decimal.zero;
 
       _accounts.forEach((acc) {
-        _total += Decimal.tryParse(acc.fiat);
+        _repo.getCurrencies(acc.accountType).forEach((currency) {
+
+           _total += Decimal.tryParse(currency.fiat);
+        });
       });
 
       yield AccountLoaded(_accounts, total: _total);

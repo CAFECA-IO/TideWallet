@@ -30,14 +30,14 @@ class Currency {
   });
 
   copyWith(
-    int cointype,
+    {int cointype,
     int purpose,
     String symbol,
     String imgPath,
     String amount,
     String fiat,
     String name,
-    ACCOUNT accountType,
+    ACCOUNT accountType,}
   ) {
     return Currency(
       cointype: cointype ?? this.cointype,

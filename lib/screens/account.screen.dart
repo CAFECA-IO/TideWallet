@@ -46,10 +46,19 @@ class _AccountScreenState extends State<AccountScreen> {
                 text: TextSpan(
                     text: '≈',
                     children: [
-                      TextSpan(text: state.total.toString(), style: Theme.of(context).textTheme.headline5.copyWith(fontSize: 36.0, letterSpacing: 20.0)),
+                      TextSpan(
+                        text: ' ${state.total.toString()} ',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline5
+                            .copyWith(fontSize: 36.0),
+                      ),
                       TextSpan(text: 'USD')
                     ],
-                    style: Theme.of(context).textTheme.bodyText1.copyWith(color: Colors.white)),
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1
+                        .copyWith(color: Colors.white)),
               ),
             ),
             Expanded(
@@ -62,10 +71,10 @@ class _AccountScreenState extends State<AccountScreen> {
                     crossAxisSpacing: 4.0),
                 children: state.accounts
                     .map((Currency acc) => AccountItem(acc, () {
-                      Navigator.of(context).pushNamed(CurrencyScreen.routeName, arguments: {
-                        "account": acc
-                      });
-                    }))
+                          Navigator.of(context).pushNamed(
+                              CurrencyScreen.routeName,
+                              arguments: {"account": acc});
+                        }))
                     .toList(),
               ),
             )

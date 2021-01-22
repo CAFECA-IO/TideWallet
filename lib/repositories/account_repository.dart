@@ -19,9 +19,9 @@ class AccountRepository {
     return Future.delayed(Duration(seconds: 0));
   }
 
-  get accounts => AccountCore().accounts;
+  // get accounts => AccountCore().accounts;
 
-  List<Currency> getTokenList(ACCOUNT acc) {
-    return AccountCore().tokens[acc];
+  List<Currency> getCurrencies(ACCOUNT acc) {
+    return AccountCore().currencies[acc];
   }
 }
