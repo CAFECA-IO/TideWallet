@@ -1,5 +1,5 @@
 class User {
-  bool _isCreated = false;
+  bool _isCreated = true;
 
   bool get hasWallet {
     return this._isCreated;
@@ -21,9 +21,16 @@ class User {
     this._isCreated = true;
 
     // The reuturn value of success
-    return true;
+    // return true;
 
     // The reuturn value of fail
     // return false;
+
+    return pwd.length >= 5;
+  }
+
+    Future<bool> checkWalletBackup() async {
+    await Future.delayed(Duration(milliseconds: 500));
+    return false;
   }
 }

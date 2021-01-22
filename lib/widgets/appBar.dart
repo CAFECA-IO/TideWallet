@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../theme.dart';
+import '../screens/account.screen.dart';
 import '../screens/restore_wallet.screen.dart';
 import '../screens/scan_wallet.screen.dart';
 import '../screens/wallet_connect.screen.dart';
+import '../screens/currency.screen.dart';
 
 class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
   final String title;
@@ -29,6 +31,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
         case WalletConnectScreen.routeName:
         case ScanWalletScreen.routeName:
         case RestoreWalletScreen.routeName:
+        case CurrencyScreen.routeName:
           leading = GestureDetector(
             behavior: HitTestBehavior.translucent,
             child: ImageIcon(
@@ -89,83 +92,97 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
     List<Widget> genActions(String routeName) {
       List<Widget> _actions = [];
 
-      // switch (routeName) {
-      //   case TransferScreen.routeName:
-      //   case ReceiveScreen.routeName:
-      //   case BuyCryptoScreen.routeName:
-      //   case InfoScreen.routeName:
-      //     _actions = [
-      //       actionItem(
-      //           Icon(
-      //             Icons.close,
-      //             color: MyColors.ui_01,
-      //             size: 28,
-      //           ), () {
-      //         Navigator.of(context).pop();
-      //       })
-      //     ];
-      //     break;
-      //   case VerifyMnemonicScreen.routeName:
-      //     _actions = actions.entries.map((MapEntry entry) {
-      //       return actionItem(
-      //           Text(
-      //             entry.key,
-      //             style: Theme.of(context).textTheme.bodyText1,
-      //           ),
-      //           entry.value);
-      //     }).toList();
-      //     break;
-      //   case RestoreWalletScreen.routeName:
-      //     _actions = actions.entries.map((MapEntry entry) {
-      //       return actionItem(
-      //           Icon(
-      //             Icons.check,
-      //             color: disable
-      //                 ? MyColors.text_01.withOpacity(0.5)
-      //                 : MyColors.text_01,
-      //             size: 28,
-      //           ),
-      //           entry.value);
-      //     }).toList();
+      switch (routeName) {
+        case AccountScreen.routeName:
+          _actions = [
+            actionItem(
+                ImageIcon(
+                  AssetImage('assets/images/icons/ic_notification_tip.png'),
+                  size: 44.0,
+                  color: Colors.white,
+                ),
+                () {})
+          ];
+          break;
 
-      //     break;
-      //   case AccountScreen.routeName:
-      //   case SwapScreen.routeName:
-      //   case InvestmentScreen.routeName:
-      //     _actions = [
-      //       actionItem(
-      //         Icon(
-      //           Icons.developer_board,
-      //           color: Theme.of(context).primaryColor,
-      //           size: 28,
-      //         ),
-      //         () {
-      //           // TODO:
-      //           // Navigator.of(context)
-      //           //     .pushReplacementNamed(CreateWalletScreen.routeName);
-      //         },
-      //       )
-      //     ];
-      //     break;
-      //   case CurrencyDetailScreen.routeName:
-      //     _actions = actions.entries.map((MapEntry entry) {
-      //       return actionItem(
-      //           Icon(
-      //             entry.key == 'hide' ? Icons.visibility_off : Icons.info,
-      //             color: MyColors.text_01,
-      //             size: 28,
-      //           ),
-      //           entry.value);
-      //     }).toList();
-      //     break;
-      //   default:
-      // }
+        // case TransferScreen.routeName:
+        // case ReceiveScreen.routeName:
+        // case BuyCryptoScreen.routeName:
+        // case InfoScreen.routeName:
+        //   _actions = [
+        //     actionItem(
+        //         Icon(
+        //           Icons.close,
+        //           color: MyColors.ui_01,
+        //           size: 28,
+        //         ), () {
+        //       Navigator.of(context).pop();
+        //     })
+        //   ];
+        //   break;
+        // case VerifyMnemonicScreen.routeName:
+        //   _actions = actions.entries.map((MapEntry entry) {
+        //     return actionItem(
+        //         Text(
+        //           entry.key,
+        //           style: Theme.of(context).textTheme.bodyText1,
+        //         ),
+        //         entry.value);
+        //   }).toList();
+        //   break;
+        // case RestoreWalletScreen.routeName:
+        //   _actions = actions.entries.map((MapEntry entry) {
+        //     return actionItem(
+        //         Icon(
+        //           Icons.check,
+        //           color: disable
+        //               ? MyColors.text_01.withOpacity(0.5)
+        //               : MyColors.text_01,
+        //           size: 28,
+        //         ),
+        //         entry.value);
+        //   }).toList();
+
+        //   break;
+        // case AccountScreen.routeName:
+        // case SwapScreen.routeName:
+        // case InvestmentScreen.routeName:
+        //   _actions = [
+        //     actionItem(
+        //       Icon(
+        //         Icons.developer_board,
+        //         color: Theme.of(context).primaryColor,
+        //         size: 28,
+        //       ),
+        //       () {
+        //         // TODO:
+        //         // Navigator.of(context)
+        //         //     .pushReplacementNamed(CreateWalletScreen.routeName);
+        //       },
+        //     )
+        //   ];
+        //   break;
+        // case CurrencyDetailScreen.routeName:
+        //   _actions = actions.entries.map((MapEntry entry) {
+        //     return actionItem(
+        //         Icon(
+        //           entry.key == 'hide' ? Icons.visibility_off : Icons.info,
+        //           color: MyColors.text_01,
+        //           size: 28,
+        //         ),
+        //         entry.value);
+        //   }).toList();
+        //   break;
+        default:
+      }
 
       return _actions;
     }
 
     bool showBackground() {
       if (routeName == ScanWalletScreen.routeName) return false;
+      if (routeName == AccountScreen.routeName) return false;
+      if (routeName == CurrencyScreen.routeName) return false;
       return true;
     }
 
@@ -178,18 +195,20 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
         textAlign: TextAlign.center,
       ),
       backgroundColor: Colors.transparent,
-      flexibleSpace: showBackground() ? Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: <Color>[
-              Theme.of(context).primaryColor,
-              Theme.of(context).accentColor
-            ],
-          ),
-        ),
-      ) : null,
+      flexibleSpace: showBackground()
+          ? Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: <Color>[
+                    Theme.of(context).primaryColor,
+                    Theme.of(context).accentColor
+                  ],
+                ),
+              ),
+            )
+          : null,
       leading: genLeading(routeName),
       actions: genActions(routeName),
     );
