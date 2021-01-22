@@ -13,7 +13,7 @@ class AccountRepository {
   }
 
   Future<Map<TransactionPriority, String>> fetchGasPrice() async {
-    Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 1));
     return {
       TransactionPriority.slow: "33.46200020",
       TransactionPriority.standard: "43.20000233",
@@ -22,11 +22,14 @@ class AccountRepository {
   }
 
   Future<String> fetchGasLimit() async {
-    Future.delayed(Duration(seconds: 1));
+    await Future.delayed(Duration(seconds: 1));
     return '25148';
   }
 
   Future<bool> createTransaction(List<dynamic> condition) async {
+    // create
+    // sign
+    // publish
     await Future.delayed(Duration(seconds: 5));
     return true;
   }

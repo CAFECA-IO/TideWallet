@@ -43,5 +43,7 @@
     "cancel": "Cancel",
     "ok": "OK",
     "error_password": "密碼錯誤",
-    "error_format": "格式錯誤"
+    "error_format": "格式錯誤",
+    "send": "匯款",
+    "receive": "收款"
 }

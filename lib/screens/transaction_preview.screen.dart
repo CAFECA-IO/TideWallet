@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import './transaction_list.screen.dart';
 import '../helpers/i18n.dart';
 import '../blocs/user/user_bloc.dart';
 import '../blocs/transaction/transaction_bloc.dart';
@@ -47,13 +48,16 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
       ),
       body: BlocListener<TransactionBloc, TransactionState>(
         cubit: _bloc,
-        listener: (context, state) {
+        listener: (context, state) async {
           print(state);
           if (state is TransactionPublishing) {
             DialogContorller.showUnDissmissible(context, LoadingDialog());
           }
           if (state is TransactionSent) {
             DialogContorller.dismiss(context);
+            await Future.delayed(Duration(milliseconds: 150), () {
+              Navigator.of(context).pushNamed(TransactionListScreen.routeName);
+            });
           }
         },
         child: Container(

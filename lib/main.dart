@@ -14,6 +14,7 @@ import './screens/transaction_preview.screen.dart';
 import './repositories/account_repository.dart';
 import './repositories/transaction_repository.dart';
 import './screens/scan_wallet.screen.dart';
+import './screens/transaction_list.screen.dart';
 import './repositories/user_repository.dart';
 import './helpers/i18n.dart';
 import './blocs/delegate.dart';
@@ -88,6 +89,7 @@ MaterialApp _material = MaterialApp(
     TransactionPreviewScreen.routeName: (context) => TransactionPreviewScreen(),
     RestoreWalletScreen.routeName: (context) => RestoreWalletScreen(),
     ScanWalletScreen.routeName: (conte) => ScanWalletScreen(),
+    TransactionListScreen.routeName: (context) => TransactionListScreen(),
   },
   localizationsDelegates: [
     const I18nDelegate(),

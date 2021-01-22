@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tidewallet3/screens/create_transaction.screen.dart';
+import 'package:tidewallet3/screens/transaction_list.screen.dart';
 import 'package:tidewallet3/screens/transaction_preview.screen.dart';
 
 import '../theme.dart';
@@ -35,6 +36,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
         case ScanWalletScreen.routeName:
         case ScanAddressScreen.routeName:
         case RestoreWalletScreen.routeName:
+        case TransactionListScreen.routeName:
           leading = GestureDetector(
             behavior: HitTestBehavior.translucent,
             child: ImageIcon(
@@ -163,6 +165,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
 
     bool showBackground() {
       if (routeName == ScanWalletScreen.routeName) return false;
+      if (routeName == TransactionListScreen.routeName) return false;
       return true;
     }
 
