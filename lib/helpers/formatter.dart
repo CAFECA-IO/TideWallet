@@ -17,4 +17,11 @@ class Formatter {
     }
     return Decimal.parse(amount).toString();
   }
+
+  static String formateAdddress(String address, {int showLength = 6}) {
+    String prefix = address.substring(0, showLength);
+    String suffix =
+        address.substring(address.length - showLength, address.length);
+    return prefix + "..." + suffix;
+  }
 }

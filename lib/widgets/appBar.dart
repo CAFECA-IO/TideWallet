@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:tidewallet3/screens/create_transaction.screen.dart';
-import 'package:tidewallet3/screens/transaction_list.screen.dart';
-import 'package:tidewallet3/screens/transaction_preview.screen.dart';
 
 import '../theme.dart';
 import '../screens/restore_wallet.screen.dart';
 import '../screens/scan_wallet.screen.dart';
 import '../screens/scan_address.screen.dart';
 import '../screens/wallet_connect.screen.dart';
+import '../screens/transaction_list.screen.dart';
+import '../screens/transaction_preview.screen.dart';
+import '../screens/create_transaction.screen.dart';
+import '../screens/transaction_detail.screen.dart';
 
 class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
   final String title;
@@ -37,6 +38,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
         case ScanAddressScreen.routeName:
         case RestoreWalletScreen.routeName:
         case TransactionListScreen.routeName:
+        case TransactionDetailScreen.routeName:
           leading = GestureDetector(
             behavior: HitTestBehavior.translucent,
             child: ImageIcon(

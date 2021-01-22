@@ -15,6 +15,9 @@ class MyColors {
   static const secondary_05 = Color(0xFFECECEC);
   static const secondary_06 = Color(0xFFEEEEEE);
   static const secondary_07 = Color(0xFFEEF2F6);
+  static const secondary_08 = Color(0xFF7ED321);
+  static const secondary_09 = Color(0xFFd0021B);
+  static const secondary_10 = Color(0xFF555555);
 
   static const font_01 = Colors.white;
 }
@@ -25,6 +28,7 @@ TextTheme myTextTheme = TextTheme(
         fontSize: 20.0,
         letterSpacing: 0.4,
         fontWeight: FontWeight.bold),
+    headline4: TextStyle(color: Colors.white),
     headline5: TextStyle(
         color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),
     headline6: TextStyle(color: MyColors.secondary_02, fontSize: 13.0),

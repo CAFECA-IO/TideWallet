@@ -13,6 +13,7 @@ abstract class BaseButton extends StatelessWidget {
   final bool isEnabled;
   final TextStyle textStyle;
   final double minWidth;
+  final double borderRadius;
 
   BaseButton(this._text, this._onPressed,
       {this.iconImg,
@@ -24,7 +25,8 @@ abstract class BaseButton extends StatelessWidget {
       this.padding,
       this.isEnabled = true,
       this.textStyle,
-      this.minWidth});
+      this.minWidth,
+      this.borderRadius});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +39,7 @@ abstract class BaseButton extends StatelessWidget {
             ? this.padding
             : const EdgeInsets.symmetric(horizontal: 32.5, vertical: 13.0),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(200.0),
+          borderRadius: BorderRadius.circular(this.borderRadius ?? 200.0),
           side: BorderSide(
             color: isEnabled ? this.borderColor : this.disableColor,
             width: 1,
@@ -53,7 +55,8 @@ abstract class BaseButton extends StatelessWidget {
             this.iconImg != null
                 ? ImageIcon(
                     this.iconImg,
-                    color: Theme.of(context).textTheme.button.color,
+                    color: this.textColor ??
+                        Theme.of(context).textTheme.button.color,
                     size: 20.0,
                   )
                 : SizedBox(width: 0),

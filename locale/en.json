@@ -46,5 +46,17 @@
     "error_password": "密碼錯誤",
     "error_format": "格式錯誤",
     "send": "Send",
-    "receive": "Receive"
+    "receive": "Receive",
+    "move": "Move",
+    "process": "Processing",
+    "transaction_detail": "Transaction Detail",
+    "status": "Status",
+    "time": "Time",
+    "transfer_to": "Transfer to",
+    "save_to": "Save to",
+    "transaction_id": "Transaction ID",
+    "pending": "Pending",
+    "compeleted": "Completed",
+    "transaction_fail": "Transaction failed",
+    "confirmation": "confirmation"
 }

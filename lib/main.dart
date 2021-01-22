@@ -15,6 +15,7 @@ import './repositories/account_repository.dart';
 import './repositories/transaction_repository.dart';
 import './screens/scan_wallet.screen.dart';
 import './screens/transaction_list.screen.dart';
+import './screens/transaction_detail.screen.dart';
 import './repositories/user_repository.dart';
 import './helpers/i18n.dart';
 import './blocs/delegate.dart';
@@ -83,13 +84,14 @@ MaterialApp _material = MaterialApp(
   theme: myThemeData,
   routes: {
     // '/': (context) => LandingScreen(),
-    '/': (context) => CreateTransactionScreen(),
+    '/': (context) => TransactionListScreen(),
     WalletConnectScreen.routeName: (context) => WalletConnectScreen(),
     CreateTransactionScreen.routeName: (context) => CreateTransactionScreen(),
     TransactionPreviewScreen.routeName: (context) => TransactionPreviewScreen(),
     RestoreWalletScreen.routeName: (context) => RestoreWalletScreen(),
     ScanWalletScreen.routeName: (conte) => ScanWalletScreen(),
     TransactionListScreen.routeName: (context) => TransactionListScreen(),
+    TransactionDetailScreen.routeName: (context) => TransactionDetailScreen(),
   },
   localizationsDelegates: [
     const I18nDelegate(),

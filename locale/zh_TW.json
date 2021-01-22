@@ -45,5 +45,17 @@
     "error_password": "密碼錯誤",
     "error_format": "格式錯誤",
     "send": "匯款",
-    "receive": "收款"
+    "receive": "收款",
+    "move": "內轉",
+    "process": "等待處理",
+    "transaction_detail": "交易細節",
+    "status": "Status",
+    "time": "Time",
+    "transfer_to": "轉出至",
+    "save_to": "存入至",
+    "transaction_id": "Transaction ID",
+    "pending": "Pending",
+    "compeleted": "Completed",
+    "transaction_fail": "Transaction failed",
+    "confirmation": "confirmation"
 }
