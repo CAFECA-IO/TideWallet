@@ -36,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   // HDWalletRepository _hdWalletRepository;
 
   static List<HomeScreenContent> _screens = [
-    HomeScreenContent(AccountScreen(), AccountScreen.routeName, t('總資產'),
+    HomeScreenContent(AccountScreen(), AccountScreen.routeName, t('total_asset'),
         iconData: Icons.account_balance_wallet, bottomText: ''),
     HomeScreenContent(SettingsScreen(), SettingsScreen.routeName, '',
         iconData: Icons.reorder, bottomText: ''),

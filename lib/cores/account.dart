@@ -6,7 +6,6 @@ import '../models/account.model.dart';
 import '../services/account_service.dart';
 import '../services/account_service_base.dart';
 import '../services/ethereum_service.dart';
-import '../mock/endpoint.dart';
 
 class AccountCore {
   PublishSubject<AccountMessage> messenger;
@@ -37,6 +36,8 @@ class AccountCore {
     // TODO: Get amount in DB
     for (var value in ACCOUNT.values) {
       if (ACCOUNT_LIST[value] != null) {
+        bool exist = await this.checkAccountExist();
+
         Currency _currency = Currency.fromMap(ACCOUNT_LIST[value]);
         Decimal fiat = Decimal.tryParse(_currency.fiat);
 
@@ -44,23 +45,15 @@ class AccountCore {
         this.currencies[value].add(_currency);
 
         if (value == ACCOUNT.ETH) {
-          List<Map> result = await getETHTokens();
-          List<Currency> tokenList =
-              result.map((e) => Currency.fromMap(e)).toList();
-          tokenList.forEach((tk) {
-            fiat += Decimal.tryParse(tk.fiat);
-          });
-          this.currencies[value] = this.currencies[value].sublist(0, 1) + tokenList;
-
           AccountService ethService = EthereumService(_service);
           this._services.add(ethService);
           ethService.start();
         }
 
+        await createAccount();
+
         this.messenger.add(
             AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: _currency.copyWith(fiat: fiat.toString())));
-
-        
       }
     }
   }
@@ -78,5 +71,15 @@ class AccountCore {
         fiat += Decimal.tryParse(curr.fiat);
       });
      return fiat.toString();
+  }
+
+  Future<bool> checkAccountExist() async {
+    await Future.delayed(Duration(milliseconds: 300));
+
+    return false;
+  }
+
+  createAccount() async {
+    await Future.delayed(Duration(milliseconds: 300));
   }
 }

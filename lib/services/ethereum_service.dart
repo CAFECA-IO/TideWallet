@@ -79,15 +79,31 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   _sync() {
-      _timer = Timer.periodic(Duration(milliseconds: this.syncInterval), (_) async {
-      Map res = await getETH();
-      Currency curr =  Currency.fromMap({ ...res, "accountType": ACCOUNT.ETH });
+    _timer =
+        Timer.periodic(Duration(milliseconds: this.syncInterval), (_) async {
+      await this._getTokens();
+      Currency curr = await this._getETH();
 
-      AccountCore().currencies[curr.accountType][0] = curr;
       String _fiat = AccountCore().getAccountFiat(curr.accountType);
 
-      AccountMessage msg = AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: curr.copyWith(fiat: _fiat));
+      AccountMessage msg = AccountMessage(
+          evt: ACCOUNT_EVT.OnUpdateAccount, value: curr.copyWith(fiat: _fiat));
       AccountCore().messenger.add(msg);
     });
+  }
+
+  _getTokens() async {
+    List<Map> result = await getETHTokens();
+    List<Currency> tokenList = result.map((e) => Currency.fromMap(e)).toList();
+
+    AccountCore().currencies[ACCOUNT.ETH] =
+        AccountCore().currencies[ACCOUNT.ETH].sublist(0, 1) + tokenList;
+  }
+
+  Future<Currency> _getETH() async {
+    Map res = await getETH();
+    Currency curr = Currency.fromMap({...res, "accountType": ACCOUNT.ETH});
+    AccountCore().currencies[curr.accountType][0] = curr;
+    return curr;
   }
 }
