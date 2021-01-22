@@ -1,12 +1,12 @@
 import 'package:decimal/decimal.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:tidewallet3/mock/endpoint.dart';
-import 'package:tidewallet3/services/account_service_base.dart';
-import 'package:tidewallet3/services/ethereum_service.dart';
 
 import '../constants/account_config.dart';
 import '../models/account.model.dart';
 import '../services/account_service.dart';
+import '../services/account_service_base.dart';
+import '../services/ethereum_service.dart';
+import '../mock/endpoint.dart';
 
 class AccountCore {
   PublishSubject<AccountMessage> messenger;

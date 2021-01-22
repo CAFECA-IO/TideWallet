@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tidewallet3/blocs/backup/backup_bloc.dart';
-import 'package:tidewallet3/screens/currency.screen.dart';
-import 'package:tidewallet3/widgets/backupThumb.dart';
 
+import '../blocs/backup/backup_bloc.dart';
 import '../blocs/account/account_bloc.dart';
-import '../models/account.model.dart';
+import '../screens/currency.screen.dart';
+import '../widgets/backupThumb.dart';
 import '../widgets/account_item.dart';
+import '../models/account.model.dart';
 
 class AccountScreen extends StatefulWidget {
   static const routeName = '/account';

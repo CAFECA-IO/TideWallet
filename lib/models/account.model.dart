@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tidewallet3/constants/account_config.dart';
+
+import '../constants/account_config.dart';
 
 enum ACCOUNT_EVT { 
   OnUpdateAccount,

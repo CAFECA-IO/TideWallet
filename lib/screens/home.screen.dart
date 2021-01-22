@@ -5,6 +5,9 @@ import './wallet_connect.screen.dart';
 import './settings.screen.dart';
 import '../widgets/appBar.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../helpers/i18n.dart';
+
+final t = I18n.t;
 
 class HomeScreenContent {
   final String routeName;
@@ -33,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   // HDWalletRepository _hdWalletRepository;
 
   static List<HomeScreenContent> _screens = [
-    HomeScreenContent(AccountScreen(), AccountScreen.routeName, '總資產',
+    HomeScreenContent(AccountScreen(), AccountScreen.routeName, t('總資產'),
         iconData: Icons.account_balance_wallet, bottomText: ''),
     HomeScreenContent(SettingsScreen(), SettingsScreen.routeName, '',
         iconData: Icons.reorder, bottomText: ''),

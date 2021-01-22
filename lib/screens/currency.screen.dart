@@ -20,11 +20,9 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
   @override
   void didChangeDependencies() {
     Map<String, Currency> arg = ModalRoute.of(context).settings.arguments;
-    print(arg);
     _repo = Provider.of<AccountRepository>(context);
     _bloc = CurrencyBloc(_repo)
       ..add(GetCurrencyList(arg['account'].accountType));
-    // _bloc = TokenBloc(_repo);
     super.didChangeDependencies();
   }
 

@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:tidewallet3/blocs/backup/backup_bloc.dart';
 
 import './screens/currency.screen.dart';
 import './screens/landing.screen.dart';
@@ -18,6 +17,7 @@ import './blocs/account/account_bloc.dart';
 import './blocs/delegate.dart';
 import './blocs/user/user_bloc.dart';
 import './blocs/restore_wallet/restore_wallet_bloc.dart';
+import './blocs/backup/backup_bloc.dart';
 import './helpers/i18n.dart';
 import 'theme.dart';
 

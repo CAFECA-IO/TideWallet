@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:tidewallet3/widgets/buttons/primary_button.dart';
+
+import './buttons/primary_button.dart';
+import '../helpers/i18n.dart';
+
+final t = I18n.t;
 
 class BackupThumb extends StatelessWidget {
   @override
@@ -29,15 +33,29 @@ class BackupThumb extends StatelessWidget {
           ),
           SizedBox(width: 6.0),
           Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('重要 ! 助記詞備份', style: TextStyle(fontSize: 16.0, color: Colors.white,)),
-              Text('錢包遺失時，可重新取回資產', style: Theme.of(context).textTheme.subtitle2.copyWith(color: Colors.white))
-            ]
-          ),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(t('backup_message_1'),
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.white,
+                    )),
+                Text(t('backup_message_2'),
+                    style: Theme.of(context)
+                        .textTheme
+                        .subtitle2
+                        .copyWith(color: Colors.white))
+              ]),
           Spacer(),
-          PrimaryButton('立即備份', () {}, padding: const EdgeInsets.symmetric(horizontal: 0.0), backgroundColor: Theme.of(context).hintColor, borderColor: Theme.of(context).hintColor, fontSize: 14.0,)
+          PrimaryButton(
+            t('backup_now'),
+            () {},
+            padding: const EdgeInsets.symmetric(horizontal: 0.0),
+            backgroundColor: Theme.of(context).hintColor,
+            borderColor: Theme.of(context).hintColor,
+            fontSize: 14.0,
+          )
         ],
       ),
     );

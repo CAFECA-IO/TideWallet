@@ -6,8 +6,6 @@ import 'account_service_decorator.dart';
 class BitcoinServiceDecorator extends AccountServiceDecorator {
   BitcoinServiceDecorator(AccountService service) : super(service);
 
-  int syncInterval = 500;
-
   @override
   Decimal calculateFastDee() {
     // TODO: implement calculateFastDee

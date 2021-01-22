@@ -1,9 +1,8 @@
 import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:tidewallet3/repositories/user_repository.dart';
 
+import '../../repositories/user_repository.dart';
 part 'backup_event.dart';
 part 'backup_state.dart';
 

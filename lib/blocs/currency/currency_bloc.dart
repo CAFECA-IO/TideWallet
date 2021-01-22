@@ -1,11 +1,11 @@
 import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
-import 'package:tidewallet3/constants/account_config.dart';
-import 'package:tidewallet3/models/account.model.dart';
-import 'package:tidewallet3/repositories/account_repository.dart';
+
+import '../../constants/account_config.dart';
+import '../../models/account.model.dart';
+import '../../repositories/account_repository.dart';
 
 part 'currency_event.dart';
 part 'currency_state.dart';
