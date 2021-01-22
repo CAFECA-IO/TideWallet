@@ -104,7 +104,6 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
                 () {})
           ];
           break;
-
         // case TransferScreen.routeName:
         // case ReceiveScreen.routeName:
         // case BuyCryptoScreen.routeName:
