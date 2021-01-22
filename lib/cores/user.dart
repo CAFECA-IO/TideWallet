@@ -28,4 +28,9 @@ class User {
 
     return pwd.length >= 5;
   }
+
+    Future<bool> checkWalletBackup() async {
+    await Future.delayed(Duration(milliseconds: 500));
+    return false;
+  }
 }

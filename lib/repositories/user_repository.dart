@@ -23,4 +23,6 @@ class UserRepository {
         return null;
       }
   }
+
+  Future<bool> checkWalletBackup() => _user.checkWalletBackup();
 }

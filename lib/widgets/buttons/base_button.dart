@@ -8,6 +8,8 @@ abstract class BaseButton extends StatelessWidget {
   final Color disableColor;
   final Color textColor;
   final AssetImage iconImg;
+  final EdgeInsetsGeometry padding;
+  final double fontSize;
 
   BaseButton(
     this._text,
@@ -17,6 +19,8 @@ abstract class BaseButton extends StatelessWidget {
     this.disableColor,
     this.borderColor,
     this.textColor,
+    this.padding,
+    this.fontSize
   });
   
   @override
@@ -24,7 +28,7 @@ abstract class BaseButton extends StatelessWidget {
     return FlatButton(
         disabledColor: this.disableColor,
         color: backgroundColor,
-        padding: const EdgeInsets.symmetric(horizontal: 32.5, vertical: 13.0),
+        padding: this.padding ?? const EdgeInsets.symmetric(horizontal: 32.5, vertical: 13.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(200.0),
           side: BorderSide(
@@ -38,10 +42,10 @@ abstract class BaseButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             this.iconImg != null ? ImageIcon(this.iconImg, color: Theme.of(context).textTheme.button.color, size: 20.0,) : SizedBox(width: 0), 
-            SizedBox(width: 14.0,),
+            this.iconImg != null ? SizedBox(width: 14.0,) : SizedBox(),
             Text(
               _text,
-              style: TextStyle(fontSize: 16.0, color: this.textColor),
+              style: TextStyle(fontSize: this.fontSize ?? 16.0, color: this.textColor),
             ),
           ],
         ),

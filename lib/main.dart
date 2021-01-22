@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:tidewallet3/blocs/backup/backup_bloc.dart';
 
 import './screens/currency.screen.dart';
 import './screens/landing.screen.dart';
@@ -64,6 +65,11 @@ class MyApp extends StatelessWidget {
                 Provider.of<AccountRepository>(context, listen: false),
               ),
             ),
+            BlocProvider<BackupBloc>(
+              create: (BuildContext context) => BackupBloc(
+                Provider.of<UserRepository>(context, listen: false),
+              )..add(CheckBackup()),
+            )
           ],
           child: _material,
         ),
