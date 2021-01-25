@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:tidewallet3/screens/add_currency.screen.dart';
 
 import './screens/currency.screen.dart';
 import './screens/landing.screen.dart';
@@ -86,6 +87,7 @@ MaterialApp _material = MaterialApp(
     RestoreWalletScreen.routeName: (context) => RestoreWalletScreen(),
     ScanWalletScreen.routeName: (conte) => ScanWalletScreen(),
     CurrencyScreen.routeName: (context) => CurrencyScreen(),
+    AddCurrencyScreen.routeName: (context) => AddCurrencyScreen(),
     WalletConnectScreen.routeName: (context) => WalletConnectScreen(),
   },
   localizationsDelegates: [

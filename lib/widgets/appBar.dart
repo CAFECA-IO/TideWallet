@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tidewallet3/screens/add_currency.screen.dart';
 
 import '../theme.dart';
 import '../screens/account.screen.dart';
@@ -32,6 +33,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
         case ScanWalletScreen.routeName:
         case RestoreWalletScreen.routeName:
         case CurrencyScreen.routeName:
+        case AddCurrencyScreen.routeName:
           leading = GestureDetector(
             behavior: HitTestBehavior.translucent,
             child: ImageIcon(

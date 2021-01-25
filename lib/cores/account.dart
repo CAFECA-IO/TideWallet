@@ -82,4 +82,8 @@ class AccountCore {
   createAccount() async {
     await Future.delayed(Duration(milliseconds: 300));
   }
+
+  AccountService getService(ACCOUNT type) {
+    return _services.firstWhere((svc) => (svc.base == type));
+  }
 }

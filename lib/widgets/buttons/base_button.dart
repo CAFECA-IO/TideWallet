@@ -26,6 +26,7 @@ abstract class BaseButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlatButton(
+        disabledTextColor: Colors.white,
         disabledColor: this.disableColor,
         color: backgroundColor,
         padding: this.padding ?? const EdgeInsets.symmetric(horizontal: 32.5, vertical: 13.0),

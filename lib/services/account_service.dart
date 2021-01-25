@@ -1,7 +1,9 @@
 import 'package:decimal/decimal.dart';
+import 'package:tidewallet3/constants/account_config.dart';
 
 abstract class AccountService {
   int syncInterval = 10 * 1000;
+  ACCOUNT base;
 
   void init();
   void start();

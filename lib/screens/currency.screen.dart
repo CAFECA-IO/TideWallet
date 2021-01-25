@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:tidewallet3/screens/add_currency.screen.dart';
 
 import '../blocs/currency/currency_bloc.dart';
 import '../models/account.model.dart';
@@ -85,7 +86,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
                   Positioned(
                       child: InkWell(
                           onTap: () {
-                            print('Click');
+                            Navigator.of(context).pushNamed(AddCurrencyScreen.routeName);
                           },
                           child: Container(child: Text('+ 添加幣種'))),
                       bottom: 12.0,

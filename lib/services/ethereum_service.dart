@@ -10,8 +10,10 @@ import '../mock/endpoint.dart';
 import '../cores/account.dart';
 
 class EthereumService extends AccountServiceDecorator {
-  EthereumService(AccountService service) : super(service);
-
+  EthereumService(AccountService service) : super(service) {
+    this.base = ACCOUNT.ETH;
+  }
+  
   Timer _timer;
 
   estimateGasLimit() {}
@@ -105,5 +107,30 @@ class EthereumService extends AccountServiceDecorator {
     Currency curr = Currency.fromMap({...res, "accountType": ACCOUNT.ETH});
     AccountCore().currencies[curr.accountType][0] = curr;
     return curr;
+  }
+
+  static Future<Token> getTokeninfo(String _address) async {
+    Map result = await getETHTokeninfo(_address);
+    print('~~~~ $result');
+    if (result != null && result['success']) {
+      Token _token = Token(
+          symbol: result['symbol'],
+          name: result['name'],
+          decimal: result['decimal'],
+          imgUrl: result['imgPath'],
+          description: result['description'],
+          contract: result['contract'],
+          totalSupply: result['totalSupply']
+          );
+      return _token;
+    } else {
+      return null;
+    }
+  }
+
+  Future<bool> addToken(Token tk) async {
+    await Future.delayed(Duration(milliseconds: 500));
+
+    return true;
   }
 }
