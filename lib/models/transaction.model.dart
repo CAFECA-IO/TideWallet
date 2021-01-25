@@ -286,7 +286,7 @@ extension TransactionStatueExt on TransactionStatus {
         return "compeleted";
         break;
       case TransactionStatus.fail:
-        return "fail";
+        return "transaction_fail";
         break;
       case TransactionStatus.pending:
         return "pending";

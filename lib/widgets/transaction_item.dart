@@ -45,22 +45,38 @@ class TransactionItem extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    ImageIcon(
-                      AssetImage(transaction.direction.iconPath),
-                      size: 20.0,
+                    transaction.status == TransactionStatus.fail
+                        ? SizedBox(
+                            width: 28,
+                          )
+                        : Row(
+                            children: [
+                              ImageIcon(
+                                AssetImage(transaction.direction.iconPath),
+                                size: 20.0,
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                            ],
+                          ),
+                    Text(
+                      t(transaction.direction.title),
+                      style: transaction.status == TransactionStatus.fail
+                          ? Theme.of(context)
+                              .textTheme
+                              .bodyText1
+                              .copyWith(color: Theme.of(context).cursorColor)
+                          : Theme.of(context).textTheme.bodyText1,
                     ),
-                    SizedBox(
-                      width: 8,
-                    ),
-                    Text(t(transaction.direction.title)),
                   ],
                 ),
                 Text(
-                  '${transaction.direction == TransactionDirection.received ? "" : "-"} ${transaction.amount} ${currency.symbol.toUpperCase()}',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyText1
-                      .copyWith(color: transaction.direction.color),
+                  '${transaction.direction == TransactionDirection.received ? "+" : "-"} ${transaction.amount} ${currency.symbol.toUpperCase()}',
+                  style: Theme.of(context).textTheme.bodyText1.copyWith(
+                      color: transaction.status == TransactionStatus.fail
+                          ? Theme.of(context).cursorColor
+                          : transaction.direction.color),
                 )
               ],
             ),
@@ -74,15 +90,28 @@ class TransactionItem extends StatelessWidget {
                     ),
                     Text(
                       transaction.direction.subtitle,
-                      style: Theme.of(context).textTheme.subtitle2,
+                      style: transaction.status == TransactionStatus.fail
+                          ? Theme.of(context)
+                              .textTheme
+                              .subtitle2
+                              .copyWith(color: Theme.of(context).cursorColor)
+                          : Theme.of(context).textTheme.subtitle2,
                     ),
                   ],
                 ),
-                Text(Formatter.dateTime(transaction.timestamp),
-                    style: Theme.of(context).textTheme.subtitle2)
+                Text(
+                  Formatter.dateTime(transaction.timestamp),
+                  style: transaction.status == TransactionStatus.fail
+                      ? Theme.of(context)
+                          .textTheme
+                          .subtitle2
+                          .copyWith(color: Theme.of(context).cursorColor)
+                      : Theme.of(context).textTheme.subtitle2,
+                )
               ],
             ),
-            transaction.confirmations > 6
+            transaction.confirmations > 6 ||
+                    transaction.status == TransactionStatus.fail
                 ? SizedBox(
                     height: 32,
                   )
