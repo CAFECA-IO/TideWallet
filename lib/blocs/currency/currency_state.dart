@@ -20,4 +20,7 @@ class CurrencyLoaded extends CurrencyState {
   final Decimal total;
 
   CurrencyLoaded(this.currencies, {this.total}) : super([], total: Decimal.zero);
+
+  @override
+  List<Object> get props => [currencies, total];
 }

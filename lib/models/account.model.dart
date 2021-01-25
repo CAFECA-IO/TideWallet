@@ -4,7 +4,7 @@ import '../constants/account_config.dart';
 
 enum ACCOUNT_EVT { 
   OnUpdateAccount,
-  OnUpdateToken,
+  OnUpdateCurrency,
 }
 
 class Currency {

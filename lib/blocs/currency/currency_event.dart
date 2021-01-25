@@ -13,8 +13,8 @@ class GetCurrencyList extends CurrencyEvent {
   GetCurrencyList(this.account);
 }
 
-class UpdateCurrency extends CurrencyEvent {
-  final Currency token;
+class UpdateCurrencies extends CurrencyEvent {
+  final List<Currency> currenices;
 
-  UpdateCurrency(this.token);
+  UpdateCurrencies(this.currenices);
 }
