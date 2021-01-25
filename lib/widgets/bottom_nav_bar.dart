@@ -17,6 +17,7 @@ class CBottomAppBar extends StatefulWidget {
     this.selectedColor,
     this.notchedShape,
     this.onTabSelected,
+    this.selectedIndex,
   }) {
     // assert(this.items.length == 2 || this.items.length == 4);
   }
@@ -29,19 +30,16 @@ class CBottomAppBar extends StatefulWidget {
   final Color selectedColor;
   final NotchedShape notchedShape;
   final ValueChanged<int> onTabSelected;
+  final int selectedIndex;
 
   @override
   State<StatefulWidget> createState() => CBottomAppBarState();
 }
 
 class CBottomAppBarState extends State<CBottomAppBar> {
-  int _selectedIndex = 0;
 
   _updateIndex(int index) {
     widget.onTabSelected(index);
-    setState(() {
-      _selectedIndex = index;
-    });
   }
 
   @override
@@ -90,7 +88,7 @@ class CBottomAppBarState extends State<CBottomAppBar> {
     int index,
     ValueChanged<int> onPressed,
   }) {
-    bool _isSelected = _selectedIndex == index;
+    bool _isSelected = widget.selectedIndex == index;
     Color color = _isSelected ? widget.selectedColor : widget.color;
     return Expanded(
       child: SizedBox(

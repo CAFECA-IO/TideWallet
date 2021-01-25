@@ -9,7 +9,10 @@ import '../widgets/account_item.dart';
 import '../models/account.model.dart';
 
 class AccountScreen extends StatefulWidget {
+  final Function jumpTo;
   static const routeName = '/account';
+
+  AccountScreen(this.jumpTo);
 
   @override
   _AccountScreenState createState() => _AccountScreenState();
@@ -90,7 +93,9 @@ class _AccountScreenState extends State<AccountScreen> {
           builder: (context, state) {
             if (state is UnBackup) {
               return Positioned(
-                child: BackupThumb(),
+                child: BackupThumb(() {
+                  widget.jumpTo(1);
+                }),
                 bottom: 30.0,
                 left: 10.0,
               );

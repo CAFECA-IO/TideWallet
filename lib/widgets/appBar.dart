@@ -6,6 +6,7 @@ import '../screens/restore_wallet.screen.dart';
 import '../screens/scan_wallet.screen.dart';
 import '../screens/wallet_connect.screen.dart';
 import '../screens/currency.screen.dart';
+import '../screens/settings.screen.dart';
 
 class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
   final String title;
@@ -183,6 +184,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
       if (routeName == ScanWalletScreen.routeName) return false;
       if (routeName == AccountScreen.routeName) return false;
       if (routeName == CurrencyScreen.routeName) return false;
+      if (routeName == SettingsScreen.routeName) return false;
       return true;
     }
 

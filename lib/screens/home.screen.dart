@@ -35,13 +35,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   // bool _isInit = true;
   // HDWalletRepository _hdWalletRepository;
 
-  static List<HomeScreenContent> _screens = [
-    HomeScreenContent(AccountScreen(), AccountScreen.routeName, t('total_asset'),
-        iconData: Icons.account_balance_wallet, bottomText: ''),
-    HomeScreenContent(SettingsScreen(), SettingsScreen.routeName, '',
-        iconData: Icons.reorder, bottomText: ''),
-  ];
-
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
@@ -76,6 +69,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    List<HomeScreenContent> _screens = [
+      HomeScreenContent(AccountScreen((int index) {
+        _pageController.jumpToPage(index);
+        setState(
+          () {
+            _selectedIndex = index;
+          },
+        );
+      }), AccountScreen.routeName, t('total_asset'),
+          iconData: Icons.account_balance_wallet, bottomText: ''),
+      HomeScreenContent(SettingsScreen(), SettingsScreen.routeName, '',
+          iconData: Icons.reorder, bottomText: ''),
+    ];
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       resizeToAvoidBottomInset: false,
@@ -98,6 +105,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             _selectedIndex = index;
           });
         },
+        selectedIndex: _selectedIndex,
         items: _screens
             .map((s) =>
                 CBottomAppBarItem(iconData: s.iconData, text: s.bottomText))
