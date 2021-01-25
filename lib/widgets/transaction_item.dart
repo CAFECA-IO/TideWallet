@@ -1,39 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:tidewallet3/theme.dart';
 
+import '../theme.dart';
 import '../helpers/i18n.dart';
 import '../helpers/formatter.dart';
 import '../models/transaction.model.dart';
+import '../models/account.model.dart';
 import '../screens/transaction_detail.screen.dart';
 
-class TransactionItem extends StatefulWidget {
-  final TransactionDirection direction;
-  final String address;
-  final DateTime dateTime;
-  final String amount;
-  // final String amountInFiat;
-  final String symbol;
-  // final String fiat;
-  final int confirmations;
-  final TransactionStatus status;
+// class TransactionItem extends StatefulWidget {
+class TransactionItem extends StatelessWidget {
+  final Currency currency;
+  final Transaction transaction;
 
-  const TransactionItem(
-      {Key key,
-      this.direction,
-      this.address,
-      this.dateTime,
-      this.amount,
-      // this.amountInFiat,
-      this.symbol,
-      // this.fiat,
-      this.confirmations,
-      this.status})
+  const TransactionItem({Key key, this.currency, this.transaction})
       : super(key: key);
-  @override
-  _TransactionItemState createState() => _TransactionItemState();
-}
+//   @override
+//   _TransactionItemState createState() => _TransactionItemState();
+// }
 
-class _TransactionItemState extends State<TransactionItem> {
+// class _TransactionItemState extends State<TransactionItem> {
   final t = I18n.t;
 
   @override
@@ -42,13 +27,8 @@ class _TransactionItemState extends State<TransactionItem> {
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(
             builder: (BuildContext context) => TransactionDetailScreen(
-                  direction: widget.direction,
-                  address: widget.address,
-                  dateTime: widget.dateTime,
-                  amount: widget.amount,
-                  symbol: widget.symbol,
-                  confirmations: widget.confirmations,
-                  status: widget.status,
+                  currency: currency,
+                  transaction: transaction,
                 )));
       },
       child: Container(
@@ -66,21 +46,21 @@ class _TransactionItemState extends State<TransactionItem> {
                 Row(
                   children: [
                     ImageIcon(
-                      AssetImage(widget.direction.iconPath),
+                      AssetImage(transaction.direction.iconPath),
                       size: 20.0,
                     ),
                     SizedBox(
                       width: 8,
                     ),
-                    Text(t(widget.direction.title)),
+                    Text(t(transaction.direction.title)),
                   ],
                 ),
                 Text(
-                  '${widget.direction == TransactionDirection.received ? "" : "-"} ${widget.amount} ${widget.symbol.toUpperCase()}',
+                  '${transaction.direction == TransactionDirection.received ? "" : "-"} ${transaction.amount} ${currency.symbol.toUpperCase()}',
                   style: Theme.of(context)
                       .textTheme
                       .bodyText1
-                      .copyWith(color: widget.direction.color),
+                      .copyWith(color: transaction.direction.color),
                 )
               ],
             ),
@@ -93,16 +73,16 @@ class _TransactionItemState extends State<TransactionItem> {
                       width: 28,
                     ),
                     Text(
-                      widget.direction.subtitle,
+                      transaction.direction.subtitle,
                       style: Theme.of(context).textTheme.subtitle2,
                     ),
                   ],
                 ),
-                Text(Formatter.dateTime(widget.dateTime),
+                Text(Formatter.dateTime(transaction.timestamp),
                     style: Theme.of(context).textTheme.subtitle2)
               ],
             ),
-            widget.confirmations > 6
+            transaction.confirmations > 6
                 ? SizedBox(
                     height: 32,
                   )
@@ -122,7 +102,7 @@ class _TransactionItemState extends State<TransactionItem> {
                         child: LinearProgressIndicator(
                           valueColor: AlwaysStoppedAnimation<Color>(
                               Theme.of(context).primaryColor),
-                          value: widget.confirmations / 6,
+                          value: transaction.confirmations / 6,
                           backgroundColor: MyColors.secondary_05,
                         ),
                       ),

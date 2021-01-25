@@ -1,11 +1,9 @@
 import 'dart:async';
-import 'dart:math' as math;
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:decimal/decimal.dart';
 
-import '../../repositories/account_repository.dart';
 import '../../repositories/transaction_repository.dart';
 import '../../models/transaction.model.dart';
 
@@ -14,11 +12,10 @@ part 'transaction_state.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   TransactionRepository _repo;
-  AccountRepository _accountRepo;
   Map<TransactionPriority, String> _gasPrice;
   String _gasLimit;
 
-  TransactionBloc(this._repo, this._accountRepo) : super(TransactionInitial());
+  TransactionBloc(this._repo) : super(TransactionInitial());
 
   @override
   Stream<TransactionState> mapEventToState(
@@ -31,8 +28,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
     TransactionInitial _state = state;
     if (event is FetchTransactionFee) {
-      _gasPrice = await _accountRepo.fetchGasPrice();
-      _gasLimit = await _accountRepo.fetchGasLimit();
+      _gasPrice = await _repo.fetchGasPrice();
+      _gasLimit = await _repo.fetchGasLimit();
       Decimal fee = Decimal.parse(_gasPrice[_state.priority]) *
           Decimal.parse(_gasLimit) /
           Decimal.fromInt(BigInt.from(10).pow(9).toInt());
@@ -47,10 +44,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     if (event is ScanQRCode) {
       print("ValidAddress address: ${event.address}");
-      List<bool> _rules = [
-        _accountRepo.validAddress(event.address),
-        _state.rules[1]
-      ];
+      List<bool> _rules = [_repo.validAddress(event.address), _state.rules[1]];
       print(_rules);
       yield _state.copyWith(
         address: event.address,
@@ -59,10 +53,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     if (event is ValidAddress) {
       print("ValidAddress address: ${event.address}");
-      List<bool> _rules = [
-        _accountRepo.validAddress(event.address),
-        _state.rules[1]
-      ];
+      List<bool> _rules = [_repo.validAddress(event.address), _state.rules[1]];
       print(_rules);
       yield _state.copyWith(
         address: event.address,
@@ -72,8 +63,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     if (event is ValidAmount) {
       List<bool> _rules = [
         _state.rules[0],
-        _accountRepo.validAmount(event.amount,
-            priority: TransactionPriority.standard)
+        _repo.validAmount(event.amount, priority: TransactionPriority.standard)
       ];
       print(_rules);
       yield _state.copyWith(
@@ -85,7 +75,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       // TODO getTransactionFee
       List<bool> _rules = [
         _state.rules[0],
-        _accountRepo.validAmount(_state.amount, priority: event.priority)
+        _repo.validAmount(_state.amount, priority: event.priority)
       ];
       Decimal fee = Decimal.parse(_gasPrice[event.priority]) *
           Decimal.parse(_gasLimit) /
@@ -105,7 +95,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         yield _state.copyWith(gasLimit: event.gasLimit);
       List<bool> _rules = [
         _state.rules[0],
-        _accountRepo.validAmount(_state.amount,
+        _repo.validAmount(_state.amount,
             gasLimit: event.gasLimit, gasPrice: _state.gasPrice)
       ];
       yield _state.copyWith(
@@ -118,7 +108,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         yield _state.copyWith(gasLimit: event.gasPrice);
       List<bool> _rules = [
         _state.rules[0],
-        _accountRepo.validAmount(_state.amount,
+        _repo.validAmount(_state.amount,
             gasLimit: _state.gasLimit, gasPrice: event.gasPrice)
       ];
       yield _state.copyWith(
@@ -129,7 +119,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
     if (event is CreateTransaction) {
       yield TransactionPublishing();
-      bool result = await _accountRepo.createTransaction(_state.props);
+      bool result = await _repo.createTransaction(_state.props);
       if (result) {
         yield TransactionSent();
       } else {

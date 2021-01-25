@@ -6,3 +6,21 @@ abstract class TransactionStatusEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class UpdateCurrency extends TransactionStatusEvent {
+  final Currency currency;
+  UpdateCurrency(this.currency);
+}
+
+class GetTransactionList extends TransactionStatusEvent {
+  final Currency currency;
+
+  GetTransactionList(this.currency);
+}
+
+class UpdateTransactionList extends TransactionStatusEvent {
+  final Currency currency;
+  final List<Transaction> transactions;
+
+  UpdateTransactionList(this.currency, this.transactions);
+}

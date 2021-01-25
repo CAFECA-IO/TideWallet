@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../blocs/currency/currency_bloc.dart';
 import '../models/account.model.dart';
 import '../repositories/account_repository.dart';
+import '../screens/transaction_list.screen.dart';
 import '../widgets/appBar.dart';
 import '../widgets/account_item.dart';
 
@@ -91,7 +92,11 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
                   children: state.currencies
                       .map((Currency acc) => AccountItem(
                             acc,
-                            () {},
+                            () {
+                              Navigator.of(context).pushNamed(
+                                  TransactionListScreen.routeName,
+                                  arguments: {"account": acc});
+                            },
                           ))
                       .toList(),
                 ),

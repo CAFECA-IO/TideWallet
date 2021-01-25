@@ -1,37 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:tidewallet3/helpers/formatter.dart';
-import 'package:tidewallet3/theme.dart';
 
+import '../helpers/formatter.dart';
+import '../models/account.model.dart';
+import '../theme.dart';
 import '../models/transaction.model.dart';
 import '../helpers/i18n.dart';
 import '../widgets/appBar.dart';
 import '../widgets/dash_line_divider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TransactionDetailScreen extends StatelessWidget {
-  final TransactionDirection direction;
-  final String address;
-  final DateTime dateTime;
-  final String amount;
-  final String symbol;
-  final int confirmations;
-  final TransactionStatus status;
+  final Currency currency;
+  final Transaction transaction;
 
   static const routeName = '/transaction-detail';
 
-  const TransactionDetailScreen(
-      {Key key,
-      this.direction,
-      this.address,
-      this.dateTime,
-      this.amount,
-      this.symbol,
-      this.confirmations,
-      this.status})
+  const TransactionDetailScreen({Key key, this.currency, this.transaction})
       : super(key: key);
 
   final t = I18n.t;
   @override
   Widget build(BuildContext context) {
+    print(transaction.status);
+    print(transaction.amount);
+    print(transaction.confirmations);
     return Scaffold(
       appBar: GeneralAppbar(
         title: t('transaction_detail'),
@@ -47,16 +39,24 @@ class TransactionDetailScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  '${direction == TransactionDirection.sent ? "-" : "+"} $amount',
+                  '${transaction.direction == TransactionDirection.sent ? "-" : "+"} ${transaction.amount}',
                   style: Theme.of(context).textTheme.headline1.copyWith(
-                      color: status != TransactionStatus.success
+                      color: transaction.status != TransactionStatus.success
                           ? MyColors.secondary_03
-                          : direction.color),
+                          : transaction.direction.color,
+                      fontSize: 32),
                 ),
                 SizedBox(
                   width: 8,
                 ),
-                Text('btc')
+                Text(
+                  'btc',
+                  style: Theme.of(context).textTheme.headline1.copyWith(
+                        color: transaction.status != TransactionStatus.success
+                            ? MyColors.secondary_03
+                            : transaction.direction.color,
+                      ),
+                )
               ],
             ),
             SizedBox(height: 24),
@@ -77,17 +77,17 @@ class TransactionDetailScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     Text(
-                      '${t(status.title)} ($confirmations ${t('confirmation')})',
+                      '${t(transaction.status.title)} (${transaction.confirmations} ${t('confirmation')})',
                       style: Theme.of(context)
                           .textTheme
                           .bodyText1
-                          .copyWith(color: status.color),
+                          .copyWith(color: transaction.status.color),
                     ),
                     SizedBox(width: 8),
                     ImageIcon(
-                      AssetImage(status.iconPath),
+                      AssetImage(transaction.status.iconPath),
                       size: 20.0,
-                      color: status.color,
+                      color: transaction.status.color,
                     ),
                   ],
                 ),
@@ -106,7 +106,7 @@ class TransactionDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Align(
                 child: Text(
-                  '(${Formatter.dateTime(dateTime)})',
+                  '(${Formatter.dateTime(transaction.timestamp)})',
                   style: Theme.of(context).textTheme.bodyText1,
                 ),
                 alignment: Alignment.centerLeft,
@@ -124,7 +124,7 @@ class TransactionDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Align(
                 child: Text(
-                  address,
+                  transaction.address,
                   style: Theme.of(context).textTheme.bodyText1,
                 ),
                 alignment: Alignment.centerLeft,
@@ -142,7 +142,7 @@ class TransactionDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Align(
                 child: Text(
-                  '${Formatter.formaDecimal('0.00035006946653')} btc',
+                  '${Formatter.formaDecimal(transaction.fee)} btc',
                   style: Theme.of(context).textTheme.bodyText1,
                 ),
                 alignment: Alignment.centerLeft,
@@ -161,12 +161,22 @@ class TransactionDetailScreen extends StatelessWidget {
               child: Row(
                 children: [
                   Container(
-                    child: Image.asset('assets/images/ic_btc_web.png'),
+                    // child: Image.asset('assets/images/ic_btc_web.png'),
+                    child: Image.asset(currency.imgPath),
                     width: 24,
                   ),
                   SizedBox(
                     width: 8,
                   ),
+                  GestureDetector(
+                    onTap: _launchURL,
+                    child: Text(
+                      Formatter.formateAdddress(transaction.txId),
+                      style: Theme.of(context).textTheme.bodyText1.copyWith(
+                          color: Theme.of(context).primaryColor,
+                          decoration: TextDecoration.underline),
+                    ),
+                  )
                 ],
               ),
             ),
@@ -174,5 +184,14 @@ class TransactionDetailScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+_launchURL() async {
+  const url = 'https://flutter.dev';
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
   }
 }

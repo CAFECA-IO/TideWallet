@@ -67,8 +67,8 @@ class MyApp extends StatelessWidget {
             ),
             BlocProvider<TransactionBloc>(
               create: (BuildContext context) => TransactionBloc(
-                  Provider.of<TransactionRepository>(context, listen: false),
-                  Provider.of<AccountRepository>(context, listen: false)),
+                Provider.of<TransactionRepository>(context, listen: false),
+              ),
             ),
             BlocProvider<RestoreWalletBloc>(
               create: (BuildContext context) => RestoreWalletBloc(
@@ -97,8 +97,8 @@ MaterialApp _material = MaterialApp(
   title: 'TideWallet3',
   theme: myThemeData,
   routes: {
-    // '/': (context) => LandingScreen(),
-    '/': (context) => TransactionListScreen(),
+    '/': (context) => LandingScreen(),
+    // '/': (context) => TransactionListScreen(),
     CreateTransactionScreen.routeName: (context) => CreateTransactionScreen(),
     TransactionPreviewScreen.routeName: (context) => TransactionPreviewScreen(),
     RestoreWalletScreen.routeName: (context) => RestoreWalletScreen(),

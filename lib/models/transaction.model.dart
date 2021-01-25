@@ -1,6 +1,175 @@
+import 'dart:typed_data';
 import 'dart:ui';
 
 import '../theme.dart';
+import './utxo.model.dart';
+import './bitcoin_transaction.model.dart';
+import './ethereum_transaction.model.dart';
+import './ethereum_token_transaction.model.dart';
+
+class Transaction {
+  String id;
+  TransactionDirection _direction;
+  String _amount; // in eth
+  TransactionStatus _status;
+  int _timestamp; // in second
+  int _confirmations;
+  String _address;
+  String _fee; // in eth
+  String _txId;
+  Uint8List _note;
+
+  Map<String, dynamic> _data = {};
+
+  TransactionDirection get direction => _direction;
+  String get amount => _amount;
+  TransactionStatus get status => _status;
+  String get fee => _fee;
+  int get confirmations => _confirmations;
+  DateTime get timestamp =>
+      DateTime.fromMillisecondsSinceEpoch(_timestamp, isUtc: false);
+  String get address => _address;
+  String get txId => _txId;
+  Uint8List get note => _note ?? Uint8List(0);
+
+  List<UnspentTxOut> get utxos => _data["utxos"];
+  List<int> get rlpData => _data["rawTx"];
+  List<int> get rawTx => _data["rawTx"];
+
+  set utxos(List<UnspentTxOut> utxos) {
+    _data["utxos"] = utxos;
+  }
+
+  set rlpData(List<int> data) {
+    _data["rawTx"] = data;
+  }
+
+  set rawTx(List<int> data) {
+    _data["rawTx"] = data;
+  }
+
+  List<dynamic> get serializedData {
+    List<dynamic> list = [];
+    list.add(_direction.value); //0
+    list.add(_amount); //1
+    list.add(_status); //2
+    list.add(_timestamp); //3
+    list.add(_confirmations); //4
+    list.add(_address); //5
+    list.add(_fee); //6
+    list.add(_txId); //7
+    list.add(_note); //8
+    list.add(_data["rawTx"]); //9
+
+    List<UnspentTxOut> utxos = _data["utxos"];
+    if (utxos == null) return list;
+    List<List<dynamic>> utxoList =
+        List.generate(utxos.length, (index) => utxos[index].serializedData);
+    list.add(utxoList);
+
+    return list;
+  }
+
+// need update
+  Transaction({
+    String id,
+    TransactionDirection direction,
+    String amount,
+    TransactionStatus status,
+    int timestamp,
+    int confirmations,
+    String address,
+    String fee,
+    String txId,
+    Uint8List note,
+  })  : _txId = txId,
+        _direction = direction,
+        _address = address,
+        _confirmations = confirmations,
+        _status = status,
+        _amount = amount,
+        _fee = fee,
+        _timestamp = timestamp,
+        _note = note;
+
+  Transaction.fromSerializedData(List<dynamic> data) {
+    // PBLog.debug('data: $data');
+    _direction = TransactionDirection.values
+        .where((element) => (element.value == data[0]))
+        .first;
+    _amount = data[1];
+    _status = data[2];
+    _timestamp = data[3];
+    _confirmations = data[4];
+    _address = data[5];
+    _fee = data[6];
+    _txId = data[7];
+    _note = data[8];
+    _data["rawTx"] = data[9];
+
+    if (data.length > 11) {
+      List<List<dynamic>> utxoList = data[10]; // ?
+      List<UnspentTxOut> utxos = List.generate(utxoList.length,
+          (index) => UnspentTxOut.fromSerializedData(utxoList[index]));
+      _data["utxos"] = utxos;
+    }
+  }
+
+  Transaction.fromBitcoinTransaction(BitcoinTransaction transaction) {
+    _txId = transaction.txid;
+    _amount = transaction.amount.toString();
+    _timestamp = transaction.timestamp;
+    _confirmations = transaction.confirmations;
+
+    _fee = transaction.fee.toString();
+    _direction = transaction.direction;
+    _address = (_direction == TransactionDirection.sent)
+        ? transaction.destinationAddresses
+        : transaction.sourceAddresses;
+  }
+
+  Transaction.fromEthereumTransaction(EthereumTransaction transaction) {
+    _txId = transaction.txHash;
+    _amount = transaction.amount;
+    _timestamp = transaction.timestamp;
+    _confirmations = transaction.confirmations;
+
+    var gasPrice = BigInt.parse(transaction.gasPrice);
+    var gasUsed = BigInt.from(transaction.gasUsed);
+    var feeWei = gasPrice * gasUsed;
+    // _fee = _account.toCoinUnit(feeWei).toString();
+
+    if (transaction.from.toLowerCase() == transaction.to.toLowerCase()) {
+      _direction = TransactionDirection.moved;
+      _address = transaction.from;
+    } else if (transaction.from.toLowerCase() ==
+        transaction.ownerAddress.toLowerCase()) {
+      _direction = TransactionDirection.sent;
+      _address = transaction.to;
+    } else {
+      _direction = TransactionDirection.received;
+      _address = transaction.from;
+    }
+  }
+
+  Transaction.fromEthereumTokenTransaction(
+      EthereumTokenTransaction transaction) {
+    _txId = transaction.txHash;
+    _amount = transaction.amount;
+    _timestamp = transaction.timestamp;
+    _confirmations = 1; // useless to token
+    _fee = "0"; // useless to token
+    _direction = TransactionDirection.sent;
+    if (transaction.ownerAddress.toLowerCase() ==
+        transaction.to.toLowerCase()) {
+      // received
+      _direction = TransactionDirection.received;
+    }
+    _address = (_direction == TransactionDirection.sent)
+        ? transaction.to
+        : transaction.from;
+  }
+}
 
 enum TransactionPriority { slow, standard, fast }
 
