@@ -1,7 +1,8 @@
 import 'dart:math';
 
 import 'package:decimal/decimal.dart';
-import 'package:tidewallet3/models/transaction.model.dart';
+import '../models/transaction.model.dart';
+import '../helpers/utils.dart';
 
 Future<List<Map>> getETHTokens() async {
   await Future.delayed(Duration(seconds: 1));
@@ -27,16 +28,6 @@ Future<Map> getETH() async {
     "amount": v.toString(),
     "fiat": (v * 3000).toString()
   };
-}
-
-String randomHex(int length) {
-  const array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f'];
-  String hex = ''; //      var subPSKID = [];
-  for (int index = 0; index < length; index++) {
-    hex += array[Random().nextInt(16)]
-        .toString(); //        subPSKID.add(array[i]);
-  }
-  return hex;
 }
 
 Future<List<Transaction>> getETHTransactions() async {

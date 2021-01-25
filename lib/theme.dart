@@ -18,6 +18,7 @@ class MyColors {
   static const secondary_08 = Color(0xFF7ED321);
   static const secondary_09 = Color(0xFFd0021B);
   static const secondary_10 = Color(0xFF555555);
+  static const secondary_11 = Color(0xFFF1F1F1);
 
   static const font_01 = Colors.white;
 }

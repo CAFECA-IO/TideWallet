@@ -11,6 +11,7 @@ abstract class AccountService {
   Decimal calculateFastDee();
   Decimal calculateStandardDee();
   Decimal calculateSlowDee();
+  Future<String> getReceivingAddress();
 
   getTransactions();
   prepareTransaction();
