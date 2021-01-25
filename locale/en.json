@@ -28,6 +28,17 @@
     "backup_message_1": "重要 ! 助記詞備份",
     "backup_message_2": "錢包遺失時，可重新取回資產",
     "backup_now": "立即備份",
+    "add_currency": "添加幣種",
+    "symbol": "Symbol",
+    "name": "Name",
+    "contract": "Contract",
+    "decimal": "Decimal",
+    "total_supply": "Total Supply",
+    "description": "Description",
+    "enter_address": "請輸入地址",
+    "add": "新增",
     "error_password": "密碼錯誤",
-    "error_format": "格式錯誤"
+    "error_format": "格式錯誤",
+    "error_add": "新增失敗",
+    "error_address": "地址格式錯誤"
 }

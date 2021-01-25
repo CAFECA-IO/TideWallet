@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tidewallet3/screens/add_currency.screen.dart';
 
 import '../theme.dart';
 import '../screens/account.screen.dart';
@@ -7,6 +6,7 @@ import '../screens/restore_wallet.screen.dart';
 import '../screens/scan_wallet.screen.dart';
 import '../screens/wallet_connect.screen.dart';
 import '../screens/currency.screen.dart';
+import '../screens/add_currency.screen.dart';
 
 class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
   final String title;

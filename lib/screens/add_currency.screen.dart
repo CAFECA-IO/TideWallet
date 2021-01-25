@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:tidewallet3/blocs/add_currency/add_currency_bloc.dart';
-import 'package:tidewallet3/repositories/account_repository.dart';
-import 'package:tidewallet3/widgets/appBar.dart';
-import 'package:tidewallet3/widgets/buttons/primary_button.dart';
-import 'package:tidewallet3/widgets/dialogs/dialog_controller.dart';
-import 'package:tidewallet3/widgets/dialogs/error_dialog.dart';
-import 'package:tidewallet3/widgets/dialogs/loading_dialog.dart';
-import 'package:tidewallet3/widgets/inputs/input.dart';
+
+import '../blocs/add_currency/add_currency_bloc.dart';
+import '../repositories/account_repository.dart';
+import '../widgets/appBar.dart';
+import '../widgets/buttons/primary_button.dart';
+import '../widgets/dialogs/dialog_controller.dart';
+import '../widgets/dialogs/error_dialog.dart';
+import '../widgets/dialogs/loading_dialog.dart';
+import '../widgets/inputs/input.dart';
+import '../helpers/i18n.dart';
+
+final t = I18n.t;
 
 class AddCurrencyScreen extends StatefulWidget {
   static const routeName = '/add-currency';
@@ -51,7 +55,20 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
             Widget item(String _title, String _value) {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: RichText(text: TextSpan(text: '$_title：\n', children: [TextSpan(text: _value, style: Theme.of(context).textTheme.bodyText1)], style: Theme.of(context).textTheme.subtitle2.copyWith(height: 1.5)),),
+                child: RichText(
+                  text: TextSpan(
+                    text: '$_title：\n',
+                    children: [
+                      TextSpan(
+                          text: _value,
+                          style: Theme.of(context).textTheme.bodyText1)
+                    ],
+                    style: Theme.of(context)
+                        .textTheme
+                        .subtitle2
+                        .copyWith(height: 1.5),
+                  ),
+                ),
               );
             }
 
@@ -67,12 +84,12 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
                       height: 80.0,
                     ),
                   ),
-                  item('Symbol', state.result.symbol),
-                  item('Name', state.result.name),
-                  item('Contract', state.result.contract),
-                  item('Decimal', state.result.decimal.toString()),
-                  item('Total Supply', state.result.totalSupply.toString()),
-                  item('Description', state.result.description),
+                  item(t('symbol'), state.result.symbol),
+                  item(t('name'), state.result.name),
+                  item(t('contract'), state.result.contract),
+                  item(t('decimal'), state.result.decimal.toString()),
+                  item(t('total_supply'), state.result.totalSupply.toString()),
+                  item(t('description'), state.result.description),
                 ],
               );
             }
@@ -93,20 +110,20 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
 
               if (state is AddFail) {
                 DialogContorller.dismiss(context);
-                DialogContorller.show(context, ErrorDialog('新增失敗'));
+                DialogContorller.show(context, ErrorDialog(t('error_add')));
               }
             },
             child: Container(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.all(20.0),
               child: Column(children: [
                 Input(
-                  labelText: '請輸入地址',
+                  labelText: t('enter_address'),
                   controller: _controller,
                   autovalidate: AutovalidateMode.always,
                   validator: (String v) {
                     if (!_repo.validateETHAddress(v) &&
                         _controller.text.isNotEmpty) {
-                      return '地址格式錯誤';
+                      return t('error_address');
                     }
 
                     return null;
@@ -126,7 +143,7 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 30.0),
                   child: PrimaryButton(
-                    '新增',
+                    t('add'),
                     addable
                         ? () {
                             _bloc.add(AddToken());

@@ -3,8 +3,8 @@ import 'package:bloc/bloc.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:equatable/equatable.dart';
 
-import 'package:tidewallet3/models/account.model.dart';
-import 'package:tidewallet3/repositories/account_repository.dart';
+import '../../models/account.model.dart';
+import '../../repositories/account_repository.dart';
 
 part 'add_currency_event.dart';
 part 'add_currency_state.dart';

@@ -1,8 +1,9 @@
 import 'package:decimal/decimal.dart';
-import 'package:tidewallet3/constants/account_config.dart';
-import 'package:tidewallet3/services/account_service.dart';
 
 import 'account_service_decorator.dart';
+import '../constants/account_config.dart';
+import '../services/account_service.dart';
+
 
 class BitcoinServiceDecorator extends AccountServiceDecorator {
   BitcoinServiceDecorator(AccountService service) : super(service) {

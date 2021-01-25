@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:tidewallet3/screens/add_currency.screen.dart';
 
 import '../blocs/currency/currency_bloc.dart';
 import '../models/account.model.dart';
+import '../screens/add_currency.screen.dart';
 import '../repositories/account_repository.dart';
 import '../widgets/appBar.dart';
 import '../widgets/account_item.dart';
+import '../helpers/i18n.dart';
+
+final t = I18n.t;
 
 class CurrencyScreen extends StatefulWidget {
   static const routeName = '/Currency';
@@ -85,10 +88,17 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
                   ),
                   Positioned(
                       child: InkWell(
-                          onTap: () {
-                            Navigator.of(context).pushNamed(AddCurrencyScreen.routeName);
-                          },
-                          child: Container(child: Text('+ 添加幣種'))),
+                        onTap: () {
+                          Navigator.of(context)
+                              .pushNamed(AddCurrencyScreen.routeName);
+                        },
+                        child: Container(
+                          child: Text(
+                            '+ ${t('add_currency')}',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
                       bottom: 12.0,
                       right: 12.0)
                 ],

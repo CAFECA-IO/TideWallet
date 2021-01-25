@@ -5,13 +5,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:tidewallet3/screens/add_currency.screen.dart';
 
 import './screens/currency.screen.dart';
 import './screens/landing.screen.dart';
 import './screens/restore_wallet.screen.dart';
 import './screens/wallet_connect.screen.dart';
 import './screens/scan_wallet.screen.dart';
+import './screens/add_currency.screen.dart';
 import './repositories/user_repository.dart';
 import './repositories/account_repository.dart';
 import './blocs/account/account_bloc.dart';
