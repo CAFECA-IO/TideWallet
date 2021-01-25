@@ -18,7 +18,7 @@ class TransactionStatusBloc
   StreamSubscription _subscription;
 
   TransactionStatusBloc(this._repo, this._accountRepo)
-      : super(TransactionStatusInitial(null, [])) {
+      : super(TransactionStatusInitial(null, [], null)) {
     this._repo.listener.listen((msg) {
       if (msg.evt == ACCOUNT_EVT.OnUpdateAccount) {
         print("msg.value ${(msg.value as Currency).name}");
@@ -40,14 +40,25 @@ class TransactionStatusBloc
           state.currency.symbol == event.currency.symbol) {
         final List<Transaction> transactions =
             _repo.getTransactionsFromDB(event.currency); // getTransactionFromDB
-        yield TransactionStatusLoaded(event.currency, transactions);
+        yield TransactionStatusLoaded(event.currency, transactions, null);
       }
     }
     if (event is UpdateTransactionList) {
       if (state.currency != null &&
           state.currency.symbol == event.currency.symbol) {
-        yield TransactionStatusLoaded(event.currency, event.transactions);
+        if (state.transaction != null) {
+          int index = event.transactions.indexWhere(
+              (Transaction tx) => tx.txId == state.transaction.txId);
+          yield TransactionStatusLoaded(
+              event.currency, event.transactions, event.transactions[index]);
+        }
+        yield TransactionStatusLoaded(event.currency, event.transactions, null);
       }
+    }
+    if (event is UpdateTransaction) {
+      print('event.transaction: ${event.transaction}');
+      yield TransactionStatusLoaded(
+          state.currency, state.transactions, event.transaction);
     }
   }
 }

@@ -24,3 +24,9 @@ class UpdateTransactionList extends TransactionStatusEvent {
 
   UpdateTransactionList(this.currency, this.transactions);
 }
+
+class UpdateTransaction extends TransactionStatusEvent {
+  final Transaction transaction;
+
+  UpdateTransaction(this.transaction);
+}

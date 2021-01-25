@@ -14,22 +14,15 @@ class TransactionItem extends StatelessWidget {
 
   const TransactionItem({Key key, this.currency, this.transaction})
       : super(key: key);
-//   @override
-//   _TransactionItemState createState() => _TransactionItemState();
-// }
 
-// class _TransactionItemState extends State<TransactionItem> {
   final t = I18n.t;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (BuildContext context) => TransactionDetailScreen(
-                  currency: currency,
-                  transaction: transaction,
-                )));
+        Navigator.of(context).pushNamed(TransactionDetailScreen.routeName,
+            arguments: {"currency": currency, "transaction": transaction});
       },
       child: Container(
         padding: const EdgeInsets.all(12.0),
