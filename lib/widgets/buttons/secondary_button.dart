@@ -17,5 +17,5 @@ class SecondaryButton extends BaseButton {
             disableColor: disableColor ?? MyColors.primary_02,
             borderColor: borderColor ?? MyColors.primary_01,
             iconImg: iconImg,
-            textColor: textColor);
+            textColor: textColor ?? MyColors.primary_01);
 }

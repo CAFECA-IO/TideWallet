@@ -4,7 +4,12 @@ import '../theme.dart';
 import '../screens/account.screen.dart';
 import '../screens/restore_wallet.screen.dart';
 import '../screens/scan_wallet.screen.dart';
+import '../screens/scan_address.screen.dart';
 import '../screens/wallet_connect.screen.dart';
+import '../screens/transaction_list.screen.dart';
+import '../screens/transaction_preview.screen.dart';
+import '../screens/create_transaction.screen.dart';
+import '../screens/transaction_detail.screen.dart';
 import '../screens/currency.screen.dart';
 
 class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
@@ -29,8 +34,13 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
       Widget leading = SizedBox();
       switch (routeName) {
         case WalletConnectScreen.routeName:
+        case CreateTransactionScreen.routeName:
+        case TransactionPreviewScreen.routeName:
         case ScanWalletScreen.routeName:
+        case ScanAddressScreen.routeName:
         case RestoreWalletScreen.routeName:
+        case TransactionListScreen.routeName:
+        case TransactionDetailScreen.routeName:
         case CurrencyScreen.routeName:
           leading = GestureDetector(
             behavior: HitTestBehavior.translucent,
@@ -62,16 +72,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
         //         },
         //   );
         //   break;
-        // case TransferScreen.routeName:
-        //   leading = GestureDetector(
-        //       behavior: HitTestBehavior.translucent,
-        //       child: Icon(
-        //         Icons.format_list_bulleted,
-        //         color: MyColors.ui_01,
-        //         size: 28,
-        //       ),
-        //       onTap: leadingFunc);
-        //   break;
+
         default:
       }
 
@@ -181,6 +182,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
 
     bool showBackground() {
       if (routeName == ScanWalletScreen.routeName) return false;
+      if (routeName == TransactionListScreen.routeName) return false;
       if (routeName == AccountScreen.routeName) return false;
       if (routeName == CurrencyScreen.routeName) return false;
       return true;
