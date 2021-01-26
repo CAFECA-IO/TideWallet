@@ -15,6 +15,7 @@ import './screens/transaction_preview.screen.dart';
 import './repositories/account_repository.dart';
 import './repositories/transaction_repository.dart';
 import './screens/scan_wallet.screen.dart';
+import './screens/add_currency.screen.dart';
 import './screens/transaction_list.screen.dart';
 import './screens/transaction_detail.screen.dart';
 import './screens/receive.screen.dart';
@@ -107,6 +108,7 @@ MaterialApp _material = MaterialApp(
     TransactionListScreen.routeName: (context) => TransactionListScreen(),
     TransactionDetailScreen.routeName: (context) => TransactionDetailScreen(),
     CurrencyScreen.routeName: (context) => CurrencyScreen(),
+    AddCurrencyScreen.routeName: (context) => AddCurrencyScreen(),
     ReceiveScreen.routeName: (context) => ReceiveScreen(),
     WalletConnectScreen.routeName: (context) => WalletConnectScreen(),
   },

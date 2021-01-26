@@ -1,4 +1,5 @@
 import 'package:rxdart/subjects.dart';
+import 'package:tidewallet3/services/ethereum_service.dart';
 
 import '../models/account.model.dart';
 import '../cores/account.dart';
@@ -22,6 +23,21 @@ class AccountRepository {
 
   List<Currency> getCurrencies(ACCOUNT acc) {
     return AccountCore().currencies[acc];
+  }
+
+  bool validateETHAddress(String address) {
+    // TODO
+    return address.startsWith('0x');
+  }
+
+  Future<Token> getTokenInfo(String address)  {
+    return EthereumService.getTokeninfo(address);
+  }
+
+  Future<bool> addToken(Token token) async {
+    EthereumService _ethService = AccountCore().getService(ACCOUNT.ETH);
+
+    return _ethService.addToken(token);
   }
 
   Future<String> getReceivingAddress(Currency curr) async {

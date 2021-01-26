@@ -4,10 +4,14 @@ import 'package:provider/provider.dart';
 
 import '../blocs/currency/currency_bloc.dart';
 import '../models/account.model.dart';
+import '../screens/add_currency.screen.dart';
 import '../repositories/account_repository.dart';
 import '../screens/transaction_list.screen.dart';
 import '../widgets/appBar.dart';
 import '../widgets/account_item.dart';
+import '../helpers/i18n.dart';
+
+final t = I18n.t;
 
 class CurrencyScreen extends StatefulWidget {
   static const routeName = '/Currency';
@@ -46,40 +50,59 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
           return Container(
             decoration: BoxDecoration(color: Color(0xFFF7F8F9)),
             child: Column(children: [
-              Container(
-                alignment: Alignment.bottomCenter,
-                padding: const EdgeInsets.only(bottom: 58.0),
-                width: double.infinity,
-                height: 200.0,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: <Color>[
-                      Theme.of(context).primaryColor,
-                      Theme.of(context).accentColor
-                    ],
-                  ),
-                ),
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                      text: '≈',
-                      children: [
-                        TextSpan(
-                          text: ' ${state.total.toString()} ',
+              Stack(
+                children: [
+                  Container(
+                    alignment: Alignment.bottomCenter,
+                    padding: const EdgeInsets.only(bottom: 58.0),
+                    width: double.infinity,
+                    height: 200.0,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: <Color>[
+                          Theme.of(context).primaryColor,
+                          Theme.of(context).accentColor
+                        ],
+                      ),
+                    ),
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                          text: '≈',
+                          children: [
+                            TextSpan(
+                              text: ' ${state.total.toString()} ',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline5
+                                  .copyWith(fontSize: 36.0),
+                            ),
+                            TextSpan(text: 'USD')
+                          ],
                           style: Theme.of(context)
                               .textTheme
-                              .headline5
-                              .copyWith(fontSize: 36.0),
+                              .bodyText1
+                              .copyWith(color: Colors.white)),
+                    ),
+                  ),
+                  Positioned(
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context)
+                              .pushNamed(AddCurrencyScreen.routeName);
+                        },
+                        child: Container(
+                          child: Text(
+                            '+ ${t('add_currency')}',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
-                        TextSpan(text: 'USD')
-                      ],
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyText1
-                          .copyWith(color: Colors.white)),
-                ),
+                      ),
+                      bottom: 12.0,
+                      right: 12.0)
+                ],
               ),
               Expanded(
                 child: GridView(

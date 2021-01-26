@@ -3,6 +3,7 @@ import 'package:decimal/decimal.dart';
 import 'account_service.dart';
 
 class AccountServiceBase extends AccountService {
+  
   @override
   Decimal calculateFastDee() {
     // TODO: implement calculateFastDee

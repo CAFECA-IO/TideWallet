@@ -35,7 +35,7 @@ abstract class BaseButton extends StatelessWidget {
     return FlatButton(
         minWidth: minWidth ?? 0,
         disabledColor: this.disableColor,
-        disabledTextColor: this.disabledTextColor,
+        disabledTextColor: this.disabledTextColor?? Colors.white,
         color: isEnabled ? backgroundColor : disableColor,
         padding: this.padding ??
             const EdgeInsets.symmetric(horizontal: 32.5, vertical: 13.0),

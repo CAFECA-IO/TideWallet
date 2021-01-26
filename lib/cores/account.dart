@@ -84,6 +84,10 @@ class AccountCore {
     await Future.delayed(Duration(milliseconds: 300));
   }
 
+  AccountService getService(ACCOUNT type) {
+    return _services.firstWhere((svc) => (svc.base == type));
+  }
+
   // Future<String> getReceivingAddress(Currency curr) async {
   //   return await this._services.getReceivingAddress();
   // }

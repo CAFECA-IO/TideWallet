@@ -4,8 +4,8 @@ import '../constants/account_config.dart';
 
 enum ACCOUNT_EVT {
   OnUpdateAccount,
-  OnUpdateToken,
-  OnUpdateTransactions,
+  OnUpdateCurrency,
+  OnUpdateTransactions
 }
 
 class Currency {
@@ -69,4 +69,24 @@ class AccountMessage {
   final value;
 
   AccountMessage({@required this.evt, this.value});
+}
+
+class Token {
+  final String symbol;
+  final String name;
+  final int decimal;
+  final String imgUrl;
+  final int totalSupply;
+  final String contract;
+  final String description;
+
+  Token({
+    this.symbol,
+    this.name,
+    this.decimal,
+    this.imgUrl,
+    this.totalSupply,
+    this.contract,
+    this.description
+  });
 }
