@@ -6,21 +6,22 @@ import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
+import './repositories/account_repository.dart';
+import './repositories/transaction_repository.dart';
+import './repositories/user_repository.dart';
 import './screens/currency.screen.dart';
 import './screens/landing.screen.dart';
 import './screens/restore_wallet.screen.dart';
 import './screens/wallet_connect.screen.dart';
 import './screens/create_transaction.screen.dart';
 import './screens/transaction_preview.screen.dart';
-import './repositories/account_repository.dart';
-import './repositories/transaction_repository.dart';
 import './screens/scan_wallet.screen.dart';
 import './screens/add_currency.screen.dart';
 import './screens/transaction_list.screen.dart';
 import './screens/transaction_detail.screen.dart';
 import './screens/receive.screen.dart';
-import './repositories/user_repository.dart';
-import './repositories/account_repository.dart';
+import './screens/setting_fiat.screen.dart';
+import './blocs/fiat/fiat_bloc.dart';
 import './blocs/account/account_bloc.dart';
 import './blocs/delegate.dart';
 import './blocs/user/user_bloc.dart';
@@ -28,6 +29,7 @@ import './blocs/transaction/transaction_bloc.dart';
 import './blocs/restore_wallet/restore_wallet_bloc.dart';
 import './blocs/backup/backup_bloc.dart';
 import './helpers/i18n.dart';
+import './repositories/trader_repository.dart';
 import 'theme.dart';
 
 void main() {
@@ -58,6 +60,9 @@ class MyApp extends StatelessWidget {
           ),
           Provider<TransactionRepository>(
             create: (_) => TransactionRepository(),
+          ),
+          Provider<TraderRepository>(
+            create: (_) => TraderRepository(),
           )
         ],
         child: MultiBlocProvider(
@@ -82,11 +87,17 @@ class MyApp extends StatelessWidget {
                 Provider.of<AccountRepository>(context, listen: false),
               ),
             ),
+                BlocProvider<FiatBloc>(
+              create: (BuildContext context) => FiatBloc(
+                Provider.of<TraderRepository>(context, listen: false),
+              )..add(GetFiatList()),
+            ),
             BlocProvider<BackupBloc>(
               create: (BuildContext context) => BackupBloc(
                 Provider.of<UserRepository>(context, listen: false),
               )..add(CheckBackup()),
-            )
+            ),
+        
           ],
           child: _material,
         ),
@@ -110,6 +121,7 @@ MaterialApp _material = MaterialApp(
     CurrencyScreen.routeName: (context) => CurrencyScreen(),
     AddCurrencyScreen.routeName: (context) => AddCurrencyScreen(),
     ReceiveScreen.routeName: (context) => ReceiveScreen(),
+    SettingFiatScreen.routeName: (context) => SettingFiatScreen(),
     WalletConnectScreen.routeName: (context) => WalletConnectScreen(),
   },
   localizationsDelegates: [

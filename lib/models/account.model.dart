@@ -1,12 +1,9 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 
 import '../constants/account_config.dart';
 
-enum ACCOUNT_EVT {
-  OnUpdateAccount,
-  OnUpdateCurrency,
-  OnUpdateTransactions
-}
+enum ACCOUNT_EVT { OnUpdateAccount, OnUpdateCurrency, OnUpdateTransactions }
 
 class Currency {
   final int cointype;
@@ -80,13 +77,23 @@ class Token {
   final String contract;
   final String description;
 
-  Token({
-    this.symbol,
-    this.name,
-    this.decimal,
-    this.imgUrl,
-    this.totalSupply,
-    this.contract,
-    this.description
-  });
+  Token(
+      {this.symbol,
+      this.name,
+      this.decimal,
+      this.imgUrl,
+      this.totalSupply,
+      this.contract,
+      this.description});
+}
+
+class Fiat {
+  final String name;
+  final Decimal exchangeRate;
+
+  Fiat({this.name, this.exchangeRate});
+
+  Fiat.fromMap(Map map)
+      : name = map['name'],
+        exchangeRate = Decimal.tryParse(map['rate']);
 }
