@@ -50,6 +50,8 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: GeneralAppbar(
         title: t('my_wallet'),
@@ -73,45 +75,46 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
           child: Container(
             width: double.infinity,
             padding: EdgeInsets.symmetric(vertical: 0, horizontal: 16.0),
-            margin: EdgeInsets.symmetric(vertical: 40.0),
+            margin: EdgeInsets.symmetric(vertical: height * 0.05),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  '${t('remit')} ${_currency.symbol.toUpperCase()}',
-                  style: Theme.of(context).textTheme.bodyText1,
-                ),
-                _currency.accountType == ACCOUNT.BTC
-                    ? Container(
-                        height: 32,
-                        child: Text(
-                          t('btc_receving_address_hint'),
-                          style: Theme.of(context).textTheme.subtitle2,
-                        ),
-                      )
-                    : SizedBox(height: 100),
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 28),
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Text(
+                    '${t('remit')} ${_currency.symbol.toUpperCase()}',
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                ),
+                Container(
+                  height: height * 0.035,
+                  child: Text(
+                    _currency.accountType == ACCOUNT.BTC
+                        ? t('btc_receving_address_hint')
+                        : '',
+                    style: Theme.of(context).textTheme.subtitle2,
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: height * 0.045),
                   child: QrImage(
                     data: _address,
                     version: QrVersions.auto,
-                    size: 240.0,
+                    size: width * 0.7,
                   ),
                 ),
                 Spacer(),
                 Container(
-                  height: 54,
-                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  height: 60,
+                  margin: EdgeInsets.symmetric(
+                      horizontal: width * 0.035, vertical: height * 0.045),
                   padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                   color: MyColors.secondary_11,
                   child: Center(child: Text(_address)),
                 ),
-                SizedBox(
-                  height: 60,
-                ),
                 Container(
-                  padding: EdgeInsets.only(bottom: 48),
-                  margin: EdgeInsets.symmetric(horizontal: 36),
+                  padding: EdgeInsets.only(bottom: height * 0.05),
+                  margin: EdgeInsets.symmetric(horizontal: width * 0.1),
                   child: SecondaryButton(
                     t('copy_wallet_address'),
                     () {
