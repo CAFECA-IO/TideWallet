@@ -77,5 +77,11 @@
   "my_wallet": "My Wallet",
   "remit": "請轉入",
   "copy_wallet_address":"複製錢包地址",
-  "btc_receving_address_hint":"每轉入一次， 地址將會改變，避免被追蹤交易紀錄，保有隱私性"
+  "btc_receving_address_hint":"每轉入一次， 地址將會改變，避免被追蹤交易紀錄，保有隱私性",
+  "reset_password": "Reset Password",
+  "current_password": "Current Password",
+  "new_password": "New Password",
+  "re_ew_password": "再次輸入新密碼",
+  "wrong_password": "Wrong Password",
+  "diff_with_curr_pwd": "Different with current password"
 }
