@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       }), AccountScreen.routeName, t('total_asset'),
           iconData: Icons.account_balance_wallet, bottomText: ''),
       HomeScreenContent(SettingsScreen(), SettingsScreen.routeName, '',
-          iconData: Icons.reorder, bottomText: ''),
+          iconData: Icons.settings, bottomText: ''),
     ];
 
     return Scaffold(

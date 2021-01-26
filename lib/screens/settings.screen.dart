@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-
 import '../blocs/backup/backup_bloc.dart';
 import '../widgets/settings/backup.dart';
 import '../widgets/dialogs/dialog_controller.dart';
@@ -24,12 +23,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
       onTap: _onTap,
       child: Container(
         padding: const EdgeInsets.only(
-            right: 20.0, left: 4.0, top: 10.0, bottom: 10.0),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: Theme.of(context).dividerColor),
-          ),
+          right: 20.0,
+          left: 4.0,
+          top: 10.0,
+          bottom: 10.0,
         ),
+        // decoration: BoxDecoration(
+        //   border: Border(
+        //     bottom: BorderSide(color: Theme.of(context).dividerColor),
+        //   ),
+        // ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -40,6 +43,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
             )
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _section(String title, List<Widget> items) {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.only(left: 20.0),
+      margin: const EdgeInsets.only(bottom: 16.0),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.only(
+              right: 20.0,
+              left: 4.0,
+              top: 10.0,
+              bottom: 10.0,
+            ),
+            width: double.infinity,
+            child: Text(
+              title,
+              style: Theme.of(context).textTheme.subtitle2,
+            ),
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: Theme.of(context).dividerColor),
+              ),
+            ),
+          ),
+          ...items
+        ],
       ),
     );
   }
@@ -75,12 +109,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           child: Text(''),
         ),
-        Container(
-          padding: const EdgeInsets.only(left: 20.0),
-          child: ListView(
-            padding: const EdgeInsets.all(0),
-            shrinkWrap: true,
-            children: [
+        ListView(
+          padding: const EdgeInsets.all(0),
+          shrinkWrap: true,
+          children: [
+            _section('安全中心', [
+              _item('重設錢包密碼', () {
+                // TODO: Navigate to screen
+                print('ಠ_ಠ');
+              }),
               BackupSetting(
                 _item(
                   t('setting_backup'),
@@ -99,9 +136,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   },
                 ),
               )
-            ],
-          ),
-        )
+            ]),
+            _section('一般設定', [
+              _item('法幣單位', () {
+                // TODO: Navigate to screen
+                print('Σ( ° △ °|||)');
+              })
+            ]),
+            _section('關於', [
+              _item('建議與反饋', () {
+                // TODO: Navigate to screen
+                print('Σ( ° △ °|||)');
+              }),
+              _item('服務條款與隱私權政策', () {
+                // TODO: Navigate to screen
+                print('Σ( ° △ °|||)');
+              })
+            ])
+          ],
+        ),
       ],
     );
   }
