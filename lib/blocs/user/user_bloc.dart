@@ -23,5 +23,14 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     if (event is UserRestore) {
       yield UserSuccess();
     }
+
+    if (event is VerifyPassword) {
+      yield VerifyingPassword();
+      if (_repo.verifyPassword(event.password)) {
+        yield PasswordVerified();
+      } else {
+        yield PasswordInvalid();
+      }
+    }
   }
 }

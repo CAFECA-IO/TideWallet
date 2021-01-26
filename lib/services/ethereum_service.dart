@@ -8,6 +8,7 @@ import 'package:tidewallet3/models/account.model.dart';
 import 'package:tidewallet3/services/account_service.dart';
 import '../mock/endpoint.dart';
 import '../cores/account.dart';
+import '../models/transaction.model.dart';
 
 class EthereumService extends AccountServiceDecorator {
   EthereumService(AccountService service) : super(service) {
@@ -96,7 +97,21 @@ class EthereumService extends AccountServiceDecorator {
       
       AccountCore().messenger.add(msg);
       AccountCore().messenger.add(currMsg);
+
+      List<Transaction> transactions = await this._getTransactions();
+
+      AccountMessage txMsg = AccountMessage(evt: ACCOUNT_EVT.OnUpdateTransactions, value: {
+        "currency": curr.copyWith(fiat: _fiat),
+        "transactions": transactions
+      });
+      AccountCore().messenger.add(txMsg);
     });
+  }
+
+  _getTransactions() async {
+    // TODO get transactions from api
+    List<Transaction> result = await getETHTransactions();
+    return result;
   }
 
   _getTokens() async {
@@ -136,5 +151,11 @@ class EthereumService extends AccountServiceDecorator {
     await Future.delayed(Duration(milliseconds: 500));
 
     return true;
+  }
+
+  @override
+  Future<String> getReceivingAddress() async {
+    // TODO: implement publishTransaction
+    throw UnimplementedError();
   }
 }

@@ -73,4 +73,9 @@ class BitcoinServiceDecorator extends AccountServiceDecorator {
     throw UnimplementedError();
   }
 
+  @override
+  Future<String> getReceivingAddress() async {
+    // TODO: implement publishTransaction
+    throw UnimplementedError();
+  }
 }

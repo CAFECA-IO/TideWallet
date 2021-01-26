@@ -52,8 +52,9 @@ class AccountCore {
 
         await createAccount();
 
-        this.messenger.add(
-            AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: _currency.copyWith(fiat: fiat.toString())));
+        this.messenger.add(AccountMessage(
+            evt: ACCOUNT_EVT.OnUpdateAccount,
+            value: _currency.copyWith(fiat: fiat.toString())));
       }
     }
   }
@@ -65,12 +66,12 @@ class AccountCore {
   String getAccountFiat(ACCOUNT type) {
     List<Currency> _currs = this.currencies[type];
 
-     Decimal fiat = Decimal.zero;
-      _currs.forEach((curr) {
-        print('Fiat: ${curr.fiat}, Amount: ${curr.amount}');
-        fiat += Decimal.tryParse(curr.fiat);
-      });
-     return fiat.toString();
+    Decimal fiat = Decimal.zero;
+    _currs.forEach((curr) {
+      print('Fiat: ${curr.fiat}, Amount: ${curr.amount}');
+      fiat += Decimal.tryParse(curr.fiat);
+    });
+    return fiat.toString();
   }
 
   Future<bool> checkAccountExist() async {
@@ -86,4 +87,8 @@ class AccountCore {
   AccountService getService(ACCOUNT type) {
     return _services.firstWhere((svc) => (svc.base == type));
   }
+
+  // Future<String> getReceivingAddress(Currency curr) async {
+  //   return await this._services.getReceivingAddress();
+  // }
 }
