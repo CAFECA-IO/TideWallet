@@ -6,6 +6,10 @@ import '../helpers/i18n.dart';
 final t = I18n.t;
 
 class BackupThumb extends StatelessWidget {
+  final Function toBackup;
+
+  BackupThumb(this.toBackup);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -50,7 +54,9 @@ class BackupThumb extends StatelessWidget {
           Spacer(),
           PrimaryButton(
             t('backup_now'),
-            () {},
+            () {
+              this.toBackup();
+            },
             padding: const EdgeInsets.symmetric(horizontal: 0.0),
             backgroundColor: Theme.of(context).hintColor,
             borderColor: Theme.of(context).hintColor,

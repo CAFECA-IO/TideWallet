@@ -8,3 +8,11 @@ abstract class BackupEvent extends Equatable {
 }
 
 class CheckBackup extends BackupEvent {}
+
+class VerifyBackupPassword extends BackupEvent {
+  final String password;
+
+  VerifyBackupPassword(this.password);
+}
+
+class Backup extends BackupEvent {}

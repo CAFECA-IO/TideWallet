@@ -33,7 +33,7 @@ abstract class BaseButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlatButton(
-        minWidth: minWidth ?? 0,
+        minWidth: minWidth ?? null,
         disabledColor: this.disableColor,
         disabledTextColor: this.disabledTextColor ?? Colors.white,
         color: isEnabled ? backgroundColor : disableColor,

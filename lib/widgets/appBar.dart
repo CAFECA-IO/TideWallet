@@ -11,6 +11,7 @@ import '../screens/transaction_preview.screen.dart';
 import '../screens/create_transaction.screen.dart';
 import '../screens/transaction_detail.screen.dart';
 import '../screens/currency.screen.dart';
+import '../screens/settings.screen.dart';
 import '../screens/add_currency.screen.dart';
 import '../screens/receive.screen.dart';
 import '../screens/update_password.screen.dart';
@@ -190,6 +191,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
       if (routeName == TransactionListScreen.routeName) return false;
       if (routeName == AccountScreen.routeName) return false;
       if (routeName == CurrencyScreen.routeName) return false;
+      if (routeName == SettingsScreen.routeName) return false;
       return true;
     }
 

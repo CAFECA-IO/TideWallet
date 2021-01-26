@@ -1,5 +1,6 @@
 class User {
   bool _isCreated = true;
+  bool _isBackup = false;
   String _password;
 
   bool get hasWallet {
@@ -40,6 +41,12 @@ class User {
 
   Future<bool> checkWalletBackup() async {
     await Future.delayed(Duration(milliseconds: 500));
-    return false;
+    return _isBackup;
+  }
+
+   Future<bool> backupWallet() async {
+    await Future.delayed(Duration(milliseconds: 500));
+    _isBackup = true;
+    return _isBackup;
   }
 }

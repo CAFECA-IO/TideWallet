@@ -3,7 +3,6 @@ import '../../helpers/i18n.dart';
 
 import '../../theme.dart';
 import 'base_button.dart';
-import 'primary_button.dart';
 
 class RadioGroupButton extends StatefulWidget {
   final List<List<dynamic>> function;
