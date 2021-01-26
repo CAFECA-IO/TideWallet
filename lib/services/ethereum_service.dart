@@ -8,10 +8,13 @@ import 'package:tidewallet3/models/account.model.dart';
 import 'package:tidewallet3/services/account_service.dart';
 import '../mock/endpoint.dart';
 import '../cores/account.dart';
+import '../models/transaction.model.dart';
 
 class EthereumService extends AccountServiceDecorator {
-  EthereumService(AccountService service) : super(service);
-
+  EthereumService(AccountService service) : super(service) {
+    this.base = ACCOUNT.ETH;
+  }
+  
   Timer _timer;
 
   estimateGasLimit() {}
@@ -88,22 +91,71 @@ class EthereumService extends AccountServiceDecorator {
 
       AccountMessage msg = AccountMessage(
           evt: ACCOUNT_EVT.OnUpdateAccount, value: curr.copyWith(fiat: _fiat));
+
+      AccountMessage currMsg = AccountMessage(
+          evt: ACCOUNT_EVT.OnUpdateCurrency, value: AccountCore().currencies[this.base]);
+      
       AccountCore().messenger.add(msg);
+      AccountCore().messenger.add(currMsg);
+
+      List<Transaction> transactions = await this._getTransactions();
+
+      AccountMessage txMsg = AccountMessage(evt: ACCOUNT_EVT.OnUpdateTransactions, value: {
+        "currency": curr.copyWith(fiat: _fiat),
+        "transactions": transactions
+      });
+      AccountCore().messenger.add(txMsg);
     });
+  }
+
+  _getTransactions() async {
+    // TODO get transactions from api
+    List<Transaction> result = await getETHTransactions();
+    return result;
   }
 
   _getTokens() async {
     List<Map> result = await getETHTokens();
     List<Currency> tokenList = result.map((e) => Currency.fromMap(e)).toList();
 
-    AccountCore().currencies[ACCOUNT.ETH] =
-        AccountCore().currencies[ACCOUNT.ETH].sublist(0, 1) + tokenList;
+    AccountCore().currencies[this.base] =
+        AccountCore().currencies[this.base].sublist(0, 1) + tokenList;
   }
 
   Future<Currency> _getETH() async {
     Map res = await getETH();
-    Currency curr = Currency.fromMap({...res, "accountType": ACCOUNT.ETH});
+    Currency curr = Currency.fromMap({...res, "accountType": this.base});
     AccountCore().currencies[curr.accountType][0] = curr;
     return curr;
+  }
+
+  static Future<Token> getTokeninfo(String _address) async {
+    Map result = await getETHTokeninfo(_address);
+    if (result != null && result['success']) {
+      Token _token = Token(
+          symbol: result['symbol'],
+          name: result['name'],
+          decimal: result['decimal'],
+          imgUrl: result['imgPath'],
+          description: result['description'],
+          contract: result['contract'],
+          totalSupply: result['totalSupply']
+          );
+      return _token;
+    } else {
+      return null;
+    }
+  }
+
+  Future<bool> addToken(Token tk) async {
+    await Future.delayed(Duration(milliseconds: 500));
+
+    return true;
+  }
+
+  @override
+  Future<String> getReceivingAddress() async {
+    // TODO: implement publishTransaction
+    throw UnimplementedError();
   }
 }

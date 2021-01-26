@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../constants/account_config.dart';
 
-enum ACCOUNT_EVT { 
+enum ACCOUNT_EVT {
   OnUpdateAccount,
-  OnUpdateToken,
+  OnUpdateCurrency,
+  OnUpdateTransactions
 }
 
 class Currency {
@@ -18,38 +19,36 @@ class Currency {
   final String name;
   final ACCOUNT accountType;
 
-  Currency({
-    this.cointype,
-    this.purpose,
-    this.amount,
-    this.fiat,
-    this.imgPath,
-    this.symbol,
-    this.name,
-    this.accountIndex,
-    this.accountType
-  });
+  Currency(
+      {this.cointype,
+      this.purpose,
+      this.amount,
+      this.fiat,
+      this.imgPath,
+      this.symbol,
+      this.name,
+      this.accountIndex,
+      this.accountType});
 
-  copyWith(
-    {int cointype,
+  copyWith({
+    int cointype,
     int purpose,
     String symbol,
     String imgPath,
     String amount,
     String fiat,
     String name,
-    ACCOUNT accountType,}
-  ) {
+    ACCOUNT accountType,
+  }) {
     return Currency(
-      cointype: cointype ?? this.cointype,
-      purpose: purpose ?? this.purpose,
-      amount: amount ?? this.amount,
-      fiat: fiat ?? this.fiat,
-      symbol: symbol ?? this.symbol,
-      imgPath: imgPath ?? this.imgPath,
-      name: name ?? this.name,
-      accountType: accountType ?? this.accountType
-    );
+        cointype: cointype ?? this.cointype,
+        purpose: purpose ?? this.purpose,
+        amount: amount ?? this.amount,
+        fiat: fiat ?? this.fiat,
+        symbol: symbol ?? this.symbol,
+        imgPath: imgPath ?? this.imgPath,
+        name: name ?? this.name,
+        accountType: accountType ?? this.accountType);
   }
 
   Currency.fromMap(
@@ -70,4 +69,24 @@ class AccountMessage {
   final value;
 
   AccountMessage({@required this.evt, this.value});
+}
+
+class Token {
+  final String symbol;
+  final String name;
+  final int decimal;
+  final String imgUrl;
+  final int totalSupply;
+  final String contract;
+  final String description;
+
+  Token({
+    this.symbol,
+    this.name,
+    this.decimal,
+    this.imgUrl,
+    this.totalSupply,
+    this.contract,
+    this.description
+  });
 }

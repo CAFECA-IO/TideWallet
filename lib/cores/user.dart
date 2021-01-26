@@ -10,6 +10,10 @@ class User {
     this._isCreated = true;
   }
 
+  bool verifyPassword(String password) {
+    return password == "MerMer";
+  }
+
   bool validPaperWallet(String wallet) {
     // TODO: The result should be modified
     return wallet.length > 50;

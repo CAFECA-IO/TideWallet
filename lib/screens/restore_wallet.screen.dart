@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tidewallet3/widgets/appBar.dart';
 
 import '../blocs/restore_wallet/restore_wallet_bloc.dart';
 import '../blocs/user/user_bloc.dart';
@@ -9,8 +8,9 @@ import '../widgets/dialogs/error_dialog.dart';
 import '../widgets/buttons/secondary_button.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/loading_dialog.dart';
-import '../helpers/i18n.dart';
+import '../widgets/appBar.dart';
 import '../widgets/dialogs/verify_password_dialog.dart';
+import '../helpers/i18n.dart';
 
 final t = I18n.t;
 

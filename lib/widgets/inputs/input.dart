@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class Input extends StatelessWidget {
   final TextEditingController controller;
@@ -13,25 +14,30 @@ class Input extends StatelessWidget {
   final FocusNode focusNode;
   final String hintText;
   final AutovalidateMode autovalidate;
+  final TextInputType keyboardType;
+  final List<TextInputFormatter> inputFormatter;
 
-  Input({
-    this.controller,
-    this.labelText,
-    this.suffixText,
-    this.validator,
-    this.readOnly: false,
-    this.onTap,
-    this.suffix,
-    this.suffixIcon,
-    this.onChanged,
-    this.focusNode,
-    this.hintText,
-    this.autovalidate: AutovalidateMode.always,
-  });
+  Input(
+      {this.controller,
+      this.labelText,
+      this.suffixText,
+      this.validator,
+      this.readOnly: false,
+      this.onTap,
+      this.suffix,
+      this.suffixIcon,
+      this.onChanged,
+      this.focusNode,
+      this.hintText,
+      this.autovalidate: AutovalidateMode.always,
+      this.keyboardType: TextInputType.text,
+      this.inputFormatter: const []});
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+        inputFormatters: inputFormatter,
+        keyboardType: keyboardType,
         focusNode: focusNode,
         controller: controller,
         // textAlignVertical: TextAlignVertical.bottom,

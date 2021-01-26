@@ -1,10 +1,14 @@
 import 'package:decimal/decimal.dart';
-import 'package:tidewallet3/services/account_service.dart';
 
 import 'account_service_decorator.dart';
+import '../constants/account_config.dart';
+import '../services/account_service.dart';
+
 
 class BitcoinServiceDecorator extends AccountServiceDecorator {
-  BitcoinServiceDecorator(AccountService service) : super(service);
+  BitcoinServiceDecorator(AccountService service) : super(service) {
+    this.base = ACCOUNT.BTC;
+  }
 
   @override
   Decimal calculateFastDee() {
@@ -69,4 +73,9 @@ class BitcoinServiceDecorator extends AccountServiceDecorator {
     throw UnimplementedError();
   }
 
+  @override
+  Future<String> getReceivingAddress() async {
+    // TODO: implement publishTransaction
+    throw UnimplementedError();
+  }
 }

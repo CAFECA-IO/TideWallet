@@ -1,5 +1,9 @@
 import 'dart:math';
 
+import 'package:decimal/decimal.dart';
+import '../models/transaction.model.dart';
+import '../helpers/utils.dart';
+
 Future<List<Map>> getETHTokens() async {
   await Future.delayed(Duration(seconds: 1));
 
@@ -22,6 +26,63 @@ Future<Map> getETH() async {
     "symbol": "ETH",
     "imgPath": "assets/images/eth.png",
     "amount": v.toString(),
-    "fiat": (v * 3000 ).toString()
+    "fiat": (v * 3000).toString()
   };
+
+}
+
+ Future<Map> getETHTokeninfo(String address) async {
+    await Future.delayed(Duration(seconds: 1));
+    if (address.length > 10) {
+      return {
+        "success": true,
+        "symbol": "XPA",
+        "decimal": 18,
+        "name": "XPA",
+        "imgPath": "assets/images/xpa.png",
+        "contract": "0x90528aeb3a2b736b780fd1b6c478bb7e1d643170",
+        "totalSupply": 50000000,
+        "description": "Hey Hey"
+      };
+    } else {
+      return {
+        "success": false
+      };
+    }
+  }
+
+Future<List<Transaction>> getETHTransactions() async {
+  List<Transaction> transactions = [];
+  int v = Random().nextInt(10);
+  print("v: $v");
+  for (int i = 0; i < v; i++) {
+    TransactionDirection direction =
+        TransactionDirection.values[Random().nextInt(2)];
+    String amount = "${Random().nextInt(100)}.${Random().nextInt(9)}";
+    int timestamp = DateTime.now().millisecondsSinceEpoch;
+    int confirmations = Random().nextInt(10);
+    TransactionStatus status = confirmations > 6
+        ? TransactionStatus.success
+        : TransactionStatus.pending;
+    String address = randomHex(32);
+    String fee = "${Random().nextInt(10)}.${Random().nextInt(9)}";
+    String txid = randomHex(32);
+    print("status: $status");
+
+    Transaction transaction = Transaction(
+        id: randomHex(6),
+        direction: direction,
+        amount: amount,
+        status: status,
+        timestamp: timestamp,
+        confirmations: confirmations,
+        address: address,
+        fee: fee,
+        txId: txid);
+    print(transaction.status);
+
+    transactions.add(transaction);
+  }
+
+  return transactions;
 }
