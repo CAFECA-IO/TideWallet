@@ -121,4 +121,10 @@ class EthereumService extends AccountServiceDecorator {
     AccountCore().currencies[curr.accountType][0] = curr;
     return curr;
   }
+
+  @override
+  Future<String> getReceivingAddress() async {
+    // TODO: implement publishTransaction
+    throw UnimplementedError();
+  }
 }

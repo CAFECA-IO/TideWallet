@@ -11,6 +11,7 @@ import '../screens/transaction_preview.screen.dart';
 import '../screens/create_transaction.screen.dart';
 import '../screens/transaction_detail.screen.dart';
 import '../screens/currency.screen.dart';
+import '../screens/receive.screen.dart';
 
 class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
   final String title;
@@ -42,6 +43,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
         case TransactionListScreen.routeName:
         case TransactionDetailScreen.routeName:
         case CurrencyScreen.routeName:
+        case ReceiveScreen.routeName:
           leading = GestureDetector(
             behavior: HitTestBehavior.translucent,
             child: ImageIcon(
