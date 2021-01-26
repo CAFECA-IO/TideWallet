@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+
 import '../blocs/backup/backup_bloc.dart';
+import '../widgets/settings/backup.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/verify_password_dialog.dart';
 
@@ -77,45 +79,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
             padding: const EdgeInsets.all(0),
             shrinkWrap: true,
             children: [
-              BlocBuilder<BackupBloc, BackupState>(
-                builder: (BuildContext ctx, BackupState state) {
-                  if (state is UnBackup) {
-                    return _item(
-                      '備份錢包',
-                      () {
-                        DialogContorller.showUnDissmissible(
-                          context,
-                          VerifyPasswordDialog(
-                            (String pwd) {},
-                            (String pwd) {
-                              DialogContorller.dismiss(context);
-                            },
-                          ),
-                        );
-                      },
-                    );
-                  }
-
-                  Color _color = Theme.of(context).accentColor;
-
-                  return Container(
-                    padding: const EdgeInsets.only(
-                        right: 20.0, left: 4.0, top: 10.0, bottom: 10.0),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        bottom:
-                            BorderSide(color: Theme.of(context).dividerColor),
+              BackupSetting(
+                _item(
+                  '備份錢包',
+                  () {
+                    DialogContorller.showUnDissmissible(
+                      context,
+                      VerifyPasswordDialog(
+                        (String pwd) {
+                          _backupBloc.add(VerifyBackupPassword(pwd));
+                        },
+                        (String pwd) {
+                          DialogContorller.dismiss(context);
+                        },
                       ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.check, color: _color,),
-                        SizedBox(width: 24.0,),
-                        Text('已備份錢包', style: TextStyle(color: _color),),
-                      ],
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               )
             ],
           ),

@@ -25,4 +25,6 @@ class UserRepository {
   }
 
   Future<bool> checkWalletBackup() => _user.checkWalletBackup();
+
+  Future<bool> backupWallet() => _user.backupWallet();
 }
