@@ -6,7 +6,7 @@ import '../../blocs/backup/backup_bloc.dart';
 import '../../widgets/buttons/secondary_button.dart';
 import '../../widgets/dialogs/dialog_controller.dart';
 import '../../widgets/dialogs/error_dialog.dart';
-
+import '../../helpers/i18n.dart';
 import '../../theme.dart';
 
 class BackupSetting extends StatefulWidget {
@@ -19,7 +19,8 @@ class BackupSetting extends StatefulWidget {
 
 class _BackupSettingState extends State<BackupSetting> {
   BackupBloc _backupBloc;
-  final GlobalKey globalKey = GlobalKey();
+  // final GlobalKey globalKey = GlobalKey();
+  final t = I18n.t;
 
   @override
   void didChangeDependencies() {
@@ -57,7 +58,7 @@ class _BackupSettingState extends State<BackupSetting> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: SecondaryButton(
-                            '儲存圖片',
+                            t('save_image'),
                             () {
                               _backupBloc.add(Backup());
                               Navigator.of(context).pop();
@@ -78,11 +79,11 @@ class _BackupSettingState extends State<BackupSetting> {
 
         if (state is BackupDenied) {
           DialogContorller.dismiss(context);
-          DialogContorller.show(context, ErrorDialog('密碼錯誤'));
+          DialogContorller.show(context, ErrorDialog(t('error_password')));
         }
 
         if (state is BackupFail) {
-          DialogContorller.show(context, ErrorDialog('備份失敗'));
+          DialogContorller.show(context, ErrorDialog(t('error_backup')));
         }
       },
       child: BlocBuilder<BackupBloc, BackupState>(
@@ -108,7 +109,7 @@ class _BackupSettingState extends State<BackupSetting> {
                     width: 24.0,
                   ),
                   Text(
-                    '已備份錢包',
+                    t('setting_backuped'),
                     style: TextStyle(color: _color),
                   ),
                 ],

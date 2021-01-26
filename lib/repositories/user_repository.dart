@@ -31,4 +31,9 @@ class UserRepository {
   Future<bool> checkWalletBackup() => _user.checkWalletBackup();
 
   Future<bool> backupWallet() => _user.backupWallet();
+
+  Future<String> getPaperWallet() async {
+    await Future.delayed(Duration(milliseconds: 500));
+    return 'wallet';
+  }
 }

@@ -43,7 +43,6 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
          return false;
        }
     } catch (e) {
-      print(e);
       return false;
     }
   }
@@ -65,14 +64,12 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
     if (event is VerifyBackupPassword) {
       yield UnBackup();
 
-      final wallet = 'wallet';
-      if (true) {
+      if (_repo.verifyPassword(event.password)) {
+        final wallet = await _repo.getPaperWallet();
+
         yield BackupAuth(wallet);
       } else {
         yield BackupDenied();
-
-        await Future.delayed(Duration(milliseconds: 300));
-        yield UnBackup();
       }
     }
 

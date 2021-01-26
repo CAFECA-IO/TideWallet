@@ -6,6 +6,7 @@ import '../blocs/backup/backup_bloc.dart';
 import '../widgets/settings/backup.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/verify_password_dialog.dart';
+import '../helpers/i18n.dart';
 
 class SettingsScreen extends StatefulWidget {
   static const routeName = '/settings';
@@ -16,6 +17,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   BackupBloc _backupBloc;
+  final t = I18n.t;
 
   Widget _item(String _title, Function _onTap) {
     return InkWell(
@@ -81,7 +83,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               BackupSetting(
                 _item(
-                  '備份錢包',
+                  t('setting_backup'),
                   () {
                     DialogContorller.showUnDissmissible(
                       context,
