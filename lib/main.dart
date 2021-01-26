@@ -22,12 +22,16 @@ import './screens/transaction_detail.screen.dart';
 import './screens/receive.screen.dart';
 import './screens/setting_fiat.screen.dart';
 import './blocs/fiat/fiat_bloc.dart';
+import './screens/update_password.screen.dart';
 import './blocs/account/account_bloc.dart';
 import './blocs/delegate.dart';
 import './blocs/user/user_bloc.dart';
 import './blocs/transaction/transaction_bloc.dart';
+import './blocs/transaction_status/transaction_status_bloc.dart';
 import './blocs/restore_wallet/restore_wallet_bloc.dart';
 import './blocs/backup/backup_bloc.dart';
+import './blocs/receive/receive_bloc.dart';
+import './blocs/update_password/update_password_bloc.dart';
 import './helpers/i18n.dart';
 import './repositories/trader_repository.dart';
 import 'theme.dart';
@@ -87,7 +91,7 @@ class MyApp extends StatelessWidget {
                 Provider.of<AccountRepository>(context, listen: false),
               ),
             ),
-                BlocProvider<FiatBloc>(
+            BlocProvider<FiatBloc>(
               create: (BuildContext context) => FiatBloc(
                 Provider.of<TraderRepository>(context, listen: false),
               )..add(GetFiatList()),
@@ -97,7 +101,22 @@ class MyApp extends StatelessWidget {
                 Provider.of<UserRepository>(context, listen: false),
               )..add(CheckBackup()),
             ),
-        
+            BlocProvider<TransactionStatusBloc>(
+              create: (BuildContext context) => TransactionStatusBloc(
+                Provider.of<TransactionRepository>(context, listen: false),
+                Provider.of<AccountRepository>(context, listen: false),
+              ),
+            ),
+            BlocProvider<ReceiveBloc>(
+              create: (BuildContext context) => ReceiveBloc(
+                Provider.of<AccountRepository>(context, listen: false),
+              ),
+            ),
+            BlocProvider<UpdatePasswordBloc>(
+              create: (BuildContext context) => UpdatePasswordBloc(
+                Provider.of<UserRepository>(context, listen: false),
+              ),
+            ),
           ],
           child: _material,
         ),
@@ -111,7 +130,6 @@ MaterialApp _material = MaterialApp(
   theme: myThemeData,
   routes: {
     '/': (context) => LandingScreen(),
-    // '/': (context) => TransactionListScreen(),
     CreateTransactionScreen.routeName: (context) => CreateTransactionScreen(),
     TransactionPreviewScreen.routeName: (context) => TransactionPreviewScreen(),
     RestoreWalletScreen.routeName: (context) => RestoreWalletScreen(),
@@ -123,6 +141,7 @@ MaterialApp _material = MaterialApp(
     ReceiveScreen.routeName: (context) => ReceiveScreen(),
     SettingFiatScreen.routeName: (context) => SettingFiatScreen(),
     WalletConnectScreen.routeName: (context) => WalletConnectScreen(),
+    UpdatePasswordScreen.routeName: (context) => UpdatePasswordScreen(),
   },
   localizationsDelegates: [
     const I18nDelegate(),

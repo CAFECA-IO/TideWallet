@@ -15,6 +15,10 @@ class UserRepository {
     return _user.verifyPassword(password);
   }
 
+  void updatePassword(String password) {
+    _user.updatePassword(password);
+  }
+
   bool validPaperWallet(String wallet) {
     return _user.validPaperWallet(wallet);
   }
