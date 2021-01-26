@@ -139,8 +139,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
           padding: const EdgeInsets.all(0),
           shrinkWrap: true,
           children: [
-            _section('安全中心', [
-              _item('重設錢包密碼', () {
+            _section(t('setting_security'), [
+              _item(t('setting_reset_password'), () {
                 // TODO: Navigate to screen
                 print('ಠ_ಠ');
               }),
@@ -163,18 +163,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               )
             ]),
-            _section('一般設定', [
-              _item('法幣單位', () {
+            _section(t('setting_normal'), [
+              _item(t('setting_fiat'), () {
                 Navigator.of(context).pushNamed(SettingFiatScreen.routeName);
                 print('Σ( ° △ °|||)');
               })
             ]),
-            _section('關於', [
-              _item('建議與反饋', () {
+            _section(t('setting_about'), [
+              _item(t('setting_feedback'), () {
                 // TODO: Navigate to screen
                 print('Σ( ° △ °|||)');
               }),
-              _item('服務條款與隱私權政策', () {
+              _item(t('setting_term'), () {
                 // TODO: Navigate to screen
                 print('Σ( ° △ °|||)');
               })
