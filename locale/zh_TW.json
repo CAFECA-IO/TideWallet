@@ -70,6 +70,7 @@
   "current_password": "Current Password",
   "new_password": "New Password",
   "re_ew_password": "再次輸入新密碼",
-  "wrong_password": "密碼錯誤"
+  "wrong_password": "密碼錯誤",
+  "diff_with_curr_pwd": "與舊密碼不同"
 }
 

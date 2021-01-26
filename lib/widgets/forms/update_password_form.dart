@@ -122,7 +122,7 @@ class _CheckingViewState extends State<CheckingView> {
           title = t('create_wallet_rule_3');
           break;
         case 3:
-          title = t('create_wallet_rule_4');
+          title = t('diff_with_curr_pwd');
           break;
         default:
       }
