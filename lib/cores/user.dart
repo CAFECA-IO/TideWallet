@@ -1,5 +1,6 @@
 class User {
   bool _isCreated = true;
+  String _password;
 
   bool get hasWallet {
     return this._isCreated;
@@ -10,7 +11,11 @@ class User {
   }
 
   bool verifyPassword(String password) {
-    return password == "MerMer";
+    return this._password ?? "123asdZXC" == password;
+  }
+
+  void updatePassword(String password) {
+    this._password = password;
   }
 
   bool validPaperWallet(String wallet) {
@@ -33,7 +38,7 @@ class User {
     return pwd.length >= 5;
   }
 
-    Future<bool> checkWalletBackup() async {
+  Future<bool> checkWalletBackup() async {
     await Future.delayed(Duration(milliseconds: 500));
     return false;
   }
