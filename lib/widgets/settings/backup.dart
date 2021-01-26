@@ -28,7 +28,6 @@ class _BackupSettingState extends State<BackupSetting> {
   }
 
 
-
   @override
   Widget build(BuildContext context) {
     return BlocListener<BackupBloc, BackupState>(
@@ -37,34 +36,39 @@ class _BackupSettingState extends State<BackupSetting> {
           DialogContorller.dismiss(context);
           showModalBottomSheet(
             // isDismissible: false,
+            isScrollControlled: true,
             context: context,
             shape: bottomSheetShape,
             builder: (BuildContext ctx) {
-              return Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0, vertical: 40.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    QrImage(
-                      data: state.wallet,
-                      version: QrVersions.auto,
-                      size: 240.0,
+              return Wrap(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0, vertical: 40.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        QrImage(
+                          data: state.wallet,
+                          version: QrVersions.auto,
+                          size: 240.0,
+                        ),
+                        SizedBox(height: 40.0),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: SecondaryButton(
+                            '儲存圖片',
+                            () {
+                              _backupBloc.add(Backup());
+                              Navigator.of(context).pop();
+                            },
+                            textColor: Theme.of(context).primaryColor,
+                          ),
+                        )
+                      ],
                     ),
-                    SizedBox(height: 40.0),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: SecondaryButton(
-                        '儲存圖片',
-                        () {
-                          _backupBloc.add(Backup());
-                          Navigator.of(context).pop();
-                        },
-                        textColor: Theme.of(context).primaryColor,
-                      ),
-                    )
-                  ],
-                ),
+                  ),
+                ],
               );
             },
           ).then((value) {
@@ -78,7 +82,6 @@ class _BackupSettingState extends State<BackupSetting> {
         }
 
         if (state is BackupFail) {
-          DialogContorller.dismiss(context);
           DialogContorller.show(context, ErrorDialog('備份失敗'));
         }
       },

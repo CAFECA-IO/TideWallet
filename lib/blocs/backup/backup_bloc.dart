@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../repositories/user_repository.dart';
 part 'backup_event.dart';
@@ -19,18 +21,29 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
       data: wallet,
       version: QrVersions.auto,
       gapless: true,
+      color: Colors.white,
+      emptyColor: Colors.black,
       errorCorrectionLevel: QrErrorCorrectLevel.L,
     );
     ByteData imageData;
 
     imageData = await painter.toImageData(600.0);
     final imageBytes = imageData.buffer.asUint8List();
-    try {
-      await ImageGallerySaver.saveImage(Uint8List.fromList(imageBytes),
-          quality: 60, name: "Paper Wallet");
 
-      return true;
+    try {
+       PermissionStatus status = await Permission.storage.request();
+
+       if (status.isGranted) {
+        final result = await ImageGallerySaver.saveImage(Uint8List.fromList(imageBytes),
+            quality: 60, name: "PaperWallet");
+        print(result);
+        return true;
+
+       } else {
+         return false;
+       }
     } catch (e) {
+      print(e);
       return false;
     }
   }
@@ -66,10 +79,10 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
     if (event is Backup) {
       BackupAuth _state = state;
       yield Backuping();
-      await _capture(_state.wallet);
+      bool storeRes = await _capture(_state.wallet);
       bool res = await _repo.backupWallet();
 
-      if (res) {
+      if (res && storeRes) {
         yield Backuped();
       } else {
         yield BackupFail();
