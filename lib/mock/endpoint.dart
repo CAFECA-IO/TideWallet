@@ -1,6 +1,4 @@
 import 'dart:math';
-
-import 'package:decimal/decimal.dart';
 import '../models/transaction.model.dart';
 import '../helpers/utils.dart';
 
@@ -31,25 +29,25 @@ Future<Map> getETH() async {
 
 }
 
- Future<Map> getETHTokeninfo(String address) async {
-    await Future.delayed(Duration(seconds: 1));
-    if (address.length > 10) {
-      return {
-        "success": true,
-        "symbol": "XPA",
-        "decimal": 18,
-        "name": "XPA",
-        "imgPath": "assets/images/xpa.png",
-        "contract": "0x90528aeb3a2b736b780fd1b6c478bb7e1d643170",
-        "totalSupply": 50000000,
-        "description": "Hey Hey"
-      };
-    } else {
-      return {
-        "success": false
-      };
-    }
+Future<Map> getETHTokeninfo(String address) async {
+  await Future.delayed(Duration(seconds: 1));
+  if (address.length > 10) {
+    return {
+      "success": true,
+      "symbol": "XPA",
+      "decimal": 18,
+      "name": "XPA",
+      "imgPath": "assets/images/xpa.png",
+      "contract": "0x90528aeb3a2b736b780fd1b6c478bb7e1d643170",
+      "totalSupply": 50000000,
+      "description": "Hey Hey"
+    };
+  } else {
+    return {
+      "success": false
+    };
   }
+}
 
 Future<List<Transaction>> getETHTransactions() async {
   List<Transaction> transactions = [];
@@ -85,4 +83,31 @@ Future<List<Transaction>> getETHTransactions() async {
   }
 
   return transactions;
+}
+
+Future<List<Map>> fiatList() async {
+  await Future.delayed(Duration(seconds: 1));
+
+  return [
+    {
+      "name": "USD",
+      "rate": "1"
+    },
+    {
+      "name": "CNY",
+      "rate": "0.14"
+    },
+    {
+      "name": "TWD",
+      "rate": "0.03"
+    },
+    {
+      "name": "HKD",
+      "rate": "0.14"
+    },
+    {
+      "name": "JPY",
+      "rate": "0.01"
+    }
+  ];
 }

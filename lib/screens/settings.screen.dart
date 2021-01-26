@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-
 import '../blocs/backup/backup_bloc.dart';
+import '../blocs/account/account_bloc.dart';
 import '../widgets/settings/backup.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/verify_password_dialog.dart';
 import '../helpers/i18n.dart';
+import 'setting_fiat.screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   static const routeName = '/settings';
@@ -24,12 +25,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
       onTap: _onTap,
       child: Container(
         padding: const EdgeInsets.only(
-            right: 20.0, left: 4.0, top: 10.0, bottom: 10.0),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: Theme.of(context).dividerColor),
-          ),
+          right: 20.0,
+          left: 4.0,
+          top: 10.0,
+          bottom: 10.0,
         ),
+        // decoration: BoxDecoration(
+        //   border: Border(
+        //     bottom: BorderSide(color: Theme.of(context).dividerColor),
+        //   ),
+        // ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -40,6 +45,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
             )
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _section(String title, List<Widget> items) {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.only(left: 20.0),
+      margin: const EdgeInsets.only(bottom: 16.0),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.only(
+              right: 20.0,
+              left: 4.0,
+              top: 10.0,
+              bottom: 10.0,
+            ),
+            width: double.infinity,
+            child: Text(
+              title,
+              style: Theme.of(context).textTheme.subtitle2,
+            ),
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: Theme.of(context).dividerColor),
+              ),
+            ),
+          ),
+          ...items
+        ],
       ),
     );
   }
@@ -60,27 +96,54 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          width: double.infinity,
-          height: 200.0,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: <Color>[
-                Theme.of(context).primaryColor,
-                Theme.of(context).accentColor
-              ],
-            ),
-          ),
-          child: Text(''),
+        BlocBuilder<AccountBloc, AccountState>(
+          builder: (ctx, state) {
+            return Container(
+              alignment: Alignment.bottomCenter,
+              padding: const EdgeInsets.only(bottom: 58.0),
+              width: double.infinity,
+              height: 200.0,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: <Color>[
+                    Theme.of(context).primaryColor,
+                    Theme.of(context).accentColor
+                  ],
+                ),
+              ),
+              child: RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                    text: '≈',
+                    children: [
+                      TextSpan(
+                        text: ' ${state.total.toString()} ',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline5
+                            .copyWith(fontSize: 36.0),
+                      ),
+                      TextSpan(text: 'USD')
+                    ],
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1
+                        .copyWith(color: Colors.white)),
+              ),
+            );
+          },
         ),
-        Container(
-          padding: const EdgeInsets.only(left: 20.0),
-          child: ListView(
-            padding: const EdgeInsets.all(0),
-            shrinkWrap: true,
-            children: [
+        ListView(
+          padding: const EdgeInsets.all(0),
+          shrinkWrap: true,
+          children: [
+            _section(t('setting_security'), [
+              _item(t('setting_reset_password'), () {
+                // TODO: Navigate to screen
+                print('ಠ_ಠ');
+              }),
               BackupSetting(
                 _item(
                   t('setting_backup'),
@@ -99,9 +162,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   },
                 ),
               )
-            ],
-          ),
-        )
+            ]),
+            _section(t('setting_normal'), [
+              _item(t('setting_fiat'), () {
+                Navigator.of(context).pushNamed(SettingFiatScreen.routeName);
+                print('Σ( ° △ °|||)');
+              })
+            ]),
+            _section(t('setting_about'), [
+              _item(t('setting_feedback'), () {
+                // TODO: Navigate to screen
+                print('Σ( ° △ °|||)');
+              }),
+              _item(t('setting_term'), () {
+                // TODO: Navigate to screen
+                print('Σ( ° △ °|||)');
+              })
+            ])
+          ],
+        ),
       ],
     );
   }

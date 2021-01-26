@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import './welcome.screen.dart';
 import './home.screen.dart';
 import '../repositories/user_repository.dart';
+import '../blocs/fiat/fiat_bloc.dart';
 import '../blocs/user/user_bloc.dart';
 
 class LandingScreen extends StatefulWidget {
@@ -15,11 +16,13 @@ class LandingScreen extends StatefulWidget {
 class _LandingScreenState extends State<LandingScreen> {
   UserBloc _bloc;
   UserRepository _repo;
+  FiatBloc _fiatBloc;
 
   @override
   void didChangeDependencies() {
     _repo = Provider.of<UserRepository>(context);
     _bloc = BlocProvider.of<UserBloc>(context);
+    _fiatBloc = BlocProvider.of<FiatBloc>(context);
 
     super.didChangeDependencies();
   }
@@ -27,6 +30,7 @@ class _LandingScreenState extends State<LandingScreen> {
   @override
   void dispose() {
     _bloc.close();
+    _fiatBloc.close();
     super.dispose();
   }
 
