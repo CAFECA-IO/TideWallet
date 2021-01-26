@@ -82,4 +82,10 @@
   "save_image": "儲存圖片",
   "error_backup": "備份失敗",
   "setting_backuped": "已備份錢包"
+  "reset_password": "Reset Password",
+  "current_password": "Current Password",
+  "new_password": "New Password",
+  "re_ew_password": "再次輸入新密碼",
+  "wrong_password": "Wrong Password",
+  "diff_with_curr_pwd": "Different with current password"
 }

@@ -1,6 +1,7 @@
 class User {
   bool _isCreated = true;
   bool _isBackup = false;
+  String _password;
 
   bool get hasWallet {
     return this._isCreated;
@@ -11,7 +12,11 @@ class User {
   }
 
   bool verifyPassword(String password) {
-    return password == "MerMer";
+    return this._password ?? "123asdZXC" == password;
+  }
+
+  void updatePassword(String password) {
+    this._password = password;
   }
 
   bool validPaperWallet(String wallet) {

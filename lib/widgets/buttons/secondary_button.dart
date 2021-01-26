@@ -9,12 +9,17 @@ class SecondaryButton extends BaseButton {
     Function _onPressed, {
     Color backgroundColor,
     Color disableColor,
+    Color disabledTextColor,
+    bool isEnabled,
     Color borderColor,
     AssetImage iconImg,
     Color textColor,
   }) : super(_text, _onPressed,
             backgroundColor: Colors.transparent,
-            disableColor: disableColor ?? MyColors.primary_02,
+            disableColor: disableColor,
+            disabledTextColor:
+                disabledTextColor ?? MyColors.primary_03.withOpacity(0.5),
+            isEnabled: isEnabled ?? true,
             borderColor: borderColor ?? MyColors.primary_01,
             iconImg: iconImg,
             textColor: textColor ?? MyColors.primary_01);
