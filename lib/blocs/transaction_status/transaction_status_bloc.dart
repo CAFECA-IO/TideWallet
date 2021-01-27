@@ -7,6 +7,7 @@ import '../../models/account.model.dart';
 import '../../models/transaction.model.dart';
 import '../../repositories/transaction_repository.dart';
 import '../../repositories/account_repository.dart';
+import '../../repositories/trader_repository.dart';
 
 part 'transaction_status_event.dart';
 part 'transaction_status_state.dart';
@@ -15,20 +16,30 @@ class TransactionStatusBloc
     extends Bloc<TransactionStatusEvent, TransactionStatusState> {
   TransactionRepository _repo;
   AccountRepository _accountRepo;
+  TraderRepository _traderRepo;
   StreamSubscription _subscription;
 
-  TransactionStatusBloc(this._repo, this._accountRepo)
+  TransactionStatusBloc(this._repo, this._accountRepo, this._traderRepo)
       : super(TransactionStatusInitial(null, [], null)) {
     this._repo.listener.listen((msg) {
       if (msg.evt == ACCOUNT_EVT.OnUpdateAccount) {
         print("msg.value ${(msg.value as Currency).name}");
-        this.add(UpdateCurrency(msg.value));
+        Currency currency = msg.value;
+        
+        this.add(UpdateCurrency(_addUSD(currency)));
       }
       if (msg.evt == ACCOUNT_EVT.OnUpdateTransactions) {
+        Currency currency = msg.value['currency'];
+
         this.add(UpdateTransactionList(
-            msg.value['currency'], msg.value['transactions']));
+            _addUSD(currency), msg.value['transactions']));
       }
     });
+  }
+
+  Currency _addUSD(Currency c) {
+
+    return c.copyWith(inUSD: _traderRepo.calculateToFiat(c).toString());
   }
 
   @override

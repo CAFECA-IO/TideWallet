@@ -1,3 +1,4 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
@@ -6,8 +7,10 @@ import './create_transaction.screen.dart';
 import './receive.screen.dart';
 import '../repositories/account_repository.dart';
 import '../repositories/transaction_repository.dart';
+import '../repositories/trader_repository.dart';
 import '../models/account.model.dart';
 import '../models/transaction.model.dart';
+import '../blocs/fiat/fiat_bloc.dart';
 import '../blocs/transaction_status/transaction_status_bloc.dart';
 import '../widgets/appBar.dart';
 import '../widgets/buttons/tertiary_button.dart';
@@ -29,6 +32,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
   TransactionStatusBloc _bloc;
   TransactionRepository _repo;
   AccountRepository _accountRepo;
+  TraderRepository _traderRepo;
   Currency _currency;
 
   @override
@@ -36,8 +40,9 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
     Map<String, Currency> arg = ModalRoute.of(context).settings.arguments;
     _currency = arg["account"];
     _repo = Provider.of<TransactionRepository>(context);
+    _traderRepo = Provider.of<TraderRepository>(context);
     _accountRepo = Provider.of<AccountRepository>(context);
-    _bloc = TransactionStatusBloc(_repo, _accountRepo)
+    _bloc = TransactionStatusBloc(_repo, _accountRepo, _traderRepo)
       ..add(UpdateCurrency(_currency));
     super.didChangeDependencies();
   }
@@ -104,10 +109,21 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                           '${Formatter.formaDecimal(state.currency?.amount ?? _currency.amount)}',
                           style: Theme.of(context).textTheme.headline4),
                     ),
-                    Text(
-                      '${String.fromCharCode(0x2248)} ${Formatter.formaDecimal(state.currency?.fiat ?? _currency.fiat) + " USD"}',
-                      style: Theme.of(context).textTheme.button,
-                    ),
+                    BlocBuilder<FiatBloc, FiatState>(
+                        builder: (context, fiatState) {
+                      FiatLoaded _state;
+                      String value = '';
+
+                      if (fiatState is FiatLoaded) {
+                        _state = fiatState;
+                        String num =state.currency?.inUSD ?? _currency.inUSD;
+                        value = Formatter.formaDecimal((Decimal.tryParse(num) / _state.fiat.exchangeRate).toString());
+                      }
+                      return Text(
+                        '${String.fromCharCode(0x2248)} $value ${_state.fiat.name}',
+                        style: Theme.of(context).textTheme.button,
+                      );
+                    }),
                     SizedBox(height: 24),
                   ]),
                 ),

@@ -87,10 +87,9 @@ class EthereumService extends AccountServiceDecorator {
       await this._getTokens();
       Currency curr = await this._getETH();
 
-      String _fiat = AccountCore().getAccountFiat(curr.accountType);
 
       AccountMessage msg = AccountMessage(
-          evt: ACCOUNT_EVT.OnUpdateAccount, value: curr.copyWith(fiat: _fiat));
+          evt: ACCOUNT_EVT.OnUpdateAccount, value: curr);
 
       AccountMessage currMsg = AccountMessage(
           evt: ACCOUNT_EVT.OnUpdateCurrency, value: AccountCore().currencies[this.base]);
@@ -101,7 +100,7 @@ class EthereumService extends AccountServiceDecorator {
       List<Transaction> transactions = await this._getTransactions();
 
       AccountMessage txMsg = AccountMessage(evt: ACCOUNT_EVT.OnUpdateTransactions, value: {
-        "currency": curr.copyWith(fiat: _fiat),
+        "currency": curr,
         "transactions": transactions
       });
       AccountCore().messenger.add(txMsg);
