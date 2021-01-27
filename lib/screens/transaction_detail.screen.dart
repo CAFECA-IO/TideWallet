@@ -1,3 +1,4 @@
+import 'package:tidewallet3/repositories/trader_repository.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,6 +33,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
   TransactionStatusBloc _bloc;
   TransactionRepository _repo;
   AccountRepository _accountRepo;
+  TraderRepository _traderRepo;
   Currency _currency;
   Transaction _transaction;
 
@@ -42,11 +44,12 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
     _transaction = arg["transaction"];
     _repo = Provider.of<TransactionRepository>(context);
     _accountRepo = Provider.of<AccountRepository>(context);
+    _traderRepo = Provider.of<TraderRepository>(context);
     print(_transaction.status);
     print(_transaction.amount);
     print(_transaction.confirmations);
     print(_transaction.direction);
-    _bloc = TransactionStatusBloc(_repo, _accountRepo)
+    _bloc = TransactionStatusBloc(_repo, _accountRepo, _traderRepo)
       ..add(UpdateTransaction(_transaction)); // TODO GetTransactionList
     super.didChangeDependencies();
   }

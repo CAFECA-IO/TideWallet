@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../blocs/backup/backup_bloc.dart';
-import '../blocs/account/account_bloc.dart';
+import '../widgets/header.dart';
 import '../widgets/settings/backup.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/verify_password_dialog.dart';
+import '../widgets/settings/fiat.dart';
 import '../helpers/i18n.dart';
-import 'setting_fiat.screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   static const routeName = '/settings';
@@ -96,45 +96,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        BlocBuilder<AccountBloc, AccountState>(
-          builder: (ctx, state) {
-            return Container(
-              alignment: Alignment.bottomCenter,
-              padding: const EdgeInsets.only(bottom: 58.0),
-              width: double.infinity,
-              height: 200.0,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: <Color>[
-                    Theme.of(context).primaryColor,
-                    Theme.of(context).accentColor
-                  ],
-                ),
-              ),
-              child: RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                    text: '≈',
-                    children: [
-                      TextSpan(
-                        text: ' ${state.total.toString()} ',
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline5
-                            .copyWith(fontSize: 36.0),
-                      ),
-                      TextSpan(text: 'USD')
-                    ],
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyText1
-                        .copyWith(color: Colors.white)),
-              ),
-            );
-          },
-        ),
+        Header(),
         ListView(
           padding: const EdgeInsets.all(0),
           shrinkWrap: true,
@@ -164,10 +126,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               )
             ]),
             _section(t('setting_normal'), [
-              _item(t('setting_fiat'), () {
-                Navigator.of(context).pushNamed(SettingFiatScreen.routeName);
-                print('Σ( ° △ °|||)');
-              })
+              FiatSetting(_item(t('setting_fiat'), null))
             ]),
             _section(t('setting_about'), [
               _item(t('setting_feedback'), () {

@@ -6,15 +6,19 @@ import 'package:equatable/equatable.dart';
 import '../../constants/account_config.dart';
 import '../../models/account.model.dart';
 import '../../repositories/account_repository.dart';
+import '../../repositories/trader_repository.dart';
 
 part 'currency_event.dart';
 part 'currency_state.dart';
 
 class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
   AccountRepository _repo;
+  TraderRepository _traderRepo;
+
   StreamSubscription _subscription;
 
-  CurrencyBloc(this._repo) : super(CurrencyInitial([], total: Decimal.zero)) {
+  CurrencyBloc(this._repo, this._traderRepo)
+      : super(CurrencyInitial([], total: Decimal.zero)) {
     _subscription?.cancel();
     this._repo.listener.listen((msg) {
       if (msg.evt == ACCOUNT_EVT.OnUpdateCurrency) {
@@ -35,24 +39,34 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
     CurrencyEvent event,
   ) async* {
     if (event is GetCurrencyList) {
-      final List<Currency> list = _repo.getCurrencies(event.account);
+      List<Currency> list = _repo.getCurrencies(event.account);
       Decimal _total = Decimal.zero;
-      list.forEach((curr) {
-        _total += Decimal.tryParse(curr.fiat);
-      });
+
+      list = list.map((curr) {
+        Decimal v = _traderRepo.calculateToUSD(curr);
+        _total += v;
+
+        return curr.copyWith(inUSD: v.toString());
+      }).toList();
+
       yield CurrencyLoaded(list, total: _total);
     }
 
     if (event is UpdateCurrencies) {
       if (event.currenices[0].accountType == state.currencies[0].accountType) {
-        final List<Currency> list = event.currenices;
-
+        List<Currency> _list = event.currenices;
         Decimal _total = Decimal.zero;
-        list.forEach((curr) {
-          _total += Decimal.tryParse(curr.fiat);
-        });
 
-        yield CurrencyLoaded(list, total: _total);
+        _list = _list.map(
+          (e) {
+            Decimal v = _traderRepo.calculateToUSD(e);
+            _total += v;
+
+            return e.copyWith(inUSD: v.toString());
+          },
+        ).toList();
+
+        yield CurrencyLoaded(_list, total: _total);
       }
     }
   }

@@ -89,6 +89,7 @@ class MyApp extends StatelessWidget {
             BlocProvider<AccountBloc>(
               create: (BuildContext context) => AccountBloc(
                 Provider.of<AccountRepository>(context, listen: false),
+                Provider.of<TraderRepository>(context, listen: false),
               ),
             ),
             BlocProvider<FiatBloc>(
@@ -100,12 +101,6 @@ class MyApp extends StatelessWidget {
               create: (BuildContext context) => BackupBloc(
                 Provider.of<UserRepository>(context, listen: false),
               )..add(CheckBackup()),
-            ),
-            BlocProvider<TransactionStatusBloc>(
-              create: (BuildContext context) => TransactionStatusBloc(
-                Provider.of<TransactionRepository>(context, listen: false),
-                Provider.of<AccountRepository>(context, listen: false),
-              ),
             ),
             BlocProvider<ReceiveBloc>(
               create: (BuildContext context) => ReceiveBloc(
