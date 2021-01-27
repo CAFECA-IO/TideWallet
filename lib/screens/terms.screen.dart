@@ -220,7 +220,7 @@ class TermsScreen extends StatelessWidget {
                           ..onTap = () {
                             print('Σ( ° △ °|||)');
                             launch(_emailLaunchUri.toString());
-                          }()),
+                          }),
                     TextSpan(
                         text: t('update_time', values: {
                           'year': '2021',
