@@ -6,8 +6,8 @@ import '../blocs/account/account_bloc.dart';
 import '../widgets/settings/backup.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/verify_password_dialog.dart';
+import '../widgets/settings/fiat.dart';
 import '../helpers/i18n.dart';
-import 'setting_fiat.screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   static const routeName = '/settings';
@@ -164,10 +164,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               )
             ]),
             _section(t('setting_normal'), [
-              _item(t('setting_fiat'), () {
-                Navigator.of(context).pushNamed(SettingFiatScreen.routeName);
-                print('Σ( ° △ °|||)');
-              })
+              FiatSetting(_item(t('setting_fiat'), null))
             ]),
             _section(t('setting_about'), [
               _item(t('setting_feedback'), () {

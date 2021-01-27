@@ -22,5 +22,10 @@ class FiatBloc extends Bloc<FiatEvent, FiatState> {
         
         yield FiatLoaded(list: res, fiat: selted);
       }
+
+      if (event is SwitchFiat) {
+        FiatLoaded _state = state;
+        yield _state.copyWith(fiat: event.fiat);
+      }
   }
 }
