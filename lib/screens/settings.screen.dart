@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../blocs/backup/backup_bloc.dart';
 import '../blocs/account/account_bloc.dart';
+import '../screens/update_password.screen.dart';
+import '../screens/feedback.screen.dart';
+import '../screens/terms.screen.dart';
 import '../widgets/settings/backup.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/verify_password_dialog.dart';
@@ -141,7 +144,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             _section(t('setting_security'), [
               _item(t('setting_reset_password'), () {
-                // TODO: Navigate to screen
+                Navigator.of(context).pushNamed(UpdatePasswordScreen.routeName);
                 print('ಠ_ಠ');
               }),
               BackupSetting(
@@ -171,11 +174,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ]),
             _section(t('setting_about'), [
               _item(t('setting_feedback'), () {
-                // TODO: Navigate to screen
+                Navigator.of(context).pushNamed(FeedbackScreen.routeName);
                 print('Σ( ° △ °|||)');
               }),
               _item(t('setting_term'), () {
-                // TODO: Navigate to screen
+                Navigator.of(context).pushNamed(TermsScreen.routeName);
                 print('Σ( ° △ °|||)');
               })
             ])

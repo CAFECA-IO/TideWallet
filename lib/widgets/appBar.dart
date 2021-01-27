@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../theme.dart';
 import '../screens/account.screen.dart';
 import '../screens/restore_wallet.screen.dart';
 import '../screens/scan_wallet.screen.dart';
@@ -16,6 +15,8 @@ import '../screens/add_currency.screen.dart';
 import '../screens/receive.screen.dart';
 import '../screens/setting_fiat.screen.dart';
 import '../screens/update_password.screen.dart';
+import '../screens/feedback.screen.dart';
+import '../screens/terms.screen.dart';
 
 class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
   final String title;
@@ -51,6 +52,8 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
         case ReceiveScreen.routeName:
         case SettingFiatScreen.routeName:
         case UpdatePasswordScreen.routeName:
+        case FeedbackScreen.routeName:
+        case TermsScreen.routeName:
           leading = GestureDetector(
             behavior: HitTestBehavior.translucent,
             child: ImageIcon(

@@ -21,6 +21,8 @@ import './screens/transaction_list.screen.dart';
 import './screens/transaction_detail.screen.dart';
 import './screens/receive.screen.dart';
 import './screens/setting_fiat.screen.dart';
+import './screens/feedback.screen.dart';
+import './screens/terms.screen.dart';
 import './blocs/fiat/fiat_bloc.dart';
 import './screens/update_password.screen.dart';
 import './blocs/account/account_bloc.dart';
@@ -142,6 +144,8 @@ MaterialApp _material = MaterialApp(
     SettingFiatScreen.routeName: (context) => SettingFiatScreen(),
     WalletConnectScreen.routeName: (context) => WalletConnectScreen(),
     UpdatePasswordScreen.routeName: (context) => UpdatePasswordScreen(),
+    FeedbackScreen.routeName: (context) => FeedbackScreen(),
+    TermsScreen.routeName: (context) => TermsScreen(),
   },
   localizationsDelegates: [
     const I18nDelegate(),

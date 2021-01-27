@@ -29,6 +29,10 @@ TextTheme myTextTheme = TextTheme(
         fontSize: 20.0,
         letterSpacing: 0.4,
         fontWeight: FontWeight.bold),
+    headline2: TextStyle(
+        color: MyColors.primary_03,
+        fontSize: 24.0,
+        fontWeight: FontWeight.bold),
     headline4: TextStyle(color: Colors.white),
     headline5: TextStyle(
         color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),
