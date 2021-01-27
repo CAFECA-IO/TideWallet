@@ -12,7 +12,7 @@ class Currency {
   final String symbol;
   final String imgPath;
   final String amount;
-  final String fiat;
+  final String inUSD;
   final String name;
   final ACCOUNT accountType;
 
@@ -20,20 +20,20 @@ class Currency {
       {this.cointype,
       this.purpose,
       this.amount,
-      this.fiat,
+      this.inUSD,
       this.imgPath,
       this.symbol,
       this.name,
       this.accountIndex,
       this.accountType});
 
-  copyWith({
+  Currency copyWith({
     int cointype,
     int purpose,
     String symbol,
     String imgPath,
     String amount,
-    String fiat,
+    String inUSD,
     String name,
     ACCOUNT accountType,
   }) {
@@ -41,7 +41,7 @@ class Currency {
         cointype: cointype ?? this.cointype,
         purpose: purpose ?? this.purpose,
         amount: amount ?? this.amount,
-        fiat: fiat ?? this.fiat,
+        inUSD: inUSD ?? this.inUSD,
         symbol: symbol ?? this.symbol,
         imgPath: imgPath ?? this.imgPath,
         name: name ?? this.name,
@@ -57,7 +57,7 @@ class Currency {
         name = map['name'],
         imgPath = map['imgPath'],
         amount = map['amount'] ?? '0',
-        fiat = map['fiat'] ?? '0',
+        inUSD = map['inUSD'] ?? '0',
         accountType = map['accountType'];
 }
 

@@ -9,4 +9,8 @@ abstract class FiatEvent extends Equatable {
 
 class GetFiatList extends FiatEvent {}
 
-class SwitchFiat extends FiatEvent {}
+class SwitchFiat extends FiatEvent {
+  final Fiat fiat;
+
+  SwitchFiat(this.fiat);
+}

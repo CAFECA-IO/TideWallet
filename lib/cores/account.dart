@@ -39,7 +39,6 @@ class AccountCore {
         bool exist = await this.checkAccountExist();
 
         Currency _currency = Currency.fromMap(ACCOUNT_LIST[value]);
-        Decimal fiat = Decimal.tryParse(_currency.fiat);
 
         this.currencies[value] = [];
         this.currencies[value].add(_currency);
@@ -54,7 +53,7 @@ class AccountCore {
 
         this.messenger.add(AccountMessage(
             evt: ACCOUNT_EVT.OnUpdateAccount,
-            value: _currency.copyWith(fiat: fiat.toString())));
+            value: _currency));
       }
     }
   }
@@ -63,16 +62,10 @@ class AccountCore {
     messenger.close();
   }
 
-  String getAccountFiat(ACCOUNT type) {
-    List<Currency> _currs = this.currencies[type];
 
-    Decimal fiat = Decimal.zero;
-    _currs.forEach((curr) {
-      print('Fiat: ${curr.fiat}, Amount: ${curr.amount}');
-      fiat += Decimal.tryParse(curr.fiat);
-    });
-    return fiat.toString();
-  }
+
+
+
 
   Future<bool> checkAccountExist() async {
     await Future.delayed(Duration(milliseconds: 300));
@@ -91,4 +84,7 @@ class AccountCore {
   // Future<String> getReceivingAddress(Currency curr) async {
   //   return await this._services.getReceivingAddress();
   // }
+
+  List<Currency> getCurrencies(ACCOUNT type) => this.currencies[type];
+
 }

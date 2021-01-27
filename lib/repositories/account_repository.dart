@@ -22,7 +22,7 @@ class AccountRepository {
   }
 
   List<Currency> getCurrencies(ACCOUNT acc) {
-    return AccountCore().currencies[acc];
+    return AccountCore().getCurrencies(acc);
   }
 
   bool validateETHAddress(String address) {
