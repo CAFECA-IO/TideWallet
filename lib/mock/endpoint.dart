@@ -26,7 +26,6 @@ Future<Map> getETH() async {
     "amount": v.toString(),
     "fiat": (v * 3000).toString()
   };
-
 }
 
 Future<Map> getETHTokeninfo(String address) async {
@@ -43,9 +42,7 @@ Future<Map> getETHTokeninfo(String address) async {
       "description": "Hey Hey"
     };
   } else {
-    return {
-      "success": false
-    };
+    return {"success": false};
   }
 }
 
@@ -85,29 +82,22 @@ Future<List<Transaction>> getETHTransactions() async {
   return transactions;
 }
 
-Future<List<Map>> fiatList() async {
+Future<Map<String, List<Map>>> exchangeRate() async {
   await Future.delayed(Duration(seconds: 1));
 
-  return [
-    {
-      "name": "USD",
-      "rate": "1"
-    },
-    {
-      "name": "CNY",
-      "rate": "0.14"
-    },
-    {
-      "name": "TWD",
-      "rate": "0.03"
-    },
-    {
-      "name": "HKD",
-      "rate": "0.14"
-    },
-    {
-      "name": "JPY",
-      "rate": "0.01"
-    }
-  ];
+  return {
+    "crypto": [
+      {"name": "ETH", "rate": "1325"},
+      {"name": "BTC", "rate": "31847"},
+      {"name": "XRP", "rate": "0.265"},
+      {"name": "XPA", "rate": "0.001"},
+    ],
+    "fiat": [
+      {"name": "USD", "rate": "1"},
+      {"name": "CNY", "rate": "0.14"},
+      {"name": "TWD", "rate": "0.03"},
+      {"name": "HKD", "rate": "0.14"},
+      {"name": "JPY", "rate": "0.01"}
+    ]
+  };
 }
