@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tidewallet3/blocs/fiat/fiat_bloc.dart';
-import 'package:tidewallet3/screens/setting_fiat.screen.dart';
 
+import '../../screens/setting_fiat.screen.dart';
+import '../../blocs/fiat/fiat_bloc.dart';
 import '../../helpers/i18n.dart';
 
 class FiatSetting extends StatefulWidget {
