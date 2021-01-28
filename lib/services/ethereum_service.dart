@@ -129,6 +129,7 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   static Future<Token> getTokeninfo(String _address) async {
+    Future.delayed(Duration(milliseconds: 1000));
     Map result = await getETHTokeninfo(_address);
     if (result != null && result['success']) {
       Token _token = Token(

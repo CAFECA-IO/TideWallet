@@ -50,9 +50,9 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
         builder: (context, state) {
           Widget result = SizedBox();
           bool addable =
-              (state is BeforeAdd && state.valid && state.result != null);
+              (state is GetToken && state.result != null);
 
-          if (state is BeforeAdd) {
+          if (state is GetToken) {
             Widget item(String _title, String _value) {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -73,7 +73,7 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
               );
             }
 
-            if (state.result != null && state.valid) {
+            if (state.result != null) {
               result = Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -93,17 +93,24 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
                   item(t('description'), state.result.description),
                 ],
               );
+            } else {
+              result = Container(child: Text(t('not_found')));
             }
           }
 
           return BlocListener<AddCurrencyBloc, AddCurrencyState>(
             cubit: _bloc,
+            listenWhen: (prev, curr) => (prev != curr),
             listener: (context, state) {
-              if (state is BeforeAdd) {
-                if (state.loading) {
-                  DialogController.show(context, LoadingDialog());
-                }
+
+              if (state is Loading) {
+                DialogController.showUnDissmissible(context, LoadingDialog());
               }
+
+              if (state is GetToken) {
+                DialogController.dismiss(context);
+              }
+
               if (state is AddSuccess) {
                 DialogController.dismiss(context);
                 Navigator.of(context).pop();
