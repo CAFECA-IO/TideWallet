@@ -41,6 +41,7 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: GeneralAppbar(
         routeName: AddCurrencyScreen.routeName,
       ),
