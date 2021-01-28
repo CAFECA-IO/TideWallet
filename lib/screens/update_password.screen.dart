@@ -16,15 +16,23 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    GeneralAppbar _generalAppbar = GeneralAppbar(
+      title: t('reset_password'),
+      routeName: UpdatePasswordScreen.routeName,
+    );
     return Scaffold(
-      appBar: GeneralAppbar(
-        title: t('reset_password'),
-        routeName: UpdatePasswordScreen.routeName,
-      ),
-      resizeToAvoidBottomInset: false,
-      body: Container(
-        padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-        child: UpdatePasswordForm(),
+      appBar: _generalAppbar,
+      body: LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          child: ConstrainedBox(
+              constraints: BoxConstraints(
+                  minWidth: constraints.maxWidth,
+                  minHeight: constraints.maxHeight),
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                child: UpdatePasswordForm(),
+              )),
+        ),
       ),
     );
   }

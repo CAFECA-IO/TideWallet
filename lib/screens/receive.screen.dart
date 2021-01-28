@@ -62,10 +62,10 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
           listener: (context, state) {
             print('state: $state');
             if (state is AddressLoading) {
-              DialogContorller.showUnDissmissible(context, LoadingDialog());
+              DialogController.showUnDissmissible(context, LoadingDialog());
             }
             if (state is AddressLoaded) {
-              DialogContorller.dismiss(context);
+              DialogController.dismiss(context);
               setState(() {
                 _address = state.address;
                 print('_address: $_address');

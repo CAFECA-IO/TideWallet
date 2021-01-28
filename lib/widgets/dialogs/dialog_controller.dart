@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class DialogContorller {
+class DialogController {
   static const Color _barrierColor = Colors.transparent;
 
   static show(BuildContext ctx, Widget dialog, {Function onDismiss}) {

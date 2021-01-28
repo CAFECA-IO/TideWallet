@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../blocs/update_password/update_password_bloc.dart';
 import '../../blocs/user/user_bloc.dart';
-import '../inputs/input.dart';
 import '../inputs/password_input.dart';
 import '../buttons/secondary_button.dart';
 import '../dialogs/dialog_controller.dart';
@@ -11,6 +10,9 @@ import '../dialogs/error_dialog.dart';
 import '../../helpers/i18n.dart';
 
 class UpdatePasswordForm extends StatefulWidget {
+  final double appBarHeight;
+
+  const UpdatePasswordForm({Key key, this.appBarHeight}) : super(key: key);
   @override
   _UpdatePasswordFormState createState() => _UpdatePasswordFormState();
 }
@@ -55,7 +57,7 @@ class _UpdatePasswordFormState extends State<UpdatePasswordForm> {
               break;
             default:
           }
-          DialogContorller.show(context, ErrorDialog(_text), onDismiss: () {
+          DialogController.show(context, ErrorDialog(_text), onDismiss: () {
             _bloc.add(
               CleanUpdatePassword(),
             );
@@ -71,7 +73,7 @@ class _UpdatePasswordFormState extends State<UpdatePasswordForm> {
           cubit: _bloc,
           builder: (BuildContext ctx, UpdatePasswordState state) {
             if (state is UpdatePasswordStateCheck) {
-              return CheckingView(_bloc, state);
+              return CheckingView(_bloc, state, widget.appBarHeight);
             }
 
             return SizedBox();
@@ -83,7 +85,9 @@ class _UpdatePasswordFormState extends State<UpdatePasswordForm> {
 class CheckingView extends StatefulWidget {
   final UpdatePasswordBloc _bloc;
   final UpdatePasswordStateCheck _state;
-  CheckingView(this._bloc, this._state);
+  final double appBarHeight;
+
+  CheckingView(this._bloc, this._state, this.appBarHeight);
 
   @override
   _CheckingViewState createState() => _CheckingViewState();
@@ -134,93 +138,84 @@ class _CheckingViewState extends State<CheckingView> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          padding:
-              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-          child: Form(
-            key: _form,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                      color:
-                          Theme.of(context).primaryColorDark.withOpacity(0.25),
-                      borderRadius: BorderRadius.circular(4.0)),
-                  padding:
-                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-                  margin: EdgeInsets.symmetric(vertical: 16.0),
-                  child: Text(
-                    t('create_wallet_message'),
-                    style: TextStyle(color: Colors.black),
-                  ),
+    return Container(
+      child: Form(
+        key: _form,
+        child: IntrinsicHeight(
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColorDark.withOpacity(0.25),
+                    borderRadius: BorderRadius.circular(4.0)),
+                padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                margin: EdgeInsets.symmetric(vertical: 16.0),
+                child: Text(
+                  t('create_wallet_message'),
+                  style: TextStyle(color: Colors.black),
                 ),
-                PasswordInput(
-                  label: t('current_password'),
-                  controller: _currentPwdController,
-                  validator: (String v) => '',
-                  onChanged: (String v) {
-                    widget._bloc.add(InputWalletCurrentPassword(v));
+              ),
+              PasswordInput(
+                label: t('current_password'),
+                controller: _currentPwdController,
+                validator: (String v) => '',
+                onChanged: (String v) {
+                  widget._bloc.add(InputWalletCurrentPassword(v));
+                },
+              ),
+              SizedBox(height: 16.0),
+              PasswordInput(
+                label: t('new_password'),
+                controller: _pwdController,
+                validator: (String v) => '',
+                onChanged: (String v) {
+                  widget._bloc.add(InputPassword(v));
+                },
+              ),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 15.0),
+                margin: EdgeInsets.only(top: 8.0),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).dividerColor,
+                    borderRadius: BorderRadius.circular(4.0)),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: checkList(widget._state.rules)),
+              ),
+              SizedBox(height: 16.0),
+              PasswordInput(
+                label: t('re_ew_password'),
+                controller: _repwdController,
+                validator: (String v) => '',
+                onChanged: (String v) {
+                  widget._bloc.add(InputRePassword(v));
+                },
+              ),
+              Spacer(),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 36.0, vertical: 48.0),
+                width: MediaQuery.of(context).size.width * 0.9,
+                child: SecondaryButton(
+                  t('confirm'),
+                  () {
+                    widget._bloc.add(SubmitUpdatePassword());
                   },
+                  borderColor: Theme.of(context).accentColor,
+                  textColor: Theme.of(context).accentColor,
+                  isEnabled: (widget._state.currentPassword.isNotEmpty &&
+                          widget._state.password.isNotEmpty &&
+                          widget._state.rePassword.isNotEmpty)
+                      ? true
+                      : false,
                 ),
-                SizedBox(height: 16.0),
-                PasswordInput(
-                  label: t('new_password'),
-                  controller: _pwdController,
-                  validator: (String v) => '',
-                  onChanged: (String v) {
-                    widget._bloc.add(InputPassword(v));
-                  },
-                ),
-                Container(
-                  width: double.infinity,
-                  padding:
-                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 15.0),
-                  margin: EdgeInsets.only(top: 8.0),
-                  decoration: BoxDecoration(
-                      color: Theme.of(context).dividerColor,
-                      borderRadius: BorderRadius.circular(4.0)),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: checkList(widget._state.rules)),
-                ),
-                SizedBox(height: 16.0),
-                PasswordInput(
-                  label: t('re_ew_password'),
-                  controller: _repwdController,
-                  validator: (String v) => '',
-                  onChanged: (String v) {
-                    widget._bloc.add(InputRePassword(v));
-                  },
-                ),
-              ],
-            ),
+              )
+            ],
           ),
         ),
-        Positioned(
-          bottom: 0,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 36.0),
-            margin: EdgeInsets.only(bottom: 48),
-            width: MediaQuery.of(context).size.width * 0.9,
-            child: SecondaryButton(
-              t('confirm'),
-              () {
-                widget._bloc.add(SubmitUpdatePassword());
-              },
-              borderColor: Theme.of(context).accentColor,
-              textColor: Theme.of(context).accentColor,
-              isEnabled: (widget._state.currentPassword.isNotEmpty &&
-                      widget._state.password.isNotEmpty &&
-                      widget._state.rePassword.isNotEmpty)
-                  ? true
-                  : false,
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
