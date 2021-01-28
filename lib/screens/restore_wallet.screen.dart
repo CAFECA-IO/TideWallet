@@ -44,14 +44,14 @@ class _RestoreWalletScreenState extends State<RestoreWalletScreen> {
           if (state is PaperWalletSuccess) {
             // Wait for Navigator back from Scan Screen
             await Future.delayed(Duration(milliseconds: 300));
-            DialogContorller.showUnDissmissible(
+            DialogController.showUnDissmissible(
               context,
               VerifyPasswordDialog((String password) {
-                DialogContorller.dismiss(context);
+                DialogController.dismiss(context);
                 _bloc.add(RestorePapaerWallet(password));
               }, (String password) {
                 _bloc.add(CleanWalletResult());
-                DialogContorller.dismiss(context);
+                DialogController.dismiss(context);
               }),
             );
           }
@@ -64,13 +64,13 @@ class _RestoreWalletScreenState extends State<RestoreWalletScreen> {
           }
 
           if (state is PaperWallletRestoring) {
-            DialogContorller.showUnDissmissible(context, LoadingDialog());
+            DialogController.showUnDissmissible(context, LoadingDialog());
           }
 
           if (state is PaperWalletRestoreFail) {
-            DialogContorller.dismiss(context);
+            DialogController.dismiss(context);
 
-            DialogContorller.show(context, ErrorDialog(t('error_password')));
+            DialogController.show(context, ErrorDialog(t('error_password')));
           }
         },
         child: Container(

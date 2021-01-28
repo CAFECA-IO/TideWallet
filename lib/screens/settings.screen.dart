@@ -114,14 +114,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _item(
                   t('setting_backup'),
                   () {
-                    DialogContorller.showUnDissmissible(
+                    DialogController.showUnDissmissible(
                       context,
                       VerifyPasswordDialog(
                         (String pwd) {
                           _backupBloc.add(VerifyBackupPassword(pwd));
                         },
                         (String pwd) {
-                          DialogContorller.dismiss(context);
+                          DialogController.dismiss(context);
                         },
                       ),
                     );

@@ -51,10 +51,10 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
         listener: (context, state) async {
           print(state);
           if (state is TransactionPublishing) {
-            DialogContorller.showUnDissmissible(context, LoadingDialog());
+            DialogController.showUnDissmissible(context, LoadingDialog());
           }
           if (state is TransactionSent) {
-            DialogContorller.dismiss(context);
+            DialogController.dismiss(context);
             await Future.delayed(Duration(milliseconds: 150), () {
               Navigator.of(context).pushNamed(TransactionListScreen.routeName);
             });
@@ -138,7 +138,7 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
                     _bloc.add(CreateTransaction());
                   }
                   if (state is PasswordInvalid) {
-                    DialogContorller.show(
+                    DialogController.show(
                         context, ErrorDialog(t('error_password')));
                   }
                 },
@@ -148,13 +148,13 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
                   child: SecondaryButton(
                     "Confirm",
                     () {
-                      DialogContorller.showUnDissmissible(
+                      DialogController.showUnDissmissible(
                         context,
                         VerifyPasswordDialog((String password) {
                           _userBloc.add(VerifyPassword(password));
-                          DialogContorller.dismiss(context);
+                          DialogController.dismiss(context);
                         }, (String password) {
-                          DialogContorller.dismiss(context);
+                          DialogController.dismiss(context);
                         }),
                       );
 

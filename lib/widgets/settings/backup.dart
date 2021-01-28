@@ -34,7 +34,7 @@ class _BackupSettingState extends State<BackupSetting> {
     return BlocListener<BackupBloc, BackupState>(
       listener: (context, state) {
         if (state is BackupAuth) {
-          DialogContorller.dismiss(context);
+          DialogController.dismiss(context);
           showModalBottomSheet(
             // isDismissible: false,
             isScrollControlled: true,
@@ -78,12 +78,12 @@ class _BackupSettingState extends State<BackupSetting> {
         }
 
         if (state is BackupDenied) {
-          DialogContorller.dismiss(context);
-          DialogContorller.show(context, ErrorDialog(t('error_password')));
+          DialogController.dismiss(context);
+          DialogController.show(context, ErrorDialog(t('error_password')));
         }
 
         if (state is BackupFail) {
-          DialogContorller.show(context, ErrorDialog(t('error_backup')));
+          DialogController.show(context, ErrorDialog(t('error_backup')));
         }
       },
       child: BlocBuilder<BackupBloc, BackupState>(

@@ -22,11 +22,17 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
     );
     return Scaffold(
       appBar: _generalAppbar,
-      body: Container(
-        padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-        child: SingleChildScrollView(
-            child: UpdatePasswordForm(
-                appBarHeight: _generalAppbar.preferredSize.height)),
+      body: LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          child: ConstrainedBox(
+              constraints: BoxConstraints(
+                  minWidth: constraints.maxWidth,
+                  minHeight: constraints.maxHeight),
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+                child: UpdatePasswordForm(),
+              )),
+        ),
       ),
     );
   }
