@@ -100,17 +100,17 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
             listener: (context, state) {
               if (state is BeforeAdd) {
                 if (state.loading) {
-                  DialogContorller.show(context, LoadingDialog());
+                  DialogController.show(context, LoadingDialog());
                 }
               }
               if (state is AddSuccess) {
-                DialogContorller.dismiss(context);
+                DialogController.dismiss(context);
                 Navigator.of(context).pop();
               }
 
               if (state is AddFail) {
-                DialogContorller.dismiss(context);
-                DialogContorller.show(context, ErrorDialog(t('error_add')));
+                DialogController.dismiss(context);
+                DialogController.show(context, ErrorDialog(t('error_add')));
               }
             },
             child: Container(
