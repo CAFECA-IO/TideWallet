@@ -10,28 +10,31 @@ abstract class AddCurrencyState extends Equatable {
 class AddCurrencyInitial extends AddCurrencyState {}
 
 class BeforeAdd extends AddCurrencyState {
-  final bool loading;
   final String address;
   final bool valid;
-  final Token result;
 
-  BeforeAdd({this.loading, this.address, this.valid, this.result});
+  BeforeAdd({ this.address, this.valid });
 
   copyWith({
     String address,
-    bool loading,
     bool valid,
     Token result,
   }) =>
       BeforeAdd(
         address: address ?? this.address,
-        loading: loading ?? this.loading,
         valid: valid ?? this.valid,
-        result: result,
       );
 
   @override
-  List<Object> get props => [loading, address, valid, result];
+  List<Object> get props => [address, valid];
+}
+
+class Loading extends AddCurrencyState {}
+
+class GetToken extends AddCurrencyState {
+  final Token result;
+
+  GetToken(this.result);
 }
 
 class AddSuccess extends AddCurrencyState {}
