@@ -10,10 +10,6 @@ class EthereumTokenTransaction {
   int confirmations;
   TransactionStatus status;
   final String amount;
-  final String tokenId;
-
-  final String ownerAddress;
-  final String ownerContract;
 
   EthereumTokenTransaction({
     this.id,
@@ -24,9 +20,6 @@ class EthereumTokenTransaction {
     this.confirmations,
     this.status,
     this.amount,
-    this.tokenId, // for ERC-721
-    this.ownerAddress,
-    this.ownerContract,
   });
 
   EthereumTokenTransaction.fromMap(Map<String, dynamic> transactionMap)
@@ -37,8 +30,5 @@ class EthereumTokenTransaction {
         timestamp = transactionMap[DBTransaction.FieldName_Timestamp],
         confirmations = transactionMap[DBTransaction.FieldName_Confirmations],
         status = transactionMap[DBTransaction.FieldName_Status],
-        amount = transactionMap[DBTransaction.FieldName_Amount],
-        tokenId = transactionMap[DBTransaction.FieldName_TokenId],
-        ownerAddress = transactionMap[DBTransaction.FieldName_OwnerAddress],
-        ownerContract = transactionMap[DBTransaction.FieldName_OwnerContract];
+        amount = transactionMap[DBTransaction.FieldName_Amount];
 }

@@ -17,7 +17,6 @@ class EthereumTransaction {
   final String gasPrice; // in Wei
   final int gasUsed;
   final Uint8List data; // utf8.encode
-  final String ownerAddress;
 
   EthereumTransaction({
     this.id,
@@ -33,7 +32,6 @@ class EthereumTransaction {
     this.gasPrice,
     this.gasUsed,
     Uint8List data,
-    this.ownerAddress,
   }) : data = data ?? Uint8List(0);
 
   EthereumTransaction.fromMap(Map<String, dynamic> transactionMap)
@@ -48,6 +46,5 @@ class EthereumTransaction {
         amount = transactionMap[DBTransaction.FieldName_Amount],
         gasPrice = transactionMap[DBTransaction.FieldName_GasPrice].toString(),
         gasUsed = transactionMap[DBTransaction.FieldName_GasUsed],
-        data = transactionMap[DBTransaction.FieldName_Note],
-        ownerAddress = transactionMap[DBTransaction.FieldName_OwnerAddress];
+        data = transactionMap[DBTransaction.FieldName_Note];
 }
