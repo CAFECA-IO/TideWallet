@@ -3,7 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import './transaction_preview.screen.dart';
-import './scan_wallet.screen.dart';
+import './scan_address.screen.dart';
+
 import '../models/transaction.model.dart';
 // import '../blocs/user/user_bloc.dart';
 import '../blocs/transaction/transaction_bloc.dart';
@@ -70,6 +71,9 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
           builder: (context, state) {
             if (state is TransactionInitial) {
               print(state.props);
+              if (state.address.isNotEmpty) {
+                _addressController.text = state.address;
+              }
               return Container(
                 padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
                 margin: EdgeInsets.symmetric(vertical: 16.0),
@@ -86,8 +90,9 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                         controller: _addressController,
                         suffixIcon: GestureDetector(
                             onTap: () {
+                              this._bloc.add(ResetAddress());
                               Navigator.of(context)
-                                  .pushNamed(ScanWalletScreen.routeName);
+                                  .pushNamed(ScanAddressScreen.routeName);
                             },
                             child: ImageIcon(AssetImage(
                                 'assets/images/icons/ic_qrcode.png'))),

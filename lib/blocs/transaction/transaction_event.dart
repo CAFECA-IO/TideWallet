@@ -7,6 +7,10 @@ abstract class TransactionEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class ResetAddress extends TransactionEvent {
+  ResetAddress();
+}
+
 class ScanQRCode extends TransactionEvent {
   final String address;
   ScanQRCode(this.address);

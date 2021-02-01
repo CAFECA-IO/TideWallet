@@ -42,6 +42,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         gasPrice: _gasPrice[_state.priority],
       );
     }
+    if (event is ResetAddress) {
+      List<bool> _rules = [false, _state.rules[1]];
+      print(_rules);
+      yield _state.copyWith(
+        address: '',
+        rules: _rules,
+      );
+    }
     if (event is ScanQRCode) {
       print("ValidAddress address: ${event.address}");
       List<bool> _rules = [_repo.validAddress(event.address), _state.rules[1]];
