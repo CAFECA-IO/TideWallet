@@ -35,3 +35,19 @@
 
 > ./doc/TideWallet_Interaction_Diagram_BackupWallet.drawio
 ![](./doc/TideWallet_Interaction_Diagram_BackupWallet.png)
+
+### UI Logic
+> ./doc/LandingScreen.drawio
+![](./doc/LandingScreen.png)
+
+> ./doc/WelcomeScreen.drawio
+![](./doc/WelcomeScreen.png)
+
+> ./doc/RestoreWalletScreen.drawio
+![](./doc/RestoreWalletScreen.png)
+
+> ./doc/AccountScreen.drawio
+![](./doc/AccountScreen.png)
+
+> ./doc/CurrencyScreen.drawio
+![](./doc/CurrencyScreen.png)
