@@ -30,6 +30,7 @@ import './blocs/account/account_bloc.dart';
 import './blocs/delegate.dart';
 import './blocs/user/user_bloc.dart';
 import './blocs/transaction/transaction_bloc.dart';
+// import './blocs/transaction_status/transaction_status_bloc.dart';
 import './blocs/restore_wallet/restore_wallet_bloc.dart';
 import './blocs/backup/backup_bloc.dart';
 import './blocs/receive/receive_bloc.dart';
@@ -81,8 +82,15 @@ class MyApp extends StatelessWidget {
             BlocProvider<TransactionBloc>(
               create: (BuildContext context) => TransactionBloc(
                 Provider.of<TransactionRepository>(context, listen: false),
+                Provider.of<TraderRepository>(context, listen: false),
               ),
             ),
+            // BlocProvider<TransactionStatusBloc>(
+            //   create: (BuildContext context) => TransactionStatusBloc(
+            //     Provider.of<TransactionRepository>(context, listen: false),
+            //     Provider.of<TraderRepository>(context, listen: false),
+            //   ),
+            // ),
             BlocProvider<RestoreWalletBloc>(
               create: (BuildContext context) => RestoreWalletBloc(
                 Provider.of<UserRepository>(context, listen: false),
