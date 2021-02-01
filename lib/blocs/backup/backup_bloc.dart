@@ -8,6 +8,7 @@ import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../helpers/logger.dart';
 import '../../repositories/user_repository.dart';
 part 'backup_event.dart';
 part 'backup_state.dart';
@@ -36,7 +37,7 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
        if (status.isGranted) {
         final result = await ImageGallerySaver.saveImage(Uint8List.fromList(imageBytes),
             quality: 60, name: "PaperWallet");
-        print(result);
+        Log.debug(result);
         return true;
 
        } else {

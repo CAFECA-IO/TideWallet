@@ -108,7 +108,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _section(t('setting_security'), [
               _item(t('setting_reset_password'), () {
                 Navigator.of(context).pushNamed(UpdatePasswordScreen.routeName);
-                print('ಠ_ಠ');
               }),
               BackupSetting(
                 _item(
@@ -135,11 +134,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _section(t('setting_about'), [
               _item(t('setting_feedback'), () {
                 Navigator.of(context).pushNamed(FeedbackScreen.routeName);
-                print('Σ( ° △ °|||)');
               }),
               _item(t('setting_term'), () {
                 Navigator.of(context).pushNamed(TermsScreen.routeName);
-                print('Σ( ° △ °|||)');
               })
             ])
           ],

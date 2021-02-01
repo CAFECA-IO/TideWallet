@@ -34,7 +34,6 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
     Map<String, Currency> arg = ModalRoute.of(context).settings.arguments;
     _currency = arg["currency"];
     _repo = Provider.of<AccountRepository>(context);
-    print("_address: $_address");
     if (!_isCalled) {
       _bloc = ReceiveBloc(_repo)..add(GetReceivingAddress(_currency));
       _isCalled = true;
@@ -60,7 +59,6 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
       body: BlocListener<ReceiveBloc, ReceiveState>(
           cubit: _bloc,
           listener: (context, state) {
-            print('state: $state');
             if (state is AddressLoading) {
               DialogController.showUnDissmissible(context, LoadingDialog());
             }
@@ -68,7 +66,6 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
               DialogController.dismiss(context);
               setState(() {
                 _address = state.address;
-                print('_address: $_address');
               });
             }
           },

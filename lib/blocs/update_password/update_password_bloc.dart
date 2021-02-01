@@ -31,10 +31,8 @@ class UpdatePasswordBloc
     UpdatePasswordEvent event,
   ) async* {
     UpdatePasswordStateCheck _state = state;
-    print('State currentPassword: ${_state.currentPassword}');
 
     if (event is InputWalletCurrentPassword) {
-      print('Event: ${event.currentPassword}');
       if (_state.password.isNotEmpty) {
         yield _state.copyWith(
           currentPassword: event.currentPassword,
@@ -58,7 +56,6 @@ class UpdatePasswordBloc
     }
 
     if (event is SubmitUpdatePassword) {
-      print(this.validateState(_state));
       yield _state.copyWith(error: this.validateState(_state));
     }
 

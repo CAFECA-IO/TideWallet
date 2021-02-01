@@ -49,7 +49,6 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
       body: BlocListener<TransactionBloc, TransactionState>(
         cubit: _bloc,
         listener: (context, state) async {
-          print(state);
           if (state is TransactionPublishing) {
             DialogController.showUnDissmissible(context, LoadingDialog());
           }
@@ -157,8 +156,6 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
                           DialogController.dismiss(context);
                         }),
                       );
-
-                      print(_bloc.state.props);
                     },
                     textColor: Theme.of(context).accentColor,
                     borderColor: Theme.of(context).accentColor,

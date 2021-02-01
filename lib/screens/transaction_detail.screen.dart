@@ -1,4 +1,3 @@
-import 'package:tidewallet3/repositories/trader_repository.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../blocs/transaction_status/transaction_status_bloc.dart';
 
 import '../theme.dart';
+import '../helpers/logger.dart';
 import '../helpers/i18n.dart';
 import '../helpers/formatter.dart';
 import '../models/account.model.dart';
@@ -14,6 +14,7 @@ import '../widgets/appBar.dart';
 import '../widgets/dash_line_divider.dart';
 import '../repositories/account_repository.dart';
 import '../repositories/transaction_repository.dart';
+import '../repositories/trader_repository.dart';
 
 class TransactionDetailScreen extends StatefulWidget {
   // final Currency currency;
@@ -45,10 +46,10 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
     _repo = Provider.of<TransactionRepository>(context);
     _accountRepo = Provider.of<AccountRepository>(context);
     _traderRepo = Provider.of<TraderRepository>(context);
-    print(_transaction.status);
-    print(_transaction.amount);
-    print(_transaction.confirmations);
-    print(_transaction.direction);
+    Log.debug(_transaction.status);
+    Log.debug(_transaction.amount);
+    Log.debug(_transaction.confirmations);
+    Log.debug(_transaction.direction);
     _bloc = TransactionStatusBloc(_repo, _accountRepo, _traderRepo)
       ..add(UpdateTransaction(_transaction)); // TODO GetTransactionList
     super.didChangeDependencies();
@@ -62,7 +63,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("build");
+    Log.debug("build");
     return Scaffold(
       appBar: GeneralAppbar(
         title: t('transaction_detail'),
