@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:tidewallet3/constants/account_config.dart';
+import 'package:tidewallet3/helpers/http_agent.dart';
 
 import 'account_service_decorator.dart';
 
