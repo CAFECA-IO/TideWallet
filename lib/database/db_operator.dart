@@ -1,9 +1,23 @@
+import 'dao/user_dao.dart';
+import 'database.dart';
+
 class DBOperator {
-  query() {}
+  AppDatabase database;
+  bool _isInit = false;
 
-  create() {}
+  DBOperator._privateConstructor();
 
-  update() {}
+  UserDao get userDao => database.userDao;
 
-  delete() {}
+  factory DBOperator() => instance;
+
+  static final DBOperator instance = DBOperator._privateConstructor();
+
+  init() async {
+    if (_isInit) return;
+
+    final db = await $FloorAppDatabase.databaseBuilder('tidewallet.db').build();
+    this.database = db;
+    this._isInit = true;
+  }
 }

@@ -14,6 +14,7 @@ class EthereumService extends AccountServiceDecorator {
   EthereumService(AccountService service) : super(service) {
     this.base = ACCOUNT.ETH;
   }
+
   
   Timer _timer;
 
