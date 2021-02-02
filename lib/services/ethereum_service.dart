@@ -1,15 +1,14 @@
 import 'dart:async';
-import 'package:tidewallet3/constants/account_config.dart';
-import 'package:tidewallet3/helpers/http_agent.dart';
+import 'package:decimal/decimal.dart';
+
 
 import 'account_service_decorator.dart';
-
-import 'package:decimal/decimal.dart';
-import 'package:tidewallet3/models/account.model.dart';
-import 'package:tidewallet3/services/account_service.dart';
+import '../models/account.model.dart';
+import '../models/transaction.model.dart';
+import '../constants/account_config.dart';
+import '../services/account_service.dart';
 import '../mock/endpoint.dart';
 import '../cores/account.dart';
-import '../models/transaction.model.dart';
 
 class EthereumService extends AccountServiceDecorator {
   EthereumService(AccountService service) : super(service) {

@@ -9,7 +9,7 @@ class HTTPAgent {
   static final HTTPAgent _instance = HTTPAgent._internal();
   factory HTTPAgent() => _instance;
   Dio _dio;
-  ToeknInterceptor _tokeninterceptor = ToeknInterceptor();
+  TokenInterceptor _tokenInterceptor = TokenInterceptor();
   RetryInterceptor _retryInterceptor;
 
   HTTPAgent._internal() {
@@ -22,7 +22,7 @@ class HTTPAgent {
   }
 
   setInterceptor() {
-    _dio.interceptors.add(_tokeninterceptor);
+    _dio.interceptors.add(_tokenInterceptor);
 
     _retryInterceptor =  RetryInterceptor(
       this._dio,
@@ -35,7 +35,7 @@ class HTTPAgent {
   }
 
   void setToken(String token) {
-    _tokeninterceptor.setToken(token);
+    _tokenInterceptor.setToken(token);
   }
 
   Future<Response> get(String path) {
