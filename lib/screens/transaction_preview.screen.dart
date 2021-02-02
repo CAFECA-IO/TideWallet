@@ -42,8 +42,6 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
   @override
   void dispose() {
     super.dispose();
-    // _bloc.close();
-    _userBloc.close();
   }
 
   @override

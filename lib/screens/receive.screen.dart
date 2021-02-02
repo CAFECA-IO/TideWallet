@@ -75,28 +75,28 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
           child: Container(
             width: double.infinity,
             padding: EdgeInsets.symmetric(vertical: 0, horizontal: 16.0),
-            margin: EdgeInsets.symmetric(vertical: height * 0.05),
+            margin: EdgeInsets.symmetric(vertical: 48),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(vertical: 16),
                   child: Text(
                     '${t('remit')} ${_currency.symbol.toUpperCase()}',
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                 ),
+                SizedBox(height: 20),
                 Container(
-                  height: height * 0.035,
+                  height: 40,
                   child: Text(
-                    _currency.accountType == ACCOUNT.BTC
+                    _currency.accountType != ACCOUNT.BTC
                         ? t('btc_receving_address_hint')
                         : '',
                     style: Theme.of(context).textTheme.subtitle2,
                   ),
                 ),
+                SizedBox(height: 20),
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: height * 0.045),
                   child: QrImage(
                     data: _address,
                     version: QrVersions.auto,
@@ -107,13 +107,12 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
                 Container(
                   height: 60,
                   margin: EdgeInsets.symmetric(
-                      horizontal: width * 0.035, vertical: height * 0.045),
+                      horizontal: width * 0.035, vertical: 20),
                   padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                   color: MyColors.secondary_11,
                   child: Center(child: Text(_address)),
                 ),
                 Container(
-                  padding: EdgeInsets.only(bottom: height * 0.05),
                   margin: EdgeInsets.symmetric(horizontal: width * 0.1),
                   child: SecondaryButton(
                     t('copy_wallet_address'),

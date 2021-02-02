@@ -34,7 +34,7 @@ import './blocs/transaction/transaction_bloc.dart';
 import './blocs/restore_wallet/restore_wallet_bloc.dart';
 import './blocs/backup/backup_bloc.dart';
 import './blocs/receive/receive_bloc.dart';
-import './blocs/update_password/update_password_bloc.dart';
+// import './blocs/update_password/update_password_bloc.dart';
 import './helpers/i18n.dart';
 import './repositories/trader_repository.dart';
 import 'theme.dart';
@@ -117,11 +117,11 @@ class MyApp extends StatelessWidget {
                 Provider.of<AccountRepository>(context, listen: false),
               ),
             ),
-            BlocProvider<UpdatePasswordBloc>(
-              create: (BuildContext context) => UpdatePasswordBloc(
-                Provider.of<UserRepository>(context, listen: false),
-              ),
-            ),
+            // BlocProvider<UpdatePasswordBloc>(
+            //   create: (BuildContext context) => UpdatePasswordBloc(
+            //     Provider.of<UserRepository>(context, listen: false),
+            //   ),
+            // ),
           ],
           child: _material,
         ),
