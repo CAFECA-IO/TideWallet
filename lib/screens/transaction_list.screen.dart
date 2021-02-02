@@ -3,11 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
-import './create_transaction.screen.dart';
-import './receive.screen.dart';
-import '../repositories/account_repository.dart';
 import '../repositories/transaction_repository.dart';
 import '../repositories/trader_repository.dart';
+import './create_transaction.screen.dart';
+import './receive.screen.dart';
 import '../models/account.model.dart';
 import '../models/transaction.model.dart';
 import '../blocs/fiat/fiat_bloc.dart';
@@ -31,7 +30,6 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
   final t = I18n.t;
   TransactionStatusBloc _bloc;
   TransactionRepository _repo;
-  AccountRepository _accountRepo;
   TraderRepository _traderRepo;
   Currency _currency;
 
@@ -41,8 +39,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
     _currency = arg["account"];
     _repo = Provider.of<TransactionRepository>(context);
     _traderRepo = Provider.of<TraderRepository>(context);
-    _accountRepo = Provider.of<AccountRepository>(context);
-    _bloc = TransactionStatusBloc(_repo, _accountRepo, _traderRepo)
+    _bloc = TransactionStatusBloc(_repo, _traderRepo)
       ..add(UpdateCurrency(_currency));
     super.didChangeDependencies();
   }
@@ -116,8 +113,10 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
 
                       if (fiatState is FiatLoaded) {
                         _state = fiatState;
-                        String num =state.currency?.inUSD ?? _currency.inUSD;
-                        value = Formatter.formaDecimal((Decimal.tryParse(num) / _state.fiat.exchangeRate).toString());
+                        String num = state.currency?.inUSD ?? _currency.inUSD;
+                        value = Formatter.formaDecimal(
+                            (Decimal.tryParse(num) / _state.fiat.exchangeRate)
+                                .toString());
                       }
                       return Text(
                         '${String.fromCharCode(0x2248)} $value ${_state.fiat.name}',
@@ -140,8 +139,9 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                           child: TertiaryButton(
                         t('send'),
                         () {
-                          Navigator.of(context)
-                              .pushNamed(CreateTransactionScreen.routeName);
+                          Navigator.of(context).pushNamed(
+                              CreateTransactionScreen.routeName,
+                              arguments: {"account": _currency});
                         },
                         textColor: MyColors.primary_04,
                         iconImg:

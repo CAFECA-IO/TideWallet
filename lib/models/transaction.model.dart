@@ -138,18 +138,6 @@ class Transaction {
     var gasUsed = BigInt.from(transaction.gasUsed);
     var feeWei = gasPrice * gasUsed;
     // _fee = _account.toCoinUnit(feeWei).toString();
-
-    if (transaction.from.toLowerCase() == transaction.to.toLowerCase()) {
-      _direction = TransactionDirection.moved;
-      _address = transaction.from;
-    } else if (transaction.from.toLowerCase() ==
-        transaction.ownerAddress.toLowerCase()) {
-      _direction = TransactionDirection.sent;
-      _address = transaction.to;
-    } else {
-      _direction = TransactionDirection.received;
-      _address = transaction.from;
-    }
   }
 
   Transaction.fromEthereumTokenTransaction(
@@ -160,11 +148,6 @@ class Transaction {
     _confirmations = 1; // useless to token
     _fee = "0"; // useless to token
     _direction = TransactionDirection.sent;
-    if (transaction.ownerAddress.toLowerCase() ==
-        transaction.to.toLowerCase()) {
-      // received
-      _direction = TransactionDirection.received;
-    }
     _address = (_direction == TransactionDirection.sent)
         ? transaction.to
         : transaction.from;

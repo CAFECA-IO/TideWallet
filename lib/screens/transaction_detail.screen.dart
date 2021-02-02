@@ -2,8 +2,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import '../blocs/transaction_status/transaction_status_bloc.dart';
 
+import '../blocs/transaction_status/transaction_status_bloc.dart';
 import '../theme.dart';
 import '../helpers/logger.dart';
 import '../helpers/i18n.dart';
@@ -12,7 +12,6 @@ import '../models/account.model.dart';
 import '../models/transaction.model.dart';
 import '../widgets/appBar.dart';
 import '../widgets/dash_line_divider.dart';
-import '../repositories/account_repository.dart';
 import '../repositories/transaction_repository.dart';
 import '../repositories/trader_repository.dart';
 
@@ -33,7 +32,6 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
   final t = I18n.t;
   TransactionStatusBloc _bloc;
   TransactionRepository _repo;
-  AccountRepository _accountRepo;
   TraderRepository _traderRepo;
   Currency _currency;
   Transaction _transaction;
@@ -44,13 +42,14 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
     _currency = arg["currency"];
     _transaction = arg["transaction"];
     _repo = Provider.of<TransactionRepository>(context);
-    _accountRepo = Provider.of<AccountRepository>(context);
+
     _traderRepo = Provider.of<TraderRepository>(context);
     Log.debug(_transaction.status);
     Log.debug(_transaction.amount);
     Log.debug(_transaction.confirmations);
     Log.debug(_transaction.direction);
-    _bloc = TransactionStatusBloc(_repo, _accountRepo, _traderRepo)
+
+    _bloc = TransactionStatusBloc(_repo, _traderRepo)
       ..add(UpdateTransaction(_transaction)); // TODO GetTransactionList
     super.didChangeDependencies();
   }
@@ -95,7 +94,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                         width: 8,
                       ),
                       Text(
-                        'btc',
+                        _currency.symbol,
                         style: Theme.of(context).textTheme.headline1.copyWith(
                               color: _transaction.status !=
                                       TransactionStatus.success
@@ -188,7 +187,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Align(
                       child: Text(
-                        '${Formatter.formaDecimal(_transaction.fee)} btc',
+                        '${Formatter.formaDecimal(_transaction.fee)} ${_currency.symbol}',
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                       alignment: Alignment.centerLeft,

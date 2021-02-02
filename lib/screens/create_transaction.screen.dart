@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 import './transaction_preview.screen.dart';
-import './scan_wallet.screen.dart';
+import './scan_address.screen.dart';
+
 import '../models/transaction.model.dart';
-// import '../blocs/user/user_bloc.dart';
+import '../models/account.model.dart';
 import '../blocs/transaction/transaction_bloc.dart';
+import '../repositories/transaction_repository.dart';
 import '../widgets/appBar.dart';
 import '../widgets/buttons/radio_button.dart';
 import '../widgets/buttons/secondary_button.dart';
@@ -32,25 +35,32 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
   TextEditingController _amountController;
   TextEditingController _gasController;
   TextEditingController _gasPriceController;
+  TransactionRepository _repo;
+  Currency _currency;
   final _form = GlobalKey<FormState>();
   bool _isSelected = false;
 
   @override
   void didChangeDependencies() {
+    Map<String, Currency> arg = ModalRoute.of(context).settings.arguments;
+    _currency = arg["account"];
     _addressController = TextEditingController();
     _amountController = TextEditingController();
     _gasController = TextEditingController();
     _gasPriceController = TextEditingController();
+    this._repo = Provider.of<TransactionRepository>(context);
+    this._repo.setCurrency(_currency);
+    print('didChangeDependencies: ${_currency.symbol}');
     _bloc = BlocProvider.of<TransactionBloc>(context)
+      ..add(UpdateTransactionCreateCurrency(this._currency))
       ..add(FetchTransactionFee());
-    // _userBloc = BlocProvider.of<UserBloc>(context);
     super.didChangeDependencies();
   }
 
   @override
   void dispose() {
     super.dispose();
-    _bloc.close();
+    // _bloc.close();
     // _userBloc.close();
     _addressController.dispose();
     _amountController.dispose();
@@ -71,6 +81,9 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
           builder: (context, state) {
             if (state is TransactionInitial) {
               Log.debug(state.props);
+              if (state.address.isNotEmpty) {
+                _addressController.text = state.address;
+              }
               return Container(
                 padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
                 margin: EdgeInsets.symmetric(vertical: 16.0),
@@ -88,7 +101,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                         suffixIcon: GestureDetector(
                             onTap: () {
                               Navigator.of(context)
-                                  .pushNamed(ScanWalletScreen.routeName);
+                                  .pushNamed(ScanAddressScreen.routeName);
                             },
                             child: ImageIcon(AssetImage(
                                 'assets/images/icons/ic_qrcode.png'))),
@@ -309,7 +322,15 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                             if (state.rules[0] == true &&
                                 state.rules[1] == true)
                               Navigator.of(context).pushNamed(
-                                  TransactionPreviewScreen.routeName);
+                                  TransactionPreviewScreen.routeName,
+                                  arguments: {
+                                    "currency": _currency,
+                                    "transaction": Transaction(
+                                        address: state.address,
+                                        direction: TransactionDirection.sent,
+                                        amount: state.amount,
+                                        fee: state.fee)
+                                  });
                             else
                               // TODO alertDialog
                               () {};
