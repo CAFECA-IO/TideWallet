@@ -1,14 +1,22 @@
 import 'package:rxdart/subjects.dart';
+import '../services/account_service.dart';
 import '../cores/account.dart';
 import '../models/account.model.dart';
 import '../models/transaction.model.dart';
 
 class TransactionRepository {
+  Currency _currency;
+  AccountService _accountService;
   PublishSubject<AccountMessage> get listener => AccountCore().messenger;
 
-  TransactionRepository() {
-    // AccountCore().setMessenger();
+  TransactionRepository();
+
+  void setCurrency(Currency currency) {
+    this._currency = currency;
+    // _accountService = AccountCore().getService(this._currency.accountType);
   }
+
+  get currency => this._currency;
 
   bool validAddress(String address) {
     return address.length < 8 ? false : true;
@@ -41,7 +49,9 @@ class TransactionRepository {
     return true;
   }
 
-  List<Transaction> getTransactionsFromDB(Currency currency) {
+  List<Transaction> getTransactions() {
     // todo getTransactionFromDB
+    // List<Transaction> txs = _accountService.getTransactions();
+    // return txs;
   }
 }

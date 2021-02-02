@@ -193,6 +193,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
 
     bool showBackground() {
       if (routeName == ScanWalletScreen.routeName) return false;
+      if (routeName == ScanAddressScreen.routeName) return false;
       if (routeName == TransactionListScreen.routeName) return false;
       if (routeName == AccountScreen.routeName) return false;
       if (routeName == CurrencyScreen.routeName) return false;

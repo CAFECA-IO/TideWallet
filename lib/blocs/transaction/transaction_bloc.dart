@@ -5,23 +5,32 @@ import 'package:equatable/equatable.dart';
 import 'package:decimal/decimal.dart';
 
 import '../../repositories/transaction_repository.dart';
+import '../../repositories/trader_repository.dart';
 import '../../models/transaction.model.dart';
+import '../../models/account.model.dart';
 
 part 'transaction_event.dart';
 part 'transaction_state.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   TransactionRepository _repo;
+  TraderRepository _traderRepo;
+
   Map<TransactionPriority, String> _gasPrice;
   String _gasLimit;
 
-  TransactionBloc(this._repo) : super(TransactionInitial());
+  TransactionBloc(this._repo, this._traderRepo) : super(TransactionInitial());
 
   @override
   Stream<TransactionState> mapEventToState(
     TransactionEvent event,
   ) async* {
     print("event: $event");
+    if (event is UpdateTransactionCreateCurrency) {
+      _repo.setCurrency(event.currency);
+      print('UpdateTransactionCreateCurrency: ${event.currency.symbol}');
+      yield TransactionInitial();
+    }
     if (state is TransactionSent) return;
     if (state is TransactionPublishing) return;
     if (state is CreateTransactionFail) return;
@@ -40,6 +49,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         feeToFiat: '$feeToFiat',
         gasLimit: _gasLimit,
         gasPrice: _gasPrice[_state.priority],
+      );
+    }
+    if (event is ResetAddress) {
+      List<bool> _rules = [false, _state.rules[1]];
+      print(_rules);
+      yield _state.copyWith(
+        address: '',
+        rules: _rules,
       );
     }
     if (event is ScanQRCode) {

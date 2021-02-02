@@ -16,6 +16,7 @@ import './screens/wallet_connect.screen.dart';
 import './screens/create_transaction.screen.dart';
 import './screens/transaction_preview.screen.dart';
 import './screens/scan_wallet.screen.dart';
+import './screens/scan_address.screen.dart';
 import './screens/add_currency.screen.dart';
 import './screens/transaction_list.screen.dart';
 import './screens/transaction_detail.screen.dart';
@@ -29,11 +30,11 @@ import './blocs/account/account_bloc.dart';
 import './blocs/delegate.dart';
 import './blocs/user/user_bloc.dart';
 import './blocs/transaction/transaction_bloc.dart';
-import './blocs/transaction_status/transaction_status_bloc.dart';
+// import './blocs/transaction_status/transaction_status_bloc.dart';
 import './blocs/restore_wallet/restore_wallet_bloc.dart';
 import './blocs/backup/backup_bloc.dart';
 import './blocs/receive/receive_bloc.dart';
-import './blocs/update_password/update_password_bloc.dart';
+// import './blocs/update_password/update_password_bloc.dart';
 import './helpers/i18n.dart';
 import './repositories/trader_repository.dart';
 import 'theme.dart';
@@ -81,8 +82,15 @@ class MyApp extends StatelessWidget {
             BlocProvider<TransactionBloc>(
               create: (BuildContext context) => TransactionBloc(
                 Provider.of<TransactionRepository>(context, listen: false),
+                Provider.of<TraderRepository>(context, listen: false),
               ),
             ),
+            // BlocProvider<TransactionStatusBloc>(
+            //   create: (BuildContext context) => TransactionStatusBloc(
+            //     Provider.of<TransactionRepository>(context, listen: false),
+            //     Provider.of<TraderRepository>(context, listen: false),
+            //   ),
+            // ),
             BlocProvider<RestoreWalletBloc>(
               create: (BuildContext context) => RestoreWalletBloc(
                 Provider.of<UserRepository>(context, listen: false),
@@ -109,11 +117,11 @@ class MyApp extends StatelessWidget {
                 Provider.of<AccountRepository>(context, listen: false),
               ),
             ),
-            BlocProvider<UpdatePasswordBloc>(
-              create: (BuildContext context) => UpdatePasswordBloc(
-                Provider.of<UserRepository>(context, listen: false),
-              ),
-            ),
+            // BlocProvider<UpdatePasswordBloc>(
+            //   create: (BuildContext context) => UpdatePasswordBloc(
+            //     Provider.of<UserRepository>(context, listen: false),
+            //   ),
+            // ),
           ],
           child: _material,
         ),
@@ -131,6 +139,7 @@ MaterialApp _material = MaterialApp(
     TransactionPreviewScreen.routeName: (context) => TransactionPreviewScreen(),
     RestoreWalletScreen.routeName: (context) => RestoreWalletScreen(),
     ScanWalletScreen.routeName: (conte) => ScanWalletScreen(),
+    ScanAddressScreen.routeName: (conte) => ScanAddressScreen(),
     TransactionListScreen.routeName: (context) => TransactionListScreen(),
     TransactionDetailScreen.routeName: (context) => TransactionDetailScreen(),
     CurrencyScreen.routeName: (context) => CurrencyScreen(),

@@ -9,7 +9,7 @@ import '../helpers/i18n.dart';
 final t = I18n.t;
 
 class ScanAddressScreen extends StatefulWidget {
-  static const routeName = '/scan-wallet';
+  static const routeName = '/scan-address';
   @override
   _ScanAddressScreenState createState() => _ScanAddressScreenState();
 }
@@ -41,7 +41,7 @@ class _ScanAddressScreenState extends State<ScanAddressScreen> {
         extendBodyBehindAppBar: true,
         appBar: GeneralAppbar(
           routeName: ScanAddressScreen.routeName,
-          title: t('scan_title'),
+          title: t('scan'),
         ),
         body: Stack(
           alignment: Alignment.center,
@@ -52,7 +52,10 @@ class _ScanAddressScreenState extends State<ScanAddressScreen> {
             BlocBuilder<TransactionBloc, TransactionState>(
               cubit: _bloc,
               builder: (context, state) {
-                if (state is TransactionInitial && !state.rules[0]) {
+                if (state is TransactionInitial &&
+                    state.address.isNotEmpty &&
+                    !state.rules[0]) {
+                  print(state.rules[0]);
                   return Positioned(
                     child: Container(
                       padding: const EdgeInsets.symmetric(

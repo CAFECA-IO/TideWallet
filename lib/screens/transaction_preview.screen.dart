@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import './transaction_list.screen.dart';
+import '../models/transaction.model.dart';
+import '../models/account.model.dart';
 import '../helpers/i18n.dart';
 import '../blocs/user/user_bloc.dart';
 import '../blocs/transaction/transaction_bloc.dart';
@@ -23,10 +25,15 @@ class TransactionPreviewScreen extends StatefulWidget {
 class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
   TransactionBloc _bloc;
   UserBloc _userBloc;
+  Currency _currency;
+  Transaction _transaction;
   final t = I18n.t;
 
   @override
   void didChangeDependencies() {
+    Map<String, dynamic> arg = ModalRoute.of(context).settings.arguments;
+    _currency = arg["currency"];
+    _transaction = arg["transaction"];
     _bloc = BlocProvider.of<TransactionBloc>(context);
     _userBloc = BlocProvider.of<UserBloc>(context);
     super.didChangeDependencies();
@@ -35,8 +42,6 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
   @override
   void dispose() {
     super.dispose();
-    _bloc.close();
-    _userBloc.close();
   }
 
   @override
@@ -56,7 +61,8 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
           if (state is TransactionSent) {
             DialogController.dismiss(context);
             await Future.delayed(Duration(milliseconds: 150), () {
-              Navigator.of(context).pushNamed(TransactionListScreen.routeName);
+              Navigator.of(context).popUntil((route) =>
+                  route.settings.name == TransactionListScreen.routeName);
             });
           }
         },
@@ -77,8 +83,7 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
                     ),
                     SizedBox(height: 7),
                     Align(
-                      child:
-                          Text("18e044328d1687c13300fdc28a18e044328d1687c13"),
+                      child: Text(_transaction.address),
                       alignment: Alignment.centerLeft,
                     ),
                   ],
@@ -97,7 +102,7 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
                     ),
                     SizedBox(height: 7),
                     Align(
-                      child: Text("20 btc"),
+                      child: Text("${_transaction.amount} ${_currency.symbol}"),
                       alignment: Alignment.centerLeft,
                     )
                   ],
@@ -116,13 +121,13 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
                     ),
                     SizedBox(height: 7),
                     Align(
-                      child: Text("0.000023 btc"),
+                      child: Text("${_transaction.fee} ${_currency.symbol}"),
                       alignment: Alignment.centerLeft,
                     ),
                     SizedBox(height: 4),
                     Align(
                       child: Text(
-                        "≈ 10 USD",
+                        "≈ 10 USD", // TODO
                         style: Theme.of(context).textTheme.caption,
                       ),
                       alignment: Alignment.centerLeft,

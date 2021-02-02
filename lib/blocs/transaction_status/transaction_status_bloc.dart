@@ -6,7 +6,6 @@ import 'package:equatable/equatable.dart';
 import '../../models/account.model.dart';
 import '../../models/transaction.model.dart';
 import '../../repositories/transaction_repository.dart';
-import '../../repositories/account_repository.dart';
 import '../../repositories/trader_repository.dart';
 
 part 'transaction_status_event.dart';
@@ -15,17 +14,17 @@ part 'transaction_status_state.dart';
 class TransactionStatusBloc
     extends Bloc<TransactionStatusEvent, TransactionStatusState> {
   TransactionRepository _repo;
-  AccountRepository _accountRepo;
   TraderRepository _traderRepo;
   StreamSubscription _subscription;
 
-  TransactionStatusBloc(this._repo, this._accountRepo, this._traderRepo)
+  TransactionStatusBloc(this._repo, this._traderRepo)
       : super(TransactionStatusInitial(null, [], null)) {
+    _subscription?.cancel();
     this._repo.listener.listen((msg) {
       if (msg.evt == ACCOUNT_EVT.OnUpdateAccount) {
         print("msg.value ${(msg.value as Currency).name}");
         Currency currency = msg.value;
-        
+
         this.add(UpdateCurrency(_addUSD(currency)));
       }
       if (msg.evt == ACCOUNT_EVT.OnUpdateTransactions) {
@@ -38,7 +37,6 @@ class TransactionStatusBloc
   }
 
   Currency _addUSD(Currency c) {
-
     return c.copyWith(inUSD: _traderRepo.calculateToFiat(c).toString());
   }
 
@@ -47,11 +45,14 @@ class TransactionStatusBloc
     TransactionStatusEvent event,
   ) async* {
     if (event is UpdateCurrency) {
-      if (state.currency == null ||
-          state.currency.symbol == event.currency.symbol) {
-        final List<Transaction> transactions =
-            _repo.getTransactionsFromDB(event.currency); // getTransactionFromDB
+      if (state.currency == null) {
+        print('event.currency: ${event.currency}');
+        _repo.setCurrency(event.currency);
+        final List<Transaction> transactions = _repo.getTransactions() ?? [];
         yield TransactionStatusLoaded(event.currency, transactions, null);
+      } else if (state.currency.symbol == event.currency.symbol) {
+        yield TransactionStatusLoaded(
+            event.currency, state.transactions, state.transaction);
       }
     }
     if (event is UpdateTransactionList) {

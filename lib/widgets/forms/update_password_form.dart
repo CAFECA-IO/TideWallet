@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 import '../../blocs/update_password/update_password_bloc.dart';
 import '../../blocs/user/user_bloc.dart';
@@ -8,6 +9,7 @@ import '../buttons/secondary_button.dart';
 import '../dialogs/dialog_controller.dart';
 import '../dialogs/error_dialog.dart';
 import '../../helpers/i18n.dart';
+import '../../repositories/user_repository.dart';
 
 class UpdatePasswordForm extends StatefulWidget {
   final double appBarHeight;
@@ -20,12 +22,14 @@ class UpdatePasswordForm extends StatefulWidget {
 class _UpdatePasswordFormState extends State<UpdatePasswordForm> {
   UpdatePasswordBloc _bloc;
   UserBloc _userBloc;
+  UserRepository _userRepo;
 
   final t = I18n.t;
 
   @override
   void didChangeDependencies() {
-    _bloc = BlocProvider.of<UpdatePasswordBloc>(context);
+    _userRepo = Provider.of<UserRepository>(context);
+    _bloc = UpdatePasswordBloc(_userRepo);
     _userBloc = BlocProvider.of<UserBloc>(context);
     super.didChangeDependencies();
   }
@@ -34,7 +38,6 @@ class _UpdatePasswordFormState extends State<UpdatePasswordForm> {
   void dispose() {
     super.dispose();
     _bloc.close();
-    _userBloc.close();
   }
 
   @override
@@ -75,7 +78,6 @@ class _UpdatePasswordFormState extends State<UpdatePasswordForm> {
             if (state is UpdatePasswordStateCheck) {
               return CheckingView(_bloc, state, widget.appBarHeight);
             }
-
             return SizedBox();
           }),
     );
