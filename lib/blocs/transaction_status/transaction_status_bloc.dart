@@ -7,6 +7,7 @@ import '../../models/account.model.dart';
 import '../../models/transaction.model.dart';
 import '../../repositories/transaction_repository.dart';
 import '../../repositories/trader_repository.dart';
+import '../../helpers/logger.dart';
 
 part 'transaction_status_event.dart';
 part 'transaction_status_state.dart';
@@ -22,7 +23,7 @@ class TransactionStatusBloc
     _subscription?.cancel();
     this._repo.listener.listen((msg) {
       if (msg.evt == ACCOUNT_EVT.OnUpdateAccount) {
-        print("msg.value ${(msg.value as Currency).name}");
+        Log.debug("msg.value ${(msg.value as Currency).name}");
         Currency currency = msg.value;
 
         this.add(UpdateCurrency(_addUSD(currency)));
@@ -68,7 +69,7 @@ class TransactionStatusBloc
       }
     }
     if (event is UpdateTransaction) {
-      print('event.transaction: ${event.transaction}');
+      Log.debug('event.transaction: ${event.transaction}');
       yield TransactionStatusLoaded(
           state.currency, state.transactions, event.transaction);
     }

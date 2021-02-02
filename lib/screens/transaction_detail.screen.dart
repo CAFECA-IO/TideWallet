@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../blocs/transaction_status/transaction_status_bloc.dart';
 import '../theme.dart';
+import '../helpers/logger.dart';
 import '../helpers/i18n.dart';
 import '../helpers/formatter.dart';
 import '../models/account.model.dart';
@@ -43,6 +44,10 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
     _repo = Provider.of<TransactionRepository>(context);
 
     _traderRepo = Provider.of<TraderRepository>(context);
+    Log.debug(_transaction.status);
+    Log.debug(_transaction.amount);
+    Log.debug(_transaction.confirmations);
+    Log.debug(_transaction.direction);
 
     _bloc = TransactionStatusBloc(_repo, _traderRepo)
       ..add(UpdateTransaction(_transaction)); // TODO GetTransactionList
@@ -57,7 +62,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("build");
+    Log.debug("build");
     return Scaffold(
       appBar: GeneralAppbar(
         title: t('transaction_detail'),

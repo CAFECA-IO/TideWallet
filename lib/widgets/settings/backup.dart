@@ -6,6 +6,7 @@ import '../../blocs/backup/backup_bloc.dart';
 import '../../widgets/buttons/secondary_button.dart';
 import '../../widgets/dialogs/dialog_controller.dart';
 import '../../widgets/dialogs/error_dialog.dart';
+import '../../helpers/logger.dart';
 import '../../helpers/i18n.dart';
 import '../../theme.dart';
 
@@ -73,7 +74,7 @@ class _BackupSettingState extends State<BackupSetting> {
               );
             },
           ).then((value) {
-            print(_backupBloc.state);
+            Log.debug(_backupBloc.state);
           });
         }
 

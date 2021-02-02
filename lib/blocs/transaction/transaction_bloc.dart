@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:decimal/decimal.dart';
 
 import '../../repositories/transaction_repository.dart';
+import '../../helpers/logger.dart';
 import '../../repositories/trader_repository.dart';
 import '../../models/transaction.model.dart';
 import '../../models/account.model.dart';
@@ -25,10 +26,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   Stream<TransactionState> mapEventToState(
     TransactionEvent event,
   ) async* {
-    print("event: $event");
     if (event is UpdateTransactionCreateCurrency) {
       _repo.setCurrency(event.currency);
-      print('UpdateTransactionCreateCurrency: ${event.currency.symbol}');
       yield TransactionInitial();
     }
     if (state is TransactionSent) return;
@@ -60,18 +59,18 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       );
     }
     if (event is ScanQRCode) {
-      print("ValidAddress address: ${event.address}");
+      Log.debug("ValidAddress address: ${event.address}");
       List<bool> _rules = [_repo.validAddress(event.address), _state.rules[1]];
-      print(_rules);
+      Log.debug(_rules);
       yield _state.copyWith(
         address: event.address,
         rules: _rules,
       );
     }
     if (event is ValidAddress) {
-      print("ValidAddress address: ${event.address}");
+      Log.debug("ValidAddress address: ${event.address}");
       List<bool> _rules = [_repo.validAddress(event.address), _state.rules[1]];
-      print(_rules);
+      Log.debug(_rules);
       yield _state.copyWith(
         address: event.address,
         rules: _rules,
@@ -82,7 +81,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         _state.rules[0],
         _repo.validAmount(event.amount, priority: TransactionPriority.standard)
       ];
-      print(_rules);
+      Log.debug(_rules);
       yield _state.copyWith(
         amount: event.amount,
         rules: _rules,

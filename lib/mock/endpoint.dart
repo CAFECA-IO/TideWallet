@@ -49,7 +49,6 @@ Future<Map> getETHTokeninfo(String address) async {
 Future<List<Transaction>> getETHTransactions() async {
   List<Transaction> transactions = [];
   int v = Random().nextInt(10);
-  print("v: $v");
   for (int i = 0; i < v; i++) {
     TransactionDirection direction =
         TransactionDirection.values[Random().nextInt(2)];
@@ -62,7 +61,6 @@ Future<List<Transaction>> getETHTransactions() async {
     String address = randomHex(32);
     String fee = "${Random().nextInt(10)}.${Random().nextInt(9)}";
     String txid = randomHex(32);
-    print("status: $status");
 
     Transaction transaction = Transaction(
         id: randomHex(6),
@@ -74,7 +72,6 @@ Future<List<Transaction>> getETHTransactions() async {
         address: address,
         fee: fee,
         txId: txid);
-    print(transaction.status);
 
     transactions.add(transaction);
   }

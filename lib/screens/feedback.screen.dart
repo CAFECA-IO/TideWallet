@@ -87,7 +87,6 @@ class FeedbackScreen extends StatelessWidget {
           _section(t('contact_way'), [
             _item(t('email'), () {
               launch(_emailLaunchUri.toString());
-              print('Σ( ° △ °|||)');
             }),
           ])
         ],
