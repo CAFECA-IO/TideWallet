@@ -45,10 +45,15 @@ class TransactionStatusBloc
     TransactionStatusEvent event,
   ) async* {
     if (event is UpdateCurrency) {
-      print('event.currency: ${event.currency}');
-      _repo.setCurrency(event.currency);
-      final List<Transaction> transactions = _repo.getTransactions() ?? [];
-      yield TransactionStatusLoaded(event.currency, transactions, null);
+      if (state.currency == null) {
+        print('event.currency: ${event.currency}');
+        _repo.setCurrency(event.currency);
+        final List<Transaction> transactions = _repo.getTransactions() ?? [];
+        yield TransactionStatusLoaded(event.currency, transactions, null);
+      } else if (state.currency.symbol == event.currency.symbol) {
+        yield TransactionStatusLoaded(
+            event.currency, state.transactions, state.transaction);
+      }
     }
     if (event is UpdateTransactionList) {
       if (state.currency != null &&

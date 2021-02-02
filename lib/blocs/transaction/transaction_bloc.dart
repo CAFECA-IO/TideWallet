@@ -26,8 +26,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     TransactionEvent event,
   ) async* {
     print("event: $event");
-    if (event is UpdateCurrency) {
+    if (event is UpdateTransactionCreateCurrency) {
       _repo.setCurrency(event.currency);
+      print('UpdateTransactionCreateCurrency: ${event.currency.symbol}');
       yield TransactionInitial();
     }
     if (state is TransactionSent) return;

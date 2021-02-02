@@ -49,8 +49,9 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
     _gasPriceController = TextEditingController();
     this._repo = Provider.of<TransactionRepository>(context);
     this._repo.setCurrency(_currency);
+    print('didChangeDependencies: ${_currency.symbol}');
     _bloc = BlocProvider.of<TransactionBloc>(context)
-      ..add(UpdateCurrency(this._currency))
+      ..add(UpdateTransactionCreateCurrency(this._currency))
       ..add(FetchTransactionFee());
     super.didChangeDependencies();
   }
@@ -58,7 +59,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
   @override
   void dispose() {
     super.dispose();
-    _bloc.close();
+    // _bloc.close();
     // _userBloc.close();
     _addressController.dispose();
     _amountController.dispose();

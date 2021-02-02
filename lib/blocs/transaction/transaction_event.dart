@@ -7,9 +7,9 @@ abstract class TransactionEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class UpdateCurrency extends TransactionEvent {
+class UpdateTransactionCreateCurrency extends TransactionEvent {
   final Currency currency;
-  UpdateCurrency(this.currency);
+  UpdateTransactionCreateCurrency(this.currency);
 }
 
 class ResetAddress extends TransactionEvent {
