@@ -12,7 +12,7 @@ class TokenInterceptor extends Interceptor {
   void setToken(String token) {
     _token = token;
 
-    Log.info('ToknInterceptor::setToekn $_token');
+    Log.info('TokenInterceptor::setToken $_token');
   }
 
   void clearToken() {
