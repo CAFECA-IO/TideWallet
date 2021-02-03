@@ -1,6 +1,18 @@
+# Getting Started
+
+set [database config](#DB)
+
+
+
 ## Flutter
 - version: 1.22.5
 
+### DB
+* If is using first time or changing ./lib/database run:
+
+```
+flutter packages pub run build_runner build // or flutter packages pub run build_runner build  watch
+```  
 
 
 ### DB Schema
