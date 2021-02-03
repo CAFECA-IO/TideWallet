@@ -15,8 +15,17 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   Stream<UserState> mapEventToState(
     UserEvent event,
   ) async* {
+    if (event is UserCheck) {
+      bool existed = await _repo.checkUser();
+
+      if (existed) {
+         yield UserSuccess();
+      }
+    }
+
     if (event is UserCreate) {
-      _repo.createUser();
+
+      _repo.createUser(event.password);
       yield UserSuccess();
     }
 

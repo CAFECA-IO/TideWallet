@@ -7,9 +7,9 @@ class UserRepository {
 
   User get user => _user;
 
-  createUser() {
-    _user.createUser();
-  }
+  Future<void> createUser(String pwd) => _user.createUser(pwd);
+
+  Future<bool> checkUser() => _user.checkUser();
 
   bool verifyPassword(String password) {
     return _user.verifyPassword(password);

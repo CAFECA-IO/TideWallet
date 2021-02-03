@@ -64,7 +64,7 @@ class _CreateWalletFormState extends State<CreateWalletForm> {
 
         if (_state.error == CreateFormError.none) {
           Navigator.of(context).pop();
-          _userBloc.add(UserCreate());
+          _userBloc.add(UserCreate(_state.password));
         }
       },
       child: BlocBuilder<CreateWalletBloc, CreateWalletState>(

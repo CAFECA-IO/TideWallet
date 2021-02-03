@@ -14,15 +14,17 @@ class LandingScreen extends StatefulWidget {
 }
 
 class _LandingScreenState extends State<LandingScreen> {
+  bool _isInit = true;
   UserBloc _bloc;
-  UserRepository _repo;
   FiatBloc _fiatBloc;
 
   @override
   void didChangeDependencies() {
-    _repo = Provider.of<UserRepository>(context);
-    _bloc = BlocProvider.of<UserBloc>(context);
-    _fiatBloc = BlocProvider.of<FiatBloc>(context);
+    if (_isInit) {
+      _bloc = BlocProvider.of<UserBloc>(context)..add(UserCheck());
+      _fiatBloc = BlocProvider.of<FiatBloc>(context);
+      _isInit = false;
+    }
 
     super.didChangeDependencies();
   }
@@ -42,11 +44,7 @@ class _LandingScreenState extends State<LandingScreen> {
           return HomeScreen();
         }
 
-        if (_repo.user.hasWallet) {
-          return HomeScreen();
-        } else {
-          return WelcomeScreen();
-        }
+        return WelcomeScreen();
       },
     );
   }
