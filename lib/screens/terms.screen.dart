@@ -218,7 +218,6 @@ class TermsScreen extends StatelessWidget {
                             decoration: TextDecoration.underline),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
-                            print('Σ( ° △ °|||)');
                             launch(_emailLaunchUri.toString());
                           }),
                     TextSpan(

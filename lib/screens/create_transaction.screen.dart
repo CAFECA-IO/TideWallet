@@ -16,6 +16,7 @@ import '../widgets/buttons/secondary_button.dart';
 import '../widgets/inputs/input.dart';
 import '../helpers/i18n.dart';
 import '../helpers/formatter.dart';
+import '../helpers/logger.dart';
 
 class CreateTransactionScreen extends StatefulWidget {
   static const routeName = '/create-transaction';
@@ -79,7 +80,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
           cubit: _bloc,
           builder: (context, state) {
             if (state is TransactionInitial) {
-              print(state.props);
+              Log.debug(state.props);
               if (state.address.isNotEmpty) {
                 _addressController.text = state.address;
               }
@@ -248,7 +249,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                                 () {
                                   _bloc.add(
                                       ChangePriority(TransactionPriority.slow));
-                                  print(state.priority);
+                                  Log.debug(state.priority);
                                 }
                               ],
                               [
@@ -256,7 +257,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                                 () {
                                   _bloc.add(ChangePriority(
                                       TransactionPriority.standard));
-                                  print(state.priority);
+                                  Log.debug(state.priority);
                                 }
                               ],
                               [
@@ -264,7 +265,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                                 () {
                                   _bloc.add(
                                       ChangePriority(TransactionPriority.fast));
-                                  print(state.priority);
+                                  Log.debug(state.priority);
                                 }
                               ]
                             ]),
