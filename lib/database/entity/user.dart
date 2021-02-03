@@ -17,5 +17,17 @@ class User {
   @ColumnInfo(name: 'backup_status', nullable: false)
   final bool backupStatus;
 
-  User(this.userId, this.keystore, this.passwordHash, this.passwordSalt, this.backupStatus);
+  User(this.userId, this.keystore, this.passwordHash, this.passwordSalt,
+      this.backupStatus);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is User &&
+          runtimeType == other.runtimeType &&
+          userId == other.userId &&
+          keystore == other.keystore;
+
+  @override
+  int get hashCode => userId.hashCode ^ keystore.hashCode;
 }
