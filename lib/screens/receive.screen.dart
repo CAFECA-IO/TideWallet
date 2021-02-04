@@ -11,7 +11,7 @@ import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/loading_dialog.dart';
 import '../widgets/buttons/secondary_button.dart';
 import '../helpers/i18n.dart';
-import '../repositories/account_repository.dart';
+import '../repositories/transaction_repository.dart';
 import '../blocs/receive/receive_bloc.dart';
 import '../constants/account_config.dart';
 
@@ -23,7 +23,7 @@ class ReceiveScreen extends StatefulWidget {
 
 class _ReceiveScreenState extends State<ReceiveScreen> {
   final t = I18n.t;
-  AccountRepository _repo;
+  TransactionRepository _repo;
   ReceiveBloc _bloc;
   Currency _currency;
   String _address = '';
@@ -33,7 +33,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
   void didChangeDependencies() {
     Map<String, Currency> arg = ModalRoute.of(context).settings.arguments;
     _currency = arg["currency"];
-    _repo = Provider.of<AccountRepository>(context);
+    _repo = Provider.of<TransactionRepository>(context);
     if (!_isCalled) {
       _bloc = ReceiveBloc(_repo)..add(GetReceivingAddress(_currency));
       _isCalled = true;
@@ -50,7 +50,6 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: GeneralAppbar(
         title: t('my_wallet'),

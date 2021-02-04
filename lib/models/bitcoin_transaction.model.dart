@@ -3,11 +3,7 @@ import 'dart:typed_data';
 import 'transaction.model.dart';
 import 'db_transaction.model.dart';
 
-const ADVANCED_TRANSACTION_MARKER = 0x00;
-const ADVANCED_TRANSACTION_FLAG = 0x01;
-const DEFAULT_SEQUENCE = 0xffffffff;
-
-class BitcoinTransaction {
+abstract class BitcoinTransaction {
   String id;
   String txid;
   int locktime;

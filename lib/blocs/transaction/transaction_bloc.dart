@@ -36,18 +36,18 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
     TransactionInitial _state = state;
     if (event is FetchTransactionFee) {
-      _gasPrice = await _repo.fetchGasPrice();
-      _gasLimit = await _repo.fetchGasLimit();
-      Decimal fee = Decimal.parse(_gasPrice[_state.priority]) *
-          Decimal.parse(_gasLimit) /
-          Decimal.fromInt(BigInt.from(10).pow(9).toInt());
+      // createRawTx
+      String hex = 'asd'; //TODO
+      List<dynamic> _fee = await _repo.getTransactionFee(hex);
+      Decimal fee = _fee.length == 2
+          ? _fee[0][_state.priority] * _fee[1]
+          : _fee[0][_state.priority];
       Decimal feeToFiat = fee * Decimal.fromInt(68273);
-      // TODO toEther()
       yield _state.copyWith(
-        fee: '$fee',
-        feeToFiat: '$feeToFiat',
-        gasLimit: _gasLimit,
-        gasPrice: _gasPrice[_state.priority],
+        fee: fee.toString(),
+        feeToFiat: feeToFiat.toString(),
+        gasLimit: _fee.length == 2 ? _fee[1].toString() : '',
+        gasPrice: _fee[0][_state.priority].toString(),
       );
     }
     if (event is ResetAddress) {
@@ -60,7 +60,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     if (event is ScanQRCode) {
       Log.debug("ValidAddress address: ${event.address}");
-      List<bool> _rules = [_repo.validAddress(event.address), _state.rules[1]];
+      bool verifiedAddress = await _repo.verifyAddress(
+          event.address, false); // TODO Account add publish property
+      List<bool> _rules = [verifiedAddress, _state.rules[1]];
       Log.debug(_rules);
       yield _state.copyWith(
         address: event.address,
@@ -69,7 +71,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     if (event is ValidAddress) {
       Log.debug("ValidAddress address: ${event.address}");
-      List<bool> _rules = [_repo.validAddress(event.address), _state.rules[1]];
+      bool verifiedAddress = await _repo.verifyAddress(event.address, false);
+      List<bool> _rules = [verifiedAddress, _state.rules[1]];
       Log.debug(_rules);
       yield _state.copyWith(
         address: event.address,

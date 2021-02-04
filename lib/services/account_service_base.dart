@@ -1,24 +1,24 @@
 import 'package:decimal/decimal.dart';
 
 import 'account_service.dart';
+import '../models/transaction.model.dart';
 
 class AccountServiceBase extends AccountService {
-  
   @override
-  Decimal calculateFastDee() {
-    // TODO: implement calculateFastDee
+  Decimal calculateFastFee() {
+    // TODO: implement calculateFastFee
     throw UnimplementedError();
   }
 
   @override
-  Decimal calculateSlowDee() {
-    // TODO: implement calculateSlowDee
+  Decimal calculateSlowFee() {
+    // TODO: implement calculateSlowFee
     throw UnimplementedError();
   }
 
   @override
-  Decimal calculateStandardDee() {
-    // TODO: implement calculateStandardDee
+  Decimal calculateStandardFee() {
+    // TODO: implement calculateStandardFee
     throw UnimplementedError();
   }
 
@@ -50,13 +50,13 @@ class AccountServiceBase extends AccountService {
   }
 
   @override
-  Decimal toCoinUnit() {
+  Decimal toCoinUnit(Decimal smallUnit) {
     // TODO: implement toCoinUnit
     throw UnimplementedError();
   }
 
   @override
-  Decimal toSmallUnit() {
+  Decimal toSmallUnit(Decimal coinUnit) {
     // TODO: implement toSmallUnit
     throw UnimplementedError();
   }
@@ -68,8 +68,26 @@ class AccountServiceBase extends AccountService {
   }
 
   @override
+  Future<List<dynamic>> getTransactionFee(String hex) async {
+    // TODO: implement publishTransaction
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String> getChangingAddress() async {
+    // TODO: implement publishTransaction
+    throw UnimplementedError();
+  }
+
+  @override
   Future<String> getReceivingAddress() async {
     // TODO: implement publishTransaction
     throw UnimplementedError();
   }
+
+  // @override
+  // Future<Decimal> estimateGasLimit(String hex) {
+  //   // TODO: implement estimateGasLimit
+  //   throw UnimplementedError();
+  // }
 }

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:decimal/decimal.dart';
-
+import 'package:dio/dio.dart';
 
 import 'account_service_decorator.dart';
 import '../models/account.model.dart';
@@ -9,49 +9,57 @@ import '../constants/account_config.dart';
 import '../services/account_service.dart';
 import '../mock/endpoint.dart';
 import '../cores/account.dart';
+import '../helpers/http_agent.dart';
 
 class EthereumService extends AccountServiceDecorator {
   EthereumService(AccountService service) : super(service) {
     this.base = ACCOUNT.ETH;
   }
-  
+  static const String _baseUrl = 'https://service.tidewallet.io';
+
   Timer _timer;
 
-  estimateGasLimit() {}
+  Future<Map<TransactionPriority, Decimal>> getGasPrice() async {
+    Response response =
+        await HTTPAgent().get('$_baseUrl/api/v1/blockchain/8000003C/fee');
+    Map<String, dynamic> data =
+        response.data['payload']; // TODO FEE should return String or double
+  }
+
   getTransactions() {}
   getBalance() {}
   getTokenTransactions() {}
   getTokenBalance() {}
   getTokenInfo() {}
 
-  @override
-  Decimal calculateFastDee() {
-    // TODO: implement calculateFastDee
-    throw UnimplementedError();
-  }
+  // @override
+  // Decimal calculateFastFee() {
+  //   // TODO: implement calculateFastFee
+  //   throw UnimplementedError();
+  // }
 
-  @override
-  Decimal calculateSlowDee() {
-    // TODO: implement calculateSlowDee
-    throw UnimplementedError();
-  }
+  // @override
+  // Decimal calculateSlowFee() {
+  //   // TODO: implement calculateSlowFee
+  //   throw UnimplementedError();
+  // }
 
-  @override
-  Decimal calculateStandardDee() {
-    // TODO: implement calculateStandardDee
-    throw UnimplementedError();
-  }
+  // @override
+  // Decimal calculateStandardFee() {
+  //   // TODO: implement calculateStandardFee
+  //   throw UnimplementedError();
+  // }
 
   @override
   void init() {
     // TODO: implement init
   }
 
-  @override
-  prepareTransaction() {
-    // TODO: implement prepareTransaction
-    throw UnimplementedError();
-  }
+  // @override
+  // prepareTransaction() {
+  //   // TODO: implement prepareTransaction
+  //   throw UnimplementedError();
+  // }
 
   @override
   void start() {
@@ -64,13 +72,13 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   @override
-  Decimal toCoinUnit() {
+  Decimal toCoinUnit(Decimal wei) {
     // TODO: implement toCoinUnit
     throw UnimplementedError();
   }
 
   @override
-  Decimal toSmallUnit() {
+  Decimal toSmallUnit(Decimal eth) {
     // TODO: implement toSmallUnit
     throw UnimplementedError();
   }
@@ -87,22 +95,21 @@ class EthereumService extends AccountServiceDecorator {
       await this._getTokens();
       Currency curr = await this._getETH();
 
-
-      AccountMessage msg = AccountMessage(
-          evt: ACCOUNT_EVT.OnUpdateAccount, value: curr);
+      AccountMessage msg =
+          AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: curr);
 
       AccountMessage currMsg = AccountMessage(
-          evt: ACCOUNT_EVT.OnUpdateCurrency, value: AccountCore().currencies[this.base]);
-      
+          evt: ACCOUNT_EVT.OnUpdateCurrency,
+          value: AccountCore().currencies[this.base]);
+
       AccountCore().messenger.add(msg);
       AccountCore().messenger.add(currMsg);
 
       List<Transaction> transactions = await this._getTransactions();
 
-      AccountMessage txMsg = AccountMessage(evt: ACCOUNT_EVT.OnUpdateTransactions, value: {
-        "currency": curr,
-        "transactions": transactions
-      });
+      AccountMessage txMsg = AccountMessage(
+          evt: ACCOUNT_EVT.OnUpdateTransactions,
+          value: {"currency": curr, "transactions": transactions});
       AccountCore().messenger.add(txMsg);
     });
   }
@@ -139,8 +146,7 @@ class EthereumService extends AccountServiceDecorator {
           imgUrl: result['imgPath'],
           description: result['description'],
           contract: result['contract'],
-          totalSupply: result['totalSupply']
-          );
+          totalSupply: result['totalSupply']);
       return _token;
     } else {
       return null;
@@ -153,8 +159,39 @@ class EthereumService extends AccountServiceDecorator {
     return true;
   }
 
+  Future<Decimal> _estimateGasLimit(String hex) async {
+    Response response = await HTTPAgent().post(
+        '$_baseUrl/api/v1/blockchain/8000003C/gas-limit',
+        {'hex': hex}); // TODO API FormatError
+    Map<String, dynamic> data = response.data['payload'];
+    int gasLimit = data['gasLimit'];
+    return Decimal.fromInt(gasLimit);
+  }
+
+  @override
+  Future<List<dynamic>> getTransactionFee(String hex) async {
+    // TODO getFeeFromDB && getSyncFeeAutomatically
+    Response response =
+        await HTTPAgent().get('$_baseUrl/api/v1/blockchain/8000003C/fee');
+    Map<String, dynamic> data =
+        response.data['payload']; // TODO FEE should return String or double
+    Map<TransactionPriority, Decimal> transactionFee = {
+      TransactionPriority.slow: Decimal.parse(data['slow'].toString()),
+      TransactionPriority.standard: Decimal.parse(data['standard'].toString()),
+      TransactionPriority.fast: Decimal.parse(data['fast'].toString()),
+    };
+    Decimal gasLimit = await _estimateGasLimit(hex);
+    return [transactionFee, gasLimit];
+  }
+
   @override
   Future<String> getReceivingAddress() async {
+    // TODO: implement publishTransaction
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String> getChangingAddress() async {
     // TODO: implement publishTransaction
     throw UnimplementedError();
   }
