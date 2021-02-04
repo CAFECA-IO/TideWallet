@@ -1,14 +1,20 @@
+import 'dart:math';
 import 'package:dio/dio.dart';
-import 'package:tidewallet3/constants/endpoint.dart';
-import 'package:tidewallet3/helpers/http_agent.dart';
+import 'package:web3dart/web3dart.dart';
 
+import '../cores/paper_wallet.dart';
+import '../constants/endpoint.dart';
+import '../helpers/logger.dart';
+import '../helpers/http_agent.dart';
 import '../database/db_operator.dart';
 import '../database/entity/user.dart' as UserEnity;
 class User {
   String _wallet;
   bool _isBackup = false;
   String _password;
-  String _salt;
+  String _salt = Random.secure().toString();
+
+  PaperWallet _paperWallet;
 
   bool get hasWallet {
     return _wallet != null;
@@ -25,19 +31,25 @@ class User {
     return false;
   }
 
-  Future<void> createUser(String pwd) async {
+  Future<bool> createUser(String pwd) async {
+    _paperWallet = PaperWallet();
+    Wallet wallet = _paperWallet.createWallet(pwd);
+
+    String extPK = _paperWallet.getExtendedPublicKey();
+    Log.debug(extPK);
+    
     final Map a = {
-      "extend_public_key": "xxxxxxxxxxxxx...xxxxx",
+      "extend_public_key": extPK,
       "install_id": "xxxxxxxxxxxxx...xxxxx",
       "app_uuid": "xxxxxxxxxxxxx...xxxxx"
     };
 
     Response res = await HTTPAgent().post('${Endpoint.SUSANOO}/user', a);
 
-    UserEnity.User _user = UserEnity.User(res.data['user_id'], 'keystore', 'password', 'salt',
+    UserEnity.User _user = UserEnity.User(res.data['user_id'], wallet.toJson(), 'password', this._salt,
       false);
     await DBOperator().userDao.insertUser(_user);
-
+    return true;
   }
 
   bool verifyPassword(String password) {
