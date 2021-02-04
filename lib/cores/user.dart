@@ -8,8 +8,10 @@ import '../constants/endpoint.dart';
 import '../helpers/logger.dart';
 import '../helpers/http_agent.dart';
 import '../helpers/cryptor.dart';
+import '../helpers/prefer_manager.dart';
 import '../database/db_operator.dart';
 import '../database/entity/user.dart' as UserEnity;
+import '../models/auth.model.dart';
 
 class User {
   String _wallet;
@@ -18,6 +20,7 @@ class User {
   String _salt = Random.secure().toString();
 
   PaperWallet _paperWallet;
+  PrefManager _prefManager = PrefManager();
 
   // Deprecated
   bool get hasWallet {
@@ -25,12 +28,9 @@ class User {
   }
 
   Future<bool> checkUser() async {
-    UserEnity.User _user = await DBOperator().userDao.findUser();
-    if (_user != null) {
-      _wallet = _user.keystore;
-      _passwordHash = _user.passwordHash;
-      _salt = _user.passwordSalt;
-      _isBackup = _user.backupStatus;
+    UserEnity.User user = await DBOperator().userDao.findUser();
+    if (user != null) {
+      this._initUser(user);
       return true;
     }
     return false;
@@ -42,22 +42,27 @@ class User {
     String extPK = _paperWallet.getExtendedPublicKey();
     Log.debug(extPK);
 
+    String installId = await this._prefManager.getInstallationId();
+
     this._passwordHash = _seasonedPassword(pwd);
 
-    final Map a = {
+    final Map payload = {
       "extend_public_key": extPK,
-      "install_id": "xxxxxxxxxxxxx...xxxxx",
-      "app_uuid": "xxxxxxxxxxxxx...xxxxx"
+      "install_id": installId,
+      "app_uuid": installId
     };
 
-    Response res = await HTTPAgent().post('${Endpoint.SUSANOO}/user', a);
+    Response res = await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
+    Map data = res.data['payload'];
+    this._prefManager.setAuthItem(AuthItem.fromJson(data));
 
-    UserEnity.User _user = UserEnity.User(
-        res.data['user_id'], wallet.toJson(), this._passwordHash, this._salt, false);
-    await DBOperator().userDao.insertUser(_user);
+    UserEnity.User user = UserEnity.User(data['user_id'], wallet.toJson(),
+        this._passwordHash, this._salt, false);
+    await DBOperator().userDao.insertUser(user);
+    await this._initUser(user);
 
     // TODO
-    return res.statusCode == 200;
+    return res.data['success'];
   }
 
   bool verifyPassword(String password) {
@@ -65,7 +70,6 @@ class User {
   }
 
   void updatePassword(String password) {
-
     this._passwordHash = _seasonedPassword(password);
   }
 
@@ -101,6 +105,18 @@ class User {
     await Future.delayed(Duration(milliseconds: 500));
     _isBackup = true;
     return _isBackup;
+  }
+
+  Future<void> _initUser(UserEnity.User user) async {
+    this._wallet = user.keystore;
+    this._passwordHash = user.passwordHash;
+    this._salt = user.passwordSalt;
+    this._isBackup = user.backupStatus;
+
+    AuthItem item = await _prefManager.getAuthItem();
+    if (item != null) {
+      HTTPAgent().setToken(item.token);
+    }
   }
 
   String _seasonedPassword(String password) {
