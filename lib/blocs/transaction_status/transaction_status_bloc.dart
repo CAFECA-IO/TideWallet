@@ -49,7 +49,8 @@ class TransactionStatusBloc
       if (state.currency == null) {
         print('event.currency: ${event.currency}');
         _repo.setCurrency(event.currency);
-        final List<Transaction> transactions = _repo.getTransactions() ?? [];
+        final List<Transaction> transactions =
+            []; //_repo.getTransactions() ?? [];
         yield TransactionStatusLoaded(event.currency, transactions, null);
       } else if (state.currency.symbol == event.currency.symbol) {
         yield TransactionStatusLoaded(

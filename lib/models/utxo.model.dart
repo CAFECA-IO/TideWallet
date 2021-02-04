@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:decimal/decimal.dart';
+
 class UnspentTxOut {
   static const String ClassName = "utxo";
   static const String FieldName_Id = "id";
@@ -26,7 +28,7 @@ class UnspentTxOut {
   final int vout;
   final String type;
   final String address;
-  final double amount;
+  final Decimal amount; // in btc
   final int chainIndex;
   final int keyIndex;
   final Uint8List data; // hex string

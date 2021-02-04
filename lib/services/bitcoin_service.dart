@@ -18,7 +18,6 @@ class BitcoinService extends AccountServiceDecorator {
     HTTPAgent().setToken('token'); //TODO TEST
   }
   static const String _baseUrl = 'https://service.tidewallet.io';
-  static Decimal _btcInSatoshi = Decimal.parse(BigInt.from(1e8).toString());
 
   Timer _timer;
   int _numberOfUsedExternalKey;
@@ -70,15 +69,15 @@ class BitcoinService extends AccountServiceDecorator {
     // TODO: implement stop
   }
 
-  @override
-  Decimal toCoinUnit(Decimal satoshi) {
-    return satoshi / _btcInSatoshi;
-  }
+  // @override
+  // Decimal toCoinUnit(Decimal satoshi) {
+  //   return satoshi / _btcInSatoshi;
+  // }
 
-  @override
-  Decimal toSmallUnit(Decimal btc) {
-    return btc * _btcInSatoshi;
-  }
+  // @override
+  // Decimal toSmallUnit(Decimal btc) {
+  //   return btc * _btcInSatoshi;
+  // }
 
   @override
   publishTransaction() {

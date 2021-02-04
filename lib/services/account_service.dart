@@ -10,8 +10,8 @@ abstract class AccountService {
   void init();
   void start();
   void stop();
-  Decimal toCoinUnit(Decimal smallUnit);
-  Decimal toSmallUnit(Decimal coinUnit);
+  // Decimal toCoinUnit(Decimal smallUnit);
+  // Decimal toSmallUnit(Decimal coinUnit);
   // Decimal calculateFastFee();
   // Decimal calculateStandardFee();
   // Decimal calculateSlowFee();

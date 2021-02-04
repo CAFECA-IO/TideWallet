@@ -1,6 +1,4 @@
-import 'dart:typed_data';
-import 'package:decimal/decimal.dart';
-
+import '../models/bitcoin_transaction.model.dart';
 import '../constants/account_config.dart';
 import 'transaction_service.dart';
 import 'transaction_service_decorator_bitcoin_based.dart';
@@ -17,6 +15,7 @@ class BitcoinTransactionService
     this.bech32HrpTestnet = 'tb';
     this.bech32Separator = '1';
     this.supportSegwit = true;
+    this.segWitType = SegWitType.nativeSegWit; //TODO segwitType
   }
 
   // @override

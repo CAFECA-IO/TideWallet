@@ -9,8 +9,8 @@ import 'transaction_service.dart';
 class TransactionServiceBased extends TransactionService {
   @override
   Future<Uint8List> prepareTransaction(
-      String to, Decimal amount, Decimal fee, Uint8List message, bool publish,
-      {List<UnspentTxOut> unspentTxOuts}) {
+      bool publish, String to, Decimal amount, Decimal fee, Uint8List message,
+      {List<UnspentTxOut> unspentTxOuts, String changeAddress}) {
     // TODO: implement prepareTransaction
     throw UnimplementedError();
   }

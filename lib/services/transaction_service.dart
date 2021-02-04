@@ -9,6 +9,6 @@ abstract class TransactionService {
 
   bool verifyAddress(String address, bool publish);
   Future<Uint8List> prepareTransaction(
-      String to, Decimal amount, Decimal fee, Uint8List message, bool publish,
-      {List<UnspentTxOut> unspentTxOuts});
+      bool publish, String to, Decimal amount, Decimal fee, Uint8List message,
+      {List<UnspentTxOut> unspentTxOuts, String changeAddress});
 }

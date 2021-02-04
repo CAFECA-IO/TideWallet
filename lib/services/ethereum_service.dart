@@ -71,17 +71,17 @@ class EthereumService extends AccountServiceDecorator {
     _timer?.cancel();
   }
 
-  @override
-  Decimal toCoinUnit(Decimal wei) {
-    // TODO: implement toCoinUnit
-    throw UnimplementedError();
-  }
+  // @override
+  // Decimal toCoinUnit(Decimal wei) {
+  //   // TODO: implement toCoinUnit
+  //   throw UnimplementedError();
+  // }
 
-  @override
-  Decimal toSmallUnit(Decimal eth) {
-    // TODO: implement toSmallUnit
-    throw UnimplementedError();
-  }
+  // @override
+  // Decimal toSmallUnit(Decimal eth) {
+  //   // TODO: implement toSmallUnit
+  //   throw UnimplementedError();
+  // }
 
   @override
   publishTransaction() {
