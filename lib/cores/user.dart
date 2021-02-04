@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
@@ -52,7 +53,6 @@ class User {
       "app_uuid": installId
     };
 
-
     Response res = await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
     Map data = res.data['payload'];
 
@@ -60,8 +60,8 @@ class User {
 
     String keystore = await compute(PaperWallet.walletToJson, wallet);
 
-    UserEnity.User user = UserEnity.User(data['user_id'], keystore,
-        this._passwordHash, this._salt, false);
+    UserEnity.User user = UserEnity.User(
+        data['user_id'], keystore, this._passwordHash, this._salt, false);
     await DBOperator().userDao.insertUser(user);
 
     await this._initUser(user);
@@ -79,23 +79,51 @@ class User {
   }
 
   bool validPaperWallet(String wallet) {
-    // TODO: The result should be modified
-    return wallet.length > 50;
+    try {
+      Map v = json.decode(wallet);
+
+      return v['address'] != null && v['crypto'] != null;
+    } catch (e) {
+      Log.warning(e);
+    }
+
+    return false;
   }
 
   Future<bool> restorePaperWallet(String wallet, String pwd) async {
-    await Future.delayed(Duration(seconds: 1));
+    Wallet w = await compute(PaperWallet.jsonToWallet, [wallet, pwd]);
 
-    // TODO: try recover with password
-    this._wallet = wallet;
+    if (w == null) {
+      return false;
+    }
 
-    // The reuturn value of success
-    // return true;
+    List<int> seed =
+        await compute(PaperWallet.magicSeed, w.privateKey.toString());
+    String extPK = PaperWallet.getExtendedPublicKey(seed: seed);
 
-    // The reuturn value of fail
-    // return false;
+    String installId = await this._prefManager.getInstallationId();
 
-    return pwd.length >= 5;
+    this._passwordHash = _seasonedPassword(pwd);
+
+    final Map payload = {
+      "extend_public_key": extPK,
+      "install_id": installId,
+      "app_uuid": installId
+    };
+
+    Response res = await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
+    Map data = res.data['payload'];
+
+    this._prefManager.setAuthItem(AuthItem.fromJson(data));
+
+    UserEnity.User user = UserEnity.User(
+        data['user_id'], wallet, this._passwordHash, this._salt, false);
+    await DBOperator().userDao.insertUser(user);
+
+    await this._initUser(user);
+
+    // TODO
+    return res.data['success'];
   }
 
   Future<bool> checkWalletBackup() async {

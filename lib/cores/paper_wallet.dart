@@ -86,7 +86,12 @@ class PaperWallet {
   static Wallet jsonToWallet(List<String> decode) {
     final json = decode[0];
     final password = decode[1];
-
-    return Wallet.fromJson(json, password);
+    Wallet wallet;
+    try {
+      wallet = Wallet.fromJson(json, password);
+    } catch(e) {
+      Log.error(e);
+    }
+    return wallet;
   }
 }
