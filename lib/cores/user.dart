@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:web3dart/web3dart.dart';
 
 import '../cores/paper_wallet.dart';
@@ -19,7 +20,6 @@ class User {
   String _passwordHash;
   String _salt = Random.secure().toString();
 
-  PaperWallet _paperWallet;
   PrefManager _prefManager = PrefManager();
 
   // Deprecated
@@ -37,10 +37,10 @@ class User {
   }
 
   Future<bool> createUser(String pwd) async {
-    _paperWallet = PaperWallet();
-    Wallet wallet = _paperWallet.createWallet(pwd);
-    String extPK = _paperWallet.getExtendedPublicKey();
-    Log.debug(extPK);
+    Wallet wallet = await compute(PaperWallet.createWallet, pwd);
+    List<int> seed =
+        await compute(PaperWallet.magicSeed, wallet.privateKey.toString());
+    String extPK = PaperWallet.getExtendedPublicKey(seed: seed);
 
     String installId = await this._prefManager.getInstallationId();
 
@@ -52,13 +52,18 @@ class User {
       "app_uuid": installId
     };
 
+
     Response res = await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
     Map data = res.data['payload'];
+
     this._prefManager.setAuthItem(AuthItem.fromJson(data));
 
-    UserEnity.User user = UserEnity.User(data['user_id'], wallet.toJson(),
+    String keystore = await compute(PaperWallet.walletToJson, wallet);
+
+    UserEnity.User user = UserEnity.User(data['user_id'], keystore,
         this._passwordHash, this._salt, false);
     await DBOperator().userDao.insertUser(user);
+
     await this._initUser(user);
 
     // TODO

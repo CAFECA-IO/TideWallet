@@ -11,11 +11,9 @@ class PaperWallet {
   static const int EXT_CHAININDEX = 0;
   static const int EXT_KEYINDEX = 0;
 
-  List<int> _seed;
-
   PaperWallet();
 
-  Wallet createWallet(String pwd) {
+  static Wallet createWallet(String pwd) {
     Random rng = Random.secure();
 
     Credentials random = EthPrivateKey.createRandom(rng);
@@ -23,12 +21,11 @@ class PaperWallet {
     Log.info(wallet.toJson());
 
     Log.debug(wallet.privateKey.toString());
-    _magicSeed(wallet.privateKey.toString());
 
     return wallet;
   }
 
-  Wallet recoverFromJson(String content, String pwd) {
+  static Wallet recoverFromJson(String content, String pwd) {
     Wallet wallet;
     try {
       wallet = Wallet.fromJson(content, pwd);
@@ -40,25 +37,27 @@ class PaperWallet {
   }
 
   //
-  void _magicSeed(String pk) {
+  static List<int> magicSeed(String pk) {
     List<int> list = pk.codeUnits;
     Uint8List bytes = Uint8List.fromList(list);
     List<int> seed = Cryptor.sha256round(bytes, round: 2);
-    this._seed = seed;
 
-    Uint8List seedBytes = Uint8List.fromList(this._seed);
+    Uint8List seedBytes = Uint8List.fromList(seed);
     String string = String.fromCharCodes(seedBytes);
     Log.info('Seed: $string');
+
+    return seed;
   }
 
 
-  String getExtendedPublicKey({
+  static String getExtendedPublicKey({
+    List<int> seed,
     String path = EXT_PATH,
     int chainIndex = EXT_CHAININDEX,
     int keyIndex = EXT_KEYINDEX,
     bool compressed = true,
   }) {
-    Uint8List bytes = Uint8List.fromList(this._seed);
+    Uint8List bytes = Uint8List.fromList(seed);
 
     var root = bip32.BIP32.fromSeed(bytes);
     var child = root.derivePath("$path/$chainIndex/$keyIndex");
@@ -78,5 +77,16 @@ class PaperWallet {
       // publicKey = bitcoinKey.child(chainIndex).child(keyIndex).ECPubKey(false);
     }
     return String.fromCharCodes(publicKey);
+  }
+
+  static String walletToJson(Wallet wallet) {
+    return wallet.toJson();
+  }
+
+  static Wallet jsonToWallet(List<String> decode) {
+    final json = decode[0];
+    final password = decode[1];
+
+    return Wallet.fromJson(json, password);
   }
 }
