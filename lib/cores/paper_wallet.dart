@@ -2,9 +2,9 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:bip32/bip32.dart' as bip32;
 import 'package:web3dart/web3dart.dart';
-import 'package:crypto/crypto.dart';
 
 import '../helpers/logger.dart';
+import '../helpers/cryptor.dart';
 
 class PaperWallet {
   static const String EXT_PATH = "m/44'/0'/0'";
@@ -43,7 +43,7 @@ class PaperWallet {
   void _magicSeed(String pk) {
     List<int> list = pk.codeUnits;
     Uint8List bytes = Uint8List.fromList(list);
-    List<int> seed = _sha256x2(bytes);
+    List<int> seed = Cryptor.sha256round(bytes, round: 2);
     this._seed = seed;
 
     Uint8List seedBytes = Uint8List.fromList(this._seed);
@@ -51,10 +51,6 @@ class PaperWallet {
     Log.info('Seed: $string');
   }
 
-  List<int> _sha256x2(Uint8List buffer) {
-    Digest tmp = sha256.newInstance().convert(buffer);
-    return sha256.newInstance().convert(tmp.bytes).bytes;
-  }
 
   String getExtendedPublicKey({
     String path = EXT_PATH,
