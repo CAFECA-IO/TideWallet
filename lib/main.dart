@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:tidewallet3/database/db_operator.dart';
 
 import './repositories/account_repository.dart';
 import './repositories/transaction_repository.dart';
@@ -39,7 +40,7 @@ import './helpers/i18n.dart';
 import './repositories/trader_repository.dart';
 import 'theme.dart';
 
-void main() {
+void main() async {
   Bloc.observer = ObserverDelegate();
 
   runApp(MyApp());
@@ -47,6 +48,8 @@ void main() {
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
+
+  await DBOperator().init();
 }
 
 class MyApp extends StatelessWidget {
