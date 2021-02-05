@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:bip32/bip32.dart' as bip32;
 import 'package:web3dart/web3dart.dart';
+import "package:hex/hex.dart";
 
 import '../helpers/logger.dart';
 import '../helpers/cryptor.dart';
@@ -20,8 +21,6 @@ class PaperWallet {
     Wallet wallet = Wallet.createNew(random, pwd, rng);
     Log.info(wallet.toJson());
 
-    Log.debug(wallet.privateKey.toString());
-
     return wallet;
   }
 
@@ -37,30 +36,24 @@ class PaperWallet {
   }
 
   //
-  static List<int> magicSeed(String pk) {
-    List<int> list = pk.codeUnits;
-    Uint8List bytes = Uint8List.fromList(list);
-    List<int> seed = Cryptor.sha256round(bytes, round: 2);
+  static List<int> magicSeed(Uint8List pk) {
+    List<int> seed = Cryptor.keccak256round(pk, round: 2);
 
-    Uint8List seedBytes = Uint8List.fromList(seed);
-    String string = String.fromCharCodes(seedBytes);
+    String string = HEX.encode(seed);
     Log.info('Seed: $string');
 
     return seed;
   }
 
-
   static String getExtendedPublicKey({
     List<int> seed,
     String path = EXT_PATH,
-    int chainIndex = EXT_CHAININDEX,
-    int keyIndex = EXT_KEYINDEX,
     bool compressed = true,
   }) {
     Uint8List bytes = Uint8List.fromList(seed);
 
     var root = bip32.BIP32.fromSeed(bytes);
-    var child = root.derivePath("$path/$chainIndex/$keyIndex");
+    var child = root.derivePath("$path/0/0");
     Uint8List publicKey = child.publicKey;
 
     if (!compressed) {
@@ -76,7 +69,8 @@ class PaperWallet {
       //     isPrivate: false);
       // publicKey = bitcoinKey.child(chainIndex).child(keyIndex).ECPubKey(false);
     }
-    return String.fromCharCodes(publicKey);
+
+    return HEX.encode(publicKey);
   }
 
   static String walletToJson(Wallet wallet) {
@@ -89,7 +83,7 @@ class PaperWallet {
     Wallet wallet;
     try {
       wallet = Wallet.fromJson(json, password);
-    } catch(e) {
+    } catch (e) {
       Log.error(e);
     }
     return wallet;

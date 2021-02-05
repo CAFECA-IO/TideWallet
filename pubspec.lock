@@ -170,7 +170,7 @@ packages:
     source: hosted
     version: "2.1.1"
   crypto:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: crypto
       url: "https://pub.dartlang.org"
@@ -316,7 +316,7 @@ packages:
     source: hosted
     version: "0.2.0"
   hex:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: hex
       url: "https://pub.dartlang.org"
@@ -602,6 +602,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.24.1"
+  sha3:
+    dependency: "direct main"
+    description:
+      name: sha3
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.2"
   shared_preferences:
     dependency: "direct main"
     description:

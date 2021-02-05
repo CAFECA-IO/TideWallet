@@ -56,7 +56,8 @@ dependencies:
   # crypto
   web3dart: ^1.2.3
   bip32: ^1.0.6
-  crypto: ^2.1.5
+  sha3: ^0.1.2
+  hex: ^0.1.2
 
 
   # The following adds the Cupertino Icons font to your application.

@@ -16,7 +16,7 @@ import '../database/entity/user.dart' as UserEnity;
 import '../models/auth.model.dart';
 
 class User {
-  String _wallet;
+  Wallet _wallet;
   bool _isBackup = false;
   String _passwordHash;
   String _salt = Random.secure().toString();
@@ -40,7 +40,7 @@ class User {
   Future<bool> createUser(String pwd) async {
     Wallet wallet = await compute(PaperWallet.createWallet, pwd);
     List<int> seed =
-        await compute(PaperWallet.magicSeed, wallet.privateKey.toString());
+        await compute(PaperWallet.magicSeed, wallet.privateKey.privateKey);
     String extPK = PaperWallet.getExtendedPublicKey(seed: seed);
 
     String installId = await this._prefManager.getInstallationId();
@@ -65,7 +65,7 @@ class User {
     await DBOperator().userDao.insertUser(user);
 
     await this._initUser(user);
-
+    this._wallet = wallet;
     // TODO
     return res.data['success'];
   }
@@ -96,13 +96,11 @@ class User {
     if (w == null) {
       return false;
     }
-
     List<int> seed =
-        await compute(PaperWallet.magicSeed, w.privateKey.toString());
+        await compute(PaperWallet.magicSeed, w.privateKey.privateKey);
     String extPK = PaperWallet.getExtendedPublicKey(seed: seed);
 
     String installId = await this._prefManager.getInstallationId();
-
     this._passwordHash = _seasonedPassword(pwd);
 
     final Map payload = {
@@ -121,6 +119,7 @@ class User {
     await DBOperator().userDao.insertUser(user);
 
     await this._initUser(user);
+    this._wallet = w;
 
     // TODO
     return res.data['success'];
@@ -141,7 +140,6 @@ class User {
   }
 
   Future<void> _initUser(UserEnity.User user) async {
-    this._wallet = user.keystore;
     this._passwordHash = user.passwordHash;
     this._salt = user.passwordSalt;
     this._isBackup = user.backupStatus;
@@ -153,11 +151,19 @@ class User {
   }
 
   String _seasonedPassword(String password) {
-    List<int> tmp = Cryptor.sha256round(password.codeUnits, round: 3);
+    List<int> tmp = Cryptor.keccak256round(password.codeUnits, round: 3);
     tmp += this._salt.codeUnits;
-    tmp = Cryptor.sha256round(tmp, round: 1);
+    tmp = Cryptor.keccak256round(tmp, round: 1);
 
     Uint8List bytes = Uint8List.fromList(tmp);
     return String.fromCharCodes(bytes);
+  }
+
+  Uint8List getPrivateKey() {
+    if (_wallet != null) {
+      return _wallet.privateKey.privateKey;
+    }
+
+    return null;
   }
 }
