@@ -57,20 +57,18 @@ class User {
     };
 
     APIResponse res = await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
-    Map data = res.data['payload'];
 
-    this._prefManager.setAuthItem(AuthItem.fromJson(data));
+    this._prefManager.setAuthItem(AuthItem.fromJson(res.data));
 
     String keystore = await compute(PaperWallet.walletToJson, wallet);
 
     UserEnity.User user = UserEnity.User(
-        data['user_id'], keystore, this._passwordHash, this._salt, false);
+        res.data['user_id'], keystore, this._passwordHash, this._salt, false);
     await DBOperator().userDao.insertUser(user);
 
     await this._initUser(user);
     this._wallet = wallet;
-    // TODO
-    return res.data['success'];
+    return res.success;
   }
 
   bool verifyPassword(String password) {
@@ -124,7 +122,7 @@ class User {
     this._wallet = w;
 
     // TODO
-    return res.data['success'];
+    return res.success;
   }
 
   Future<bool> checkWalletBackup() async {
