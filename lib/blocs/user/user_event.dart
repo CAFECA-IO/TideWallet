@@ -7,7 +7,13 @@ abstract class UserEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class UserCreate extends UserEvent {}
+class UserCheck extends UserEvent {}
+
+class UserCreate extends UserEvent {
+  final String password;
+
+  UserCreate(this.password);
+}
 
 class UserRestore extends UserEvent {}
 
