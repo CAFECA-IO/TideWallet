@@ -8,7 +8,6 @@ import 'ethereum_transaction.model.dart';
 class DBTransaction {
   static const String ClassName = "_transaction";
   static const String FieldName_Id = "id";
-  static const String FieldName_AccountId = "account_id";
   static const String FieldName_CurrencyId = "currency_id";
   static const String FieldName_TxId = "txid"; // txHash
   static const String FieldName_SourceAddresses =
@@ -31,7 +30,6 @@ class DBTransaction {
   static const String FieldName_Status = "status";
 
   String _id;
-  String _accountId;
   String _currencyId;
   String _txId;
   String _sourceAddresses;
@@ -53,7 +51,6 @@ class DBTransaction {
 
   Map<String, dynamic> get map => {
         FieldName_Id: _id,
-        FieldName_AccountId: _accountId,
         FieldName_CurrencyId: _currencyId,
         FieldName_TxId: _txId,
         FieldName_SourceAddresses: _sourceAddresses,
@@ -76,7 +73,6 @@ class DBTransaction {
 
   DBTransaction(
       {String id,
-      String accountId,
       String currencyId,
       String txId,
       String sourceAddresses,
@@ -96,7 +92,6 @@ class DBTransaction {
       String fee,
       Uint8List note})
       : _id = id,
-        _accountId = accountId,
         _currencyId = currencyId,
         _txId = txId,
         _sourceAddresses = sourceAddresses,
@@ -119,6 +114,7 @@ class DBTransaction {
   DBTransaction.fromBitcoinTransaction(
     BitcoinTransaction transaction,
   )   : _id = transaction.id,
+        _currencyId = transaction.currencyId,
         _txId = transaction.txid,
         _sourceAddresses = transaction.sourceAddresses,
         _destinationAddresses = transaction.destinationAddresses,
@@ -140,6 +136,7 @@ class DBTransaction {
   DBTransaction.fromEthereumTokenTransaction(
       EthereumTokenTransaction transaction)
       : _id = transaction.id,
+        _currencyId = transaction.currencyId,
         _txId = transaction.txHash,
         _sourceAddresses = transaction.from,
         _destinationAddresses = transaction.to,
@@ -160,6 +157,7 @@ class DBTransaction {
 
   DBTransaction.fromEthereumTransaction(EthereumTransaction transaction)
       : _id = transaction.id,
+        _currencyId = transaction.currencyId,
         _txId = transaction.txHash,
         _sourceAddresses = transaction.from,
         _destinationAddresses = transaction.to,

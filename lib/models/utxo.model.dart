@@ -4,10 +4,8 @@ import 'package:decimal/decimal.dart';
 
 class UnspentTxOut {
   static const String ClassName = "utxo";
-  static const String FieldName_Id = "id";
-  static const String FieldName_Network = "network";
-  static const String FieldName_AccountId = "account_id";
   static const String FieldName_CurrencyId = "currency_id";
+  static const String FieldName_Id = "id";
   static const String FieldName_TxId = "txid";
   static const String FieldName_Vout = "vout";
   static const String FieldName_Type = "utxo_type";
@@ -21,8 +19,6 @@ class UnspentTxOut {
   static const String FieldName_Sequence = "sequence";
 
   final String id;
-  int _network;
-  final String accountId;
   final String currencyId;
   final String txid;
   final int vout;
@@ -34,17 +30,15 @@ class UnspentTxOut {
   final Uint8List data; // hex string
   final int timestamp;
   final int locked;
+  final int sequence;
 
   //TEST
-  String scriptPubKey;
-  String privatekey;
-  String publickey;
-  int sequence;
+  // String scriptPubKey;
+  // String privatekey;
+  // String publickey;
 
   Map<String, dynamic> get map => {
         FieldName_Id: id,
-        FieldName_Network: _network,
-        FieldName_AccountId: accountId,
         FieldName_CurrencyId: currencyId,
         FieldName_TxId: txid,
         FieldName_Vout: vout,
@@ -66,7 +60,6 @@ class UnspentTxOut {
   List<dynamic> get serializedData {
     List<dynamic> list = [];
     list.add(id);
-    list.add(accountId);
     list.add(currencyId);
     list.add(txid);
     list.add(vout);
@@ -78,14 +71,12 @@ class UnspentTxOut {
     list.add(data);
     list.add(timestamp);
     list.add(locked);
-    list.add(_network);
     list.add(sequence);
     return list;
   }
 
   UnspentTxOut({
     this.id,
-    this.accountId,
     this.currencyId,
     this.txid,
     this.vout,
@@ -97,36 +88,32 @@ class UnspentTxOut {
     this.data,
     this.timestamp,
     this.locked,
-    //TEST
-    this.privatekey,
-    this.publickey,
-    this.scriptPubKey,
     this.sequence,
+    // for transaction only
+    // this.privatekey,
+    // this.publickey,
+    // this.scriptPubKey,
   });
   //  : _network = Config().network;
 
   UnspentTxOut.fromSerializedData(List<dynamic> list)
       : id = list[0],
-        accountId = list[1],
-        currencyId = list[2],
-        txid = list[3],
-        vout = list[4],
-        type = list[5],
-        address = list[6],
-        amount = list[7],
-        chainIndex = list[8],
-        keyIndex = list[9],
-        data = list[10],
-        timestamp = list[11],
-        locked = list[12],
-        _network = list[13],
-        sequence = list[14];
+        currencyId = list[1],
+        txid = list[2],
+        vout = list[3],
+        type = list[4],
+        address = list[5],
+        amount = list[6],
+        chainIndex = list[7],
+        keyIndex = list[8],
+        data = list[9],
+        timestamp = list[10],
+        locked = list[11],
+        sequence = list[12];
 
   UnspentTxOut.fromMap(Map<String, dynamic> map)
       : id = map[FieldName_Id],
-        accountId = map[FieldName_AccountId],
         currencyId = map[FieldName_CurrencyId],
-        _network = map[FieldName_Network], //?? Config().network,
         txid = map[FieldName_TxId],
         vout = map[FieldName_Vout],
         type = map[FieldName_Type],

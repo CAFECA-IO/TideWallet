@@ -207,6 +207,7 @@ class BitcoinTransaction {
   static const int DEFAULT_SEQUENCE = 0xffffffff;
 
   String id;
+  String currencyId;
   String txid;
   int locktime;
   int timestamp;
@@ -224,12 +225,13 @@ class BitcoinTransaction {
   Uint8List _version;
   Uint8List _lockTime;
   SegWitType _segWitType;
-  bool _publish;
+  // bool _publish; //TODO get publish property from currency
 
   List<Input> get inputs => this._inputs;
 
   BitcoinTransaction({
     this.id,
+    this.currencyId,
     this.txid,
     this.locktime,
     this.timestamp,
@@ -245,6 +247,7 @@ class BitcoinTransaction {
 
   BitcoinTransaction.fromMap(Map<String, dynamic> transactionMap)
       : id = transactionMap[DBTransaction.FieldName_Id],
+        currencyId = transactionMap[DBTransaction.FieldName_CurrencyId],
         txid = transactionMap[DBTransaction.FieldName_TxId],
         sourceAddresses =
             transactionMap[DBTransaction.FieldName_SourceAddresses],
@@ -262,8 +265,7 @@ class BitcoinTransaction {
 
   BitcoinTransaction.prepareTransaction(bool publish, SegWitType segwitType,
       {int lockTime}) // in Satoshi
-      : _segWitType = segwitType,
-        _publish = publish {
+      : _segWitType = segwitType {
     _inputs = List<Input>();
     _outputs = List<Output>();
     _segWitType = segwitType ?? SegWitType.nonSegWit;

@@ -3,6 +3,7 @@ import './transaction.model.dart';
 
 class EthereumTokenTransaction {
   final String id;
+  final String currencyId;
   final String txHash;
   final String from;
   final String to;
@@ -13,6 +14,7 @@ class EthereumTokenTransaction {
 
   EthereumTokenTransaction({
     this.id,
+    this.currencyId,
     this.txHash,
     this.from,
     this.to,
@@ -24,6 +26,7 @@ class EthereumTokenTransaction {
 
   EthereumTokenTransaction.fromMap(Map<String, dynamic> transactionMap)
       : id = transactionMap[DBTransaction.FieldName_Id],
+        currencyId = transactionMap[DBTransaction.FieldName_CurrencyId],
         txHash = transactionMap[DBTransaction.FieldName_TxId],
         from = transactionMap[DBTransaction.FieldName_SourceAddresses],
         to = transactionMap[DBTransaction.FieldName_DesticnationAddresses],
