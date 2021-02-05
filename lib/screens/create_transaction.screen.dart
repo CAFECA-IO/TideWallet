@@ -52,8 +52,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
     this._repo.setCurrency(_currency);
     print('didChangeDependencies: ${_currency.symbol}');
     _bloc = BlocProvider.of<TransactionBloc>(context)
-      ..add(UpdateTransactionCreateCurrency(this._currency))
-      ..add(FetchTransactionFee());
+      ..add(UpdateTransactionCreateCurrency(this._currency));
     super.didChangeDependencies();
   }
 
@@ -83,6 +82,9 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
               Log.debug(state.props);
               if (state.address.isNotEmpty) {
                 _addressController.text = state.address;
+              }
+              if (state.rules[0] && state.rules[1]) {
+                _bloc.add(FetchTransactionFee());
               }
               return Container(
                 padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
@@ -140,7 +142,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                         keyboardType:
                             TextInputType.numberWithOptions(decimal: true),
                       ),
-                      state.rules[1] || state.amount.isEmpty
+                      state.rules[1] || state.amount == null
                           ? SizedBox(height: 20)
                           : Align(
                               child: Container(

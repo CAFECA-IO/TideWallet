@@ -151,7 +151,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Align(
                       child: Text(
-                        '(${Formatter.dateTime(_transaction.timestamp)})',
+                        '(${Formatter.dateTime(_transaction.dateTime)})',
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                       alignment: Alignment.centerLeft,

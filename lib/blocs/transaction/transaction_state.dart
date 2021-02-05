@@ -14,7 +14,7 @@ abstract class TransactionState extends Equatable {
 
 class TransactionInitial extends TransactionState {
   final String address;
-  final String amount;
+  final Decimal amount;
   final String spandable;
   final TransactionPriority priority;
   final String gasLimit;
@@ -29,7 +29,7 @@ class TransactionInitial extends TransactionState {
 
   TransactionInitial(
       {this.address = "",
-      this.amount = "",
+      this.amount,
       this.spandable = "13.2",
       this.priority = TransactionPriority.standard,
       this.gasLimit = "",
@@ -42,7 +42,7 @@ class TransactionInitial extends TransactionState {
 
   TransactionState copyWith({
     String address,
-    String amount,
+    Decimal amount,
     String spandable,
     TransactionPriority priority,
     String gasLimit,

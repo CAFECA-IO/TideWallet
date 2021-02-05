@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:decimal/decimal.dart';
+
 import 'transaction.model.dart';
 import 'bitcoin_transaction.model.dart';
 import 'ethereum_token_transaction.model.dart';
@@ -36,7 +38,7 @@ class DBTransaction {
   String _destinationAddresses;
   int _timestamp; // in second
   int _confirmations;
-  String _amount; // in coinUnit
+  Decimal _amount; // in coinUnit
   String _gasPrice;
   int _gasUsed;
   int _nonce;
@@ -87,7 +89,7 @@ class DBTransaction {
       int blockHeight,
       TransactionStatus status,
       String txType,
-      TransactionDirection direction,
+      String direction,
       int locktime,
       String fee,
       Uint8List note})
@@ -98,7 +100,7 @@ class DBTransaction {
         _destinationAddresses = destinationAddresses,
         _timestamp = timestamp,
         _confirmations = confirmations,
-        _amount = amount,
+        _amount = Decimal.parse(amount),
         _gasPrice = gasPrice,
         _gasUsed = gasUsed,
         _nonce = nonce,
@@ -106,10 +108,16 @@ class DBTransaction {
         _blockHeight = blockHeight,
         _status = status,
         _txType = txType,
-        _direction = direction,
         _locktime = locktime,
         _fee = fee,
-        _note = note;
+        _note = note {
+    if (direction == TransactionDirection.sent.title)
+      _direction = TransactionDirection.sent;
+    else if (direction == TransactionDirection.received.title)
+      _direction = TransactionDirection.received;
+    else
+      _direction = TransactionDirection.moved;
+  }
 
   DBTransaction.fromBitcoinTransaction(
     BitcoinTransaction transaction,

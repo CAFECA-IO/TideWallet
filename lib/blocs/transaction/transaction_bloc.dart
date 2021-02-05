@@ -37,8 +37,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     TransactionInitial _state = state;
     if (event is FetchTransactionFee) {
       // createRawTx
-      String hex = 'asd'; //TODO
-      List<dynamic> _fee = await _repo.getTransactionFee(hex);
+      List<dynamic> _fee = await _repo.getTransactionFee(
+          address: _state.address, amount: _state.amount);
       Decimal fee = _fee.length == 2
           ? _fee[0][_state.priority] * _fee[1]
           : _fee[0][_state.priority];
@@ -82,11 +82,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     if (event is ValidAmount) {
       List<bool> _rules = [
         _state.rules[0],
-        _repo.validAmount(event.amount, priority: TransactionPriority.standard)
+        _repo.validAmount(Decimal.parse(event.amount),
+            priority: TransactionPriority.standard)
       ];
       Log.debug(_rules);
       yield _state.copyWith(
-        amount: event.amount,
+        amount: Decimal.parse(event.amount),
         rules: _rules,
       );
     }

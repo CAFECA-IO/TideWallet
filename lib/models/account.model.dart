@@ -6,6 +6,7 @@ import '../constants/account_config.dart';
 enum ACCOUNT_EVT { OnUpdateAccount, OnUpdateCurrency, OnUpdateTransactions }
 
 class Currency {
+  final String id;
   final int cointype;
   final int purpose;
   final int accountIndex;
@@ -17,7 +18,8 @@ class Currency {
   final ACCOUNT accountType;
 
   Currency(
-      {this.cointype,
+      {this.id,
+      this.cointype,
       this.purpose,
       this.amount,
       this.inUSD,
@@ -28,6 +30,7 @@ class Currency {
       this.accountType});
 
   Currency copyWith({
+    String id,
     int cointype,
     int purpose,
     String symbol,
@@ -38,6 +41,7 @@ class Currency {
     ACCOUNT accountType,
   }) {
     return Currency(
+        id: id ?? this.id,
         cointype: cointype ?? this.cointype,
         purpose: purpose ?? this.purpose,
         amount: amount ?? this.amount,
@@ -50,7 +54,8 @@ class Currency {
 
   Currency.fromMap(
     Map map,
-  )   : cointype = map['cointype'],
+  )   : id = map['currency_id'],
+        cointype = map['cointype'],
         purpose = map['purpose'],
         accountIndex = map['accountIndex'],
         symbol = map['symbol'],

@@ -201,7 +201,7 @@ class Output {
         0, Converter.toBtcSmallestUnit(this.amount).toInt(), Endian.little);
 }
 
-class BitcoinTransaction {
+class BitcoinTransaction extends Transaction {
   static const int ADVANCED_TRANSACTION_MARKER = 0x00;
   static const int ADVANCED_TRANSACTION_FLAG = 0x01;
   static const int DEFAULT_SEQUENCE = 0xffffffff;
@@ -216,7 +216,7 @@ class BitcoinTransaction {
   TransactionStatus status;
   String sourceAddresses; // TODO
   String destinationAddresses; //TODO
-  String amount;
+  Decimal amount;
   String fee;
   Uint8List note;
 
@@ -255,7 +255,7 @@ class BitcoinTransaction {
             transactionMap[DBTransaction.FieldName_DesticnationAddresses],
         timestamp = transactionMap[DBTransaction.FieldName_Timestamp],
         confirmations = transactionMap[DBTransaction.FieldName_Confirmations],
-        amount = transactionMap[DBTransaction.FieldName_Amount].toString(),
+        amount = transactionMap[DBTransaction.FieldName_Amount],
         direction = TransactionDirection.values.firstWhere((element) =>
             element.value == transactionMap[DBTransaction.FieldName_Direction]),
         locktime = transactionMap[DBTransaction.FieldName_LockedTime],

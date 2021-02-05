@@ -23,7 +23,7 @@ class UnspentTxOut {
   final String txid;
   final int vout;
   final String type;
-  final String address;
+  // final String address;
   final Decimal amount; // in btc
   final int chainIndex;
   final int keyIndex;
@@ -43,7 +43,7 @@ class UnspentTxOut {
         FieldName_TxId: txid,
         FieldName_Vout: vout,
         FieldName_Type: type,
-        FieldName_Address: address,
+        // FieldName_Address: address,
         FieldName_Amount: amount,
         FieldName_ChainIndex: chainIndex,
         FieldName_KeyIndex: keyIndex,
@@ -64,7 +64,7 @@ class UnspentTxOut {
     list.add(txid);
     list.add(vout);
     list.add(type);
-    list.add(address);
+    // list.add(address);
     list.add(amount);
     list.add(chainIndex);
     list.add(keyIndex);
@@ -81,7 +81,7 @@ class UnspentTxOut {
     this.txid,
     this.vout,
     this.type,
-    this.address,
+    // this.address,
     this.amount,
     this.chainIndex,
     this.keyIndex,
@@ -102,14 +102,14 @@ class UnspentTxOut {
         txid = list[2],
         vout = list[3],
         type = list[4],
-        address = list[5],
-        amount = list[6],
-        chainIndex = list[7],
-        keyIndex = list[8],
-        data = list[9],
-        timestamp = list[10],
-        locked = list[11],
-        sequence = list[12];
+        // address = list[5],
+        amount = list[5],
+        chainIndex = list[6],
+        keyIndex = list[7],
+        data = list[8],
+        timestamp = list[9],
+        locked = list[10],
+        sequence = list[11];
 
   UnspentTxOut.fromMap(Map<String, dynamic> map)
       : id = map[FieldName_Id],
@@ -117,7 +117,7 @@ class UnspentTxOut {
         txid = map[FieldName_TxId],
         vout = map[FieldName_Vout],
         type = map[FieldName_Type],
-        address = map[FieldName_Address],
+        // address = map[FieldName_Address],
         amount = map[FieldName_Amount],
         chainIndex = map[FieldName_ChainIndex],
         keyIndex = map[FieldName_KeyIndex],

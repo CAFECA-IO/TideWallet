@@ -1,20 +1,19 @@
 import 'dart:async';
 import 'package:decimal/decimal.dart';
 import 'package:dio/dio.dart';
+import 'package:convert/convert.dart';
 
 import 'account_service.dart';
 import 'account_service_decorator.dart';
 import '../models/transaction.model.dart';
-import '../helpers/logger.dart';
-import '../helpers/utils.dart';
+import '../models/bitcoin_transaction.model.dart';
+import '../models/utxo.model.dart';
 import '../helpers/http_agent.dart';
 import '../constants/account_config.dart';
 
 class BitcoinService extends AccountServiceDecorator {
-  String _accountId; //TODO TEST
   BitcoinService(AccountService service) : super(service) {
     this.base = ACCOUNT.BTC;
-    _accountId = 'cfc3324'; //TODO TEST
     HTTPAgent().setToken('token'); //TODO TEST
   }
   static const String _baseUrl = 'https://service.tidewallet.io';
@@ -92,25 +91,25 @@ class BitcoinService extends AccountServiceDecorator {
   }
 
   @override
-  Future<List<dynamic>> getTransactionFee(String hex) async {
+  Future<Map<TransactionPriority, Decimal>> getTransactionFee() async {
     // TODO getFeeFromDB && getSyncFeeAutomatically
     Response response =
         await HTTPAgent().get('$_baseUrl/api/v1/blockchain/80000001/fee');
     Map<String, dynamic> data =
         response.data['payload']; // TODO FEE should return String or double
-    // TODO calculateTransactionVsize
+
     Map<TransactionPriority, Decimal> transactionFee = {
       TransactionPriority.slow: Decimal.parse(data['slow'].toString()),
       TransactionPriority.standard: Decimal.parse(data['standard'].toString()),
       TransactionPriority.fast: Decimal.parse(data['fast'].toString()),
     };
-    return [transactionFee];
+    return transactionFee;
   }
 
   @override
-  Future<String> getChangingAddress() async {
+  Future<String> getChangingAddress(String currencyId) async {
     Response response = await HTTPAgent()
-        .get('$_baseUrl/api/v1/wallet/account/address/$_accountId/change');
+        .get('$_baseUrl/api/v1/wallet/account/address/$currencyId/change');
     Map data = response.data['payload'];
     String _address = data['address'];
     _numberOfUsedInternalKey = data['change_index'];
@@ -118,12 +117,36 @@ class BitcoinService extends AccountServiceDecorator {
   }
 
   @override
-  Future<String> getReceivingAddress() async {
+  Future<String> getReceivingAddress(String currencyId) async {
     Response response = await HTTPAgent()
-        .get('$_baseUrl/api/v1/wallet/account/address/$_accountId/receive');
+        .get('$_baseUrl/api/v1/wallet/account/address/$currencyId/receive');
     Map data = response.data['payload'];
     String address = data['address'];
     _numberOfUsedExternalKey = data['key_index'];
     return address;
+  }
+
+  @override
+  Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) async {
+    Response response = await HTTPAgent()
+        .get('$_baseUrl/api/v1/wallet/account/txs/uxto/$currencyId');
+    List<dynamic> datas = response.data['payload'];
+    List<UnspentTxOut> utxos = datas
+        .map((data) => UnspentTxOut(
+              id: data['id'],
+              currencyId: currencyId,
+              txid: data['txid'],
+              vout: data['vout'],
+              type: data['type'],
+              amount: data['amount'],
+              chainIndex: data['chain_index'],
+              keyIndex: data['key_index'],
+              data: hex.decode(data['script']),
+              timestamp: data['timestamp'],
+              locked: 0,
+              sequence: BitcoinTransaction.DEFAULT_SEQUENCE,
+            ))
+        .toList();
+    return utxos;
   }
 }

@@ -1,4 +1,6 @@
 import 'dart:math';
+import 'package:decimal/decimal.dart';
+
 import '../models/transaction.model.dart';
 import '../helpers/utils.dart';
 
@@ -52,7 +54,8 @@ Future<List<Transaction>> getETHTransactions() async {
   for (int i = 0; i < v; i++) {
     TransactionDirection direction =
         TransactionDirection.values[Random().nextInt(2)];
-    String amount = "${Random().nextInt(100)}.${Random().nextInt(9)}";
+    Decimal amount =
+        Decimal.parse("${Random().nextInt(100)}.${Random().nextInt(9)}");
     int timestamp = DateTime.now().millisecondsSinceEpoch;
     int confirmations = Random().nextInt(10);
     TransactionStatus status = confirmations > 6

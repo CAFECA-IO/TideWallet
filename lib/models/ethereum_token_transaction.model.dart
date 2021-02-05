@@ -1,7 +1,9 @@
+import 'package:decimal/decimal.dart';
+
 import 'db_transaction.model.dart';
 import './transaction.model.dart';
 
-class EthereumTokenTransaction {
+class EthereumTokenTransaction extends Transaction {
   final String id;
   final String currencyId;
   final String txHash;
@@ -10,7 +12,7 @@ class EthereumTokenTransaction {
   int timestamp;
   int confirmations;
   TransactionStatus status;
-  final String amount;
+  final Decimal amount;
 
   EthereumTokenTransaction({
     this.id,

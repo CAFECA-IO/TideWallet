@@ -20,4 +20,14 @@ class TransactionServiceBased extends TransactionService {
     // TODO: implement verifyAddress
     throw UnimplementedError();
   }
+
+  @override
+  Decimal calculateTransactionVSize(
+      {List<UnspentTxOut> unspentTxOuts,
+      Decimal feePerByte,
+      Decimal amount,
+      Uint8List message}) {
+    // TODO: implement calculateTransactionVSize
+    throw UnimplementedError();
+  }
 }

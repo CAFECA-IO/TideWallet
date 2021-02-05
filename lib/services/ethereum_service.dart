@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:decimal/decimal.dart';
 import 'package:dio/dio.dart';
+import 'package:tidewallet3/models/utxo.model.dart';
 
 import 'account_service_decorator.dart';
 import '../models/account.model.dart';
@@ -159,7 +160,8 @@ class EthereumService extends AccountServiceDecorator {
     return true;
   }
 
-  Future<Decimal> _estimateGasLimit(String hex) async {
+  @override
+  Future<Decimal> estimateGasLimit(String hex) async {
     Response response = await HTTPAgent().post(
         '$_baseUrl/api/v1/blockchain/8000003C/gas-limit',
         {'hex': hex}); // TODO API FormatError
@@ -169,7 +171,7 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   @override
-  Future<List<dynamic>> getTransactionFee(String hex) async {
+  Future<Map<TransactionPriority, Decimal>> getTransactionFee() async {
     // TODO getFeeFromDB && getSyncFeeAutomatically
     Response response =
         await HTTPAgent().get('$_baseUrl/api/v1/blockchain/8000003C/fee');
@@ -180,19 +182,25 @@ class EthereumService extends AccountServiceDecorator {
       TransactionPriority.standard: Decimal.parse(data['standard'].toString()),
       TransactionPriority.fast: Decimal.parse(data['fast'].toString()),
     };
-    Decimal gasLimit = await _estimateGasLimit(hex);
-    return [transactionFee, gasLimit];
+    // Decimal gasLimit = await _estimateGasLimit(hex);
+    return transactionFee;
   }
 
   @override
-  Future<String> getReceivingAddress() async {
+  Future<String> getReceivingAddress(String currencyId) async {
     // TODO: implement publishTransaction
     throw UnimplementedError();
   }
 
   @override
-  Future<String> getChangingAddress() async {
+  Future<String> getChangingAddress(String currencyId) async {
     // TODO: implement publishTransaction
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) async {
+    // TODO: implement getUnspentTxOut
     throw UnimplementedError();
   }
 }

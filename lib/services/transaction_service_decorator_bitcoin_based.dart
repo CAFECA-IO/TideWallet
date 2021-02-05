@@ -173,4 +173,56 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     // TODO save ChangeUtxo
     return _signTransaction(transaction);
   }
+
+  Decimal calculateTransactionVSize({
+    List<UnspentTxOut> unspentTxOuts,
+    Decimal feePerByte,
+    Decimal amount,
+    Uint8List message,
+  }) {
+    Decimal unspentAmount = Decimal.zero;
+    int headerWeight;
+    int inputWeight;
+    int outputWeight;
+    if (this.segWitType == SegWitType.nativeSegWit) {
+      headerWeight = 3 * 10 + 12;
+      inputWeight = 3 * 41 + 151;
+      outputWeight = 3 * 31 + 31;
+    } else if (this.segWitType == SegWitType.segWit) {
+      headerWeight = 3 * 10 + 12;
+      inputWeight = 3 * 76 + 210;
+      outputWeight = 3 * 32 + 32;
+    } else {
+      headerWeight = 3 * 10 + 10;
+      inputWeight = 3 * 148 + 148;
+      outputWeight = 3 * 34 + 34;
+    }
+    int numberOfTxIn = 0;
+    int numberOfTxOut = message != null ? 2 : 1;
+    int vsize =
+        0; // 3 * base_size(excluding witnesses) + total_size(including witnesses)
+    for (UnspentTxOut utxo in unspentTxOuts) {
+      ++numberOfTxIn;
+      unspentAmount += utxo.amount;
+      vsize = ((headerWeight +
+              (inputWeight * numberOfTxIn) +
+              (outputWeight * numberOfTxOut) +
+              3) ~/
+          4);
+      Decimal fee = Decimal.fromInt(vsize) * feePerByte;
+      if (unspentAmount == (amount + fee)) break;
+
+      if (unspentAmount > (amount + fee)) {
+        numberOfTxOut = 3;
+        vsize = ((headerWeight +
+                (inputWeight * numberOfTxIn) +
+                (outputWeight * numberOfTxOut) +
+                3) ~/
+            4);
+        Decimal fee = Decimal.fromInt(vsize) * feePerByte;
+        if (unspentAmount >= (amount + fee)) break;
+      }
+    }
+    return Decimal.fromInt(vsize);
+  }
 }

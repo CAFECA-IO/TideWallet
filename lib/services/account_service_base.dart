@@ -1,4 +1,5 @@
 import 'package:decimal/decimal.dart';
+import 'package:tidewallet3/models/utxo.model.dart';
 
 import 'account_service.dart';
 import '../models/transaction.model.dart';
@@ -68,26 +69,32 @@ class AccountServiceBase extends AccountService {
   }
 
   @override
-  Future<List<dynamic>> getTransactionFee(String hex) async {
+  Future<Map<TransactionPriority, Decimal>> getTransactionFee() async {
     // TODO: implement publishTransaction
     throw UnimplementedError();
   }
 
   @override
-  Future<String> getChangingAddress() async {
+  Future<String> getChangingAddress(String currencyId) async {
     // TODO: implement publishTransaction
     throw UnimplementedError();
   }
 
   @override
-  Future<String> getReceivingAddress() async {
+  Future<String> getReceivingAddress(String currencyId) async {
     // TODO: implement publishTransaction
     throw UnimplementedError();
   }
 
-  // @override
-  // Future<Decimal> estimateGasLimit(String hex) {
-  //   // TODO: implement estimateGasLimit
-  //   throw UnimplementedError();
-  // }
+  @override
+  Future<Decimal> estimateGasLimit(String hex) {
+    // TODO: implement estimateGasLimit
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) {
+    // TODO: implement getUnspentTxOut
+    throw UnimplementedError();
+  }
 }
