@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:web3dart/web3dart.dart';
 
@@ -14,14 +13,18 @@ import '../helpers/prefer_manager.dart';
 import '../database/db_operator.dart';
 import '../database/entity/user.dart' as UserEnity;
 import '../models/auth.model.dart';
+import '../models/api_response.mode.dart';
 
 class User {
+  String _id;
   Wallet _wallet;
   bool _isBackup = false;
   String _passwordHash;
   String _salt = Random.secure().toString();
 
   PrefManager _prefManager = PrefManager();
+
+  String get id => _id;
 
   // Deprecated
   bool get hasWallet {
@@ -53,7 +56,7 @@ class User {
       "app_uuid": installId
     };
 
-    Response res = await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
+    APIResponse res = await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
     Map data = res.data['payload'];
 
     this._prefManager.setAuthItem(AuthItem.fromJson(data));
@@ -109,13 +112,12 @@ class User {
       "app_uuid": installId
     };
 
-    Response res = await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
-    Map data = res.data['payload'];
+    APIResponse res = await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
 
-    this._prefManager.setAuthItem(AuthItem.fromJson(data));
+    this._prefManager.setAuthItem(AuthItem.fromJson(res.data));
 
     UserEnity.User user = UserEnity.User(
-        data['user_id'], wallet, this._passwordHash, this._salt, false);
+        res.data['user_id'], wallet, this._passwordHash, this._salt, false);
     await DBOperator().userDao.insertUser(user);
 
     await this._initUser(user);
@@ -140,6 +142,7 @@ class User {
   }
 
   Future<void> _initUser(UserEnity.User user) async {
+    this._id = user.userId;
     this._passwordHash = user.passwordHash;
     this._salt = user.passwordSalt;
     this._isBackup = user.backupStatus;

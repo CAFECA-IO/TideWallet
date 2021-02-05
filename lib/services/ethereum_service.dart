@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'package:decimal/decimal.dart';
-
+import 'package:dio/dio.dart';
+import 'package:tidewallet3/constants/endpoint.dart';
+import 'package:tidewallet3/helpers/http_agent.dart';
+import 'package:tidewallet3/helpers/logger.dart';
+import 'package:tidewallet3/models/api_response.mode.dart';
 
 import 'account_service_decorator.dart';
 import '../models/account.model.dart';
@@ -13,9 +17,9 @@ import '../cores/account.dart';
 class EthereumService extends AccountServiceDecorator {
   EthereumService(AccountService service) : super(service) {
     this.base = ACCOUNT.ETH;
+    this.syncInterval = 600 * 1000;
   }
 
-  
   Timer _timer;
 
   estimateGasLimit() {}
@@ -56,6 +60,9 @@ class EthereumService extends AccountServiceDecorator {
 
   @override
   void start() {
+    _timer = Timer.periodic(Duration(milliseconds: this.syncInterval), (_) {
+      this._sync();
+    });
     this._sync();
   }
 
@@ -82,30 +89,25 @@ class EthereumService extends AccountServiceDecorator {
     throw UnimplementedError();
   }
 
-  _sync() {
-    _timer =
-        Timer.periodic(Duration(milliseconds: this.syncInterval), (_) async {
-      await this._getTokens();
-      Currency curr = await this._getETH();
+  _sync() async {
+    Currency curr = await this._getETH();
 
+    AccountMessage msg =
+        AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: curr);
 
-      AccountMessage msg = AccountMessage(
-          evt: ACCOUNT_EVT.OnUpdateAccount, value: curr);
+    AccountMessage currMsg = AccountMessage(
+        evt: ACCOUNT_EVT.OnUpdateCurrency,
+        value: AccountCore().currencies[this.base]);
 
-      AccountMessage currMsg = AccountMessage(
-          evt: ACCOUNT_EVT.OnUpdateCurrency, value: AccountCore().currencies[this.base]);
-      
-      AccountCore().messenger.add(msg);
-      AccountCore().messenger.add(currMsg);
+    AccountCore().messenger.add(msg);
+    AccountCore().messenger.add(currMsg);
 
-      List<Transaction> transactions = await this._getTransactions();
+    List<Transaction> transactions = await this._getTransactions();
 
-      AccountMessage txMsg = AccountMessage(evt: ACCOUNT_EVT.OnUpdateTransactions, value: {
-        "currency": curr,
-        "transactions": transactions
-      });
-      AccountCore().messenger.add(txMsg);
-    });
+    AccountMessage txMsg = AccountMessage(
+        evt: ACCOUNT_EVT.OnUpdateTransactions,
+        value: {"currency": curr, "transactions": transactions});
+    AccountCore().messenger.add(txMsg);
   }
 
   _getTransactions() async {
@@ -114,19 +116,24 @@ class EthereumService extends AccountServiceDecorator {
     return result;
   }
 
-  _getTokens() async {
-    List<Map> result = await getETHTokens();
-    List<Currency> tokenList = result.map((e) => Currency.fromMap(e)).toList();
+  // Deprecated
+  // _getTokens() async {
+  //   List<Map> result = await getETHTokens();
+  //   List<Currency> tokenList = result.map((e) => Currency.fromMap(e)).toList();
 
-    AccountCore().currencies[this.base] =
-        AccountCore().currencies[this.base].sublist(0, 1) + tokenList;
-  }
+  //   AccountCore().currencies[this.base] =
+  //       AccountCore().currencies[this.base].sublist(0, 1) + tokenList;
+  // }
 
   Future<Currency> _getETH() async {
-    Map res = await getETH();
-    Currency curr = Currency.fromMap({...res, "accountType": this.base});
-    AccountCore().currencies[curr.accountType][0] = curr;
-    return curr;
+
+    APIResponse res = await HTTPAgent().get(Endpoint.SUSANOO + '/wallet/accounts');
+    Log.debug(res.data);
+
+    // Map res = await getETH();
+    // Currency curr = Currency.fromMap({...res, "accountType": this.base});
+    // AccountCore().currencies[curr.accountType][0] = curr;
+    return null;
   }
 
   static Future<Token> getTokeninfo(String _address) async {
@@ -140,8 +147,7 @@ class EthereumService extends AccountServiceDecorator {
           imgUrl: result['imgPath'],
           description: result['description'],
           contract: result['contract'],
-          totalSupply: result['totalSupply']
-          );
+          totalSupply: result['totalSupply']);
       return _token;
     } else {
       return null;

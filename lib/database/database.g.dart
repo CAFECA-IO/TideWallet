@@ -88,7 +88,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `User` (`user_id` TEXT, `keystore` TEXT, `password_hash` TEXT, `password_salt` TEXT, `backup_status` INTEGER NOT NULL, PRIMARY KEY (`user_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Account` (`account_id` TEXT, `user_id` TEXT, `purpose` INTEGER, `account_index` INTEGER, `curve_type` INTEGER, PRIMARY KEY (`account_id`))');
+            'CREATE TABLE IF NOT EXISTS `Account` (`account_id` TEXT, `user_id` TEXT, PRIMARY KEY (`account_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Currency` (`currency_id` TEXT, `name` TEXT, `coin_type` INTEGER, `description` TEXT, `symbol` TEXT, `decimals` INTEGER, `address` TEXT, `type` TEXT, `total_supply` TEXT, `contract` TEXT, PRIMARY KEY (`currency_id`))');
         await database.execute(
@@ -169,11 +169,7 @@ class _$AccountDao extends AccountDao {
             'Account',
             (Account item) => <String, dynamic>{
                   'account_id': item.accountId,
-                  'user_id': item.userId,
-                  'purpose': item.purpose,
-                  'account_index': item.accountIndex,
-                  'curve_type':
-                      item.curveType == null ? null : (item.curveType ? 1 : 0)
+                  'user_id': item.userId
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -189,12 +185,7 @@ class _$AccountDao extends AccountDao {
     return _queryAdapter.queryList('SELECT * FROM Account',
         mapper: (Map<String, dynamic> row) => Account(
             accountId: row['account_id'] as String,
-            userId: row['user_id'] as String,
-            purpose: row['purpose'] as int,
-            accountIndex: row['account_index'] as int,
-            curveType: row['curve_type'] == null
-                ? null
-                : (row['curve_type'] as int) != 0));
+            userId: row['user_id'] as String));
   }
 
   @override

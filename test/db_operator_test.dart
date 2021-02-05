@@ -80,11 +80,16 @@ void main() {
         final User user = await opt.userDao.findUser();
 
         List<Account> _accounts = accounts
-            .map((acc) => Account(
+            .map(
+              (acc) => Account(
                 accountId: acc['account_id'],
                 userId: user.userId,
-                purpose: acc['purpose'],
-                accountIndex: int.tryParse(acc['account_index'])))
+                // purpose: acc['purpose'],
+                // accountIndex: int.tryParse(
+                //   acc['account_index'],
+                // ),
+              ),
+            )
             .toList();
         List<int> _result = await opt.accountDao.insertAccounts(_accounts);
         List<Account> actual = await opt.accountDao.findAllAccounts();

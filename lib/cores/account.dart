@@ -1,11 +1,16 @@
-import 'package:decimal/decimal.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../constants/account_config.dart';
+import '../constants/endpoint.dart';
 import '../models/account.model.dart';
+import '../models/api_response.mode.dart';
 import '../services/account_service.dart';
 import '../services/account_service_base.dart';
 import '../services/ethereum_service.dart';
+import '../database/entity/account.dart' as AccountEntity;
+import '../database/db_operator.dart';
+import '../helpers/logger.dart';
+import '../helpers/http_agent.dart';
 
 class AccountCore {
   PublishSubject<AccountMessage> messenger;
@@ -33,28 +38,41 @@ class AccountCore {
 
   _initAccounts() async {
     AccountService _service = AccountServiceBase();
+    APIResponse res =
+        await HTTPAgent().get(Endpoint.SUSANOO + '/wallet/accounts');
+
+    List accounts = res.data;
+    List<AccountEntity.Account> result = await DBOperator().accountDao.findAllAccounts();
+
+    Log.debug(result);
     // TODO: Get amount in DB
-    for (var value in ACCOUNT.values) {
-      if (ACCOUNT_LIST[value] != null) {
-        bool exist = await this.checkAccountExist();
+    for (var i = 0; i < accounts.length; i++) {
+      final String id = accounts[i]['account_id'];
+      bool exist = result.indexWhere((el) => el.accountId == id) > -1;
 
-        Currency _currency = Currency.fromMap(ACCOUNT_LIST[value]);
 
-        this.currencies[value] = [];
-        this.currencies[value].add(_currency);
+      AccountEntity.Account acc = AccountEntity.Account(
+          accountId: id, userId: 'eee');
 
-        if (value == ACCOUNT.ETH) {
-          AccountService ethService = EthereumService(_service);
-          this._services.add(ethService);
-          ethService.start();
-        }
 
-        await createAccount();
+      // Currency _currency = Currency.fromMap(ACCOUNT_LIST[value]);
 
-        this.messenger.add(AccountMessage(
-            evt: ACCOUNT_EVT.OnUpdateAccount,
-            value: _currency));
+      // this.currencies[value] = [];
+      // this.currencies[value].add(_currency);
+
+      // if (value == ACCOUNT.ETH) {
+      //   AccountService ethService = EthereumService(_service);
+      //   this._services.add(ethService);
+      //   ethService.start();
+      // }
+      if (!exist) {
+        await createAccount(acc);
+
       }
+
+      // this.messenger.add(AccountMessage(
+      //     evt: ACCOUNT_EVT.OnUpdateAccount,
+      //     value: _currency));
     }
   }
 
@@ -62,19 +80,14 @@ class AccountCore {
     messenger.close();
   }
 
-
-
-
-
-
   Future<bool> checkAccountExist() async {
     await Future.delayed(Duration(milliseconds: 300));
 
     return false;
   }
 
-  createAccount() async {
-    await Future.delayed(Duration(milliseconds: 300));
+  createAccount(AccountEntity.Account account) async {
+    await DBOperator().accountDao.insertAccount(account);
   }
 
   AccountService getService(ACCOUNT type) {
@@ -86,5 +99,4 @@ class AccountCore {
   // }
 
   List<Currency> getCurrencies(ACCOUNT type) => this.currencies[type];
-
 }
