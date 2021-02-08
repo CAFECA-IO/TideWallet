@@ -7,7 +7,7 @@ class Formatter {
     return DateFormat('MMM dd,yyyy, kk:mm a').format(dateTime);
   }
 
-  static String formaDecimal(String amount, {int decimalLength = 8}) {
+  static String formateDecimal(String amount, {int decimalLength = 8}) {
     List<String> splitChunck = amount.split('.');
     if (splitChunck.length > 1) {
       if (splitChunck[1].length > decimalLength) {

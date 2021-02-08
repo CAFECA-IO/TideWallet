@@ -62,7 +62,8 @@ Future<List<Transaction>> getETHTransactions() async {
         ? TransactionStatus.success
         : TransactionStatus.pending;
     String address = randomHex(32);
-    String fee = "${Random().nextInt(10)}.${Random().nextInt(9)}";
+    Decimal fee =
+        Decimal.parse("${Random().nextInt(10)}.${Random().nextInt(9)}");
     String txid = randomHex(32);
 
     Transaction transaction = Transaction(

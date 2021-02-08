@@ -187,7 +187,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Align(
                       child: Text(
-                        '${Formatter.formaDecimal(_transaction.fee)} ${_currency.symbol}',
+                        '${Formatter.formateDecimal(_transaction.fee.toString())} ${_currency.symbol}',
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                       alignment: Alignment.centerLeft,

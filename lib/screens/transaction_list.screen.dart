@@ -103,7 +103,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4),
                       child: Text(
-                          '${Formatter.formaDecimal(state.currency?.amount ?? _currency.amount)}',
+                          '${Formatter.formateDecimal(state.currency?.amount ?? _currency.amount)}',
                           style: Theme.of(context).textTheme.headline4),
                     ),
                     BlocBuilder<FiatBloc, FiatState>(
@@ -114,7 +114,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                       if (fiatState is FiatLoaded) {
                         _state = fiatState;
                         String num = state.currency?.inUSD ?? _currency.inUSD;
-                        value = Formatter.formaDecimal(
+                        value = Formatter.formateDecimal(
                             (Decimal.tryParse(num) / _state.fiat.exchangeRate)
                                 .toString());
                       }

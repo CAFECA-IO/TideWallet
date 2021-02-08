@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:decimal/decimal.dart';
 
 import '../models/utxo.model.dart';
+import '../models/transaction.model.dart';
 import '../constants/account_config.dart';
 
 abstract class TransactionService {
@@ -13,7 +14,7 @@ abstract class TransactionService {
       Decimal feePerByte,
       Decimal amount,
       Uint8List message});
-  Future<Uint8List> prepareTransaction(
+  Transaction prepareTransaction(
       bool publish, String to, Decimal amount, Decimal fee, Uint8List message,
       {List<UnspentTxOut> unspentTxOuts, String changeAddress});
 }

@@ -217,7 +217,7 @@ class BitcoinTransaction extends Transaction {
   String sourceAddresses; // TODO
   String destinationAddresses; //TODO
   Decimal amount;
-  String fee;
+  Decimal fee;
   Uint8List note;
 
   List<Input> _inputs;
@@ -259,7 +259,7 @@ class BitcoinTransaction extends Transaction {
         direction = TransactionDirection.values.firstWhere((element) =>
             element.value == transactionMap[DBTransaction.FieldName_Direction]),
         locktime = transactionMap[DBTransaction.FieldName_LockedTime],
-        fee = transactionMap[DBTransaction.FieldName_Fee].toString(),
+        fee = Decimal.parse(transactionMap[DBTransaction.FieldName_Fee]),
         note = transactionMap[DBTransaction.FieldName_Note],
         status = transactionMap[DBTransaction.FieldName_Status];
 

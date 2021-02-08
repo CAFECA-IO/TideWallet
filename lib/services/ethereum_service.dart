@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:decimal/decimal.dart';
 import 'package:dio/dio.dart';
-import 'package:tidewallet3/models/utxo.model.dart';
 
 import 'account_service_decorator.dart';
+
+import '../models/utxo.model.dart';
 import '../models/account.model.dart';
 import '../models/transaction.model.dart';
 import '../constants/account_config.dart';
@@ -85,9 +86,12 @@ class EthereumService extends AccountServiceDecorator {
   // }
 
   @override
-  publishTransaction() {
-    // TODO: implement publishTransaction
-    throw UnimplementedError();
+  Future<void> publishTransaction(
+      String blockchainId, String currencyId, Transaction transaction) async {
+    await HTTPAgent().post(
+        '$_baseUrl/api/v1/blockchain/$blockchainId/push-tx/$currencyId',
+        {"hex": transaction.serializedData});
+    return;
   }
 
   _sync() {

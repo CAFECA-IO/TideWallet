@@ -2,12 +2,13 @@ import 'dart:typed_data';
 
 import 'package:rxdart/subjects.dart';
 import 'package:decimal/decimal.dart';
-import 'package:tidewallet3/models/ethereum_transaction.model.dart';
 
 import '../services/account_service.dart';
 import '../cores/account.dart';
 import '../models/account.model.dart';
 import '../models/transaction.model.dart';
+import '../models/ethereum_transaction.model.dart';
+import '../models/bitcoin_transaction.model.dart';
 import '../models/utxo.model.dart';
 import '../services/transaction_service.dart';
 import '../services/transaction_service_based.dart';
@@ -16,10 +17,14 @@ import '../services/transaction_service_ethereum.dart';
 import '../constants/account_config.dart';
 
 class TransactionRepository {
+  static const int AVERAGE_FETCH_FEE_TIME = 1 * 60 * 60 * 1000; // milliseconds
   Currency _currency;
   AccountService _accountService;
   TransactionService _transactionService;
   PublishSubject<AccountMessage> get listener => AccountCore().messenger;
+  Transaction _transaction;
+  Map<TransactionPriority, Decimal> _fee;
+  int _timestamp; // fetch transactionFee timestamp;
 
   TransactionRepository();
 
@@ -48,9 +53,8 @@ class TransactionRepository {
   //   return address.length < 8 ? false : true;
   // }
 
-  bool validAmount(Decimal amount,
-      {TransactionPriority priority, String gasLimit, String gasPrice}) {
-    return amount.toString().length > 4 ? false : true;
+  bool verifyAmount(Decimal amount, {Decimal fee}) {
+    return Decimal.parse(_currency.amount) - amount - fee > Decimal.zero;
   }
 
   // Future<Map<TransactionPriority, String>> fetchGasPrice() async {
@@ -67,14 +71,6 @@ class TransactionRepository {
   //   return '25148';
   // }
 
-  Future<bool> createTransaction(List<dynamic> condition) async {
-    // create
-    // sign
-    // publish
-    await Future.delayed(Duration(seconds: 5));
-    return true;
-  }
-
   Future<List<Transaction>> getTransactions() async {
     return await _accountService.getTransactions();
   }
@@ -85,8 +81,13 @@ class TransactionRepository {
 
   Future<List<dynamic>> getTransactionFee(
       {String address, Decimal amount, Uint8List message}) async {
-    Map<TransactionPriority, Decimal> _fee =
-        await _accountService.getTransactionFee();
+    if (_fee == null ||
+        DateTime.now().millisecondsSinceEpoch - _timestamp >
+            AVERAGE_FETCH_FEE_TIME) {
+      _fee = await _accountService.getTransactionFee();
+      _timestamp = DateTime.now().millisecondsSinceEpoch;
+    }
+    // TODO if (message != null)
     Decimal _gasLimit = Decimal.zero;
     switch (this._currency.accountType) {
       case ACCOUNT.BTC:
@@ -120,7 +121,8 @@ class TransactionRepository {
       case ACCOUNT.ETH:
         EthereumTransaction transaction =
             EthereumTransaction.prepareTransaction();
-        _gasLimit = await _accountService.estimateGasLimit(transaction.hex);
+        _gasLimit = await _accountService
+            .estimateGasLimit(transaction.serializeTransaction);
         return [_fee, _gasLimit];
         break;
       case ACCOUNT.XRP:
@@ -140,5 +142,52 @@ class TransactionRepository {
       verified = _transactionService.verifyAddress(address, publish);
     }
     return verified;
+  }
+
+  Future<Transaction> prepareTransaction(String to, Decimal amount, Decimal fee,
+      {Uint8List message}) async {
+    switch (this._currency.accountType) {
+      case ACCOUNT.BTC:
+        String changeAddress;
+        List<UnspentTxOut> unspentTxOuts =
+            await _accountService.getUnspentTxOut(_currency.id);
+        Decimal utxoAmount = Decimal.zero;
+        for (UnspentTxOut utxo in unspentTxOuts) {
+          if (utxo.locked != 0 ||
+              !(utxo.amount > Decimal.zero) ||
+              utxo.type == '') continue;
+          utxoAmount += utxo.amount;
+          if (utxoAmount > (amount + fee)) {
+            changeAddress =
+                await _accountService.getChangingAddress(_currency.id);
+            break;
+          } else if (utxoAmount == (amount + fee)) break;
+        }
+        Transaction transaction = _transactionService.prepareTransaction(
+            false, to, amount, fee, message,
+            unspentTxOuts: unspentTxOuts,
+            changeAddress:
+                changeAddress); // TODO add account publish property // _repo.currency.publish
+        return transaction;
+        break;
+      case ACCOUNT.ETH:
+        EthereumTransaction transaction =
+            EthereumTransaction.prepareTransaction();
+        return transaction;
+        break;
+      case ACCOUNT.XRP:
+        return null;
+        // TODO: Handle this case.
+        break;
+      default:
+        return null;
+    }
+  }
+
+  Future<void> publishTransaction(
+      String blockchainId, Transaction transaction) async {
+    // TODO get blockchainId
+    return await _accountService.publishTransaction(
+        blockchainId ?? '80000001', _currency.id, transaction);
   }
 }

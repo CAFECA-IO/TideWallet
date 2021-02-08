@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../blocs/account/account_bloc.dart';
 import '../blocs/fiat/fiat_bloc.dart';
 import '../helpers/formatter.dart';
+
 class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -35,16 +36,19 @@ class Header extends StatelessWidget {
             textAlign: TextAlign.center,
             text: TextSpan(
                 text: '≈',
-                children: fiatReady ? [
-                  TextSpan(
-                    text: ' ${Formatter.formaDecimal((state.total / _state.fiat.exchangeRate).toString(), decimalLength: 2)} ',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline5
-                        .copyWith(fontSize: 36.0),
-                  ),
-                  TextSpan(text: _state.fiat.name)
-                ] : [],
+                children: fiatReady
+                    ? [
+                        TextSpan(
+                          text:
+                              ' ${Formatter.formateDecimal((state.total / _state.fiat.exchangeRate).toString(), decimalLength: 2)} ',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline5
+                              .copyWith(fontSize: 36.0),
+                        ),
+                        TextSpan(text: _state.fiat.name)
+                      ]
+                    : [],
                 style: Theme.of(context)
                     .textTheme
                     .bodyText1

@@ -79,12 +79,6 @@ class BitcoinService extends AccountServiceDecorator {
   // }
 
   @override
-  publishTransaction() {
-    // TODO: implement publishTransaction
-    throw UnimplementedError();
-  }
-
-  @override
   Future<Decimal> estimateGasLimit(String hex) {
     // TODO: implement estimateGasLimit
     throw UnimplementedError();
@@ -148,5 +142,15 @@ class BitcoinService extends AccountServiceDecorator {
             ))
         .toList();
     return utxos;
+  }
+
+  @override
+  Future<void> publishTransaction(
+      String blockchainId, String currencyId, Transaction transaction) async {
+    // Response response =
+    await HTTPAgent().post(
+        '$_baseUrl/api/v1/blockchain/$blockchainId/push-tx/$currencyId',
+        {"hex": transaction.serializedData});
+    return;
   }
 }

@@ -20,7 +20,7 @@ class Transaction {
   int timestamp; // in second
   int confirmations;
   String _address;
-  String fee; // in eth
+  Decimal fee; // in eth
   String txId;
   Uint8List note;
 
@@ -125,7 +125,7 @@ class Transaction {
     timestamp = transaction.timestamp;
     confirmations = transaction.confirmations;
 
-    fee = transaction.fee.toString();
+    fee = transaction.fee;
     direction = transaction.direction;
     _address = (direction == TransactionDirection.sent)
         ? transaction.destinationAddresses
@@ -150,7 +150,7 @@ class Transaction {
     amount = transaction.amount;
     timestamp = transaction.timestamp;
     confirmations = 1; // useless to token
-    fee = "0"; // useless to token
+    fee = Decimal.zero; // useless to token
     direction = TransactionDirection.sent;
     _address = (direction == TransactionDirection.sent)
         ? transaction.to

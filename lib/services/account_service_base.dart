@@ -63,7 +63,8 @@ class AccountServiceBase extends AccountService {
   }
 
   @override
-  publishTransaction() {
+  Future<void> publishTransaction(
+      String blockchainId, String currencyId, Transaction transaction) {
     // TODO: implement publishTransaction
     throw UnimplementedError();
   }

@@ -25,5 +25,6 @@ abstract class AccountService {
 
   getTransactions();
   // prepareTransaction();
-  publishTransaction();
+  Future<void> publishTransaction(
+      String blockchainId, String currencyId, Transaction transaction);
 }

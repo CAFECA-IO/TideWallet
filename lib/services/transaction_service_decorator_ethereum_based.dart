@@ -3,6 +3,7 @@ import 'package:decimal/decimal.dart';
 
 import 'transaction_service.dart';
 import '../models/utxo.model.dart';
+import '../models/transaction.model.dart';
 
 class EthereumBasedTransactionServiceDecorator extends TransactionService {
   final TransactionService service;
@@ -10,7 +11,7 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
   EthereumBasedTransactionServiceDecorator(this.service);
 
   @override
-  Future<Uint8List> prepareTransaction(
+  Transaction prepareTransaction(
       bool publish, String to, Decimal amount, Decimal fee, Uint8List message,
       {List<UnspentTxOut> unspentTxOuts = const [],
       String changeAddress = ''}) {

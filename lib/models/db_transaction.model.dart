@@ -47,7 +47,7 @@ class DBTransaction {
   String _txType;
   TransactionDirection _direction;
   int _locktime;
-  String _fee; // in coinUnit
+  Decimal _fee; // in coinUnit
   Uint8List _note;
   TransactionStatus _status;
 
@@ -91,7 +91,7 @@ class DBTransaction {
       String txType,
       String direction,
       int locktime,
-      String fee,
+      Decimal fee,
       Uint8List note})
       : _id = id,
         _currencyId = currencyId,

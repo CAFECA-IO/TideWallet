@@ -6,6 +6,7 @@ import 'transaction_service.dart';
 import '../cores/signer.dart';
 import '../helpers/utils.dart';
 import '../models/utxo.model.dart';
+import '../models/transaction.model.dart';
 import '../models/bitcoin_transaction.model.dart';
 import '../helpers/bitcoin_base_extension.dart';
 import '../helpers/logger.dart';
@@ -42,7 +43,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     return verified;
   }
 
-  Uint8List _signTransaction(BitcoinTransaction transaction) {
+  Transaction _signTransaction(BitcoinTransaction transaction) {
     int index = 0;
     while (index < transaction.inputs.length) {
       Uint8List rawData = transaction.getRawDataToSign(index);
@@ -72,14 +73,14 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
       transaction.inputs[index].addSignature(signature);
       index++;
     }
-    Uint8List signedTransaction = transaction.serializeTransaction;
-    return signedTransaction;
+    // Uint8List signedTransaction = transaction.serializeTransaction;
+    return transaction;
   }
 
   @override
-  Future<Uint8List> prepareTransaction(
+  BitcoinTransaction prepareTransaction(
       bool publish, String to, Decimal amount, Decimal fee, Uint8List message,
-      {List<UnspentTxOut> unspentTxOuts, String changeAddress}) async {
+      {List<UnspentTxOut> unspentTxOuts, String changeAddress}) {
     BitcoinTransaction transaction =
         BitcoinTransaction.prepareTransaction(publish, this.segWitType);
     // amount,to
@@ -111,7 +112,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     }
     transaction.addOutput(amount, to, script);
     // input
-    if (unspentTxOuts == null || unspentTxOuts.isEmpty) return Uint8List(0);
+    if (unspentTxOuts == null || unspentTxOuts.isEmpty) return null;
     Decimal utxoAmount = Decimal.zero;
     for (UnspentTxOut utxo in unspentTxOuts) {
       if (utxo.locked != 0 || !(utxo.amount > Decimal.zero) || utxo.type == '')
@@ -129,7 +130,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     }
     if (transaction.inputs.isEmpty || utxoAmount < (amount + fee)) {
       Log.warning('Insufficient utxo amount: $utxoAmount : ${amount + fee}');
-      return Uint8List(0);
+      return null;
     }
     // change, changeAddress
     Decimal change = utxoAmount - amount - fee;
@@ -165,12 +166,13 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     if (msgData.length > 250) {
       // TODO BitcoinCash Address condition >220
       Log.warning('Invalid msg data: ${msgData.toString()}');
-      return Uint8List(0);
+      return null;
     }
     if (msgData.length > 0) {
       transaction.addData(msgData);
     }
     // TODO save ChangeUtxo
+
     return _signTransaction(transaction);
   }
 

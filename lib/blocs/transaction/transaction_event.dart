@@ -26,13 +26,10 @@ class ValidAddress extends TransactionEvent {
   ValidAddress(this.address);
 }
 
-class ValidAmount extends TransactionEvent {
+class VerifyAmount extends TransactionEvent {
   final String amount;
-  ValidAmount(this.amount);
-}
 
-class FetchTransactionFee extends TransactionEvent {
-  FetchTransactionFee();
+  VerifyAmount(this.amount);
 }
 
 class ChangePriority extends TransactionEvent {
@@ -50,6 +47,12 @@ class InputGasPrice extends TransactionEvent {
   InputGasPrice(this.gasPrice);
 }
 
-class CreateTransaction extends TransactionEvent {
-  CreateTransaction();
+class PrepareTransaction extends TransactionEvent {
+  final String address;
+  final String amount;
+  PrepareTransaction(this.address, this.amount);
+}
+
+class PublishTransaction extends TransactionEvent {
+  PublishTransaction();
 }

@@ -5,10 +5,11 @@ import 'package:decimal/decimal.dart';
 import 'dart:typed_data';
 
 import 'transaction_service.dart';
+import '../models/transaction.model.dart';
 
 class TransactionServiceBased extends TransactionService {
   @override
-  Future<Uint8List> prepareTransaction(
+  Transaction prepareTransaction(
       bool publish, String to, Decimal amount, Decimal fee, Uint8List message,
       {List<UnspentTxOut> unspentTxOuts, String changeAddress}) {
     // TODO: implement prepareTransaction

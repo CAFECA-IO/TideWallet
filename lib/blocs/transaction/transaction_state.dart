@@ -19,7 +19,7 @@ class TransactionInitial extends TransactionState {
   final TransactionPriority priority;
   final String gasLimit;
   final String gasPrice;
-  final String fee;
+  final Decimal fee;
   final String feeToFiat;
   final String estimatedTime;
   final List<bool> rules;
@@ -30,11 +30,11 @@ class TransactionInitial extends TransactionState {
   TransactionInitial(
       {this.address = "",
       this.amount,
-      this.spandable = "13.2",
+      this.spandable = "",
       this.priority = TransactionPriority.standard,
       this.gasLimit = "",
       this.gasPrice = "",
-      this.fee = "",
+      this.fee,
       this.feeToFiat = "",
       this.estimatedTime = "10~30",
       this.rules = defaultValid,
@@ -42,7 +42,7 @@ class TransactionInitial extends TransactionState {
 
   TransactionState copyWith({
     String address,
-    Decimal amount,
+    String amount,
     String spandable,
     TransactionPriority priority,
     String gasLimit,
