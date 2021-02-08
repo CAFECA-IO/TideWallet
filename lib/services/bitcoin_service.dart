@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:decimal/decimal.dart';
 import 'package:dio/dio.dart';
 import 'package:convert/convert.dart';
+import 'package:tidewallet3/database/db_operator.dart';
 
 import 'account_service.dart';
 import 'account_service_decorator.dart';
@@ -86,16 +87,16 @@ class BitcoinService extends AccountServiceDecorator {
 
   @override
   Future<Map<TransactionPriority, Decimal>> getTransactionFee() async {
-    // TODO getFeeFromDB && getSyncFeeAutomatically
+    // TODO getSyncFeeAutomatically
     Response response =
         await HTTPAgent().get('$_baseUrl/api/v1/blockchain/80000001/fee');
     Map<String, dynamic> data =
-        response.data['payload']; // TODO FEE should return String or double
+        response.data['payload']; // FEE will return String
 
     Map<TransactionPriority, Decimal> transactionFee = {
-      TransactionPriority.slow: Decimal.parse(data['slow'].toString()),
-      TransactionPriority.standard: Decimal.parse(data['standard'].toString()),
-      TransactionPriority.fast: Decimal.parse(data['fast'].toString()),
+      TransactionPriority.slow: Decimal.parse(data['slow']),
+      TransactionPriority.standard: Decimal.parse(data['standard']),
+      TransactionPriority.fast: Decimal.parse(data['fast']),
     };
     return transactionFee;
   }

@@ -9,17 +9,20 @@ import 'dao/account_dao.dart';
 import 'dao/currency_dao.dart';
 import 'dao/user_dao.dart';
 import 'dao/transaction_dao.dart';
+import 'dao/utxo_dao.dart';
 import 'entity/currency.dart';
 import 'entity/account.dart';
 import 'entity/transaction.dart';
 import 'entity/user.dart';
+import 'entity/utxo.dart';
 
 part 'database.g.dart'; // the generated code will be there
 
-@Database(version: 1, entities: [User, Account, Currency, Transaction])
+@Database(version: 1, entities: [User, Account, Currency, Transaction, Utxo])
 abstract class AppDatabase extends FloorDatabase {
   UserDao get userDao;
   AccountDao get accountDao;
   CurrencyDao get currencyDao;
   TransactionDao get transactionDao;
+  UtxoDao get utxoDao;
 }
