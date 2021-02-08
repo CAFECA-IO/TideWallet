@@ -3,10 +3,11 @@ import 'package:decimal/decimal.dart';
 import 'account_service_decorator.dart';
 import '../constants/account_config.dart';
 import '../services/account_service.dart';
+import '../helpers/logger.dart';
 
 
-class BitcoinServiceDecorator extends AccountServiceDecorator {
-  BitcoinServiceDecorator(AccountService service) : super(service) {
+class BitcoinService extends AccountServiceDecorator {
+  BitcoinService(AccountService service) : super(service) {
     this.base = ACCOUNT.BTC;
   }
 
@@ -47,7 +48,7 @@ class BitcoinServiceDecorator extends AccountServiceDecorator {
 
   @override
   void start() {
-    // TODO: implement start
+    Log.info('Bitcoin svc Start');
   }
 
   @override

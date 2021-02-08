@@ -6,8 +6,10 @@ import '../models/account.model.dart';
 import '../models/api_response.mode.dart';
 import '../services/account_service.dart';
 import '../services/account_service_base.dart';
+import '../services/bitcoin_service.dart';
 import '../services/ethereum_service.dart';
 import '../database/entity/account.dart' as AccountEntity;
+import '../database/entity/network.dart' as NetworkEntity;
 import '../database/db_operator.dart';
 import '../helpers/logger.dart';
 import '../helpers/http_agent.dart';
@@ -37,42 +39,45 @@ class AccountCore {
   }
 
   _initAccounts() async {
-    AccountService _service = AccountServiceBase();
-    APIResponse res =
-        await HTTPAgent().get(Endpoint.SUSANOO + '/wallet/accounts');
+    AccountService service = AccountServiceBase();
 
-    List accounts = res.data;
-    List<AccountEntity.Account> result = await DBOperator().accountDao.findAllAccounts();
+    final chains = await this.getNetworks();
+    final accounts = await this.getAccounts();
 
-    Log.debug(result);
-    // TODO: Get amount in DB
     for (var i = 0; i < accounts.length; i++) {
-      final String id = accounts[i]['account_id'];
-      bool exist = result.indexWhere((el) => el.accountId == id) > -1;
+      int blockIndex = chains.indexWhere(
+          (chain) => chain.networkId == accounts[i].networkId);
 
+      if (blockIndex > -1) {
+        AccountService svc;
+        ACCOUNT account; 
+        switch (chains[blockIndex].coinType) {
+          case 0:
+            svc = BitcoinService(service);
+            account = ACCOUNT.BTC;
+            break;
+          case 60:
+            svc = EthereumService(service);
+            account = ACCOUNT.ETH;
+            break;
+          default:
+        }
 
-      AccountEntity.Account acc = AccountEntity.Account(
-          accountId: id, userId: 'eee');
+        if (svc != null) {
+          Currency _currency = Currency.fromMap(ACCOUNT_LIST[account]);
 
-
-      // Currency _currency = Currency.fromMap(ACCOUNT_LIST[value]);
-
-      // this.currencies[value] = [];
-      // this.currencies[value].add(_currency);
-
-      // if (value == ACCOUNT.ETH) {
-      //   AccountService ethService = EthereumService(_service);
-      //   this._services.add(ethService);
-      //   ethService.start();
-      // }
-      if (!exist) {
-        await createAccount(acc);
-
-      }
+          this.currencies[account] = [];
+          this.currencies[account].add(_currency);
 
       // this.messenger.add(AccountMessage(
       //     evt: ACCOUNT_EVT.OnUpdateAccount,
       //     value: _currency));
+          this._services.add(svc);
+          svc.start();
+        }
+      }
+
+     
     }
   }
 
@@ -92,6 +97,47 @@ class AccountCore {
 
   AccountService getService(ACCOUNT type) {
     return _services.firstWhere((svc) => (svc.base == type));
+  }
+
+  Future<List<NetworkEntity.Network>> getNetworks({publish = true}) async {
+    List<NetworkEntity.Network> networks =
+        await DBOperator().networkDao.findAllNetworks();
+
+    if (networks.isEmpty) {
+      APIResponse res = await HTTPAgent().get(Endpoint.SUSANOO + '/blockchain');
+      List l = res.data;
+      networks =
+          l.map((chain) => NetworkEntity.Network.fromJson(chain)).toList();
+    }
+
+    if (publish) {
+      networks.remove((NetworkEntity.Network n) => n.type != 1);
+    }
+
+    return networks;
+  }
+
+  Future<List<AccountEntity.Account>> getAccounts() async {
+    List<AccountEntity.Account> result =
+        await DBOperator().accountDao.findAllAccounts();
+    APIResponse res =
+        await HTTPAgent().get(Endpoint.SUSANOO + '/wallet/accounts');
+
+    List l = res.data ?? [];
+
+    for (var d in l) {
+      final String id = d['account_id'];
+      bool exist = result.indexWhere((el) => el.accountId == id) > -1;
+
+      if (!exist) {
+        AccountEntity.Account acc =
+            AccountEntity.Account(accountId: id, userId: 'eee', networkId: d['blockchain_id']);
+        await createAccount(acc);
+        result.add(acc);
+      }
+    }
+
+    return result;
   }
 
   // Future<String> getReceivingAddress(Currency curr) async {

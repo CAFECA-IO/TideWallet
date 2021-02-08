@@ -1,5 +1,6 @@
 import 'package:floor/floor.dart';
 
+import 'network.dart';
 import 'user.dart';
 
 @entity
@@ -13,6 +14,11 @@ class Account {
   @ColumnInfo(name: 'user_id')
   final String userId;
 
+  @ForeignKey(
+      childColumns: ['network_id'], parentColumns: ['network_id'], entity: Network)
+  @ColumnInfo(name: 'network_id')
+  final String networkId;
+
   // final int purpose;
 
   // @ColumnInfo(name: 'account_index')
@@ -24,6 +30,7 @@ class Account {
   Account({
     this.accountId,
     this.userId,
+    this.networkId,
     // this.purpose,
     // this.accountIndex,
     // this.curveType,
