@@ -88,7 +88,8 @@ class AccountServiceBase extends AccountService {
   }
 
   @override
-  Future<Decimal> estimateGasLimit(String hex) {
+  Future<Decimal> estimateGasLimit(
+      String from, String to, String amount, String data) {
     // TODO: implement estimateGasLimit
     throw UnimplementedError();
   }

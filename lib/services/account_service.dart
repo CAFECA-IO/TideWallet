@@ -20,7 +20,8 @@ abstract class AccountService {
   Future<String> getReceivingAddress(String currencyId);
   Future<String> getChangingAddress(String currencyId);
   Future<Map<TransactionPriority, Decimal>> getTransactionFee();
-  Future<Decimal> estimateGasLimit(String hex);
+  Future<Decimal> estimateGasLimit(
+      String from, String to, String amount, String data);
   Future<int> getNonce();
   Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId);
 

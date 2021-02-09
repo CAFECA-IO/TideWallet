@@ -168,10 +168,15 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   @override
-  Future<Decimal> estimateGasLimit(String hex) async {
+  Future<Decimal> estimateGasLimit(
+      String from, String to, String amount, String message) async {
     Response response = await HTTPAgent().post(
-        '$_baseUrl/api/v1/blockchain/8000003C/gas-limit',
-        {'hex': hex}); // TODO API FormatError
+        '$_baseUrl/api/v1/blockchain/8000003C/gas-limit', {
+      "fromAddress": from,
+      "toAddress": to,
+      "value": amount,
+      "data": message
+    }); // TODO API FormatError
     Map<String, dynamic> data = response.data['payload'];
     int gasLimit = data['gasLimit'];
     return Decimal.fromInt(gasLimit);

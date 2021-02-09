@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
+import 'package:decimal/decimal.dart';
 
 import 'utils.dart';
 import 'rlp.dart' as rlp;
@@ -81,4 +83,10 @@ Uint8List encodeToRlp(EthereumTransaction transaction) {
   }
   Log.debug('list: $list');
   return rlp.encode(list);
+}
+
+BigInt toTokenSmallestUnit(Decimal value, int decimals) {
+  Log.debug('decimals: $decimals');
+  Log.debug('decimals: ${pow(10, decimals)}');
+  return BigInt.parse((value * Decimal.fromInt(pow(10, decimals))).toString());
 }
