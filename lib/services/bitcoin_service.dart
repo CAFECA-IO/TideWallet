@@ -1,14 +1,15 @@
+import 'dart:async';
+
 import 'package:decimal/decimal.dart';
 
 import 'account_service_decorator.dart';
 import '../constants/account_config.dart';
 import '../services/account_service.dart';
-import '../helpers/logger.dart';
-
 
 class BitcoinService extends AccountServiceDecorator {
   BitcoinService(AccountService service) : super(service) {
     this.base = ACCOUNT.BTC;
+    this.syncInterval = 5 * 60 * 1000;
   }
 
   @override
@@ -36,8 +37,8 @@ class BitcoinService extends AccountServiceDecorator {
   }
 
   @override
-  void init() {
-    // TODO: implement init
+  void init(String id, ACCOUNT base, {int interval}) {
+    this.service.init(id, this.base, interval: this.syncInterval);
   }
 
   @override
@@ -47,13 +48,13 @@ class BitcoinService extends AccountServiceDecorator {
   }
 
   @override
-  void start() {
-    Log.info('Bitcoin svc Start');
+  void start() async {
+    this.service.start();
   }
 
   @override
   void stop() {
-    // TODO: implement stop
+    this.service.stop();
   }
 
   @override

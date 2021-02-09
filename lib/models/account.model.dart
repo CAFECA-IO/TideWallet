@@ -17,7 +17,8 @@ class Currency {
   final ACCOUNT accountType;
 
   Currency(
-      {this.cointype,
+      {
+      this.cointype,
       this.purpose,
       this.amount,
       this.inUSD,
@@ -25,7 +26,8 @@ class Currency {
       this.symbol,
       this.name,
       this.accountIndex,
-      this.accountType});
+      this.accountType,
+    });
 
   Currency copyWith({
     int cointype,
@@ -38,27 +40,30 @@ class Currency {
     ACCOUNT accountType,
   }) {
     return Currency(
-        cointype: cointype ?? this.cointype,
-        purpose: purpose ?? this.purpose,
-        amount: amount ?? this.amount,
-        inUSD: inUSD ?? this.inUSD,
-        symbol: symbol ?? this.symbol,
-        imgPath: imgPath ?? this.imgPath,
-        name: name ?? this.name,
-        accountType: accountType ?? this.accountType);
+      cointype: cointype ?? this.cointype,
+      purpose: purpose ?? this.purpose,
+      amount: amount ?? this.amount,
+      inUSD: inUSD ?? this.inUSD,
+      symbol: symbol ?? this.symbol,
+      imgPath: imgPath ?? this.imgPath,
+      name: name ?? this.name,
+      accountType: accountType ?? this.accountType
+    );
   }
 
   Currency.fromMap(
     Map map,
-  )   : cointype = map['cointype'],
+  )   : 
+        cointype = map['cointype'],
         purpose = map['purpose'],
         accountIndex = map['accountIndex'],
         symbol = map['symbol'],
         name = map['name'],
-        imgPath = map['imgPath'],
-        amount = map['amount'] ?? '0',
+        imgPath = map['imgPath'] ?? "assets/images/xpa.png",
+        amount = map['balance'] ?? '0',
         inUSD = map['inUSD'] ?? '0',
         accountType = map['accountType'];
+
 }
 
 class AccountMessage {

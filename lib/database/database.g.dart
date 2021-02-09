@@ -92,15 +92,18 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `User` (`user_id` TEXT, `keystore` TEXT, `password_hash` TEXT, `password_salt` TEXT, `backup_status` INTEGER NOT NULL, PRIMARY KEY (`user_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Account` (`account_id` TEXT, `user_id` TEXT, `network_id` TEXT, PRIMARY KEY (`account_id`))');
+            'CREATE TABLE IF NOT EXISTS `Account` (`account_id` TEXT, `user_id` TEXT, `network_id` TEXT, `account_index` INTEGER, PRIMARY KEY (`account_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Currency` (`currency_id` TEXT, `name` TEXT, `coin_type` INTEGER, `description` TEXT, `symbol` TEXT, `decimals` INTEGER, `address` TEXT, `type` TEXT, `total_supply` TEXT, `contract` TEXT, PRIMARY KEY (`currency_id`))');
+            'CREATE TABLE IF NOT EXISTS `Currency` (`currency_id` TEXT, `name` TEXT, `coin_type` INTEGER, `description` TEXT, `symbol` TEXT, `decimals` INTEGER, `address` TEXT, `type` TEXT, `total_supply` TEXT, `contract` TEXT, `image` TEXT, PRIMARY KEY (`currency_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Transaction` (`transaction_id` TEXT, `account_id` TEXT, `currency_id` TEXT, `tx_id` TEXT, `source_address` TEXT, `destinction_address` TEXT, `timestamp` INTEGER, `confirmation` INTEGER, `gas_price` TEXT, `gas_used` INTEGER, `nonce` INTEGER, `block` INTEGER, `locktime` INTEGER, `fee` TEXT NOT NULL, `note` TEXT, `status` INTEGER, PRIMARY KEY (`transaction_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Network` (`network_id` TEXT, `network` TEXT NOT NULL, `coin_type` INTEGER, `type` INTEGER, PRIMARY KEY (`network_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `AccountCurrency` (`accountcurrency_id` TEXT, `account_id` TEXT, `currency_id` TEXT, `balance` TEXT, `number_of_used_external_key` INTEGER, `number_of_used_internal_key` INTEGER, `last_sync_time` INTEGER, PRIMARY KEY (`accountcurrency_id`))');
+            'CREATE TABLE IF NOT EXISTS `AccountCurrency` (`accountcurrency_id` TEXT NOT NULL, `account_id` TEXT, `currency_id` TEXT, `balance` TEXT, `number_of_used_external_key` INTEGER, `number_of_used_internal_key` INTEGER, `last_sync_time` INTEGER, PRIMARY KEY (`accountcurrency_id`))');
+
+        await database.execute(
+            '''CREATE VIEW IF NOT EXISTS `JoinCurrency` AS SELECT * FROM AccountCurrency INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id INNER JOIN Account ON AccountCurrency.account_id = Account.account_id''');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -183,13 +186,14 @@ class _$UserDao extends UserDao {
 class _$AccountDao extends AccountDao {
   _$AccountDao(this.database, this.changeListener)
       : _queryAdapter = QueryAdapter(database),
-        _accountInsertionAdapter = InsertionAdapter(
+        _accountEntityInsertionAdapter = InsertionAdapter(
             database,
             'Account',
-            (Account item) => <String, dynamic>{
+            (AccountEntity item) => <String, dynamic>{
                   'account_id': item.accountId,
                   'user_id': item.userId,
-                  'network_id': item.networkId
+                  'network_id': item.networkId,
+                  'account_index': item.accountIndex
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -198,35 +202,50 @@ class _$AccountDao extends AccountDao {
 
   final QueryAdapter _queryAdapter;
 
-  final InsertionAdapter<Account> _accountInsertionAdapter;
+  final InsertionAdapter<AccountEntity> _accountEntityInsertionAdapter;
 
   @override
-  Future<List<Account>> findAllAccounts() async {
+  Future<List<AccountEntity>> findAllAccounts() async {
     return _queryAdapter.queryList('SELECT * FROM Account',
-        mapper: (Map<String, dynamic> row) => Account(
+        mapper: (Map<String, dynamic> row) => AccountEntity(
             accountId: row['account_id'] as String,
             userId: row['user_id'] as String,
-            networkId: row['network_id'] as String));
+            networkId: row['network_id'] as String,
+            accountIndex: row['account_index'] as int));
   }
 
   @override
-  Future<void> insertAccount(Account account) async {
-    await _accountInsertionAdapter.insert(account, OnConflictStrategy.replace);
+  Future<AccountEntity> findAccount(String id) async {
+    return _queryAdapter.query(
+        'SELECT * FROM Account WHERE account_id = ? LIMIT 1',
+        arguments: <dynamic>[id],
+        mapper: (Map<String, dynamic> row) => AccountEntity(
+            accountId: row['account_id'] as String,
+            userId: row['user_id'] as String,
+            networkId: row['network_id'] as String,
+            accountIndex: row['account_index'] as int));
   }
 
   @override
-  Future<List<int>> insertAccounts(List<Account> accounts) {
-    return _accountInsertionAdapter.insertListAndReturnIds(
+  Future<void> insertAccount(AccountEntity account) async {
+    await _accountEntityInsertionAdapter.insert(
+        account, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<List<int>> insertAccounts(List<AccountEntity> accounts) {
+    return _accountEntityInsertionAdapter.insertListAndReturnIds(
         accounts, OnConflictStrategy.abort);
   }
 }
 
 class _$CurrencyDao extends CurrencyDao {
   _$CurrencyDao(this.database, this.changeListener)
-      : _currencyInsertionAdapter = InsertionAdapter(
+      : _queryAdapter = QueryAdapter(database),
+        _currencyEntityInsertionAdapter = InsertionAdapter(
             database,
             'Currency',
-            (Currency item) => <String, dynamic>{
+            (CurrencyEntity item) => <String, dynamic>{
                   'currency_id': item.currencyId,
                   'name': item.name,
                   'coin_type': item.coinType,
@@ -236,24 +255,45 @@ class _$CurrencyDao extends CurrencyDao {
                   'address': item.address,
                   'type': item.type,
                   'total_supply': item.totalSupply,
-                  'contract': item.contract
+                  'contract': item.contract,
+                  'image': item.image
                 });
 
   final sqflite.DatabaseExecutor database;
 
   final StreamController<String> changeListener;
 
-  final InsertionAdapter<Currency> _currencyInsertionAdapter;
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<CurrencyEntity> _currencyEntityInsertionAdapter;
 
   @override
-  Future<void> insertCurrency(Currency currency) async {
-    await _currencyInsertionAdapter.insert(currency, OnConflictStrategy.abort);
+  Future<List<CurrencyEntity>> findAllCurrencies() async {
+    return _queryAdapter.queryList('SELECT * FROM Currency',
+        mapper: (Map<String, dynamic> row) => CurrencyEntity(
+            currencyId: row['currency_id'] as String,
+            name: row['name'] as String,
+            coinType: row['coin_type'] as int,
+            symbol: row['symbol'] as String,
+            description: row['description'] as String,
+            address: row['address'] as String,
+            contract: row['contract'] as String,
+            decimals: row['decimals'] as int,
+            totalSupply: row['total_supply'] as String,
+            type: row['type'] as String,
+            image: row['image'] as String));
   }
 
   @override
-  Future<List<int>> insertCurrencies(List<Currency> currencies) {
-    return _currencyInsertionAdapter.insertListAndReturnIds(
-        currencies, OnConflictStrategy.abort);
+  Future<void> insertCurrency(CurrencyEntity currency) async {
+    await _currencyEntityInsertionAdapter.insert(
+        currency, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<List<int>> insertCurrencies(List<CurrencyEntity> currencies) {
+    return _currencyEntityInsertionAdapter.insertListAndReturnIds(
+        currencies, OnConflictStrategy.replace);
   }
 }
 
@@ -358,10 +398,10 @@ class _$TransactionDao extends TransactionDao {
 class _$NetworkDao extends NetworkDao {
   _$NetworkDao(this.database, this.changeListener)
       : _queryAdapter = QueryAdapter(database),
-        _networkInsertionAdapter = InsertionAdapter(
+        _networkEntityInsertionAdapter = InsertionAdapter(
             database,
             'Network',
-            (Network item) => <String, dynamic>{
+            (NetworkEntity item) => <String, dynamic>{
                   'network_id': item.networkId,
                   'network': item.network,
                   'coin_type': item.coinType,
@@ -374,12 +414,12 @@ class _$NetworkDao extends NetworkDao {
 
   final QueryAdapter _queryAdapter;
 
-  final InsertionAdapter<Network> _networkInsertionAdapter;
+  final InsertionAdapter<NetworkEntity> _networkEntityInsertionAdapter;
 
   @override
-  Future<List<Network>> findAllNetworks() async {
+  Future<List<NetworkEntity>> findAllNetworks() async {
     return _queryAdapter.queryList('SELECT * FROM Network',
-        mapper: (Map<String, dynamic> row) => Network(
+        mapper: (Map<String, dynamic> row) => NetworkEntity(
             networkId: row['network_id'] as String,
             network: row['network'] as String,
             coinType: row['coin_type'] as int,
@@ -387,8 +427,8 @@ class _$NetworkDao extends NetworkDao {
   }
 
   @override
-  Future<List<int>> insertCurrencies(List<Network> currencies) {
-    return _networkInsertionAdapter.insertListAndReturnIds(
+  Future<List<int>> insertCurrencies(List<NetworkEntity> currencies) {
+    return _networkEntityInsertionAdapter.insertListAndReturnIds(
         currencies, OnConflictStrategy.abort);
   }
 }
@@ -396,10 +436,10 @@ class _$NetworkDao extends NetworkDao {
 class _$AccountCurrencyDao extends AccountCurrencyDao {
   _$AccountCurrencyDao(this.database, this.changeListener)
       : _queryAdapter = QueryAdapter(database),
-        _accountCurrencyInsertionAdapter = InsertionAdapter(
+        _accountCurrencyEntityInsertionAdapter = InsertionAdapter(
             database,
             'AccountCurrency',
-            (AccountCurrency item) => <String, dynamic>{
+            (AccountCurrencyEntity item) => <String, dynamic>{
                   'accountcurrency_id': item.accountcurrencyId,
                   'account_id': item.accountId,
                   'currency_id': item.currencyId,
@@ -415,12 +455,13 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
 
   final QueryAdapter _queryAdapter;
 
-  final InsertionAdapter<AccountCurrency> _accountCurrencyInsertionAdapter;
+  final InsertionAdapter<AccountCurrencyEntity>
+      _accountCurrencyEntityInsertionAdapter;
 
   @override
-  Future<List<AccountCurrency>> findAllAccounts() async {
+  Future<List<AccountCurrencyEntity>> findAllCurrencies() async {
     return _queryAdapter.queryList('SELECT * FROM AccountCurrency',
-        mapper: (Map<String, dynamic> row) => AccountCurrency(
+        mapper: (Map<String, dynamic> row) => AccountCurrencyEntity(
             accountcurrencyId: row['accountcurrency_id'] as String,
             accountId: row['account_id'] as String,
             currencyId: row['currency_id'] as String,
@@ -431,14 +472,29 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
   }
 
   @override
-  Future<void> insertAccount(AccountCurrency account) async {
-    await _accountCurrencyInsertionAdapter.insert(
+  Future<List<JoinCurrency>> findByAccountyId(String id) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM JoinCurrency WHERE JoinCurrency.account_id = ?',
+        arguments: <dynamic>[id],
+        mapper: (Map<String, dynamic> row) => JoinCurrency(
+            currencyId: row['currency_id'] as String,
+            symbol: row['symbol'] as String,
+            name: row['name'] as String,
+            balance: row['balance'] as String,
+            accountIndex: row['account_index'] as int,
+            coinType: row['coin_type'] as int,
+            image: row['image'] as String));
+  }
+
+  @override
+  Future<void> insertAccount(AccountCurrencyEntity account) async {
+    await _accountCurrencyEntityInsertionAdapter.insert(
         account, OnConflictStrategy.replace);
   }
 
   @override
-  Future<List<int>> insertAccounts(List<AccountCurrency> accounts) {
-    return _accountCurrencyInsertionAdapter.insertListAndReturnIds(
-        accounts, OnConflictStrategy.abort);
+  Future<List<int>> insertCurrencies(List<AccountCurrencyEntity> currencies) {
+    return _accountCurrencyEntityInsertionAdapter.insertListAndReturnIds(
+        currencies, OnConflictStrategy.replace);
   }
 }

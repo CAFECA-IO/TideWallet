@@ -21,8 +21,10 @@ import 'entity/network.dart';
 part 'database.g.dart'; // the generated code will be there
 
 @Database(
-    version: 1,
-    entities: [User, Account, Currency, Transaction, Network, AccountCurrency])
+  version: 1,
+  entities: [User, AccountEntity, CurrencyEntity, Transaction, NetworkEntity, AccountCurrencyEntity],
+  views: [JoinCurrency]
+)
 abstract class AppDatabase extends FloorDatabase {
   UserDao get userDao;
   AccountDao get accountDao;

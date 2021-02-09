@@ -2,10 +2,10 @@ import 'package:decimal/decimal.dart';
 
 import '../constants/account_config.dart';
 abstract class AccountService {
-  int syncInterval = 10 * 1000;
+  int syncInterval = 10 * 10 * 1000;
   ACCOUNT base;
 
-  void init();
+  void init(String id, ACCOUNT base, { int interval });
   void start();
   void stop();
   Decimal toCoinUnit();
@@ -18,4 +18,5 @@ abstract class AccountService {
   getTransactions();
   prepareTransaction();
   publishTransaction();
+  
 }

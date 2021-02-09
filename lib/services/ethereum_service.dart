@@ -1,10 +1,5 @@
 import 'dart:async';
 import 'package:decimal/decimal.dart';
-import 'package:dio/dio.dart';
-import 'package:tidewallet3/constants/endpoint.dart';
-import 'package:tidewallet3/helpers/http_agent.dart';
-import 'package:tidewallet3/helpers/logger.dart';
-import 'package:tidewallet3/models/api_response.mode.dart';
 
 import 'account_service_decorator.dart';
 import '../models/account.model.dart';
@@ -13,14 +8,13 @@ import '../constants/account_config.dart';
 import '../services/account_service.dart';
 import '../mock/endpoint.dart';
 import '../cores/account.dart';
+import '../helpers/logger.dart';
 
 class EthereumService extends AccountServiceDecorator {
   EthereumService(AccountService service) : super(service) {
     this.base = ACCOUNT.ETH;
-    this.syncInterval = 600 * 1000;
+    this.syncInterval = 5 * 60 * 1000;
   }
-
-  Timer _timer;
 
   estimateGasLimit() {}
   getTransactions() {}
@@ -48,8 +42,9 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   @override
-  void init() {
-    // TODO: implement init
+  void init(String id, ACCOUNT base, { int interval }) {
+    Log.debug('ETH Service Init');
+    this.service.init(id, this.base, interval: this.syncInterval);
   }
 
   @override
@@ -60,15 +55,12 @@ class EthereumService extends AccountServiceDecorator {
 
   @override
   void start() {
-    _timer = Timer.periodic(Duration(milliseconds: this.syncInterval), (_) {
-      this._sync();
-    });
-    this._sync();
+    this.service.start();
   }
 
   @override
   void stop() {
-    _timer?.cancel();
+    this.service.stop();
   }
 
   @override
@@ -91,6 +83,7 @@ class EthereumService extends AccountServiceDecorator {
 
   _sync() async {
     Currency curr = await this._getETH();
+    await this._getTokens();
 
     AccountMessage msg =
         AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: curr);
@@ -117,22 +110,18 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   // Deprecated
-  // _getTokens() async {
-  //   List<Map> result = await getETHTokens();
-  //   List<Currency> tokenList = result.map((e) => Currency.fromMap(e)).toList();
+  _getTokens() async {
+    List<Map> result = await getETHTokens();
+    List<Currency> tokenList = result.map((e) => Currency.fromMap(e)).toList();
 
-  //   AccountCore().currencies[this.base] =
-  //       AccountCore().currencies[this.base].sublist(0, 1) + tokenList;
-  // }
+    AccountCore().currencies[this.base] =
+        AccountCore().currencies[this.base].sublist(0, 1) + tokenList;
+  }
 
   Future<Currency> _getETH() async {
-
-    APIResponse res = await HTTPAgent().get(Endpoint.SUSANOO + '/wallet/accounts');
-    Log.debug(res.data);
-
-    // Map res = await getETH();
-    // Currency curr = Currency.fromMap({...res, "accountType": this.base});
-    // AccountCore().currencies[curr.accountType][0] = curr;
+    Map res = await getETH();
+    Currency curr = Currency.fromMap({...res, "accountType": this.base});
+    AccountCore().currencies[curr.accountType][0] = curr;
     return null;
   }
 

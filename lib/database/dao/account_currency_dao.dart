@@ -5,11 +5,15 @@ import '../entity/account_currency.dart';
 @dao
 abstract class AccountCurrencyDao {
   @Query('SELECT * FROM AccountCurrency')
-  Future<List<AccountCurrency>> findAllAccounts();
+  Future<List<AccountCurrencyEntity>> findAllCurrencies();
 
   @Insert(onConflict: OnConflictStrategy.replace)
-  Future<void> insertAccount(AccountCurrency account);
+  Future<void> insertAccount(AccountCurrencyEntity account);
 
-  @insert
-  Future<List<int>> insertAccounts(List<AccountCurrency> accounts);
+  @Insert(onConflict: OnConflictStrategy.replace)
+  Future<List<int>> insertCurrencies(List<AccountCurrencyEntity> currencies);
+
+
+  @Query('SELECT * FROM JoinCurrency WHERE JoinCurrency.account_id = :id')
+  Future<List<JoinCurrency>> findByAccountyId(String id);
 }

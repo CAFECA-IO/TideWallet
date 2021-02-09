@@ -8,9 +8,10 @@ import '../services/account_service.dart';
 import '../services/account_service_base.dart';
 import '../services/bitcoin_service.dart';
 import '../services/ethereum_service.dart';
-import '../database/entity/account.dart' as AccountEntity;
-import '../database/entity/network.dart' as NetworkEntity;
+import '../database/entity/account.dart';
+import '../database/entity/network.dart';
 import '../database/db_operator.dart';
+import '../database/entity/currency.dart';
 import '../helpers/logger.dart';
 import '../helpers/http_agent.dart';
 
@@ -39,10 +40,9 @@ class AccountCore {
   }
 
   _initAccounts() async {
-    AccountService service = AccountServiceBase();
-
     final chains = await this.getNetworks();
     final accounts = await this.getAccounts();
+    await this.getSupportedCurrencies();
 
     for (var i = 0; i < accounts.length; i++) {
       int blockIndex = chains.indexWhere(
@@ -53,26 +53,25 @@ class AccountCore {
         ACCOUNT account; 
         switch (chains[blockIndex].coinType) {
           case 0:
-            svc = BitcoinService(service);
+            svc = BitcoinService(AccountServiceBase());
             account = ACCOUNT.BTC;
             break;
           case 60:
-            svc = EthereumService(service);
+            svc = EthereumService(AccountServiceBase());
             account = ACCOUNT.ETH;
             break;
           default:
         }
 
         if (svc != null) {
-          Currency _currency = Currency.fromMap(ACCOUNT_LIST[account]);
-
           this.currencies[account] = [];
-          this.currencies[account].add(_currency);
 
       // this.messenger.add(AccountMessage(
       //     evt: ACCOUNT_EVT.OnUpdateAccount,
       //     value: _currency));
           this._services.add(svc);
+          Log.warning(accounts[i].accountId);
+          svc.init(accounts[i].accountId, account);
           svc.start();
         }
       }
@@ -91,7 +90,7 @@ class AccountCore {
     return false;
   }
 
-  createAccount(AccountEntity.Account account) async {
+  createAccount(AccountEntity account) async {
     await DBOperator().accountDao.insertAccount(account);
   }
 
@@ -99,26 +98,26 @@ class AccountCore {
     return _services.firstWhere((svc) => (svc.base == type));
   }
 
-  Future<List<NetworkEntity.Network>> getNetworks({publish = true}) async {
-    List<NetworkEntity.Network> networks =
+  Future<List<NetworkEntity>> getNetworks({publish = true}) async {
+    List<NetworkEntity> networks =
         await DBOperator().networkDao.findAllNetworks();
 
     if (networks.isEmpty) {
       APIResponse res = await HTTPAgent().get(Endpoint.SUSANOO + '/blockchain');
       List l = res.data;
       networks =
-          l.map((chain) => NetworkEntity.Network.fromJson(chain)).toList();
+          l.map((chain) => NetworkEntity.fromJson(chain)).toList();
     }
 
     if (publish) {
-      networks.remove((NetworkEntity.Network n) => n.type != 1);
+      networks.remove((NetworkEntity n) => n.type != 1);
     }
 
     return networks;
   }
 
-  Future<List<AccountEntity.Account>> getAccounts() async {
-    List<AccountEntity.Account> result =
+  Future<List<AccountEntity>> getAccounts() async {
+    List<AccountEntity> result =
         await DBOperator().accountDao.findAllAccounts();
     APIResponse res =
         await HTTPAgent().get(Endpoint.SUSANOO + '/wallet/accounts');
@@ -130,14 +129,24 @@ class AccountCore {
       bool exist = result.indexWhere((el) => el.accountId == id) > -1;
 
       if (!exist) {
-        AccountEntity.Account acc =
-            AccountEntity.Account(accountId: id, userId: 'eee', networkId: d['blockchain_id']);
+        AccountEntity acc =
+            AccountEntity(accountId: id, userId: 'eee', networkId: d['blockchain_id']);
         await createAccount(acc);
         result.add(acc);
       }
     }
 
     return result;
+  }
+
+  Future getSupportedCurrencies() async {
+    APIResponse res = await HTTPAgent().get(Endpoint.SUSANOO + '/currency');
+
+    if (res.data != null) {
+      List l = res.data;
+      l = l.map((c) => CurrencyEntity.fromJson(c)).toList();
+      await DBOperator().currencyDao.insertCurrencies(l);
+    }
   }
 
   // Future<String> getReceivingAddress(Currency curr) async {

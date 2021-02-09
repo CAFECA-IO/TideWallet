@@ -21,7 +21,7 @@ class AccountItem extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
+            Image.network(
               _account.imgPath,
               width: 26.0,
               height: 26.0,

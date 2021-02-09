@@ -43,23 +43,23 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
       int index = _state.accounts
           .indexWhere((account) => account.symbol == event.account.symbol);
 
-      Currency _acc = event.account;
-      List<Currency> _list = _repo.getCurrencies(_acc.accountType);
+      Currency acc = event.account;
+      List<Currency> list = _repo.getCurrencies(acc.accountType);
 
       Decimal _usd = Decimal.zero;
 
-      _list.forEach((curr) {
+      list.forEach((curr) {
         Decimal v = _traderRepo.calculateToUSD(curr);
         _usd += v;
       });
 
-      _acc = _acc.copyWith(inUSD: _usd.toString());
+      acc = acc.copyWith(inUSD: _usd.toString());
 
       List<Currency> _accounts = [..._state.accounts];
       if (index < 0) {
-        _accounts.add(_acc);
+        _accounts.add(acc);
       } else {
-        _accounts[index] = _acc;
+        _accounts[index] = acc;
       }
 
       Decimal _total = Decimal.zero;

@@ -1,7 +1,7 @@
 import 'package:floor/floor.dart';
 
-@entity
-class Network {
+@Entity(tableName: 'Network')
+class NetworkEntity {
   @primaryKey
   @ColumnInfo(name: 'network_id')
   final String networkId;
@@ -14,7 +14,7 @@ class Network {
 
   final int type;
 
-  Network({
+  NetworkEntity({
     this.networkId,
     this.network,
     this.coinType,
@@ -24,7 +24,7 @@ class Network {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Network &&
+      other is NetworkEntity &&
           runtimeType == other.runtimeType &&
           networkId == other.networkId &&
           network == other.network &&
@@ -33,7 +33,7 @@ class Network {
   @override
   int get hashCode => networkId.hashCode ^ network.hashCode ^ type.hashCode;
 
-  Network.fromJson(Map json)
+  NetworkEntity.fromJson(Map json)
       : this.networkId = json['blockchain_id'],
         this.network = json['name'],
         this.coinType = json['coin_type'],

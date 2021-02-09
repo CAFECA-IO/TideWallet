@@ -79,9 +79,9 @@ void main() {
       test('insert accounts', () async {
         final User user = await opt.userDao.findUser();
 
-        List<Account> _accounts = accounts
+        List<AccountEntity> _accounts = accounts
             .map(
-              (acc) => Account(
+              (acc) => AccountEntity(
                 accountId: acc['account_id'],
                 userId: user.userId,
                 // purpose: acc['purpose'],
@@ -92,15 +92,15 @@ void main() {
             )
             .toList();
         List<int> _result = await opt.accountDao.insertAccounts(_accounts);
-        List<Account> actual = await opt.accountDao.findAllAccounts();
+        List<AccountEntity> actual = await opt.accountDao.findAllAccounts();
 
         expect(actual, equals(_accounts));
       });
 
       test('insert currencies', () async {
-        List<Currency> _currencies = currencies
+        List<CurrencyEntity> _currencies = currencies
             .map(
-              (c) => Currency(
+              (c) => CurrencyEntity(
                   currencyId: c['token_id'],
                   name: c['name'],
                   coinType: 60,
