@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:decimal/decimal.dart';
 import 'package:dio/dio.dart';
 import 'package:convert/convert.dart';
-import 'package:tidewallet3/database/db_operator.dart';
 
 import 'account_service.dart';
 import 'account_service_decorator.dart';
@@ -11,6 +10,8 @@ import '../models/bitcoin_transaction.model.dart';
 import '../models/utxo.model.dart';
 import '../helpers/http_agent.dart';
 import '../constants/account_config.dart';
+import '../database/db_operator.dart';
+import '../database/entity/utxo.dart' as UtxoEntity;
 
 class BitcoinService extends AccountServiceDecorator {
   BitcoinService(AccountService service) : super(service) {
@@ -124,32 +125,35 @@ class BitcoinService extends AccountServiceDecorator {
 
   @override
   Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) async {
-    Response response = await HTTPAgent()
-        .get('$_baseUrl/api/v1/wallet/account/txs/uxto/$currencyId');
-    List<dynamic> datas = response.data['payload'];
-    List<UnspentTxOut> utxos = datas
-        .map((data) => UnspentTxOut(
-              id: data['id'],
-              currencyId: currencyId,
-              txid: data['txid'],
-              vout: data['vout'],
-              type: data['type'],
-              amount: data['amount'],
-              chainIndex: data['chain_index'],
-              keyIndex: data['key_index'],
-              data: hex.decode(data['script']),
-              timestamp: data['timestamp'],
-              locked: 0,
-              sequence: BitcoinTransaction.DEFAULT_SEQUENCE,
-            ))
-        .toList();
-    return utxos;
+    // TODO 應該要放在sync裡面
+    // Response response = await HTTPAgent()
+    //     .get('$_baseUrl/api/v1/wallet/account/txs/uxto/$currencyId');
+    // List<dynamic> datas = response.data['payload'];
+    // List<UtxoEntity.Utxo> utxos = datas
+    //     .map((data) => UtxoEntity.Utxo(
+    //           data['id'],
+    //           currencyId,
+    //           data['txid'],
+    //           data['vout'],
+    //           data['type'],
+    //           data['amount'],
+    //           data['chain_index'],
+    //           data['key_index'],
+    //           data['script'],
+    //           data['timestamp'],
+    //           false,
+    //           BitcoinTransaction.DEFAULT_SEQUENCE,
+    //         ))
+    //     .toList();
+    // DBOperator().utxoDao.insertUtxos(utxos);
+    List<UtxoEntity.Utxo> utxos =
+        await DBOperator().utxoDao.findAllUtxosByCurrencyId(currencyId);
+    return utxos.map((utxo) => UnspentTxOut.fromUtxoEntity(utxo)).toList();
   }
 
   @override
   Future<void> publishTransaction(
       String blockchainId, String currencyId, Transaction transaction) async {
-    // Response response =
     await HTTPAgent().post(
         '$_baseUrl/api/v1/blockchain/$blockchainId/push-tx/$currencyId',
         {"hex": transaction.serializedData});
@@ -158,7 +162,7 @@ class BitcoinService extends AccountServiceDecorator {
 
   @override
   Future<int> getNonce() {
-    // TODO: implement getNon
+    // TODO: implement getNonce
     throw UnimplementedError();
   }
 }

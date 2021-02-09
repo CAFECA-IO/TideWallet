@@ -5,7 +5,7 @@ import '../entity/utxo.dart';
 @dao
 abstract class UtxoDao {
   @Query('SELECT * FROM Utxo WHERE currency_id = :id')
-  Future<Utxo> findAllUtxosByCurrencyId(String id);
+  Future<List<Utxo>> findAllUtxosByCurrencyId(String id);
 
   @Insert(onConflict: OnConflictStrategy.replace)
   Future<void> insertUtxo(Utxo utxo);

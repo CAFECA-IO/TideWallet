@@ -12,8 +12,8 @@ class Utxo {
       childColumns: ['account_id'],
       parentColumns: ['account_id'],
       entity: Account)
-  @ColumnInfo(name: 'account_id')
-  final String accountId;
+  // @ColumnInfo(name: 'account_id')
+  // final String accountId;
 
   @ColumnInfo(name: 'currency_id')
   final String currencyId;
@@ -23,7 +23,7 @@ class Utxo {
 
   final int vout;
 
-  final String address;
+  final String type;
 
   final String amount;
 
@@ -39,17 +39,20 @@ class Utxo {
 
   final bool locked;
 
+  final int sequence;
+
   Utxo(
       this.utxoId,
-      this.accountId,
+      // this.accountId,
       this.currencyId,
       this.txId,
       this.vout,
-      this.address,
+      this.type,
       this.amount,
       this.chainIndex,
       this.keyIndex,
       this.script,
       this.timestamp,
-      this.locked);
+      this.locked,
+      this.sequence);
 }

@@ -52,16 +52,12 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
       Log.debug('rawDataHash: ${hex.encode(rawDataHash)}');
       UnspentTxOut utxo = transaction.inputs[index].utxo;
 
-      // !! TODO get privateKey
-      // MsgSignature sig = Signer().sign(
-      //     rawDataHash,
-      //     this.hdWallet.getExtendedPrivateKey(this.account.path,
-      //         chainIndex: utxo.chainIndex, keyIndex: utxo.keyIndex));
+      MsgSignature sig = Signer().sign(rawDataHash, utxo.privatekey);
 
       Uint8List buffer = new Uint8List(64);
 
-      // buffer.setRange(0, 32, encodeBigInt(sig.r));
-      // buffer.setRange(32, 64, encodeBigInt(sig.s));
+      buffer.setRange(0, 32, encodeBigInt(sig.r));
+      buffer.setRange(32, 64, encodeBigInt(sig.s));
 
       Uint8List signature = Signer()
           .encodeSignature(buffer, transaction.inputs[index].hashType.value);
@@ -85,6 +81,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
       Decimal gasLimit,
       int nonce,
       int chainId,
+      Uint8List privKey,
       List<UnspentTxOut> unspentTxOuts,
       String changeAddress}) {
     BitcoinTransaction transaction =
@@ -124,12 +121,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
       if (utxo.locked != 0 || !(utxo.amount > Decimal.zero) || utxo.type == '')
         continue;
 
-      // !! TODO get publicKey
-      // List<int> publicKey = this.hdWallet.getExtendedPublicKey(
-      //     this.account.path,
-      //     chainIndex: utxo.chainIndex,
-      //     keyIndex: utxo.keyIndex);
-      // transaction.addInput(utxo, publicKey, HashType.SIGHASH_ALL);
+      transaction.addInput(utxo, HashType.SIGHASH_ALL);
 
       utxoAmount += utxo.amount;
       if (utxoAmount >= (amount + fee)) break;

@@ -16,6 +16,7 @@ class TransactionServiceBased extends TransactionService {
       Decimal gasLimit,
       int nonce,
       int chainId,
+      Uint8List privKey,
       List<UnspentTxOut> unspentTxOuts,
       String changeAddress}) {
     // TODO: implement prepareTransaction

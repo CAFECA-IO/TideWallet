@@ -14,20 +14,16 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
 
   EthereumBasedTransactionServiceDecorator(this.service);
 
-  EthereumTransaction _signTransaction(EthereumTransaction transaction) {
-    // !! TODO get privateKey
+  EthereumTransaction _signTransaction(
+      EthereumTransaction transaction, Uint8List privKey) {
     Uint8List payload = encodeToRlp(transaction);
     Uint8List rawDataHash = keccak256(payload);
-    // MsgSignature signature = Signer().sign(
-    //     rawDataHash,
-    //     this.hdWallet.getExtendedPrivateKey(this.account.path,
-    //         chainIndex: utxo.chainIndex, keyIndex: utxo.keyIndex));
+    MsgSignature signature = Signer().sign(rawDataHash, privKey);
     final chainIdV = transaction.chainId != null
         ? (transaction.signature.v - 27 + (transaction.chainId * 2 + 35))
         : transaction.signature.v;
-
-    // signature = MsgSignature(signature.r, signature.s, chainIdV);
-    // transaction.signature = signature;
+    signature = MsgSignature(signature.r, signature.s, chainIdV);
+    transaction.signature = signature;
     return transaction;
   }
 
@@ -39,6 +35,7 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
       Decimal gasLimit,
       int nonce,
       int chainId,
+      Uint8List privKey,
       List<UnspentTxOut> unspentTxOuts = const [],
       String changeAddress}) {
     EthereumTransaction transaction = EthereumTransaction.prepareTransaction(
@@ -52,7 +49,7 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
       chainId: chainId, // TODO
       signature: MsgSignature(BigInt.zero, BigInt.zero, chainId),
     );
-    return _signTransaction(transaction);
+    return _signTransaction(transaction, privKey);
   }
 
   @override

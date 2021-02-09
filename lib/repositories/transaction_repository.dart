@@ -4,12 +4,14 @@ import 'dart:typed_data';
 import 'package:rxdart/subjects.dart';
 import 'package:decimal/decimal.dart';
 import 'package:convert/convert.dart';
+import 'package:web3dart/web3dart.dart' as web3dart;
 
-import '../services/account_service.dart';
+import '../cores/paper_wallet.dart';
 import '../cores/account.dart';
 import '../models/account.model.dart';
 import '../models/transaction.model.dart';
 import '../models/utxo.model.dart';
+import '../services/account_service.dart';
 import '../services/transaction_service.dart';
 import '../services/transaction_service_based.dart';
 import '../services/transaction_service_bitcoin.dart';
@@ -18,6 +20,8 @@ import '../constants/account_config.dart';
 import '../helpers/utils.dart';
 import '../helpers/ethereum_based_utils.dart';
 import '../helpers/rlp.dart' as rlp;
+import '../database/db_operator.dart';
+import '../database/entity/user.dart' as UserEnity;
 
 class TransactionRepository {
   static const int AVERAGE_FETCH_FEE_TIME = 1 * 60 * 60 * 1000; // milliseconds
@@ -131,7 +135,25 @@ class TransactionRepository {
     return verified;
   }
 
-  Future<Transaction> prepareTransaction(String to, Decimal amount,
+  Future<Uint8List> _getSeed(String pwd) async {
+    UserEnity.User user = await DBOperator().userDao.findUser();
+    web3dart.Wallet wallet = PaperWallet.jsonToWallet([user.keystore, pwd]);
+    List<int> seed = PaperWallet.magicSeed(wallet.privateKey.privateKey);
+    return Uint8List.fromList(seed);
+  }
+
+  Future<Uint8List> getPubKey(String pwd, int changeIndex, int keyIndex) async {
+    Uint8List seed = await _getSeed(pwd);
+    return PaperWallet.getPubKey(seed, changeIndex, keyIndex);
+  }
+
+  Future<Uint8List> getPrivKey(
+      String pwd, int changeIndex, int keyIndex) async {
+    Uint8List seed = await _getSeed(pwd);
+    return PaperWallet.getPrivKey(seed, changeIndex, keyIndex);
+  }
+
+  Future<Transaction> prepareTransaction(String pwd, String to, Decimal amount,
       {Decimal fee,
       Decimal gasPrice,
       Decimal gasLimit,
@@ -147,6 +169,9 @@ class TransactionRepository {
               !(utxo.amount > Decimal.zero) ||
               utxo.type == '') continue;
           utxoAmount += utxo.amount;
+          utxo.privatekey =
+              await getPrivKey(pwd, utxo.chainIndex, utxo.keyIndex);
+          utxo.publickey = await getPubKey(pwd, utxo.chainIndex, utxo.keyIndex);
           if (utxoAmount > (amount + fee)) {
             changeAddress =
                 await _accountService.getChangingAddress(_currency.id);
@@ -176,7 +201,7 @@ class TransactionRepository {
               rlp.toBuffer(message));
         }
         Transaction transaction = _transactionService.prepareTransaction(
-          false,
+          this._currency.publish,
           to,
           amount,
           message,

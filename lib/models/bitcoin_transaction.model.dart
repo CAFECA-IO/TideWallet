@@ -285,8 +285,8 @@ class BitcoinTransaction extends Transaction {
     Log.verbose('_lockTime: $_lockTime');
   }
 
-  void addInput(UnspentTxOut utxo, Uint8List publicKey, HashType hashType) {
-    Input input = Input(utxo, publicKey, hashType);
+  void addInput(UnspentTxOut utxo, HashType hashType) {
+    Input input = Input(utxo, utxo.publickey, hashType);
     _inputs.add(input);
   }
 

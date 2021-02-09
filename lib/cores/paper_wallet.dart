@@ -45,6 +45,32 @@ class PaperWallet {
     return seed;
   }
 
+  static Future<Uint8List> getPubKey(
+    Uint8List seed,
+    int changeIndex,
+    int keyIndex, {
+    String path = EXT_PATH,
+    bool compressed = true,
+  }) async {
+    Uint8List bytes = Uint8List.fromList(seed);
+    bip32.BIP32 root = bip32.BIP32.fromSeed(bytes);
+    bip32.BIP32 child = root.derivePath("$path/$changeIndex/$keyIndex");
+    return child.publicKey;
+  }
+
+  static Future<Uint8List> getPrivKey(
+    Uint8List seed,
+    int changeIndex,
+    int keyIndex, {
+    String path = EXT_PATH,
+    bool compressed = true,
+  }) async {
+    Uint8List bytes = Uint8List.fromList(seed);
+    bip32.BIP32 root = bip32.BIP32.fromSeed(bytes);
+    bip32.BIP32 child = root.derivePath("$path/$changeIndex/$keyIndex");
+    return child.privateKey;
+  }
+
   static String getExtendedPublicKey({
     List<int> seed,
     String path = EXT_PATH,

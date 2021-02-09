@@ -22,5 +22,6 @@ abstract class TransactionService {
       int nonce,
       int chainId,
       List<UnspentTxOut> unspentTxOuts,
-      String changeAddress});
+      String changeAddress,
+      Uint8List privKey});
 }

@@ -1,6 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:decimal/decimal.dart';
+import 'package:convert/convert.dart';
+
+import '../database/entity/utxo.dart' as UtxoEntity;
 
 class UnspentTxOut {
   static const String ClassName = "utxo";
@@ -29,13 +32,13 @@ class UnspentTxOut {
   final int keyIndex;
   final Uint8List data; // hex string
   final int timestamp;
-  final int locked;
+  final bool locked;
   final int sequence;
 
   //TEST
   // String scriptPubKey;
-  // String privatekey;
-  // String publickey;
+  Uint8List privatekey;
+  Uint8List publickey;
 
   Map<String, dynamic> get map => {
         FieldName_Id: id,
@@ -90,8 +93,8 @@ class UnspentTxOut {
     this.locked,
     this.sequence,
     // for transaction only
-    // this.privatekey,
-    // this.publickey,
+    this.privatekey,
+    this.publickey,
     // this.scriptPubKey,
   });
   //  : _network = Config().network;
@@ -125,4 +128,18 @@ class UnspentTxOut {
         timestamp = map[FieldName_Timestamp],
         locked = map[FieldName_Locked],
         sequence = map[FieldName_Sequence];
+
+  UnspentTxOut.fromUtxoEntity(UtxoEntity.Utxo utxo)
+      : id = utxo.utxoId,
+        currencyId = utxo.currencyId,
+        txid = utxo.txId,
+        vout = utxo.vout,
+        type = utxo.type,
+        amount = Decimal.parse(utxo.amount),
+        chainIndex = utxo.chainIndex,
+        keyIndex = utxo.keyIndex,
+        data = hex.decode(utxo.script),
+        timestamp = utxo.timestamp,
+        locked = utxo.locked,
+        sequence = utxo.sequence;
 }
