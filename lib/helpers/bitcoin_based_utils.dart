@@ -2,10 +2,10 @@ import 'dart:typed_data';
 import 'package:bs58check/bs58check.dart' as bs58check;
 import 'package:convert/convert.dart';
 
-import './utils.dart';
-import './bech32.dart';
-import './segwit.dart';
-import './logger.dart';
+import 'utils.dart';
+import 'bech32.dart';
+import 'segwit.dart';
+import 'logger.dart';
 
 const int OP_0 = 0x00;
 const int OP_PUSHDATA1 = 0x4c;

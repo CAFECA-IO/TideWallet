@@ -39,8 +39,8 @@ class DBTransaction {
   int _timestamp; // in second
   int _confirmations;
   Decimal _amount; // in coinUnit
-  String _gasPrice;
-  int _gasUsed;
+  Decimal _gasPrice;
+  Decimal _gasUsed;
   int _nonce;
   int _block; // in second
   int _blockHeight;
@@ -81,9 +81,9 @@ class DBTransaction {
       String destinationAddresses,
       int timestamp,
       int confirmations,
-      String amount,
-      String gasPrice,
-      int gasUsed,
+      Decimal amount,
+      Decimal gasPrice,
+      Decimal gasUsed,
       int nonce,
       int block,
       int blockHeight,
@@ -100,7 +100,7 @@ class DBTransaction {
         _destinationAddresses = destinationAddresses,
         _timestamp = timestamp,
         _confirmations = confirmations,
-        _amount = Decimal.parse(amount),
+        _amount = amount,
         _gasPrice = gasPrice,
         _gasUsed = gasUsed,
         _nonce = nonce,

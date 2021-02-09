@@ -88,7 +88,7 @@ class TransactionRepository {
       _timestamp = DateTime.now().millisecondsSinceEpoch;
     }
     // TODO if (message != null)
-    Decimal _gasLimit = Decimal.zero;
+    Decimal _gasLimit;
     switch (this._currency.accountType) {
       case ACCOUNT.BTC:
         List<UnspentTxOut> unspentTxOuts =
@@ -144,8 +144,11 @@ class TransactionRepository {
     return verified;
   }
 
-  Future<Transaction> prepareTransaction(String to, Decimal amount, Decimal fee,
-      {Uint8List message}) async {
+  Future<Transaction> prepareTransaction(String to, Decimal amount,
+      {Decimal fee,
+      Decimal gasPrice,
+      Decimal gasLimit,
+      Uint8List message}) async {
     switch (this._currency.accountType) {
       case ACCOUNT.BTC:
         String changeAddress;
@@ -164,15 +167,40 @@ class TransactionRepository {
           } else if (utxoAmount == (amount + fee)) break;
         }
         Transaction transaction = _transactionService.prepareTransaction(
-            false, to, amount, fee, message,
+            false, to, amount, message,
+            fee: fee,
             unspentTxOuts: unspentTxOuts,
             changeAddress:
                 changeAddress); // TODO add account publish property // _repo.currency.publish
         return transaction;
         break;
       case ACCOUNT.ETH:
-        EthereumTransaction transaction =
-            EthereumTransaction.prepareTransaction();
+        // TODO getNonce()
+        String from = await _accountService.getReceivingAddress(_currency.id);
+        int nonce = await _accountService.getNonce();
+        int chainId;
+        // TODO use blockchainId to get chainId
+        if (this.currency.blockchainId == 'ropsten')
+          chainId = 3;
+        else if (this.currency.blockchainId == 'rinkeby')
+          chainId = 4;
+        else if (this.currency.blockchainId == 'mordor')
+          chainId = 63;
+        else if (this.currency.blockchainId == 'mainnet') // TODO 80000001
+          chainId = 1;
+        else
+          chainId = 0;
+        Transaction transaction = _transactionService.prepareTransaction(
+          false,
+          to,
+          amount,
+          message,
+          changeAddress: from,
+          nonce: nonce,
+          gasPrice: gasPrice,
+          gasLimit: gasLimit,
+          chainId: chainId,
+        );
         return transaction;
         break;
       case ACCOUNT.XRP:

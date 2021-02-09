@@ -98,4 +98,10 @@ class AccountServiceBase extends AccountService {
     // TODO: implement getUnspentTxOut
     throw UnimplementedError();
   }
+
+  @override
+  Future<int> getNonce() {
+    // TODO: implement getNon
+    throw UnimplementedError();
+  }
 }

@@ -15,10 +15,10 @@ abstract class TransactionState extends Equatable {
 class TransactionInitial extends TransactionState {
   final String address;
   final Decimal amount;
-  final String spandable;
+  final Decimal spandable;
   final TransactionPriority priority;
-  final String gasLimit;
-  final String gasPrice;
+  final Decimal gasLimit;
+  final Decimal gasPrice;
   final Decimal fee;
   final String feeToFiat;
   final String estimatedTime;
@@ -30,10 +30,10 @@ class TransactionInitial extends TransactionState {
   TransactionInitial(
       {this.address = "",
       this.amount,
-      this.spandable = "",
+      this.spandable,
       this.priority = TransactionPriority.standard,
-      this.gasLimit = "",
-      this.gasPrice = "",
+      this.gasLimit,
+      this.gasPrice,
       this.fee,
       this.feeToFiat = "",
       this.estimatedTime = "10~30",
@@ -42,12 +42,12 @@ class TransactionInitial extends TransactionState {
 
   TransactionState copyWith({
     String address,
-    String amount,
-    String spandable,
+    Decimal amount,
+    Decimal spandable,
     TransactionPriority priority,
-    String gasLimit,
-    String gasPrice,
-    String fee,
+    Decimal gasLimit,
+    Decimal gasPrice,
+    Decimal fee,
     String feeToFiat,
     String estimatedTime,
     List<bool> rules,

@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'package:convert/convert.dart';
 import 'package:decimal/decimal.dart';
 
-import '../helpers/bitcoin_base_extension.dart';
+import '../helpers/bitcoin_based_utils.dart';
 import '../helpers/logger.dart';
 import '../helpers/converter.dart';
 import '../helpers/utils.dart';

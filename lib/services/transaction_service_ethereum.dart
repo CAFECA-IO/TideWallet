@@ -1,6 +1,3 @@
-import 'dart:typed_data';
-import 'package:decimal/decimal.dart';
-
 import '../constants/account_config.dart';
 import 'transaction_service.dart';
 import 'transaction_service_decorator_ethereum_based.dart';

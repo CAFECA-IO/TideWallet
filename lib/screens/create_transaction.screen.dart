@@ -307,8 +307,9 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                             onChanged: (bool newValue) {
                               setState(() {
                                 _isSelected = newValue;
-                                _gasPriceController.text = state.gasPrice;
-                                _gasController.text = state.gasLimit;
+                                _gasPriceController.text =
+                                    state.gasPrice.toString();
+                                _gasController.text = state.gasLimit.toString();
                               });
                             },
                           ),

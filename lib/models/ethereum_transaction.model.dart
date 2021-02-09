@@ -1,25 +1,31 @@
 import 'dart:typed_data';
 
 import 'package:decimal/decimal.dart';
+import 'package:convert/convert.dart';
 
 import 'transaction.model.dart';
 import 'db_transaction.model.dart';
 
+import '../helpers/ethereum_based_utils.dart';
+import '../cores/signer.dart';
+
 class EthereumTransaction extends Transaction {
-  final String id;
-  final String currencyId;
-  final String txHash;
+  String id;
+  String currencyId;
+  String txHash;
   final String from;
   final String to;
-  final int timestamp;
+  int timestamp;
   int confirmations;
   TransactionStatus status;
   final int nonce;
-  final int block;
+  int block;
   final Decimal amount; // in Wei
-  final String gasPrice; // in Wei
-  final int gasUsed;
-  final Uint8List data; // utf8.encode
+  final Decimal gasPrice; // in Wei
+  final Decimal gasUsed;
+  final Uint8List message; // utf8.encode
+  int chainId;
+  MsgSignature signature;
 
   EthereumTransaction({
     this.id,
@@ -35,8 +41,10 @@ class EthereumTransaction extends Transaction {
     this.amount,
     this.gasPrice,
     this.gasUsed,
-    Uint8List data,
-  }) : data = data ?? Uint8List(0);
+    Uint8List message,
+    this.chainId,
+    this.signature,
+  }) : message = message ?? Uint8List(0);
 
   EthereumTransaction.fromMap(Map<String, dynamic> transactionMap)
       : id = transactionMap[DBTransaction.FieldName_Id],
@@ -48,29 +56,23 @@ class EthereumTransaction extends Transaction {
         nonce = transactionMap[DBTransaction.FieldName_Nonce],
         confirmations = transactionMap[DBTransaction.FieldName_Confirmations],
         block = transactionMap[DBTransaction.FieldName_Block],
-        amount = transactionMap[DBTransaction.FieldName_Amount],
-        gasPrice = transactionMap[DBTransaction.FieldName_GasPrice].toString(),
-        gasUsed = transactionMap[DBTransaction.FieldName_GasUsed],
-        data = transactionMap[DBTransaction.FieldName_Note];
+        amount = Decimal.parse(transactionMap[DBTransaction.FieldName_Amount]),
+        gasPrice =
+            Decimal.parse(transactionMap[DBTransaction.FieldName_GasPrice]),
+        gasUsed =
+            Decimal.parse(transactionMap[DBTransaction.FieldName_GasUsed]),
+        message = transactionMap[DBTransaction.FieldName_Note];
 
   EthereumTransaction.prepareTransaction(
-      {this.id,
-      this.currencyId,
-      this.txHash,
-      this.from,
+      {this.from,
       this.to,
-      this.timestamp,
       this.nonce,
-      this.block,
       this.amount,
       this.gasPrice,
       this.gasUsed,
-      this.data}) {
-    // TODO
-  }
+      this.message,
+      this.chainId,
+      this.signature});
 
-  String get serializeTransaction {
-    // TODO use Ethterum
-    return '01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff2d03a58605204d696e656420627920416e74506f6f6c20757361311f10b53620558903d80272a70c0000724c0600ffffffff010f9e5096000000001976a9142ef12bd2ac1416406d0e132e5bc8d0b02df3861b88ac00000000';
-  }
+  String get serializeTransaction => hex.encode(encodeToRlp(this));
 }

@@ -8,7 +8,7 @@ import '../helpers/utils.dart';
 import '../models/utxo.model.dart';
 import '../models/transaction.model.dart';
 import '../models/bitcoin_transaction.model.dart';
-import '../helpers/bitcoin_base_extension.dart';
+import '../helpers/bitcoin_based_utils.dart';
 import '../helpers/logger.dart';
 import '../helpers/rlp.dart' as rlp;
 
@@ -79,8 +79,14 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
 
   @override
   BitcoinTransaction prepareTransaction(
-      bool publish, String to, Decimal amount, Decimal fee, Uint8List message,
-      {List<UnspentTxOut> unspentTxOuts, String changeAddress}) {
+      bool publish, String to, Decimal amount, Uint8List message,
+      {Decimal fee,
+      Decimal gasPrice,
+      Decimal gasLimit,
+      int nonce,
+      int chainId,
+      List<UnspentTxOut> unspentTxOuts,
+      String changeAddress}) {
     BitcoinTransaction transaction =
         BitcoinTransaction.prepareTransaction(publish, this.segWitType);
     // amount,to

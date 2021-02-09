@@ -20,6 +20,9 @@ class EthereumService extends AccountServiceDecorator {
   static const String _baseUrl = 'https://service.tidewallet.io';
 
   Timer _timer;
+  String _address;
+  String _contract; // ?
+  String _tokenAddress; // ?
 
   Future<Map<TransactionPriority, Decimal>> getGasPrice() async {
     Response response =
@@ -176,35 +179,47 @@ class EthereumService extends AccountServiceDecorator {
 
   @override
   Future<Map<TransactionPriority, Decimal>> getTransactionFee() async {
-    // TODO getFeeFromDB && getSyncFeeAutomatically
+    // TODO getSyncFeeAutomatically
     Response response =
         await HTTPAgent().get('$_baseUrl/api/v1/blockchain/8000003C/fee');
-    Map<String, dynamic> data =
-        response.data['payload']; // TODO FEE should return String or double
+    Map<String, dynamic> data = response.data['payload'];
     Map<TransactionPriority, Decimal> transactionFee = {
       TransactionPriority.slow: Decimal.parse(data['slow'].toString()),
       TransactionPriority.standard: Decimal.parse(data['standard'].toString()),
       TransactionPriority.fast: Decimal.parse(data['fast'].toString()),
     };
-    // Decimal gasLimit = await _estimateGasLimit(hex);
     return transactionFee;
   }
 
   @override
   Future<String> getReceivingAddress(String currencyId) async {
-    // TODO: implement publishTransaction
-    throw UnimplementedError();
+    if (this._address == null) {
+      Response response = await HTTPAgent()
+          .get('$_baseUrl/api/v1/wallet/account/address/$currencyId/receive');
+      Map data = response.data['payload'];
+      String address = data['address'];
+      this._address = address;
+    }
+    return this._address;
   }
 
   @override
   Future<String> getChangingAddress(String currencyId) async {
-    // TODO: implement publishTransaction
-    throw UnimplementedError();
+    return await getReceivingAddress(currencyId);
   }
 
   @override
   Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) async {
     // TODO: implement getUnspentTxOut
     throw UnimplementedError();
+  }
+
+  @override
+  Future<int> getNonce() async {
+    Response response =
+        await HTTPAgent().get('$_baseUrl/api/v1/blockchain/8000003C/nonce');
+    Map data = response.data['payload'];
+    int nonce = int.parse(data['nonce']);
+    return nonce;
   }
 }

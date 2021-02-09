@@ -138,10 +138,10 @@ class Transaction {
     timestamp = transaction.timestamp;
     confirmations = transaction.confirmations;
 
-    var gasPrice = BigInt.parse(transaction.gasPrice);
-    var gasUsed = BigInt.from(transaction.gasUsed);
-    var feeWei = gasPrice * gasUsed;
-    // _fee = _account.toCoinUnit(feeWei).toString();
+    // var gasPrice = BigInt.parse(transaction.gasPrice.toString());
+    // var gasUsed = BigInt.from(transaction.gasUsed.toInt());
+    // var feeWei = gasPrice * gasUsed;
+    // // _fee = _account.toCoinUnit(feeWei).toString();
   }
 
   Transaction.fromEthereumTokenTransaction(

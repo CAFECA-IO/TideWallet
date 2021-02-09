@@ -154,4 +154,10 @@ class BitcoinService extends AccountServiceDecorator {
         {"hex": transaction.serializedData});
     return;
   }
+
+  @override
+  Future<int> getNonce() {
+    // TODO: implement getNon
+    throw UnimplementedError();
+  }
 }
