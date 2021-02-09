@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 
 import './welcome.screen.dart';
 import './home.screen.dart';
-import '../repositories/user_repository.dart';
+import '../widgets/dialogs/dialog_controller.dart';
+import '../widgets/dialogs/loading_dialog.dart';
 import '../blocs/fiat/fiat_bloc.dart';
 import '../blocs/user/user_bloc.dart';
 
@@ -14,15 +14,17 @@ class LandingScreen extends StatefulWidget {
 }
 
 class _LandingScreenState extends State<LandingScreen> {
+  bool _isInit = true;
   UserBloc _bloc;
-  UserRepository _repo;
   FiatBloc _fiatBloc;
 
   @override
   void didChangeDependencies() {
-    _repo = Provider.of<UserRepository>(context);
-    _bloc = BlocProvider.of<UserBloc>(context);
-    _fiatBloc = BlocProvider.of<FiatBloc>(context);
+    if (_isInit) {
+      _bloc = BlocProvider.of<UserBloc>(context)..add(UserCheck());
+      _fiatBloc = BlocProvider.of<FiatBloc>(context);
+      _isInit = false;
+    }
 
     super.didChangeDependencies();
   }
@@ -36,18 +38,32 @@ class _LandingScreenState extends State<LandingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<UserBloc, UserState>(
-      builder: (context, state) {
-        if (state is UserSuccess) {
-          return HomeScreen();
+    return BlocListener<UserBloc, UserState>(
+      listener: (context, state) {
+        if (state is UserLoading) {
+          DialogController.showUnDissmissible(context, LoadingDialog());
         }
 
-        if (_repo.user.hasWallet) {
-          return HomeScreen();
-        } else {
-          return WelcomeScreen();
+        if (state is UserSuccess) {
+          DialogController.dismiss(context);
         }
       },
+      listenWhen: (prevState, currState) {
+        if (prevState is UserLoading || currState is UserLoading) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+      child: BlocBuilder<UserBloc, UserState>(
+        builder: (context, state) {
+          if (state is UserSuccess) {
+            return HomeScreen();
+          }
+
+          return WelcomeScreen();
+        },
+      ),
     );
   }
 }

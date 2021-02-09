@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tidewallet3/helpers/logger.dart';
 
 import '../blocs/restore_wallet/restore_wallet_bloc.dart';
 import '../widgets/appBar.dart';

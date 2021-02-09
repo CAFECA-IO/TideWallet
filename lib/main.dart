@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:tidewallet3/database/db_operator.dart';
 
 import './repositories/account_repository.dart';
 import './repositories/transaction_repository.dart';
@@ -25,8 +24,8 @@ import './screens/receive.screen.dart';
 import './screens/setting_fiat.screen.dart';
 import './screens/feedback.screen.dart';
 import './screens/terms.screen.dart';
-import './blocs/fiat/fiat_bloc.dart';
 import './screens/update_password.screen.dart';
+import './blocs/fiat/fiat_bloc.dart';
 import './blocs/account/account_bloc.dart';
 import './blocs/delegate.dart';
 import './blocs/user/user_bloc.dart';
@@ -38,6 +37,7 @@ import './blocs/receive/receive_bloc.dart';
 // import './blocs/update_password/update_password_bloc.dart';
 import './helpers/i18n.dart';
 import './repositories/trader_repository.dart';
+import './database/db_operator.dart';
 import 'theme.dart';
 
 void main() async {

@@ -9,7 +9,11 @@ abstract class UserState extends Equatable {
 
 class UserInitial extends UserState {}
 
+class UserLoading extends UserState {}
+
 class UserSuccess extends UserState {}
+
+class UserFail extends UserState {}
 
 class VerifyingPassword extends UserState {}
 
