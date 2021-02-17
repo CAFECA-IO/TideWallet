@@ -63,8 +63,8 @@ class TransactionRepository {
     return await _accountService.getTransactions();
   }
 
-  Future<String> getReceivingAddress(String currency) async {
-    return (await _accountService.getReceivingAddress(currency))[0];
+  Future<String> getReceivingAddress() async {
+    return (await _accountService.getReceivingAddress(this._currency.id))[0];
   }
 
   Future<List<dynamic>> getTransactionFee(

@@ -22,8 +22,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   ) async* {
     if (event is GetReceivingAddress) {
       yield AddressLoading(event.currency, '');
-      String address = await _repo.getReceivingAddress(
-          event.currency.id ?? 'jdkjwdw'); // TODO updateCurrencyId
+      String address = await _repo.getReceivingAddress();
       Log.debug('GetReceivingAddress: $address');
       yield AddressLoaded(event.currency, address);
     }
