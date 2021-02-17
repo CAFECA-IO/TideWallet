@@ -472,7 +472,22 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
   }
 
   @override
-  Future<List<JoinCurrency>> findByAccountyId(String id) async {
+  Future<AccountCurrencyEntity> findOneByAccountyId(String id) async {
+    return _queryAdapter.query(
+        'SELECT * FROM AccountCurrency WHERE AccountCurrency.account_id = ? LIMIT 1',
+        arguments: <dynamic>[id],
+        mapper: (Map<String, dynamic> row) => AccountCurrencyEntity(
+            accountcurrencyId: row['accountcurrency_id'] as String,
+            accountId: row['account_id'] as String,
+            currencyId: row['currency_id'] as String,
+            balance: row['balance'] as String,
+            numberOfUsedExternalKey: row['number_of_used_external_key'] as int,
+            numberOfUsedInternalKey: row['number_of_used_internal_key'] as int,
+            lastSyncTime: row['last_sync_time'] as int));
+  }
+
+  @override
+  Future<List<JoinCurrency>> findJoinedByAccountyId(String id) async {
     return _queryAdapter.queryList(
         'SELECT * FROM JoinCurrency WHERE JoinCurrency.account_id = ?',
         arguments: <dynamic>[id],

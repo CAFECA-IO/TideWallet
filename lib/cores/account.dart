@@ -70,7 +70,6 @@ class AccountCore {
       //     evt: ACCOUNT_EVT.OnUpdateAccount,
       //     value: _currency));
           this._services.add(svc);
-          Log.warning(accounts[i].accountId);
           svc.init(accounts[i].accountId, account);
           svc.start();
         }

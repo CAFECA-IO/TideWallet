@@ -34,11 +34,9 @@ class AccountCurrencyEntity {
   @ColumnInfo(name: 'last_sync_time')
   final int lastSyncTime;
 
-  @ignore
-  String symbol;
+  @ColumnInfo(name: 'chain_id')
+  final int chainId;
 
-  @ignore
-  String type;
 
   AccountCurrencyEntity(
       {this.accountcurrencyId,
@@ -48,8 +46,8 @@ class AccountCurrencyEntity {
       this.numberOfUsedExternalKey,
       this.numberOfUsedInternalKey,
       this.lastSyncTime,
-      this.symbol,
-      this.type});
+      this.chainId
+     });
 
   @override
   bool operator ==(Object other) =>

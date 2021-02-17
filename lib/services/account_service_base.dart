@@ -15,12 +15,17 @@ import '../helpers/logger.dart';
 import '../database/entity/account.dart';
 import '../database/entity/currency.dart';
 
-
 import 'account_service.dart';
 
 class AccountServiceBase extends AccountService {
   Timer _timer;
+  ACCOUNT _base;
   String _accountId;
+  int _syncInterval;
+  int _lastSyncTimestamp;
+
+  get base => this._base;
+
   AccountServiceBase();
 
   @override
@@ -48,10 +53,10 @@ class AccountServiceBase extends AccountService {
   }
 
   @override
-  void init(String id, ACCOUNT base, { int interval }) {
+  void init(String id, ACCOUNT base, {int interval}) {
     this._accountId = id;
-    this.base = base;
-    this.syncInterval = interval ?? this.syncInterval;
+    this._base = base;
+    this._syncInterval = interval ?? this._syncInterval;
   }
 
   @override
@@ -63,8 +68,17 @@ class AccountServiceBase extends AccountService {
   @override
   void start() async {
     await this._getSuppertedToken();
+    AccountCurrencyEntity select = await DBOperator()
+        .accountCurrencyDao
+        .findOneByAccountyId(this._accountId);
+    
+    if (select != null) {
+      this._lastSyncTimestamp = select.lastSyncTime;
+    }
+
     _sync();
-    _timer = Timer.periodic(Duration(milliseconds: this.syncInterval), (_) {
+
+    _timer = Timer.periodic(Duration(milliseconds: this._syncInterval), (_) {
       _sync();
     });
   }
@@ -114,26 +128,33 @@ class AccountServiceBase extends AccountService {
   }
 
   _sync() async {
-    List currs = await this.getData();
     int now = DateTime.now().millisecondsSinceEpoch;
 
+    if (now - this._lastSyncTimestamp > this._syncInterval) {
+      List currs = await this.getData();
+      final v = currs
+          .map(
+            (c) => AccountCurrencyEntity(
+                accountcurrencyId: c['currency_id'] ?? c['token_id'],
+                accountId: this._accountId,
+                numberOfUsedExternalKey: c['number_of_external_key'],
+                numberOfUsedInternalKey: c['number_of_internal_key'],
+                balance: c['balance'],
+                currencyId: c['currency_id'] ?? c['token_id'],
+                lastSyncTime: now),
+          )
+          .toList();
 
-    final v = currs
-        .map(
-          (c) => AccountCurrencyEntity(
-              accountcurrencyId: c['currency_id'] ?? c['token_id'],
-              accountId: this._accountId,
-              numberOfUsedExternalKey: c['number_of_external_key'],
-              numberOfUsedInternalKey: c['number_of_internal_key'],
-              balance: c['balance'],
-              currencyId: c['currency_id'] ?? c['token_id'],
-              lastSyncTime: now),
-        )
-        .toList();
+      await DBOperator().accountCurrencyDao.insertCurrencies(v);
+    }
 
-    await DBOperator().accountCurrencyDao.insertCurrencies(v);
-    List<JoinCurrency> jcs =
-        await DBOperator().accountCurrencyDao.findByAccountyId(this._accountId);
+    await this._pushResult();
+  }
+
+  Future _pushResult() async {
+    List<JoinCurrency> jcs = await DBOperator()
+        .accountCurrencyDao
+        .findJoinedByAccountyId(this._accountId);
 
     List cs = jcs
         .map(
@@ -150,19 +171,17 @@ class AccountServiceBase extends AccountService {
 
     AccountMessage msg =
         AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: cs[0]);
-    AccountCore().currencies[this.base] = cs;
+    AccountCore().currencies[this._base] = cs;
 
     AccountMessage currMsg = AccountMessage(
         evt: ACCOUNT_EVT.OnUpdateCurrency,
-        value: AccountCore().currencies[this.base]);
+        value: AccountCore().currencies[this._base]);
 
-    Log.debug(AccountCore().currencies[this.base]);
     AccountCore().messenger.add(msg);
     AccountCore().messenger.add(currMsg);
   }
 
   Future _getSuppertedToken() async {
-    Log.error(this._accountId);
     AccountEntity acc =
         await DBOperator().accountDao.findAccount(this._accountId);
 
