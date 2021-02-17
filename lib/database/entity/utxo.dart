@@ -40,7 +40,7 @@ class Utxo {
 
   final int timestamp;
 
-  bool locked;
+  final bool locked;
 
   final int sequence;
 

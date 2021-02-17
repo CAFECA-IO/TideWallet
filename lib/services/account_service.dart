@@ -19,7 +19,8 @@ abstract class AccountService {
 
   Future<List> getReceivingAddress(String currencyId);
   Future<List> getChangingAddress(String currencyId);
-  Future<Map<TransactionPriority, Decimal>> getTransactionFee();
+  Future<Map<TransactionPriority, Decimal>> getTransactionFee(
+      String blockchainId);
   Future<Decimal> estimateGasLimit(
       String from, String to, String amount, String data);
   Future<int> getNonce();

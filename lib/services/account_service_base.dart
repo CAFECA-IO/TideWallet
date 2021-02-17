@@ -70,7 +70,8 @@ class AccountServiceBase extends AccountService {
   }
 
   @override
-  Future<Map<TransactionPriority, Decimal>> getTransactionFee() async {
+  Future<Map<TransactionPriority, Decimal>> getTransactionFee(
+      String blockchainId) async {
     // TODO: implement publishTransaction
     throw UnimplementedError();
   }
