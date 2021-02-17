@@ -16,13 +16,6 @@ class EthereumService extends AccountServiceDecorator {
     this.syncInterval = 5 * 60 * 1000;
   }
 
-  estimateGasLimit() {}
-  getTransactions() {}
-  getBalance() {}
-  getTokenTransactions() {}
-  getTokenBalance() {}
-  getTokenInfo() {}
-
   @override
   Decimal calculateFastDee() {
     // TODO: implement calculateFastDee
@@ -81,50 +74,6 @@ class EthereumService extends AccountServiceDecorator {
     throw UnimplementedError();
   }
 
-  _sync() async {
-    Currency curr = await this._getETH();
-    await this._getTokens();
-
-    AccountMessage msg =
-        AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: curr);
-
-    AccountMessage currMsg = AccountMessage(
-        evt: ACCOUNT_EVT.OnUpdateCurrency,
-        value: AccountCore().currencies[this.base]);
-
-    AccountCore().messenger.add(msg);
-    AccountCore().messenger.add(currMsg);
-
-    List<Transaction> transactions = await this._getTransactions();
-
-    AccountMessage txMsg = AccountMessage(
-        evt: ACCOUNT_EVT.OnUpdateTransactions,
-        value: {"currency": curr, "transactions": transactions});
-    AccountCore().messenger.add(txMsg);
-  }
-
-  _getTransactions() async {
-    // TODO get transactions from api
-    List<Transaction> result = await getETHTransactions();
-    return result;
-  }
-
-  // Deprecated
-  _getTokens() async {
-    List<Map> result = await getETHTokens();
-    List<Currency> tokenList = result.map((e) => Currency.fromMap(e)).toList();
-
-    AccountCore().currencies[this.base] =
-        AccountCore().currencies[this.base].sublist(0, 1) + tokenList;
-  }
-
-  Future<Currency> _getETH() async {
-    Map res = await getETH();
-    Currency curr = Currency.fromMap({...res, "accountType": this.base});
-    AccountCore().currencies[curr.accountType][0] = curr;
-    return null;
-  }
-
   static Future<Token> getTokeninfo(String _address) async {
     Future.delayed(Duration(milliseconds: 1000));
     Map result = await getETHTokeninfo(_address);
@@ -152,6 +101,12 @@ class EthereumService extends AccountServiceDecorator {
   @override
   Future<String> getReceivingAddress() async {
     // TODO: implement publishTransaction
+    throw UnimplementedError();
+  }
+
+  @override
+  getTransactions() {
+    // TODO: implement getTransactions
     throw UnimplementedError();
   }
 }

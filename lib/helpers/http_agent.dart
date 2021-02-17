@@ -1,19 +1,25 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
+import 'package:tidewallet3/constants/endpoint.dart';
+import 'package:tidewallet3/models/auth.model.dart';
 
+import 'interceptors/error_interceptor.dart';
 import 'interceptors/retry_interceptor.dart';
 import 'interceptors/token_interceptor.dart';
 import '../models/api_response.mode.dart';
+import 'prefer_manager.dart';
 
 class HTTPAgent {
   static const int _defaultRetryCount = 3;
   static final HTTPAgent _instance = HTTPAgent._internal();
   factory HTTPAgent() => _instance;
   Dio _dio;
+  PrefManager _prefManager = PrefManager();
 
   TokenInterceptor _tokenInterceptor = TokenInterceptor();
   RetryInterceptor _retryInterceptor;
-  LogInterceptor _logInterceptor = LogInterceptor(responseBody: true, responseHeader: false);
+  LogInterceptor _logInterceptor =
+      LogInterceptor(responseBody: true, responseHeader: false);
 
   HTTPAgent._internal() {
     BaseOptions options = new BaseOptions(
@@ -27,8 +33,8 @@ class HTTPAgent {
   setInterceptor() {
     _dio.interceptors.add(_logInterceptor);
     _dio.interceptors.add(_tokenInterceptor);
-
-    _retryInterceptor =  RetryInterceptor(
+    _dio.interceptors.add(ErrorInterceptor(this._refreshToken));
+    _retryInterceptor = RetryInterceptor(
       this._dio,
       options: const RetryOptions(
         retryCount: _defaultRetryCount,
@@ -44,15 +50,38 @@ class HTTPAgent {
 
   Future<APIResponse> get(String path) => _request(() => this._dio.get(path));
 
-  Future<APIResponse> post(String path, dynamic data) => _request(() => this._dio.post(path, data: data));
+  Future<APIResponse> post(String path, dynamic data) =>
+      _request(() => this._dio.post(path, data: data));
 
-  Future<APIResponse> put(String path, dynamic data) => _request(() => this._dio.put(path, data: data));
+  Future<APIResponse> put(String path, dynamic data) =>
+      _request(() => this._dio.put(path, data: data));
 
-  Future<APIResponse> delete(String path, dynamic data) => _request(() => this._dio.delete(path, data: data));
+  Future<APIResponse> delete(String path, dynamic data) =>
+      _request(() => this._dio.delete(path, data: data));
 
   Future<APIResponse> _request(Function request) async {
     Response res = await request();
 
     return APIResponse.fromDioResponse(res);
+  }
+
+  Future<bool> _refreshToken() async {
+    AuthItem tk = await this._prefManager.getAuthItem();
+    
+    _dio.interceptors.requestLock.lock();
+    _dio.interceptors.responseLock.lock();
+
+    APIResponse res = await this.post(
+        Endpoint.SUSANOO, {'token': tk.token, 'tokenSecret': tk.tokenSecret});
+    _dio.interceptors.requestLock.unlock();
+    _dio.interceptors.responseLock.unlock();
+
+    if (res.success) {
+      final auth = AuthItem.fromJson(res.data);
+      this._prefManager.setAuthItem(auth);
+      this._tokenInterceptor.setToken(auth.token);
+    }
+
+    return res.success;
   }
 }
