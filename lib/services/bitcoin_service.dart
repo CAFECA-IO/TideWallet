@@ -47,14 +47,14 @@ class BitcoinService extends AccountServiceDecorator {
   }
 
   @override
-  Future<int> getNonce() {
+  Future<int> getNonce(String blockchainId) {
     // TODO: implement getNonce
     throw UnimplementedError();
   }
 
   @override
   Future<Decimal> estimateGasLimit(
-      String from, String to, String amount, String data) {
+      String blockchainId, String from, String to, String amount, String data) {
     // TODO: implement estimateGasLimit
     throw UnimplementedError();
   }

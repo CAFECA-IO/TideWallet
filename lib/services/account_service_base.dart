@@ -90,7 +90,7 @@ class AccountServiceBase extends AccountService {
 
   @override
   Future<Decimal> estimateGasLimit(
-      String from, String to, String amount, String data) {
+      String blockchainId, String from, String to, String amount, String data) {
     // TODO: implement estimateGasLimit
     throw UnimplementedError();
   }
@@ -102,7 +102,7 @@ class AccountServiceBase extends AccountService {
   }
 
   @override
-  Future<int> getNonce() {
+  Future<int> getNonce(String blockchainId) {
     // TODO: implement getNon
     throw UnimplementedError();
   }

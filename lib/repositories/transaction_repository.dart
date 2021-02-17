@@ -72,7 +72,8 @@ class TransactionRepository {
     if (_fee == null ||
         DateTime.now().millisecondsSinceEpoch - _timestamp >
             AVERAGE_FETCH_FEE_TIME) {
-      _fee = await _accountService.getTransactionFee();
+      _fee =
+          await _accountService.getTransactionFee(this._currency.blockchainId);
       _timestamp = DateTime.now().millisecondsSinceEpoch;
     }
     // TODO if (message != null)
@@ -111,8 +112,12 @@ class TransactionRepository {
           _address =
               (await _accountService.getChangingAddress(_currency.id))[0];
         }
-        _gasLimit = await _accountService.estimateGasLimit(_address, address,
-            amount.toString(), hex.encode(message ?? Uint8List(0)));
+        _gasLimit = await _accountService.estimateGasLimit(
+            this._currency.blockchainId,
+            _address,
+            address,
+            amount.toString(),
+            hex.encode(message ?? Uint8List(0)));
         return [_fee, _gasLimit];
         break;
       case ACCOUNT.XRP:
@@ -194,7 +199,7 @@ class TransactionRepository {
       case ACCOUNT.ETH:
         String from =
             (await _accountService.getReceivingAddress(_currency.id))[0];
-        int nonce = await _accountService.getNonce();
+        int nonce = await _accountService.getNonce(this._currency.blockchainId);
         if (currency.symbol.toLowerCase() != 'eth') {
           // ERC20
           List<int> erc20Func =

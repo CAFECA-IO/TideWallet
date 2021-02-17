@@ -123,10 +123,10 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   @override
-  Future<Decimal> estimateGasLimit(
-      String from, String to, String amount, String message) async {
+  Future<Decimal> estimateGasLimit(String blockchainId, String from, String to,
+      String amount, String message) async {
     Response response = await HTTPAgent().post(
-        '$_baseUrl/api/v1/blockchain/8000003C/gas-limit', {
+        '$_baseUrl/api/v1/blockchain/$blockchainId/gas-limit', {
       "fromAddress": from,
       "toAddress": to,
       "value": amount,
@@ -170,9 +170,9 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   @override
-  Future<int> getNonce() async {
-    Response response =
-        await HTTPAgent().get('$_baseUrl/api/v1/blockchain/8000003C/nonce');
+  Future<int> getNonce(String blockchainId) async {
+    Response response = await HTTPAgent()
+        .get('$_baseUrl/api/v1/blockchain/$blockchainId/nonce');
     Map data = response.data['payload'];
     int nonce = int.parse(data['nonce']);
     return nonce;
