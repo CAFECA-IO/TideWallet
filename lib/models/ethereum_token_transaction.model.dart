@@ -1,6 +1,4 @@
 import 'package:decimal/decimal.dart';
-
-import 'db_transaction.model.dart';
 import './transaction.model.dart';
 
 class EthereumTokenTransaction extends Transaction {
@@ -25,15 +23,4 @@ class EthereumTokenTransaction extends Transaction {
     this.status,
     this.amount,
   });
-
-  EthereumTokenTransaction.fromMap(Map<String, dynamic> transactionMap)
-      : id = transactionMap[DBTransaction.FieldName_Id],
-        currencyId = transactionMap[DBTransaction.FieldName_CurrencyId],
-        txHash = transactionMap[DBTransaction.FieldName_TxId],
-        from = transactionMap[DBTransaction.FieldName_SourceAddresses],
-        to = transactionMap[DBTransaction.FieldName_DesticnationAddresses],
-        timestamp = transactionMap[DBTransaction.FieldName_Timestamp],
-        confirmations = transactionMap[DBTransaction.FieldName_Confirmations],
-        status = transactionMap[DBTransaction.FieldName_Status],
-        amount = transactionMap[DBTransaction.FieldName_Amount];
 }

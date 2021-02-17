@@ -31,7 +31,7 @@ class Trader {
         Decimal.tryParse(_currency.amount);
   }
 
-  Decimal calculateToUSD2(Currency _currency, Decimal amount) {
+  Decimal calculateFeeToUSD(Currency _currency, Decimal amount) {
     int index = this._cryptos.indexWhere((c) => c.name == _currency.symbol);
     if (index < 0) return Decimal.zero;
 

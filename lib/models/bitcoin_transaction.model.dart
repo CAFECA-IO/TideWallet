@@ -6,8 +6,8 @@ import '../helpers/bitcoin_based_utils.dart';
 import '../helpers/logger.dart';
 import '../helpers/converter.dart';
 import '../helpers/utils.dart';
+
 import 'transaction.model.dart';
-import 'db_transaction.model.dart';
 import 'utxo.model.dart';
 
 enum BitcoinTransactionType {
@@ -228,8 +228,8 @@ class BitcoinTransaction extends Transaction {
   int confirmations;
   TransactionDirection direction;
   TransactionStatus status;
-  String sourceAddresses; // TODO
-  String destinationAddresses; //TODO
+  String sourceAddresses;
+  String destinationAddresses;
   Decimal amount;
   Decimal fee;
   Uint8List note;
@@ -260,24 +260,6 @@ class BitcoinTransaction extends Transaction {
       this.amount,
       this.fee,
       this.note});
-
-  BitcoinTransaction.fromMap(Map<String, dynamic> transactionMap)
-      : id = transactionMap[DBTransaction.FieldName_Id],
-        currencyId = transactionMap[DBTransaction.FieldName_CurrencyId],
-        txId = transactionMap[DBTransaction.FieldName_TxId],
-        sourceAddresses =
-            transactionMap[DBTransaction.FieldName_SourceAddresses],
-        destinationAddresses =
-            transactionMap[DBTransaction.FieldName_DesticnationAddresses],
-        timestamp = transactionMap[DBTransaction.FieldName_Timestamp],
-        confirmations = transactionMap[DBTransaction.FieldName_Confirmations],
-        amount = transactionMap[DBTransaction.FieldName_Amount],
-        direction = TransactionDirection.values.firstWhere((element) =>
-            element.value == transactionMap[DBTransaction.FieldName_Direction]),
-        locktime = transactionMap[DBTransaction.FieldName_LockedTime],
-        fee = Decimal.parse(transactionMap[DBTransaction.FieldName_Fee]),
-        note = transactionMap[DBTransaction.FieldName_Note],
-        status = transactionMap[DBTransaction.FieldName_Status];
 
   BitcoinTransaction.prepareTransaction(bool publish, SegwitType segwitType,
       {int lockTime}) // in Satoshi

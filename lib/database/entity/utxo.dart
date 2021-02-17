@@ -40,7 +40,7 @@ class Utxo {
 
   final int timestamp;
 
-  final bool locked;
+  bool locked;
 
   final int sequence;
 
@@ -58,20 +58,6 @@ class Utxo {
       this.timestamp,
       this.locked,
       this.sequence);
-
-  Utxo.locked(Utxo _utxo)
-      : this.utxoId = _utxo.utxoId,
-        this.currencyId = _utxo.currencyId,
-        this.txId = _utxo.txId,
-        this.vout = _utxo.vout,
-        this.type = _utxo.type,
-        this.amount = _utxo.amount,
-        this.chainIndex = _utxo.chainIndex,
-        this.keyIndex = _utxo.keyIndex,
-        this.script = _utxo.script,
-        this.timestamp = _utxo.timestamp,
-        this.locked = true,
-        this.sequence = _utxo.sequence;
 
   Utxo.fromUnspentUtxo(UnspentTxOut _utxo)
       : this.utxoId = _utxo.id,

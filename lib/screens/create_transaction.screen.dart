@@ -164,7 +164,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                       Container(
                         child: Align(
                           child: Text(
-                            '${t('balance')}: ${Formatter.formateDecimal(state.spandable.toString())} ${_repo.currency.symbol}',
+                            '${t('balance')}: ${Formatter.formatDecimal(state.spandable.toString())} ${_repo.currency.symbol}',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                           alignment: Alignment.centerRight,
@@ -280,7 +280,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                             style: Theme.of(context).textTheme.headline6,
                           ),
                           Text(
-                            '${state.fee.toString().isEmpty ? "loading..." : (Formatter.formateDecimal(state.fee.toString()) + _repo.currency.symbol)}',
+                            '${state.fee.toString().isEmpty ? "loading..." : (Formatter.formatDecimal(state.fee.toString()) + _repo.currency.symbol)}',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                         ],
@@ -288,7 +288,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: Text(
-                          '${String.fromCharCode(0x2248)} ${state.feeToFiat.isEmpty ? "" : (Formatter.formateDecimal(state.feeToFiat) + _state.fiat.name)}',
+                          '${String.fromCharCode(0x2248)} ${state.feeToFiat.isEmpty ? "" : (Formatter.formatDecimal(state.feeToFiat) + _state.fiat.name)}',
                           style: Theme.of(context).textTheme.caption,
                         ),
                       ),

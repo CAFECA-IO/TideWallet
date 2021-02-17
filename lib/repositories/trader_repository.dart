@@ -26,7 +26,12 @@ class TraderRepository {
     return _trader.calculateToUSD(_curr);
   }
 
-  Decimal calculateToUSD2(Currency _curr, Decimal _amount) {
-    return _trader.calculateToUSD2(_curr, _amount);
+  Decimal calculateFeeToUSD(Currency _curr, Decimal _amount) {
+    return _trader.calculateFeeToUSD(_curr, _amount);
+  }
+
+  Decimal calculateFeeToFiat(Currency _curr, Decimal _amount) {
+    return _trader.calculateFeeToUSD(_curr, _amount) /
+        _selectedFiat.exchangeRate;
   }
 }

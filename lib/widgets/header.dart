@@ -40,7 +40,7 @@ class Header extends StatelessWidget {
                     ? [
                         TextSpan(
                           text:
-                              ' ${Formatter.formateDecimal((state.total / _state.fiat.exchangeRate).toString(), decimalLength: 2)} ',
+                              ' ${Formatter.formatDecimal((state.total / _state.fiat.exchangeRate).toString(), decimalLength: 2)} ',
                           style: Theme.of(context)
                               .textTheme
                               .headline5

@@ -132,9 +132,11 @@ class BitcoinService extends AccountServiceDecorator {
     // updateUsedUtxo
     BitcoinTransaction _transaction = transaction;
     _transaction.inputs.forEach((Input input) async {
-      UtxoEntity.Utxo _utxo =
-          await DBOperator().utxoDao.findUtxoById(input.utxo.id);
-      await DBOperator().utxoDao.updateUtxo(UtxoEntity.Utxo.locked(_utxo));
+      UnspentTxOut _utxo = input.utxo;
+      _utxo.locked = true;
+      await DBOperator()
+          .utxoDao
+          .updateUtxo(UtxoEntity.Utxo.fromUnspentUtxo(_utxo));
     });
     // insertChangeUtxo
     if (transaction.changeUtxo != null) {

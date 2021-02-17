@@ -100,7 +100,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         _rules = [_state.rules[0], _rule2];
         Log.debug(_rules);
         String _feeToFiat =
-            _traderRepo.calculateToUSD2(_repo.currency, _fee).toString();
+            _traderRepo.calculateFeeToFiat(_repo.currency, _fee).toString() +
+                _traderRepo.selectedFiat.name;
         yield _state.copyWith(
           amount: Decimal.parse(event.amount),
           rules: _rules,
@@ -132,7 +133,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           _rule2 = _repo.verifyAmount(_state.amount, fee: _fee);
         }
         String _feeToFiat =
-            _traderRepo.calculateToUSD2(_repo.currency, _fee).toString();
+            _traderRepo.calculateFeeToFiat(_repo.currency, _fee).toString() +
+                _traderRepo.selectedFiat.name;
         yield _state.copyWith(
             priority: event.priority,
             fee: _fee,
@@ -152,7 +154,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         _rule2 = _repo.verifyAmount(_state.amount, fee: _fee);
         List<bool> _rules = [_state.rules[0], _rule2];
         String _feeToFiat =
-            _traderRepo.calculateToUSD2(_repo.currency, _fee).toString();
+            _traderRepo.calculateFeeToFiat(_repo.currency, _fee).toString() +
+                _traderRepo.selectedFiat.name;
         yield _state.copyWith(
             gasLimit: Decimal.parse(event.gasLimit),
             rules: _rules,
@@ -169,7 +172,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         _rule2 = _repo.verifyAmount(_state.amount, fee: _fee);
         List<bool> _rules = [_state.rules[0], _rule2];
         String _feeToFiat =
-            _traderRepo.calculateToUSD2(_repo.currency, _fee).toString();
+            _traderRepo.calculateFeeToFiat(_repo.currency, _fee).toString() +
+                _traderRepo.selectedFiat.name;
         yield _state.copyWith(
             gasPrice: Decimal.parse(event.gasPrice),
             rules: _rules,
