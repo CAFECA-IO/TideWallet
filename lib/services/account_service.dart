@@ -17,8 +17,8 @@ abstract class AccountService {
   // Decimal calculateStandardFee();
   // Decimal calculateSlowFee();
 
-  Future<String> getReceivingAddress(String currencyId);
-  Future<String> getChangingAddress(String currencyId);
+  Future<List> getReceivingAddress(String currencyId);
+  Future<List> getChangingAddress(String currencyId);
   Future<Map<TransactionPriority, Decimal>> getTransactionFee();
   Future<Decimal> estimateGasLimit(
       String from, String to, String amount, String data);

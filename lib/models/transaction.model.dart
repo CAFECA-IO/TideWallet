@@ -24,8 +24,6 @@ class Transaction {
   String txId;
   Uint8List note;
 
-  Map<String, dynamic> _data = {};
-
   DateTime get dateTime =>
       DateTime.fromMillisecondsSinceEpoch(timestamp, isUtc: false);
   String get address => _address;
@@ -44,42 +42,20 @@ class Transaction {
     return _note;
   }
 
-  List<UnspentTxOut> get utxos => _data["utxos"];
-  List<int> get rlpData => _data["rawTx"];
-  List<int> get rawTx => _data["rawTx"];
-
-  set utxos(List<UnspentTxOut> utxos) {
-    _data["utxos"] = utxos;
+  dynamic get inputs {
+    throw UnimplementedError();
   }
 
-  set rlpData(List<int> data) {
-    _data["rawTx"] = data;
+  dynamic get outputs {
+    throw UnimplementedError();
   }
 
-  set rawTx(List<int> data) {
-    _data["rawTx"] = data;
+  dynamic get changeUtxo {
+    throw UnimplementedError();
   }
 
-  List<dynamic> get serializedData {
-    List<dynamic> list = [];
-    list.add(direction.value); //0
-    list.add(amount); //1
-    list.add(status); //2
-    list.add(timestamp); //3
-    list.add(confirmations); //4
-    list.add(address); //5
-    list.add(fee); //6
-    list.add(txId); //7
-    list.add(note); //8
-    list.add(_data["rawTx"]); //9
-
-    List<UnspentTxOut> utxos = _data["utxos"];
-    if (utxos == null) return list;
-    List<List<dynamic>> utxoList =
-        List.generate(utxos.length, (index) => utxos[index].serializedData);
-    list.add(utxoList);
-
-    return list;
+  Uint8List get serializeTransaction {
+    throw UnimplementedError();
   }
 
 // need update
@@ -96,31 +72,8 @@ class Transaction {
     this.note,
   }) : _address = address;
 
-  Transaction.fromSerializedData(List<dynamic> data) {
-    // PBLog.debug('data: $data');
-    direction = TransactionDirection.values
-        .where((element) => (element.value == data[0]))
-        .first;
-    amount = data[1];
-    status = data[2];
-    timestamp = data[3];
-    confirmations = data[4];
-    _address = data[5];
-    fee = data[6];
-    txId = data[7];
-    note = data[8];
-    _data["rawTx"] = data[9];
-
-    if (data.length > 11) {
-      List<List<dynamic>> utxoList = data[10]; // ?
-      List<UnspentTxOut> utxos = List.generate(utxoList.length,
-          (index) => UnspentTxOut.fromSerializedData(utxoList[index]));
-      _data["utxos"] = utxos;
-    }
-  }
-
   Transaction.fromBitcoinTransaction(BitcoinTransaction transaction) {
-    txId = transaction.txid;
+    txId = transaction.txId;
     amount = transaction.amount;
     timestamp = transaction.timestamp;
     confirmations = transaction.confirmations;

@@ -15,7 +15,7 @@ class BitcoinTransactionService
     this.bech32HrpTestnet = 'tb';
     this.bech32Separator = '1';
     this.supportSegwit = true;
-    this.segWitType = SegWitType.nativeSegWit; //TODO segwitType
+    this.segwitType = SegwitType.nativeSegWit; //TODO segwitType
   }
 
   // @override

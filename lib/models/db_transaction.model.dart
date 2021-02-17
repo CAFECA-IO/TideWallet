@@ -123,7 +123,7 @@ class DBTransaction {
     BitcoinTransaction transaction,
   )   : _id = transaction.id,
         _currencyId = transaction.currencyId,
-        _txId = transaction.txid,
+        _txId = transaction.txId,
         _sourceAddresses = transaction.sourceAddresses,
         _destinationAddresses = transaction.destinationAddresses,
         _timestamp = transaction.timestamp,

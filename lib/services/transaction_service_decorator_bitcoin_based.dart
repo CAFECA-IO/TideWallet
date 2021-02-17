@@ -13,6 +13,9 @@ import '../helpers/logger.dart';
 import '../helpers/rlp.dart' as rlp;
 
 class BitcoinBasedTransactionServiceDecorator extends TransactionService {
+  static const int _Index_ExternalChain = 0;
+  static const int _Index_InternalChain = 1;
+
   final TransactionService service;
   int p2pkhAddressPrefixTestnet;
   int p2pkhAddressPrefixMainnet;
@@ -21,7 +24,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
   String bech32HrpMainnet;
   String bech32HrpTestnet;
   String bech32Separator;
-  SegWitType segWitType;
+  SegwitType segwitType;
   bool supportSegwit = true;
   BitcoinBasedTransactionServiceDecorator(this.service);
   @override
@@ -75,17 +78,23 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
 
   @override
   BitcoinTransaction prepareTransaction(
-      bool publish, String to, Decimal amount, Uint8List message,
-      {Decimal fee,
-      Decimal gasPrice,
-      Decimal gasLimit,
-      int nonce,
-      int chainId,
-      Uint8List privKey,
-      List<UnspentTxOut> unspentTxOuts,
-      String changeAddress}) {
+    bool publish,
+    String to,
+    Decimal amount,
+    Uint8List message, {
+    Uint8List privKey,
+    Decimal gasPrice,
+    Decimal gasLimit,
+    int nonce,
+    int chainId,
+    String currencyId,
+    Decimal fee,
+    List<UnspentTxOut> unspentTxOuts,
+    int changeIndex,
+    String changeAddress,
+  }) {
     BitcoinTransaction transaction =
-        BitcoinTransaction.prepareTransaction(publish, this.segWitType);
+        BitcoinTransaction.prepareTransaction(publish, this.segwitType);
     // amount,to
     if (to.contains(':')) {
       to = to.split(':')[1];
@@ -118,8 +127,9 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     if (unspentTxOuts == null || unspentTxOuts.isEmpty) return null;
     Decimal utxoAmount = Decimal.zero;
     for (UnspentTxOut utxo in unspentTxOuts) {
-      if (utxo.locked != 0 || !(utxo.amount > Decimal.zero) || utxo.type == '')
-        continue;
+      if (utxo.locked == false ||
+          !(utxo.amount > Decimal.zero) ||
+          utxo.type == null) continue;
 
       transaction.addInput(utxo, HashType.SIGHASH_ALL);
 
@@ -169,9 +179,29 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     if (msgData.length > 0) {
       transaction.addData(msgData);
     }
-    // TODO save ChangeUtxo
+    BitcoinTransaction signedTransaction = _signTransaction(transaction);
 
-    return _signTransaction(transaction);
+    // Add ChangeUtxo
+    if (change > Decimal.zero) {
+      UnspentTxOut changeUtxo = UnspentTxOut(
+          id: signedTransaction.txId.substring(0, 6),
+          currencyId: currencyId,
+          txId: signedTransaction.txId,
+          vout: 1,
+          type: this.segwitType == SegwitType.nonSegWit
+              ? BitcoinTransactionType.WITNESS_V0_KEYHASH
+              : this.segwitType == SegwitType.segWit
+                  ? BitcoinTransactionType.SCRIPTHASH
+                  : BitcoinTransactionType.PUBKEYHASH,
+          amount: change,
+          chainIndex: _Index_InternalChain,
+          keyIndex: changeIndex,
+          timestamp: DateTime.now().millisecondsSinceEpoch,
+          locked: false);
+      signedTransaction.addChangeUtxo(changeUtxo);
+    }
+
+    return signedTransaction;
   }
 
   Decimal calculateTransactionVSize({
@@ -184,11 +214,11 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     int headerWeight;
     int inputWeight;
     int outputWeight;
-    if (this.segWitType == SegWitType.nativeSegWit) {
+    if (this.segwitType == SegwitType.nativeSegWit) {
       headerWeight = 3 * 10 + 12;
       inputWeight = 3 * 41 + 151;
       outputWeight = 3 * 31 + 31;
-    } else if (this.segWitType == SegWitType.segWit) {
+    } else if (this.segwitType == SegwitType.segWit) {
       headerWeight = 3 * 10 + 12;
       inputWeight = 3 * 76 + 210;
       outputWeight = 3 * 32 + 32;

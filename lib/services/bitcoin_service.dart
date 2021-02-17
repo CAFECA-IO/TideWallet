@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:decimal/decimal.dart';
-import 'package:dio/dio.dart';
 import 'package:convert/convert.dart';
+import 'package:dio/dio.dart';
 
 import 'account_service.dart';
 import 'account_service_decorator.dart';
@@ -25,24 +25,6 @@ class BitcoinService extends AccountServiceDecorator {
   int _numberOfUsedInternalKey;
   int _lastSyncTimestamp;
 
-  // @override
-  // Decimal calculateFastFee() {
-  //   // TODO: implement calculateFastFee
-  //   throw UnimplementedError();
-  // }
-
-  // @override
-  // Decimal calculateSlowFee() {
-  //   // TODO: implement calculateSlowFee
-  //   throw UnimplementedError();
-  // }
-
-  // @override
-  // Decimal calculateStandardFee() {
-  //   // TODO: implement calculateStandardFee
-  //   throw UnimplementedError();
-  // }
-
   @override
   getTransactions() {
     // TODO: implement getTransactions
@@ -54,12 +36,6 @@ class BitcoinService extends AccountServiceDecorator {
     // TODO: implement init
   }
 
-  // @override
-  // prepareTransaction() {
-  //   // TODO: implement prepareTransaction
-  //   throw UnimplementedError();
-  // }
-
   @override
   void start() {
     // TODO: implement start
@@ -70,15 +46,11 @@ class BitcoinService extends AccountServiceDecorator {
     // TODO: implement stop
   }
 
-  // @override
-  // Decimal toCoinUnit(Decimal satoshi) {
-  //   return satoshi / _btcInSatoshi;
-  // }
-
-  // @override
-  // Decimal toSmallUnit(Decimal btc) {
-  //   return btc * _btcInSatoshi;
-  // }
+  @override
+  Future<int> getNonce() {
+    // TODO: implement getNonce
+    throw UnimplementedError();
+  }
 
   @override
   Future<Decimal> estimateGasLimit(
@@ -104,23 +76,23 @@ class BitcoinService extends AccountServiceDecorator {
   }
 
   @override
-  Future<String> getChangingAddress(String currencyId) async {
+  Future<List> getChangingAddress(String currencyId) async {
     Response response = await HTTPAgent()
         .get('$_baseUrl/api/v1/wallet/account/address/$currencyId/change');
     Map data = response.data['payload'];
     String _address = data['address'];
     _numberOfUsedInternalKey = data['change_index'];
-    return _address;
+    return [_address, _numberOfUsedInternalKey];
   }
 
   @override
-  Future<String> getReceivingAddress(String currencyId) async {
+  Future<List> getReceivingAddress(String currencyId) async {
     Response response = await HTTPAgent()
         .get('$_baseUrl/api/v1/wallet/account/address/$currencyId/receive');
     Map data = response.data['payload'];
     String address = data['address'];
     _numberOfUsedExternalKey = data['key_index'];
-    return address;
+    return [address, _numberOfUsedExternalKey];
   }
 
   @override
@@ -156,13 +128,22 @@ class BitcoinService extends AccountServiceDecorator {
       String blockchainId, String currencyId, Transaction transaction) async {
     await HTTPAgent().post(
         '$_baseUrl/api/v1/blockchain/$blockchainId/push-tx/$currencyId',
-        {"hex": transaction.serializedData});
+        {"hex": hex.encode(transaction.serializeTransaction)});
+    // updateUsedUtxo
+    BitcoinTransaction _transaction = transaction;
+    _transaction.inputs.forEach((Input input) async {
+      UtxoEntity.Utxo _utxo =
+          await DBOperator().utxoDao.findUtxoById(input.utxo.id);
+      await DBOperator().utxoDao.updateUtxo(UtxoEntity.Utxo.locked(_utxo));
+    });
+    // insertChangeUtxo
+    if (transaction.changeUtxo != null) {
+      await DBOperator()
+          .utxoDao
+          .insertUtxo(UtxoEntity.Utxo.fromUnspentUtxo(transaction.changeUtxo));
+    }
+    // informBackend
+    // updateCurrencyAmount
     return;
-  }
-
-  @override
-  Future<int> getNonce() {
-    // TODO: implement getNonce
-    throw UnimplementedError();
   }
 }

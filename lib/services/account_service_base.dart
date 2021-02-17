@@ -76,13 +76,13 @@ class AccountServiceBase extends AccountService {
   }
 
   @override
-  Future<String> getChangingAddress(String currencyId) async {
+  Future<List> getChangingAddress(String currencyId) async {
     // TODO: implement publishTransaction
     throw UnimplementedError();
   }
 
   @override
-  Future<String> getReceivingAddress(String currencyId) async {
+  Future<List> getReceivingAddress(String currencyId) async {
     // TODO: implement publishTransaction
     throw UnimplementedError();
   }

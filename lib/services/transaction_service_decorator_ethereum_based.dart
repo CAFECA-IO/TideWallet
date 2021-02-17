@@ -29,15 +29,21 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
 
   @override
   EthereumTransaction prepareTransaction(
-      bool publish, String to, Decimal amount, Uint8List message,
-      {Decimal fee,
-      Decimal gasPrice,
-      Decimal gasLimit,
-      int nonce,
-      int chainId,
-      Uint8List privKey,
-      List<UnspentTxOut> unspentTxOuts = const [],
-      String changeAddress}) {
+    bool publish,
+    String to,
+    Decimal amount,
+    Uint8List message, {
+    Uint8List privKey, //ETH
+    Decimal gasPrice, //ETH
+    Decimal gasLimit, //ETH
+    int nonce, //ETH
+    int chainId, //ETH
+    String currencyId,
+    Decimal fee,
+    List<UnspentTxOut> unspentTxOuts = const [],
+    String changeAddress,
+    int changeIndex,
+  }) {
     EthereumTransaction transaction = EthereumTransaction.prepareTransaction(
       from: changeAddress, // !! TODO
       to: to,

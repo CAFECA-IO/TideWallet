@@ -1,6 +1,9 @@
 import 'package:floor/floor.dart';
+import 'package:convert/convert.dart';
 
 import 'account.dart';
+import '../../models/utxo.model.dart';
+import '../../models/bitcoin_transaction.model.dart';
 
 @entity
 class Utxo {
@@ -55,4 +58,32 @@ class Utxo {
       this.timestamp,
       this.locked,
       this.sequence);
+
+  Utxo.locked(Utxo _utxo)
+      : this.utxoId = _utxo.utxoId,
+        this.currencyId = _utxo.currencyId,
+        this.txId = _utxo.txId,
+        this.vout = _utxo.vout,
+        this.type = _utxo.type,
+        this.amount = _utxo.amount,
+        this.chainIndex = _utxo.chainIndex,
+        this.keyIndex = _utxo.keyIndex,
+        this.script = _utxo.script,
+        this.timestamp = _utxo.timestamp,
+        this.locked = true,
+        this.sequence = _utxo.sequence;
+
+  Utxo.fromUnspentUtxo(UnspentTxOut _utxo)
+      : this.utxoId = _utxo.id,
+        this.currencyId = _utxo.currencyId,
+        this.txId = _utxo.txId,
+        this.vout = _utxo.vout,
+        this.type = _utxo.type.value,
+        this.amount = _utxo.amount.toString(),
+        this.chainIndex = _utxo.chainIndex,
+        this.keyIndex = _utxo.keyIndex,
+        this.script = hex.encode(_utxo.script),
+        this.timestamp = _utxo.timestamp,
+        this.locked = true,
+        this.sequence = _utxo.sequence;
 }

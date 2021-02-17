@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:convert/convert.dart';
 import 'package:decimal/decimal.dart';
 import 'package:dio/dio.dart';
 
@@ -24,47 +25,22 @@ class EthereumService extends AccountServiceDecorator {
   String _contract; // ?
   String _tokenAddress; // ?
 
-  Future<Map<TransactionPriority, Decimal>> getGasPrice() async {
-    Response response =
-        await HTTPAgent().get('$_baseUrl/api/v1/blockchain/8000003C/fee');
-    Map<String, dynamic> data =
-        response.data['payload']; // TODO FEE should return String or double
-  }
-
   getTransactions() {}
   getBalance() {}
   getTokenTransactions() {}
   getTokenBalance() {}
   getTokenInfo() {}
 
-  // @override
-  // Decimal calculateFastFee() {
-  //   // TODO: implement calculateFastFee
-  //   throw UnimplementedError();
-  // }
-
-  // @override
-  // Decimal calculateSlowFee() {
-  //   // TODO: implement calculateSlowFee
-  //   throw UnimplementedError();
-  // }
-
-  // @override
-  // Decimal calculateStandardFee() {
-  //   // TODO: implement calculateStandardFee
-  //   throw UnimplementedError();
-  // }
+  @override
+  Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) async {
+    // TODO: implement getUnspentTxOut
+    throw UnimplementedError();
+  }
 
   @override
   void init() {
     // TODO: implement init
   }
-
-  // @override
-  // prepareTransaction() {
-  //   // TODO: implement prepareTransaction
-  //   throw UnimplementedError();
-  // }
 
   @override
   void start() {
@@ -74,27 +50,6 @@ class EthereumService extends AccountServiceDecorator {
   @override
   void stop() {
     _timer?.cancel();
-  }
-
-  // @override
-  // Decimal toCoinUnit(Decimal wei) {
-  //   // TODO: implement toCoinUnit
-  //   throw UnimplementedError();
-  // }
-
-  // @override
-  // Decimal toSmallUnit(Decimal eth) {
-  //   // TODO: implement toSmallUnit
-  //   throw UnimplementedError();
-  // }
-
-  @override
-  Future<void> publishTransaction(
-      String blockchainId, String currencyId, Transaction transaction) async {
-    await HTTPAgent().post(
-        '$_baseUrl/api/v1/blockchain/$blockchainId/push-tx/$currencyId',
-        {"hex": transaction.serializedData});
-    return;
   }
 
   _sync() {
@@ -197,7 +152,7 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   @override
-  Future<String> getReceivingAddress(String currencyId) async {
+  Future<List> getReceivingAddress(String currencyId) async {
     if (this._address == null) {
       Response response = await HTTPAgent()
           .get('$_baseUrl/api/v1/wallet/account/address/$currencyId/receive');
@@ -205,18 +160,12 @@ class EthereumService extends AccountServiceDecorator {
       String address = data['address'];
       this._address = address;
     }
-    return this._address;
+    return [this._address];
   }
 
   @override
-  Future<String> getChangingAddress(String currencyId) async {
+  Future<List> getChangingAddress(String currencyId) async {
     return await getReceivingAddress(currencyId);
-  }
-
-  @override
-  Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) async {
-    // TODO: implement getUnspentTxOut
-    throw UnimplementedError();
   }
 
   @override
@@ -226,5 +175,14 @@ class EthereumService extends AccountServiceDecorator {
     Map data = response.data['payload'];
     int nonce = int.parse(data['nonce']);
     return nonce;
+  }
+
+  @override
+  Future<void> publishTransaction(
+      String blockchainId, String currencyId, Transaction transaction) async {
+    await HTTPAgent().post(
+        '$_baseUrl/api/v1/blockchain/$blockchainId/push-tx/$currencyId',
+        {"hex": hex.encode(transaction.serializeTransaction)});
+    return;
   }
 }

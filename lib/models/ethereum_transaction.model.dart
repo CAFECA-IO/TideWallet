@@ -74,5 +74,6 @@ class EthereumTransaction extends Transaction {
       this.chainId,
       this.signature});
 
-  String get serializeTransaction => hex.encode(encodeToRlp(this));
+  @override
+  Uint8List get serializeTransaction => encodeToRlp(this);
 }

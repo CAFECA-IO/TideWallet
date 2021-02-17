@@ -17,7 +17,10 @@ class UserFail extends UserState {}
 
 class VerifyingPassword extends UserState {}
 
-class PasswordVerified extends UserState {}
+class PasswordVerified extends UserState {
+  final String password;
+  PasswordVerified(this.password);
+}
 
 class PasswordInvalid extends UserState {}
 

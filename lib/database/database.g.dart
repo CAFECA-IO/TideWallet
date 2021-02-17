@@ -96,7 +96,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Transaction` (`transaction_id` TEXT, `account_id` TEXT, `currency_id` TEXT, `tx_id` TEXT, `source_address` TEXT, `destinction_address` TEXT, `timestamp` INTEGER, `confirmation` INTEGER, `gas_price` TEXT, `gas_used` INTEGER, `nonce` INTEGER, `block` INTEGER, `locktime` INTEGER, `fee` TEXT NOT NULL, `note` TEXT, `status` INTEGER, PRIMARY KEY (`transaction_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Utxo` (`utxo_id` TEXT, `account_id` TEXT, `currency_id` TEXT, `tx_id` TEXT, `vout` INTEGER, `address` TEXT, `amount` TEXT, `chain_index` INTEGER, `key_index` INTEGER, `script` TEXT, `timestamp` INTEGER, `locked` INTEGER, PRIMARY KEY (`utxo_id`))');
+            'CREATE TABLE IF NOT EXISTS `Utxo` (`utxo_id` TEXT, `currency_id` TEXT, `tx_id` TEXT, `vout` INTEGER, `type` TEXT, `amount` TEXT, `chain_index` INTEGER, `key_index` INTEGER, `script` TEXT, `timestamp` INTEGER, `locked` INTEGER, `sequence` INTEGER, PRIMARY KEY (`utxo_id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -360,17 +360,17 @@ class _$UtxoDao extends UtxoDao {
             'Utxo',
             (Utxo item) => <String, dynamic>{
                   'utxo_id': item.utxoId,
-                  'account_id': item.accountId,
                   'currency_id': item.currencyId,
                   'tx_id': item.txId,
                   'vout': item.vout,
-                  'address': item.address,
+                  'type': item.type,
                   'amount': item.amount,
                   'chain_index': item.chainIndex,
                   'key_index': item.keyIndex,
                   'script': item.script,
                   'timestamp': item.timestamp,
-                  'locked': item.locked == null ? null : (item.locked ? 1 : 0)
+                  'locked': item.locked == null ? null : (item.locked ? 1 : 0),
+                  'sequence': item.sequence
                 }),
         _utxoUpdateAdapter = UpdateAdapter(
             database,
@@ -378,17 +378,17 @@ class _$UtxoDao extends UtxoDao {
             ['utxo_id'],
             (Utxo item) => <String, dynamic>{
                   'utxo_id': item.utxoId,
-                  'account_id': item.accountId,
                   'currency_id': item.currencyId,
                   'tx_id': item.txId,
                   'vout': item.vout,
-                  'address': item.address,
+                  'type': item.type,
                   'amount': item.amount,
                   'chain_index': item.chainIndex,
                   'key_index': item.keyIndex,
                   'script': item.script,
                   'timestamp': item.timestamp,
-                  'locked': item.locked == null ? null : (item.locked ? 1 : 0)
+                  'locked': item.locked == null ? null : (item.locked ? 1 : 0),
+                  'sequence': item.sequence
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -402,22 +402,41 @@ class _$UtxoDao extends UtxoDao {
   final UpdateAdapter<Utxo> _utxoUpdateAdapter;
 
   @override
-  Future<Utxo> findAllUtxosByCurrencyId(String id) async {
-    return _queryAdapter.query('SELECT * FROM Utxo WHERE currency_id = ?',
+  Future<List<Utxo>> findAllUtxosByCurrencyId(String id) async {
+    return _queryAdapter.queryList('SELECT * FROM Utxo WHERE currency_id = ?',
         arguments: <dynamic>[id],
         mapper: (Map<String, dynamic> row) => Utxo(
             row['utxo_id'] as String,
-            row['account_id'] as String,
             row['currency_id'] as String,
             row['tx_id'] as String,
             row['vout'] as int,
-            row['address'] as String,
+            row['type'] as String,
             row['amount'] as String,
             row['chain_index'] as int,
             row['key_index'] as int,
             row['script'] as String,
             row['timestamp'] as int,
-            row['locked'] == null ? null : (row['locked'] as int) != 0));
+            row['locked'] == null ? null : (row['locked'] as int) != 0,
+            row['sequence'] as int));
+  }
+
+  @override
+  Future<Utxo> findUtxoById(String id) async {
+    return _queryAdapter.query('SELECT * FROM Utxo WHERE utxo_id = ?',
+        arguments: <dynamic>[id],
+        mapper: (Map<String, dynamic> row) => Utxo(
+            row['utxo_id'] as String,
+            row['currency_id'] as String,
+            row['tx_id'] as String,
+            row['vout'] as int,
+            row['type'] as String,
+            row['amount'] as String,
+            row['chain_index'] as int,
+            row['key_index'] as int,
+            row['script'] as String,
+            row['timestamp'] as int,
+            row['locked'] == null ? null : (row['locked'] as int) != 0,
+            row['sequence'] as int));
   }
 
   @override

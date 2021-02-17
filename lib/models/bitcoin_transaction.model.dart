@@ -29,43 +29,55 @@ extension BitcoinTransactionTypeExt on BitcoinTransactionType {
       case BitcoinTransactionType.PUBKEY:
         return "pubkey";
         break;
+      default:
+        return null;
+        break;
     }
   }
 }
 
-enum SegWitType { nonSegWit, segWit, nativeSegWit }
+enum SegwitType { nonSegWit, segWit, nativeSegWit }
 
-extension SegWitTypeExt on SegWitType {
+extension SegwitTypeExt on SegwitType {
   int get value {
     switch (this) {
-      case SegWitType.nonSegWit:
+      case SegwitType.nonSegWit:
         return 1;
-      case SegWitType.segWit:
+      case SegwitType.segWit:
         return 2;
-      case SegWitType.nativeSegWit:
+      case SegwitType.nativeSegWit:
         return 3;
+      default:
+        return null;
+        break;
     }
   }
 
   int get purpose {
     switch (this) {
-      case SegWitType.nonSegWit:
+      case SegwitType.nonSegWit:
         return (0x80000000 | 44);
-      case SegWitType.segWit:
+      case SegwitType.segWit:
         return (0x80000000 | 49);
-      case SegWitType.nativeSegWit:
+      case SegwitType.nativeSegWit:
         return (0x80000000 | 84);
+      default:
+        return null;
+        break;
     }
   }
 
   String get name {
     switch (this) {
-      case SegWitType.nonSegWit:
+      case SegwitType.nonSegWit:
         return "Legacy";
-      case SegWitType.segWit:
+      case SegwitType.segWit:
         return "SegWit";
-      case SegWitType.nativeSegWit:
+      case SegwitType.nativeSegWit:
         return "Native SegWit";
+      default:
+        return null;
+        break;
     }
   }
 }
@@ -92,6 +104,9 @@ extension HashTypeExt on HashType {
       case HashType.SIGHASH_ANYONECANPAY:
         return 0x80;
         break;
+      default:
+        return null;
+        break;
     }
   }
 }
@@ -111,8 +126,8 @@ class Input {
   Input(this.utxo, this.publicKey, this.hashType);
   bool segwit = false;
 
-  Uint8List get reservedTxid =>
-      Uint8List.fromList(hex.decode(this.utxo.txid).reversed.toList());
+  Uint8List get reservedTxId =>
+      Uint8List.fromList(hex.decode(this.utxo.txId).reversed.toList());
   Uint8List get voutInBuffer => Uint8List(4)
     ..buffer.asByteData().setUint32(0, this.utxo.vout, Endian.little);
   Uint8List get sequenceInBuffer => Uint8List(4)
@@ -124,19 +139,18 @@ class Input {
   Uint8List get hashTypeInBuffer => Uint8List(4)
     ..buffer.asByteData().setUint32(0, hashType.value, Endian.little);
 
-  bool isSegwit(SegWitType segWitType) {
+  bool isSegwit(SegwitType segwitType) {
     bool segwit = false;
-    if (this.utxo.type == BitcoinTransactionType.PUBKEYHASH.value) {
+    if (this.utxo.type == BitcoinTransactionType.PUBKEYHASH) {
       // do nothing
-    } else if (this.utxo.type == BitcoinTransactionType.SCRIPTHASH.value) {
-      segwit = (segWitType == SegWitType.segWit);
-    } else if (this.utxo.type ==
-        BitcoinTransactionType.WITNESS_V0_KEYHASH.value) {
+    } else if (this.utxo.type == BitcoinTransactionType.SCRIPTHASH) {
+      segwit = (segwitType == SegwitType.segWit);
+    } else if (this.utxo.type == BitcoinTransactionType.WITNESS_V0_KEYHASH) {
       segwit = true;
-    } else if (this.utxo.type == 'pubkey') {
+    } else if (this.utxo.type == BitcoinTransactionType.PUBKEY) {
       // do nothing
     } else {
-      Log.warning('Unusable this.utxo: ${this.utxo.txid}');
+      Log.warning('Unusable this.utxo: ${this.utxo.txId}');
       return null;
     }
     this.segwit = segwit;
@@ -148,7 +162,7 @@ class Input {
       scriptSig = null;
     else {
       BitcoinTransactionType utxoType = BitcoinTransactionType.values
-          .firstWhere((txType) => this.utxo.type == txType.value);
+          .firstWhere((txType) => this.utxo.type == txType);
       switch (utxoType) {
         case BitcoinTransactionType.PUBKEYHASH:
           scriptSig = Uint8List.fromList([
@@ -208,7 +222,7 @@ class BitcoinTransaction extends Transaction {
 
   String id;
   String currencyId;
-  String txid;
+  String txId;
   int locktime;
   int timestamp;
   int confirmations;
@@ -224,31 +238,33 @@ class BitcoinTransaction extends Transaction {
   List<Output> _outputs;
   Uint8List _version;
   Uint8List _lockTime;
-  SegWitType _segWitType;
+  SegwitType _segwitType;
+  UnspentTxOut _changeUtxo;
   // bool _publish; //TODO get publish property from currency
 
   List<Input> get inputs => this._inputs;
+  List<Output> get outputs => this._outputs;
+  UnspentTxOut get changeUtxo => this._changeUtxo;
 
-  BitcoinTransaction({
-    this.id,
-    this.currencyId,
-    this.txid,
-    this.locktime,
-    this.timestamp,
-    this.confirmations,
-    this.direction,
-    this.status,
-    this.sourceAddresses,
-    this.destinationAddresses,
-    this.amount,
-    this.fee,
-    this.note,
-  });
+  BitcoinTransaction(
+      {this.id,
+      this.currencyId,
+      this.txId,
+      this.locktime,
+      this.timestamp,
+      this.confirmations,
+      this.direction,
+      this.status,
+      this.sourceAddresses,
+      this.destinationAddresses,
+      this.amount,
+      this.fee,
+      this.note});
 
   BitcoinTransaction.fromMap(Map<String, dynamic> transactionMap)
       : id = transactionMap[DBTransaction.FieldName_Id],
         currencyId = transactionMap[DBTransaction.FieldName_CurrencyId],
-        txid = transactionMap[DBTransaction.FieldName_TxId],
+        txId = transactionMap[DBTransaction.FieldName_TxId],
         sourceAddresses =
             transactionMap[DBTransaction.FieldName_SourceAddresses],
         destinationAddresses =
@@ -263,12 +279,12 @@ class BitcoinTransaction extends Transaction {
         note = transactionMap[DBTransaction.FieldName_Note],
         status = transactionMap[DBTransaction.FieldName_Status];
 
-  BitcoinTransaction.prepareTransaction(bool publish, SegWitType segwitType,
+  BitcoinTransaction.prepareTransaction(bool publish, SegwitType segwitType,
       {int lockTime}) // in Satoshi
-      : _segWitType = segwitType {
+      : _segwitType = segwitType {
     _inputs = List<Input>();
     _outputs = List<Output>();
-    _segWitType = segwitType ?? SegWitType.nonSegWit;
+    _segwitType = segwitType ?? SegwitType.nonSegWit;
     setVersion(publish ? 1 : 2);
     setlockTime(lockTime ?? 0);
   }
@@ -283,6 +299,10 @@ class BitcoinTransaction extends Transaction {
     _lockTime = Uint8List(4)
       ..buffer.asByteData().setUint32(0, locktime, Endian.little);
     Log.verbose('_lockTime: $_lockTime');
+  }
+
+  void addChangeUtxo(UnspentTxOut changeUtxo) {
+    this._changeUtxo = changeUtxo;
   }
 
   void addInput(UnspentTxOut utxo, HashType hashType) {
@@ -323,7 +343,7 @@ class BitcoinTransaction extends Transaction {
   Uint8List getRawDataToSign(int index) {
     List<int> data = [];
     Input selectedInput = this._inputs[index];
-    if (selectedInput.isSegwit(this._segWitType)) {
+    if (selectedInput.isSegwit(this._segwitType)) {
       //  nVersion
       //  hashPrevouts
       //  hashSequence
@@ -339,7 +359,7 @@ class BitcoinTransaction extends Transaction {
       List<int> sequences = [];
       List<int> outputs = [];
       for (Input input in this._inputs) {
-        prevouts.addAll(input.reservedTxid + input.voutInBuffer);
+        prevouts.addAll(input.reservedTxId + input.voutInBuffer);
         sequences.addAll(input.sequenceInBuffer);
       }
 
@@ -383,7 +403,7 @@ class BitcoinTransaction extends Transaction {
         data.addAll(
             Uint8List(32)..buffer.asByteData().setUint32(0, 0, Endian.little));
       //  outpoint:
-      data.addAll(selectedInput.reservedTxid + selectedInput.voutInBuffer);
+      data.addAll(selectedInput.reservedTxId + selectedInput.voutInBuffer);
       /*
       For P2WPKH witness program, the scriptCode is 0x1976a914{20-byte-pubkey-hash}88ac.
       For P2WSH witness program,
@@ -429,22 +449,21 @@ class BitcoinTransaction extends Transaction {
       data.add(this._inputs.length);
       for (Input input in this._inputs) {
         //  outpoint:
-        data.addAll(input.reservedTxid + input.voutInBuffer);
+        data.addAll(input.reservedTxId + input.voutInBuffer);
         if (input == selectedInput) {
           //  txin:
           List<int> script;
-          if (input.utxo.type == BitcoinTransactionType.PUBKEYHASH.value) {
+          if (input.utxo.type == BitcoinTransactionType.PUBKEYHASH) {
             script = pubKeyHashToP2pkhScript(toPubKeyHash(input.publicKey));
-          } else if (input.utxo.type == BitcoinTransactionType.PUBKEY.value) {
+          } else if (input.utxo.type == BitcoinTransactionType.PUBKEY) {
             script = pubkeyToP2PKScript(input.publicKey);
-          } else if (input.utxo.type ==
-              BitcoinTransactionType.SCRIPTHASH.value) {
+          } else if (input.utxo.type == BitcoinTransactionType.SCRIPTHASH) {
             script = pubkeyToBIP49RedeemScript(input.publicKey);
           } else if (input.utxo.type ==
-              BitcoinTransactionType.WITNESS_V0_KEYHASH.value) {
+              BitcoinTransactionType.WITNESS_V0_KEYHASH) {
             // do nothing
           } else {
-            Log.warning('Unusable utxo: ${input.utxo.txid}');
+            Log.warning('Unusable utxo: ${input.utxo.txId}');
             return null;
           }
           data.addAll(script);
@@ -471,6 +490,7 @@ class BitcoinTransaction extends Transaction {
     return Uint8List.fromList(data);
   }
 
+  @override
   Uint8List get serializeTransaction {
     List<int> data = [];
     //  nVersion
@@ -482,10 +502,10 @@ class BitcoinTransaction extends Transaction {
     // Input
     bool segwit = false;
     for (Input input in this._inputs) {
-      data.addAll(input.reservedTxid + input.voutInBuffer);
-      if (input.isSegwit(this._segWitType)) {
+      data.addAll(input.reservedTxId + input.voutInBuffer);
+      if (input.isSegwit(this._segwitType)) {
         segwit = true;
-        if (input.utxo.type == BitcoinTransactionType.SCRIPTHASH.value)
+        if (input.utxo.type == BitcoinTransactionType.SCRIPTHASH)
           data.addAll([input.utxo.data.length, ...input.utxo.data]);
         else
           data.add(0);
@@ -501,14 +521,14 @@ class BitcoinTransaction extends Transaction {
     for (Output output in this._outputs) {
       data.addAll(output.amountInBuffer + output.script);
     }
-    // txid
-    this.txid = hex
+    // txId
+    this.txId = hex
         .encode(sha256(sha256([...data, ...this._lockTime])).reversed.toList());
 
     //witness
     if (segwit) {
       for (Input input in this._inputs) {
-        if (input.isSegwit(this._segWitType)) {
+        if (input.isSegwit(this._segwitType)) {
           if (input.scriptSig != null) {
             data.addAll(input.scriptSig);
           }

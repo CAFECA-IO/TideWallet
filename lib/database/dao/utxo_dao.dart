@@ -7,6 +7,9 @@ abstract class UtxoDao {
   @Query('SELECT * FROM Utxo WHERE currency_id = :id')
   Future<List<Utxo>> findAllUtxosByCurrencyId(String id);
 
+  @Query('SELECT * FROM Utxo WHERE utxo_id = :id')
+  Future<Utxo> findUtxoById(String id);
+
   @Insert(onConflict: OnConflictStrategy.replace)
   Future<void> insertUtxo(Utxo utxo);
 

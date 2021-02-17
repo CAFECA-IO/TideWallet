@@ -54,5 +54,6 @@ class PrepareTransaction extends TransactionEvent {
 }
 
 class PublishTransaction extends TransactionEvent {
-  PublishTransaction();
+  final String password;
+  PublishTransaction(this.password);
 }

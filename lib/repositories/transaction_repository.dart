@@ -64,7 +64,7 @@ class TransactionRepository {
   }
 
   Future<String> getReceivingAddress(String currency) async {
-    return await _accountService.getReceivingAddress(currency);
+    return (await _accountService.getReceivingAddress(currency))[0];
   }
 
   Future<List<dynamic>> getTransactionFee(
@@ -108,7 +108,8 @@ class TransactionRepository {
         break;
       case ACCOUNT.ETH:
         if (this._address == null) {
-          _address = await _accountService.getChangingAddress(_currency.id);
+          _address =
+              (await _accountService.getChangingAddress(_currency.id))[0];
         }
         _gasLimit = await _accountService.estimateGasLimit(_address, address,
             amount.toString(), hex.encode(message ?? Uint8List(0)));
@@ -126,7 +127,7 @@ class TransactionRepository {
   Future<bool> verifyAddress(String address, bool publish) async {
     bool verified = false;
     if (this._address == null) {
-      _address = await _accountService.getChangingAddress(_currency.id);
+      _address = (await _accountService.getChangingAddress(_currency.id))[0];
     }
     verified = address != _address;
     if (verified) {
@@ -161,32 +162,38 @@ class TransactionRepository {
     switch (this._currency.accountType) {
       case ACCOUNT.BTC:
         String changeAddress;
+        int changeIndex;
         List<UnspentTxOut> unspentTxOuts =
             await _accountService.getUnspentTxOut(_currency.id);
         Decimal utxoAmount = Decimal.zero;
         for (UnspentTxOut utxo in unspentTxOuts) {
-          if (utxo.locked != 0 ||
+          if (!utxo.locked ||
               !(utxo.amount > Decimal.zero) ||
-              utxo.type == '') continue;
+              utxo.type == null) continue;
           utxoAmount += utxo.amount;
           utxo.privatekey =
               await getPrivKey(pwd, utxo.chainIndex, utxo.keyIndex);
           utxo.publickey = await getPubKey(pwd, utxo.chainIndex, utxo.keyIndex);
           if (utxoAmount > (amount + fee)) {
-            changeAddress =
+            List result =
                 await _accountService.getChangingAddress(_currency.id);
+            changeAddress = result[0];
+            changeIndex = result[1];
             break;
           } else if (utxoAmount == (amount + fee)) break;
         }
         Transaction transaction = _transactionService.prepareTransaction(
             this._currency.publish, to, amount, message,
+            currencyId: this._currency.id,
             fee: fee,
             unspentTxOuts: unspentTxOuts,
+            changeIndex: changeIndex,
             changeAddress: changeAddress);
         return transaction;
         break;
       case ACCOUNT.ETH:
-        String from = await _accountService.getReceivingAddress(_currency.id);
+        String from =
+            (await _accountService.getReceivingAddress(_currency.id))[0];
         int nonce = await _accountService.getNonce();
         if (currency.symbol.toLowerCase() != 'eth') {
           // ERC20
@@ -210,6 +217,7 @@ class TransactionRepository {
           gasPrice: gasPrice,
           gasLimit: gasLimit,
           chainId: _currency.chainId,
+          privKey: await getPrivKey(pwd, 0, 0),
         );
         return transaction;
         break;
@@ -222,9 +230,8 @@ class TransactionRepository {
     }
   }
 
-  Future<void> publishTransaction(
-      String blockchainId, Transaction transaction) async {
+  Future<void> publishTransaction(Transaction transaction) async {
     return await _accountService.publishTransaction(
-        blockchainId ?? this._currency.blockchainId, _currency.id, transaction);
+        this._currency.blockchainId, _currency.id, transaction);
   }
 }

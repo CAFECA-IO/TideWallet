@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:decimal/decimal.dart';
 import 'package:convert/convert.dart';
+import 'package:tidewallet3/models/bitcoin_transaction.model.dart';
 
 import '../database/entity/utxo.dart' as UtxoEntity;
 
@@ -9,7 +10,7 @@ class UnspentTxOut {
   static const String ClassName = "utxo";
   static const String FieldName_CurrencyId = "currency_id";
   static const String FieldName_Id = "id";
-  static const String FieldName_TxId = "txid";
+  static const String FieldName_TxId = "tx_id";
   static const String FieldName_Vout = "vout";
   static const String FieldName_Type = "utxo_type";
   static const String FieldName_Address = "addresses";
@@ -23,16 +24,16 @@ class UnspentTxOut {
 
   final String id;
   final String currencyId;
-  final String txid;
+  final String txId;
   final int vout;
-  final String type;
+  final BitcoinTransactionType type;
   // final String address;
   final Decimal amount; // in btc
   final int chainIndex;
   final int keyIndex;
   final Uint8List data; // hex string
   final int timestamp;
-  final bool locked;
+  bool locked;
   final int sequence;
 
   //TEST
@@ -43,7 +44,7 @@ class UnspentTxOut {
   Map<String, dynamic> get map => {
         FieldName_Id: id,
         FieldName_CurrencyId: currencyId,
-        FieldName_TxId: txid,
+        FieldName_TxId: txId,
         FieldName_Vout: vout,
         FieldName_Type: type,
         // FieldName_Address: address,
@@ -64,7 +65,7 @@ class UnspentTxOut {
     List<dynamic> list = [];
     list.add(id);
     list.add(currencyId);
-    list.add(txid);
+    list.add(txId);
     list.add(vout);
     list.add(type);
     // list.add(address);
@@ -81,7 +82,7 @@ class UnspentTxOut {
   UnspentTxOut({
     this.id,
     this.currencyId,
-    this.txid,
+    this.txId,
     this.vout,
     this.type,
     // this.address,
@@ -102,7 +103,7 @@ class UnspentTxOut {
   UnspentTxOut.fromSerializedData(List<dynamic> list)
       : id = list[0],
         currencyId = list[1],
-        txid = list[2],
+        txId = list[2],
         vout = list[3],
         type = list[4],
         // address = list[5],
@@ -117,7 +118,7 @@ class UnspentTxOut {
   UnspentTxOut.fromMap(Map<String, dynamic> map)
       : id = map[FieldName_Id],
         currencyId = map[FieldName_CurrencyId],
-        txid = map[FieldName_TxId],
+        txId = map[FieldName_TxId],
         vout = map[FieldName_Vout],
         type = map[FieldName_Type],
         // address = map[FieldName_Address],
@@ -132,9 +133,10 @@ class UnspentTxOut {
   UnspentTxOut.fromUtxoEntity(UtxoEntity.Utxo utxo)
       : id = utxo.utxoId,
         currencyId = utxo.currencyId,
-        txid = utxo.txId,
+        txId = utxo.txId,
         vout = utxo.vout,
-        type = utxo.type,
+        type = BitcoinTransactionType.values
+            .firstWhere((type) => type.value == utxo.type),
         amount = Decimal.parse(utxo.amount),
         chainIndex = utxo.chainIndex,
         keyIndex = utxo.keyIndex,

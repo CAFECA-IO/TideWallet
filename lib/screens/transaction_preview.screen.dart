@@ -28,6 +28,7 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
   Currency _currency;
   Transaction _transaction;
   String _feeToFiat;
+  String _pwd;
   final t = I18n.t;
 
   @override
@@ -36,6 +37,7 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
     _currency = arg["currency"];
     _transaction = arg["transaction"];
     _feeToFiat = arg["feeToFiat"];
+
     _bloc = BlocProvider.of<TransactionBloc>(context);
     _userBloc = BlocProvider.of<UserBloc>(context);
     super.didChangeDependencies();
@@ -141,7 +143,7 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
                 cubit: _userBloc,
                 listener: (context, state) {
                   if (state is PasswordVerified) {
-                    _bloc.add(PublishTransaction());
+                    _bloc.add(PublishTransaction(state.password));
                   }
                   if (state is PasswordInvalid) {
                     DialogController.show(
