@@ -74,6 +74,8 @@ class AccountServiceBase extends AccountService {
     
     if (select != null) {
       this._lastSyncTimestamp = select.lastSyncTime;
+    } else {
+      this._lastSyncTimestamp = 0;
     }
 
     _sync();

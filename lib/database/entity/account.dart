@@ -26,6 +26,7 @@ class AccountEntity {
 
   // @ColumnInfo(name: 'curve_type')
   // final bool curveType;
+  
 
   AccountEntity({
     this.accountId,

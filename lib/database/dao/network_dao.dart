@@ -8,5 +8,5 @@ abstract class NetworkDao {
   Future<List<NetworkEntity>> findAllNetworks();
 
   @insert
-  Future<List<int>> insertCurrencies(List<NetworkEntity> currencies);
+  Future<List<int>> insertNetworks(List<NetworkEntity> networks);
 }

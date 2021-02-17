@@ -53,7 +53,7 @@ class PaperWallet {
     Uint8List bytes = Uint8List.fromList(seed);
 
     var root = bip32.BIP32.fromSeed(bytes);
-    var child = root.derivePath("$path/0/0");
+    var child = root.derivePath(path);
     Uint8List publicKey = child.publicKey;
 
     if (!compressed) {

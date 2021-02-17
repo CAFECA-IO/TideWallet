@@ -69,7 +69,7 @@ class AccountCurrencyEntity {
 }
 
 @DatabaseView(
-    'SELECT * FROM AccountCurrency INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id INNER JOIN Account ON AccountCurrency.account_id = Account.account_id',
+    'SELECT * FROM AccountCurrency INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id INNER JOIN Account ON AccountCurrency.account_id = Account.account_id INNER JOIN Network ON Account.network_id = Network.network_id',
     viewName: 'JoinCurrency')
 class JoinCurrency {
   final String symbol;
@@ -91,6 +91,12 @@ class JoinCurrency {
 
   final String image;
 
+  @ColumnInfo(name: 'network_id')
+  final String blockchainId;
+
+  @ColumnInfo(name: 'chain_id')
+  final String chainId;
+
   JoinCurrency({
     this.currencyId,
     this.symbol,
@@ -99,5 +105,7 @@ class JoinCurrency {
     this.accountIndex,
     this.coinType,
     this.image,
+    this.blockchainId,
+    this.chainId
   });
 }

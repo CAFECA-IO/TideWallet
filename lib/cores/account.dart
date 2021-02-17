@@ -45,12 +45,12 @@ class AccountCore {
     await this.getSupportedCurrencies();
 
     for (var i = 0; i < accounts.length; i++) {
-      int blockIndex = chains.indexWhere(
-          (chain) => chain.networkId == accounts[i].networkId);
+      int blockIndex = chains
+          .indexWhere((chain) => chain.networkId == accounts[i].networkId);
 
       if (blockIndex > -1) {
         AccountService svc;
-        ACCOUNT account; 
+        ACCOUNT account;
         switch (chains[blockIndex].coinType) {
           case 0:
             svc = BitcoinService(AccountServiceBase());
@@ -66,16 +66,14 @@ class AccountCore {
         if (svc != null) {
           this.currencies[account] = [];
 
-      // this.messenger.add(AccountMessage(
-      //     evt: ACCOUNT_EVT.OnUpdateAccount,
-      //     value: _currency));
+          // this.messenger.add(AccountMessage(
+          //     evt: ACCOUNT_EVT.OnUpdateAccount,
+          //     value: _currency));
           this._services.add(svc);
           svc.init(accounts[i].accountId, account);
           svc.start();
         }
       }
-
-     
     }
   }
 
@@ -104,12 +102,12 @@ class AccountCore {
     if (networks.isEmpty) {
       APIResponse res = await HTTPAgent().get(Endpoint.SUSANOO + '/blockchain');
       List l = res.data;
-      networks =
-          l.map((chain) => NetworkEntity.fromJson(chain)).toList();
-    }
+      networks = l.map((chain) => NetworkEntity.fromJson(chain)).toList();
 
-    if (publish) {
-      networks.remove((NetworkEntity n) => n.type != 1);
+      if (publish) {
+        networks.remove((NetworkEntity n) => n.type != 1);
+      }
+      await DBOperator().networkDao.insertNetworks(networks);
     }
 
     return networks;
@@ -122,14 +120,16 @@ class AccountCore {
         await HTTPAgent().get(Endpoint.SUSANOO + '/wallet/accounts');
 
     List l = res.data ?? [];
+    final user = await DBOperator().userDao.findUser();
+
 
     for (var d in l) {
       final String id = d['account_id'];
       bool exist = result.indexWhere((el) => el.accountId == id) > -1;
 
       if (!exist) {
-        AccountEntity acc =
-            AccountEntity(accountId: id, userId: 'eee', networkId: d['blockchain_id']);
+        AccountEntity acc = AccountEntity(
+            accountId: id, userId: user.userId, networkId: d['blockchain_id']);
         await createAccount(acc);
         result.add(acc);
       }

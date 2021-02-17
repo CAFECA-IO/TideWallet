@@ -1,9 +1,9 @@
 import 'package:rxdart/subjects.dart';
-import 'package:tidewallet3/services/ethereum_service.dart';
 
 import '../models/account.model.dart';
 import '../cores/account.dart';
 import '../constants/account_config.dart';
+import '../services/ethereum_service.dart';
 import '../helpers/utils.dart';
 
 class AccountRepository {

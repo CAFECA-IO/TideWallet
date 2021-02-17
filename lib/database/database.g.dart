@@ -98,12 +98,12 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Transaction` (`transaction_id` TEXT, `account_id` TEXT, `currency_id` TEXT, `tx_id` TEXT, `source_address` TEXT, `destinction_address` TEXT, `timestamp` INTEGER, `confirmation` INTEGER, `gas_price` TEXT, `gas_used` INTEGER, `nonce` INTEGER, `block` INTEGER, `locktime` INTEGER, `fee` TEXT NOT NULL, `note` TEXT, `status` INTEGER, PRIMARY KEY (`transaction_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Network` (`network_id` TEXT, `network` TEXT NOT NULL, `coin_type` INTEGER, `type` INTEGER, PRIMARY KEY (`network_id`))');
+            'CREATE TABLE IF NOT EXISTS `Network` (`network_id` TEXT, `network` TEXT NOT NULL, `coin_type` INTEGER, `type` INTEGER, `chain_id` INTEGER, PRIMARY KEY (`network_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `AccountCurrency` (`accountcurrency_id` TEXT NOT NULL, `account_id` TEXT, `currency_id` TEXT, `balance` TEXT, `number_of_used_external_key` INTEGER, `number_of_used_internal_key` INTEGER, `last_sync_time` INTEGER, PRIMARY KEY (`accountcurrency_id`))');
+            'CREATE TABLE IF NOT EXISTS `AccountCurrency` (`accountcurrency_id` TEXT NOT NULL, `account_id` TEXT, `currency_id` TEXT, `balance` TEXT, `number_of_used_external_key` INTEGER, `number_of_used_internal_key` INTEGER, `last_sync_time` INTEGER, `chain_id` INTEGER, PRIMARY KEY (`accountcurrency_id`))');
 
         await database.execute(
-            '''CREATE VIEW IF NOT EXISTS `JoinCurrency` AS SELECT * FROM AccountCurrency INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id INNER JOIN Account ON AccountCurrency.account_id = Account.account_id''');
+            '''CREATE VIEW IF NOT EXISTS `JoinCurrency` AS SELECT * FROM AccountCurrency INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id INNER JOIN Account ON AccountCurrency.account_id = Account.account_id INNER JOIN Network ON Account.network_id = Network.network_id''');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -405,7 +405,8 @@ class _$NetworkDao extends NetworkDao {
                   'network_id': item.networkId,
                   'network': item.network,
                   'coin_type': item.coinType,
-                  'type': item.type
+                  'type': item.type,
+                  'chain_id': item.chainId
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -423,13 +424,14 @@ class _$NetworkDao extends NetworkDao {
             networkId: row['network_id'] as String,
             network: row['network'] as String,
             coinType: row['coin_type'] as int,
-            type: row['type'] as int));
+            type: row['type'] as int,
+            chainId: row['chain_id'] as int));
   }
 
   @override
-  Future<List<int>> insertCurrencies(List<NetworkEntity> currencies) {
+  Future<List<int>> insertNetworks(List<NetworkEntity> networks) {
     return _networkEntityInsertionAdapter.insertListAndReturnIds(
-        currencies, OnConflictStrategy.abort);
+        networks, OnConflictStrategy.abort);
   }
 }
 
@@ -446,7 +448,8 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
                   'balance': item.balance,
                   'number_of_used_external_key': item.numberOfUsedExternalKey,
                   'number_of_used_internal_key': item.numberOfUsedInternalKey,
-                  'last_sync_time': item.lastSyncTime
+                  'last_sync_time': item.lastSyncTime,
+                  'chain_id': item.chainId
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -468,7 +471,8 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
             balance: row['balance'] as String,
             numberOfUsedExternalKey: row['number_of_used_external_key'] as int,
             numberOfUsedInternalKey: row['number_of_used_internal_key'] as int,
-            lastSyncTime: row['last_sync_time'] as int));
+            lastSyncTime: row['last_sync_time'] as int,
+            chainId: row['chain_id'] as int));
   }
 
   @override
@@ -483,7 +487,8 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
             balance: row['balance'] as String,
             numberOfUsedExternalKey: row['number_of_used_external_key'] as int,
             numberOfUsedInternalKey: row['number_of_used_internal_key'] as int,
-            lastSyncTime: row['last_sync_time'] as int));
+            lastSyncTime: row['last_sync_time'] as int,
+            chainId: row['chain_id'] as int));
   }
 
   @override
@@ -498,7 +503,9 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
             balance: row['balance'] as String,
             accountIndex: row['account_index'] as int,
             coinType: row['coin_type'] as int,
-            image: row['image'] as String));
+            image: row['image'] as String,
+            blockchainId: row['network_id'] as String,
+            chainId: row['chain_id'] as String));
   }
 
   @override

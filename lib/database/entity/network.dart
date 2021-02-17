@@ -14,11 +14,15 @@ class NetworkEntity {
 
   final int type;
 
+  @ColumnInfo(name: 'chain_id')
+  final int chainId;
+
   NetworkEntity({
     this.networkId,
     this.network,
     this.coinType,
     this.type,
+    this.chainId
   });
 
   @override
@@ -37,5 +41,6 @@ class NetworkEntity {
       : this.networkId = json['blockchain_id'],
         this.network = json['name'],
         this.coinType = json['coin_type'],
+        this.chainId = json['network_id'],
         this.type = json['publish'] ? 1 : 0;
 }
