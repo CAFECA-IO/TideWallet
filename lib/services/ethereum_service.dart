@@ -138,10 +138,11 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   @override
-  Future<Map<TransactionPriority, Decimal>> getTransactionFee() async {
+  Future<Map<TransactionPriority, Decimal>> getTransactionFee(
+      String blockchainId) async {
     // TODO getSyncFeeAutomatically
     Response response =
-        await HTTPAgent().get('$_baseUrl/api/v1/blockchain/8000003C/fee');
+        await HTTPAgent().get('$_baseUrl/api/v1/blockchain/$blockchainId/fee');
     Map<String, dynamic> data = response.data['payload'];
     Map<TransactionPriority, Decimal> transactionFee = {
       TransactionPriority.slow: Decimal.parse(data['slow'].toString()),

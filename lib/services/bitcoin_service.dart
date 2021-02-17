@@ -60,10 +60,11 @@ class BitcoinService extends AccountServiceDecorator {
   }
 
   @override
-  Future<Map<TransactionPriority, Decimal>> getTransactionFee() async {
+  Future<Map<TransactionPriority, Decimal>> getTransactionFee(
+      String blockchainId) async {
     // TODO getSyncFeeAutomatically
     Response response =
-        await HTTPAgent().get('$_baseUrl/api/v1/blockchain/80000001/fee');
+        await HTTPAgent().get('$_baseUrl/api/v1/blockchain/$blockchainId/fee');
     Map<String, dynamic> data =
         response.data['payload']; // FEE will return String
 
