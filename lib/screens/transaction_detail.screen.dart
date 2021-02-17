@@ -151,7 +151,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Align(
                       child: Text(
-                        '(${Formatter.dateTime(_transaction.timestamp)})',
+                        '(${Formatter.dateTime(_transaction.dateTime)})',
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                       alignment: Alignment.centerLeft,
@@ -187,7 +187,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Align(
                       child: Text(
-                        '${Formatter.formaDecimal(_transaction.fee)} ${_currency.symbol}',
+                        '${Formatter.formatDecimal(_transaction.fee.toString())} ${_currency.symbol}',
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                       alignment: Alignment.centerLeft,
@@ -216,7 +216,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                         GestureDetector(
                           onTap: _launchURL,
                           child: Text(
-                            Formatter.formateAdddress(_transaction.txId),
+                            Formatter.formatAdddress(_transaction.txId),
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyText1

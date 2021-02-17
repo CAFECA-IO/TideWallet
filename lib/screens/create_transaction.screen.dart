@@ -5,11 +5,11 @@ import 'package:provider/provider.dart';
 
 import './transaction_preview.screen.dart';
 import './scan_address.screen.dart';
-
-import '../models/transaction.model.dart';
-import '../models/account.model.dart';
+import '../blocs/fiat/fiat_bloc.dart';
 import '../blocs/transaction/transaction_bloc.dart';
 import '../repositories/transaction_repository.dart';
+import '../models/account.model.dart';
+import '../models/transaction.model.dart';
 import '../widgets/appBar.dart';
 import '../widgets/buttons/radio_button.dart';
 import '../widgets/buttons/secondary_button.dart';
@@ -28,7 +28,7 @@ class CreateTransactionScreen extends StatefulWidget {
 
 class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
   TransactionBloc _bloc;
-  // UserBloc _userBloc;
+  FiatBloc _fiatBloc;
   final t = I18n.t;
 
   TextEditingController _addressController;
@@ -51,9 +51,9 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
     this._repo = Provider.of<TransactionRepository>(context);
     this._repo.setCurrency(_currency);
     print('didChangeDependencies: ${_currency.symbol}');
+    _fiatBloc = BlocProvider.of<FiatBloc>(context);
     _bloc = BlocProvider.of<TransactionBloc>(context)
-      ..add(UpdateTransactionCreateCurrency(this._currency))
-      ..add(FetchTransactionFee());
+      ..add(UpdateTransactionCreateCurrency(this._currency));
     super.didChangeDependencies();
   }
 
@@ -70,6 +70,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    FiatLoaded _state = _fiatBloc.state;
     return Scaffold(
       appBar: GeneralAppbar(
         title: t('send_coin'),
@@ -84,6 +85,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
               if (state.address.isNotEmpty) {
                 _addressController.text = state.address;
               }
+
               return Container(
                 padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
                 margin: EdgeInsets.symmetric(vertical: 16.0),
@@ -127,7 +129,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                       SizedBox(height: 20.0),
                       Input(
                         onChanged: (String _) {
-                          _bloc.add(ValidAmount(_amountController.text));
+                          _bloc.add(VerifyAmount(_amountController.text));
                         },
                         inputFormatter: [
                           FilteringTextInputFormatter.deny(RegExp(r"\s")),
@@ -140,7 +142,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                         keyboardType:
                             TextInputType.numberWithOptions(decimal: true),
                       ),
-                      state.rules[1] || state.amount.isEmpty
+                      state.rules[1] || state.amount == null
                           ? SizedBox(height: 20)
                           : Align(
                               child: Container(
@@ -162,7 +164,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                       Container(
                         child: Align(
                           child: Text(
-                            '${t('balance')}: ${Formatter.formaDecimal(state.spandable)} ETH',
+                            '${t('balance')}: ${Formatter.formatDecimal(state.spandable.toString())} ${_repo.currency.symbol}',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                           alignment: Alignment.centerRight,
@@ -220,7 +222,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                                           RegExp(r'(^\d*\.?\d*)$')),
                                     ],
                                     labelText:
-                                        '${t('custom')} Gas Price (gwei)',
+                                        '${t('custom')} Gas Price (${_repo.currency.symbol})',
                                     autovalidate: AutovalidateMode.disabled,
                                     controller: _gasPriceController,
                                     onChanged: (String v) {
@@ -278,7 +280,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                             style: Theme.of(context).textTheme.headline6,
                           ),
                           Text(
-                            '${state.fee.isEmpty ? "loading..." : Formatter.formaDecimal(state.fee) + " ETH"}',
+                            '${state.fee.toString().isEmpty ? "loading..." : (Formatter.formatDecimal(state.fee.toString()) + _repo.currency.symbol)}',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                         ],
@@ -286,7 +288,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: Text(
-                          '${String.fromCharCode(0x2248)} ${state.feeToFiat.isEmpty ? "" : Formatter.formaDecimal(state.feeToFiat) + " USD"}',
+                          '${String.fromCharCode(0x2248)} ${state.feeToFiat.isEmpty ? "" : (Formatter.formatDecimal(state.feeToFiat) + _state.fiat.name)}',
                           style: Theme.of(context).textTheme.caption,
                         ),
                       ),
@@ -305,8 +307,9 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                             onChanged: (bool newValue) {
                               setState(() {
                                 _isSelected = newValue;
-                                _gasPriceController.text = state.gasPrice;
-                                _gasController.text = state.gasLimit;
+                                _gasPriceController.text =
+                                    state.gasPrice.toString();
+                                _gasController.text = state.gasLimit.toString();
                               });
                             },
                           ),
@@ -326,10 +329,13 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                                   arguments: {
                                     "currency": _currency,
                                     "transaction": Transaction(
-                                        address: state.address,
-                                        direction: TransactionDirection.sent,
-                                        amount: state.amount,
-                                        fee: state.fee)
+                                      address: state.address,
+                                      direction: TransactionDirection.sent,
+                                      amount: state.amount,
+                                      fee: state.fee,
+                                    ),
+                                    "feeToFiat":
+                                        state.feeToFiat + " ${_state.fiat.name}"
                                   });
                             else
                               // TODO alertDialog

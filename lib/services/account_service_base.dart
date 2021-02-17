@@ -1,24 +1,25 @@
 import 'package:decimal/decimal.dart';
+import 'package:tidewallet3/models/utxo.model.dart';
 
 import 'account_service.dart';
+import '../models/transaction.model.dart';
 
 class AccountServiceBase extends AccountService {
-  
   @override
-  Decimal calculateFastDee() {
-    // TODO: implement calculateFastDee
+  Decimal calculateFastFee() {
+    // TODO: implement calculateFastFee
     throw UnimplementedError();
   }
 
   @override
-  Decimal calculateSlowDee() {
-    // TODO: implement calculateSlowDee
+  Decimal calculateSlowFee() {
+    // TODO: implement calculateSlowFee
     throw UnimplementedError();
   }
 
   @override
-  Decimal calculateStandardDee() {
-    // TODO: implement calculateStandardDee
+  Decimal calculateStandardFee() {
+    // TODO: implement calculateStandardFee
     throw UnimplementedError();
   }
 
@@ -50,26 +51,59 @@ class AccountServiceBase extends AccountService {
   }
 
   @override
-  Decimal toCoinUnit() {
+  Decimal toCoinUnit(Decimal smallUnit) {
     // TODO: implement toCoinUnit
     throw UnimplementedError();
   }
 
   @override
-  Decimal toSmallUnit() {
+  Decimal toSmallUnit(Decimal coinUnit) {
     // TODO: implement toSmallUnit
     throw UnimplementedError();
   }
 
   @override
-  publishTransaction() {
+  Future<void> publishTransaction(
+      String blockchainId, String currencyId, Transaction transaction) {
     // TODO: implement publishTransaction
     throw UnimplementedError();
   }
 
   @override
-  Future<String> getReceivingAddress() async {
+  Future<Map<TransactionPriority, Decimal>> getTransactionFee(
+      String blockchainId) async {
     // TODO: implement publishTransaction
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List> getChangingAddress(String currencyId) async {
+    // TODO: implement publishTransaction
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List> getReceivingAddress(String currencyId) async {
+    // TODO: implement publishTransaction
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Decimal> estimateGasLimit(
+      String blockchainId, String from, String to, String amount, String data) {
+    // TODO: implement estimateGasLimit
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) {
+    // TODO: implement getUnspentTxOut
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<int> getNonce(String blockchainId) {
+    // TODO: implement getNon
     throw UnimplementedError();
   }
 }

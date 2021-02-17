@@ -6,6 +6,7 @@ import '../constants/account_config.dart';
 enum ACCOUNT_EVT { OnUpdateAccount, OnUpdateCurrency, OnUpdateTransactions }
 
 class Currency {
+  final String id;
   final int cointype;
   final int purpose;
   final int accountIndex;
@@ -15,9 +16,14 @@ class Currency {
   final String inUSD;
   final String name;
   final ACCOUNT accountType;
+  final String blockchainId;
+  final int chainId;
+  final int decimals;
+  final bool publish;
 
   Currency(
-      {this.cointype,
+      {this.id,
+      this.cointype,
       this.purpose,
       this.amount,
       this.inUSD,
@@ -25,19 +31,28 @@ class Currency {
       this.symbol,
       this.name,
       this.accountIndex,
-      this.accountType});
+      this.accountType,
+      this.chainId,
+      this.blockchainId,
+      this.decimals,
+      this.publish});
 
-  Currency copyWith({
-    int cointype,
-    int purpose,
-    String symbol,
-    String imgPath,
-    String amount,
-    String inUSD,
-    String name,
-    ACCOUNT accountType,
-  }) {
+  Currency copyWith(
+      {String id,
+      int cointype,
+      int purpose,
+      String symbol,
+      String imgPath,
+      String amount,
+      String inUSD,
+      String name,
+      ACCOUNT accountType,
+      String blockchainId,
+      int chainId,
+      int decimals,
+      bool publish}) {
     return Currency(
+        id: id ?? this.id,
         cointype: cointype ?? this.cointype,
         purpose: purpose ?? this.purpose,
         amount: amount ?? this.amount,
@@ -45,12 +60,17 @@ class Currency {
         symbol: symbol ?? this.symbol,
         imgPath: imgPath ?? this.imgPath,
         name: name ?? this.name,
-        accountType: accountType ?? this.accountType);
+        accountType: accountType ?? this.accountType,
+        blockchainId: blockchainId ?? this.blockchainId,
+        chainId: chainId ?? this.chainId,
+        decimals: decimals ?? this.decimals,
+        publish: publish ?? this.publish);
   }
 
   Currency.fromMap(
     Map map,
-  )   : cointype = map['cointype'],
+  )   : id = map['currency_id'],
+        cointype = map['cointype'],
         purpose = map['purpose'],
         accountIndex = map['accountIndex'],
         symbol = map['symbol'],
@@ -58,7 +78,11 @@ class Currency {
         imgPath = map['imgPath'],
         amount = map['amount'] ?? '0',
         inUSD = map['inUSD'] ?? '0',
-        accountType = map['accountType'];
+        accountType = map['accountType'],
+        blockchainId = map['blockchainId'],
+        chainId = map['chainId'],
+        decimals = map['decimals'],
+        publish = map['publish'];
 }
 
 class AccountMessage {

@@ -89,7 +89,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
                                 ? [
                                     TextSpan(
                                       text:
-                                          ' ${Formatter.formaDecimal((state.total / _state.fiat.exchangeRate).toString(), decimalLength: 2)} ',
+                                          ' ${Formatter.formatDecimal((state.total / _state.fiat.exchangeRate).toString(), decimalLength: 2)} ',
                                       style: Theme.of(context)
                                           .textTheme
                                           .headline5

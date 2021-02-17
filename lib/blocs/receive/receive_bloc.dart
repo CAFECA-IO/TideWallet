@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../repositories/account_repository.dart';
+import '../../repositories/transaction_repository.dart';
 import '../../models/account.model.dart';
 import '../../helpers/logger.dart';
 
@@ -11,9 +11,9 @@ part 'receive_event.dart';
 part 'receive_state.dart';
 
 class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
-  AccountRepository _accountRepo;
-  ReceiveBloc(this._accountRepo)
-      : assert(_accountRepo != null),
+  TransactionRepository _repo;
+  ReceiveBloc(this._repo)
+      : assert(_repo != null),
         super(ReceiveInitial(null, null));
 
   @override
@@ -22,7 +22,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   ) async* {
     if (event is GetReceivingAddress) {
       yield AddressLoading(event.currency, '');
-      String address = await _accountRepo.getReceivingAddress(event.currency);
+      String address = await _repo.getReceivingAddress();
       Log.debug('GetReceivingAddress: $address');
       yield AddressLoaded(event.currency, address);
     }

@@ -6,6 +6,7 @@ import '../models/account.model.dart';
 import '../services/account_service.dart';
 import '../services/account_service_base.dart';
 import '../services/ethereum_service.dart';
+import '../services/bitcoin_service.dart';
 
 class AccountCore {
   PublishSubject<AccountMessage> messenger;
@@ -47,13 +48,16 @@ class AccountCore {
           AccountService ethService = EthereumService(_service);
           this._services.add(ethService);
           ethService.start();
+        } else if (value == ACCOUNT.BTC) {
+          AccountService btcService = BitcoinService(_service);
+          this._services.add(btcService);
+          btcService.start();
         }
 
         await createAccount();
 
-        this.messenger.add(AccountMessage(
-            evt: ACCOUNT_EVT.OnUpdateAccount,
-            value: _currency));
+        this.messenger.add(
+            AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: _currency));
       }
     }
   }
@@ -61,11 +65,6 @@ class AccountCore {
   close() {
     messenger.close();
   }
-
-
-
-
-
 
   Future<bool> checkAccountExist() async {
     await Future.delayed(Duration(milliseconds: 300));
@@ -81,10 +80,5 @@ class AccountCore {
     return _services.firstWhere((svc) => (svc.base == type));
   }
 
-  // Future<String> getReceivingAddress(Currency curr) async {
-  //   return await this._services.getReceivingAddress();
-  // }
-
   List<Currency> getCurrencies(ACCOUNT type) => this.currencies[type];
-
 }

@@ -1,6 +1,11 @@
 import 'dart:typed_data';
+import 'dart:convert';
 import 'dart:ui';
 
+import 'package:decimal/decimal.dart';
+import 'package:convert/convert.dart';
+
+import '../helpers/logger.dart';
 import '../theme.dart';
 import './utxo.model.dart';
 import './bitcoin_transaction.model.dart';
@@ -9,146 +14,98 @@ import './ethereum_token_transaction.model.dart';
 
 class Transaction {
   String id;
-  TransactionDirection _direction;
-  String _amount; // in eth
-  TransactionStatus _status;
-  int _timestamp; // in second
-  int _confirmations;
+  TransactionDirection direction;
+  Decimal amount; // in eth
+  TransactionStatus status;
+  int timestamp; // in second
+  int confirmations;
   String _address;
-  String _fee; // in eth
-  String _txId;
-  Uint8List _note;
+  Decimal fee; // in eth
+  String txId;
+  Uint8List note;
 
-  Map<String, dynamic> _data = {};
-
-  TransactionDirection get direction => _direction;
-  String get amount => _amount;
-  TransactionStatus get status => _status;
-  String get fee => _fee;
-  int get confirmations => _confirmations;
-  DateTime get timestamp =>
-      DateTime.fromMillisecondsSinceEpoch(_timestamp, isUtc: false);
+  DateTime get dateTime =>
+      DateTime.fromMillisecondsSinceEpoch(timestamp, isUtc: false);
   String get address => _address;
-  String get txId => _txId;
-  Uint8List get note => _note ?? Uint8List(0);
 
-  List<UnspentTxOut> get utxos => _data["utxos"];
-  List<int> get rlpData => _data["rawTx"];
-  List<int> get rawTx => _data["rawTx"];
-
-  set utxos(List<UnspentTxOut> utxos) {
-    _data["utxos"] = utxos;
+  String get noteInString {
+    String _note = hex.encode(this.note);
+    try {
+      // try to read as utf8
+      _note = utf8.decode(this.note);
+      Log.debug('utf8 note: $note');
+    } catch (e) {
+      // try to read as ascii
+      _note = String.fromCharCodes(this.note);
+      Log.debug('ascii note: $note');
+    }
+    return _note;
   }
 
-  set rlpData(List<int> data) {
-    _data["rawTx"] = data;
+  dynamic get inputs {
+    throw UnimplementedError();
   }
 
-  set rawTx(List<int> data) {
-    _data["rawTx"] = data;
+  dynamic get outputs {
+    throw UnimplementedError();
   }
 
-  List<dynamic> get serializedData {
-    List<dynamic> list = [];
-    list.add(_direction.value); //0
-    list.add(_amount); //1
-    list.add(_status); //2
-    list.add(_timestamp); //3
-    list.add(_confirmations); //4
-    list.add(_address); //5
-    list.add(_fee); //6
-    list.add(_txId); //7
-    list.add(_note); //8
-    list.add(_data["rawTx"]); //9
+  dynamic get changeUtxo {
+    throw UnimplementedError();
+  }
 
-    List<UnspentTxOut> utxos = _data["utxos"];
-    if (utxos == null) return list;
-    List<List<dynamic>> utxoList =
-        List.generate(utxos.length, (index) => utxos[index].serializedData);
-    list.add(utxoList);
-
-    return list;
+  Uint8List get serializeTransaction {
+    throw UnimplementedError();
   }
 
 // need update
   Transaction({
-    String id,
-    TransactionDirection direction,
-    String amount,
-    TransactionStatus status,
-    int timestamp,
-    int confirmations,
+    this.id,
+    this.direction,
+    this.amount,
+    this.status,
+    this.timestamp,
+    this.confirmations,
     String address,
-    String fee,
-    String txId,
-    Uint8List note,
-  })  : _txId = txId,
-        _direction = direction,
-        _address = address,
-        _confirmations = confirmations,
-        _status = status,
-        _amount = amount,
-        _fee = fee,
-        _timestamp = timestamp,
-        _note = note;
-
-  Transaction.fromSerializedData(List<dynamic> data) {
-    // PBLog.debug('data: $data');
-    _direction = TransactionDirection.values
-        .where((element) => (element.value == data[0]))
-        .first;
-    _amount = data[1];
-    _status = data[2];
-    _timestamp = data[3];
-    _confirmations = data[4];
-    _address = data[5];
-    _fee = data[6];
-    _txId = data[7];
-    _note = data[8];
-    _data["rawTx"] = data[9];
-
-    if (data.length > 11) {
-      List<List<dynamic>> utxoList = data[10]; // ?
-      List<UnspentTxOut> utxos = List.generate(utxoList.length,
-          (index) => UnspentTxOut.fromSerializedData(utxoList[index]));
-      _data["utxos"] = utxos;
-    }
-  }
+    this.fee,
+    this.txId,
+    this.note,
+  }) : _address = address;
 
   Transaction.fromBitcoinTransaction(BitcoinTransaction transaction) {
-    _txId = transaction.txid;
-    _amount = transaction.amount.toString();
-    _timestamp = transaction.timestamp;
-    _confirmations = transaction.confirmations;
+    txId = transaction.txId;
+    amount = transaction.amount;
+    timestamp = transaction.timestamp;
+    confirmations = transaction.confirmations;
 
-    _fee = transaction.fee.toString();
-    _direction = transaction.direction;
-    _address = (_direction == TransactionDirection.sent)
+    fee = transaction.fee;
+    direction = transaction.direction;
+    _address = (direction == TransactionDirection.sent)
         ? transaction.destinationAddresses
         : transaction.sourceAddresses;
   }
 
   Transaction.fromEthereumTransaction(EthereumTransaction transaction) {
-    _txId = transaction.txHash;
-    _amount = transaction.amount;
-    _timestamp = transaction.timestamp;
-    _confirmations = transaction.confirmations;
+    txId = transaction.txHash;
+    amount = transaction.amount;
+    timestamp = transaction.timestamp;
+    confirmations = transaction.confirmations;
 
-    var gasPrice = BigInt.parse(transaction.gasPrice);
-    var gasUsed = BigInt.from(transaction.gasUsed);
-    var feeWei = gasPrice * gasUsed;
-    // _fee = _account.toCoinUnit(feeWei).toString();
+    // var gasPrice = BigInt.parse(transaction.gasPrice.toString());
+    // var gasUsed = BigInt.from(transaction.gasUsed.toInt());
+    // var feeWei = gasPrice * gasUsed;
+    // // _fee = _account.toCoinUnit(feeWei).toString();
   }
 
   Transaction.fromEthereumTokenTransaction(
       EthereumTokenTransaction transaction) {
-    _txId = transaction.txHash;
-    _amount = transaction.amount;
-    _timestamp = transaction.timestamp;
-    _confirmations = 1; // useless to token
-    _fee = "0"; // useless to token
-    _direction = TransactionDirection.sent;
-    _address = (_direction == TransactionDirection.sent)
+    txId = transaction.txHash;
+    amount = transaction.amount;
+    timestamp = transaction.timestamp;
+    confirmations = 1; // useless to token
+    fee = Decimal.zero; // useless to token
+    direction = TransactionDirection.sent;
+    _address = (direction == TransactionDirection.sent)
         ? transaction.to
         : transaction.from;
   }

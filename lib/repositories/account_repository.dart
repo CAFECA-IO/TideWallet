@@ -30,7 +30,7 @@ class AccountRepository {
     return address.startsWith('0x');
   }
 
-  Future<Token> getTokenInfo(String address)  {
+  Future<Token> getTokenInfo(String address) {
     return EthereumService.getTokeninfo(address);
   }
 
@@ -38,11 +38,5 @@ class AccountRepository {
     EthereumService _ethService = AccountCore().getService(ACCOUNT.ETH);
 
     return _ethService.addToken(token);
-  }
-
-  Future<String> getReceivingAddress(Currency curr) async {
-    await Future.delayed(Duration(seconds: 3));
-    return randomHex(32);
-    // return await AccountCore().getReceivingAddress(curr);
   }
 }

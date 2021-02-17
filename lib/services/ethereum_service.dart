@@ -1,24 +1,30 @@
 import 'dart:async';
+import 'package:convert/convert.dart';
 import 'package:decimal/decimal.dart';
-
+import 'package:dio/dio.dart';
 
 import 'account_service_decorator.dart';
+
+import '../models/utxo.model.dart';
 import '../models/account.model.dart';
 import '../models/transaction.model.dart';
 import '../constants/account_config.dart';
 import '../services/account_service.dart';
 import '../mock/endpoint.dart';
 import '../cores/account.dart';
+import '../helpers/http_agent.dart';
 
 class EthereumService extends AccountServiceDecorator {
   EthereumService(AccountService service) : super(service) {
     this.base = ACCOUNT.ETH;
   }
+  static const String _baseUrl = 'https://service.tidewallet.io';
 
-  
   Timer _timer;
+  String _address;
+  String _contract; // ?
+  String _tokenAddress; // ?
 
-  estimateGasLimit() {}
   getTransactions() {}
   getBalance() {}
   getTokenTransactions() {}
@@ -26,32 +32,14 @@ class EthereumService extends AccountServiceDecorator {
   getTokenInfo() {}
 
   @override
-  Decimal calculateFastDee() {
-    // TODO: implement calculateFastDee
-    throw UnimplementedError();
-  }
-
-  @override
-  Decimal calculateSlowDee() {
-    // TODO: implement calculateSlowDee
-    throw UnimplementedError();
-  }
-
-  @override
-  Decimal calculateStandardDee() {
-    // TODO: implement calculateStandardDee
+  Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) async {
+    // TODO: implement getUnspentTxOut
     throw UnimplementedError();
   }
 
   @override
   void init() {
     // TODO: implement init
-  }
-
-  @override
-  prepareTransaction() {
-    // TODO: implement prepareTransaction
-    throw UnimplementedError();
   }
 
   @override
@@ -64,46 +52,27 @@ class EthereumService extends AccountServiceDecorator {
     _timer?.cancel();
   }
 
-  @override
-  Decimal toCoinUnit() {
-    // TODO: implement toCoinUnit
-    throw UnimplementedError();
-  }
-
-  @override
-  Decimal toSmallUnit() {
-    // TODO: implement toSmallUnit
-    throw UnimplementedError();
-  }
-
-  @override
-  publishTransaction() {
-    // TODO: implement publishTransaction
-    throw UnimplementedError();
-  }
-
   _sync() {
     _timer =
         Timer.periodic(Duration(milliseconds: this.syncInterval), (_) async {
       await this._getTokens();
       Currency curr = await this._getETH();
 
-
-      AccountMessage msg = AccountMessage(
-          evt: ACCOUNT_EVT.OnUpdateAccount, value: curr);
+      AccountMessage msg =
+          AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: curr);
 
       AccountMessage currMsg = AccountMessage(
-          evt: ACCOUNT_EVT.OnUpdateCurrency, value: AccountCore().currencies[this.base]);
-      
+          evt: ACCOUNT_EVT.OnUpdateCurrency,
+          value: AccountCore().currencies[this.base]);
+
       AccountCore().messenger.add(msg);
       AccountCore().messenger.add(currMsg);
 
       List<Transaction> transactions = await this._getTransactions();
 
-      AccountMessage txMsg = AccountMessage(evt: ACCOUNT_EVT.OnUpdateTransactions, value: {
-        "currency": curr,
-        "transactions": transactions
-      });
+      AccountMessage txMsg = AccountMessage(
+          evt: ACCOUNT_EVT.OnUpdateTransactions,
+          value: {"currency": curr, "transactions": transactions});
       AccountCore().messenger.add(txMsg);
     });
   }
@@ -140,8 +109,7 @@ class EthereumService extends AccountServiceDecorator {
           imgUrl: result['imgPath'],
           description: result['description'],
           contract: result['contract'],
-          totalSupply: result['totalSupply']
-          );
+          totalSupply: result['totalSupply']);
       return _token;
     } else {
       return null;
@@ -155,8 +123,67 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   @override
-  Future<String> getReceivingAddress() async {
-    // TODO: implement publishTransaction
-    throw UnimplementedError();
+  Future<Decimal> estimateGasLimit(String blockchainId, String from, String to,
+      String amount, String message) async {
+    Response response = await HTTPAgent().post(
+        '$_baseUrl/api/v1/blockchain/$blockchainId/gas-limit', {
+      "fromAddress": from,
+      "toAddress": to,
+      "value": amount,
+      "data": message
+    }); // TODO API FormatError
+    Map<String, dynamic> data = response.data['payload'];
+    int gasLimit = data['gasLimit'];
+    return Decimal.fromInt(gasLimit);
+  }
+
+  @override
+  Future<Map<TransactionPriority, Decimal>> getTransactionFee(
+      String blockchainId) async {
+    // TODO getSyncFeeAutomatically
+    Response response =
+        await HTTPAgent().get('$_baseUrl/api/v1/blockchain/$blockchainId/fee');
+    Map<String, dynamic> data = response.data['payload'];
+    Map<TransactionPriority, Decimal> transactionFee = {
+      TransactionPriority.slow: Decimal.parse(data['slow'].toString()),
+      TransactionPriority.standard: Decimal.parse(data['standard'].toString()),
+      TransactionPriority.fast: Decimal.parse(data['fast'].toString()),
+    };
+    return transactionFee;
+  }
+
+  @override
+  Future<List> getReceivingAddress(String currencyId) async {
+    if (this._address == null) {
+      Response response = await HTTPAgent()
+          .get('$_baseUrl/api/v1/wallet/account/address/$currencyId/receive');
+      Map data = response.data['payload'];
+      String address = data['address'];
+      this._address = address;
+    }
+    return [this._address];
+  }
+
+  @override
+  Future<List> getChangingAddress(String currencyId) async {
+    return await getReceivingAddress(currencyId);
+  }
+
+  @override
+  Future<int> getNonce(String blockchainId) async {
+    Response response = await HTTPAgent()
+        .get('$_baseUrl/api/v1/blockchain/$blockchainId/nonce');
+    Map data = response.data['payload'];
+    int nonce = int.parse(data['nonce']);
+    return nonce;
+  }
+
+  @override
+  Future<void> publishTransaction(
+      String blockchainId, String currencyId, Transaction transaction) async {
+    await HTTPAgent().post(
+        '$_baseUrl/api/v1/blockchain/$blockchainId/push-tx/$currencyId',
+        {"hex": hex.encode(transaction.serializeTransaction)});
+    return;
   }
 }
