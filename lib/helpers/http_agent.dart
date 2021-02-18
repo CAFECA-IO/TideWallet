@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
-import 'package:tidewallet3/constants/endpoint.dart';
-import 'package:tidewallet3/models/auth.model.dart';
 
 import 'interceptors/error_interceptor.dart';
 import 'interceptors/retry_interceptor.dart';
 import 'interceptors/token_interceptor.dart';
+import '../models/auth.model.dart';
 import '../models/api_response.mode.dart';
+import '../constants/endpoint.dart';
 import 'prefer_manager.dart';
 
 class HTTPAgent {

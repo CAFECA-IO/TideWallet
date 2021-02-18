@@ -11,7 +11,7 @@ import '../helpers/http_agent.dart';
 import '../helpers/cryptor.dart';
 import '../helpers/prefer_manager.dart';
 import '../database/db_operator.dart';
-import '../database/entity/user.dart' as UserEnity;
+import '../database/entity/user.dart';
 import '../models/auth.model.dart';
 import '../models/api_response.mode.dart';
 
@@ -32,7 +32,7 @@ class User {
   }
 
   Future<bool> checkUser() async {
-    UserEnity.User user = await DBOperator().userDao.findUser();
+    UserEntity user = await DBOperator().userDao.findUser();
     if (user != null) {
       this._initUser(user);
       return true;
@@ -67,7 +67,7 @@ class User {
 
       String keystore = await compute(PaperWallet.walletToJson, wallet);
 
-      UserEnity.User user = UserEnity.User(
+      UserEntity user = UserEntity(
           res.data['user_id'], keystore, this._passwordHash, this._salt, false);
       await DBOperator().userDao.insertUser(user);
 
@@ -124,7 +124,7 @@ class User {
     if (res.success) {
       this._prefManager.setAuthItem(AuthItem.fromJson(res.data));
 
-      UserEnity.User user = UserEnity.User(
+      UserEntity user = UserEntity(
           res.data['user_id'], wallet, this._passwordHash, this._salt, false);
       await DBOperator().userDao.insertUser(user);
 
@@ -136,7 +136,7 @@ class User {
   }
 
   Future<bool> checkWalletBackup() async {
-    UserEnity.User _user = await DBOperator().userDao.findUser();
+    UserEntity _user = await DBOperator().userDao.findUser();
     if (_user != null) {
       return _user.backupStatus;
     }
@@ -149,7 +149,7 @@ class User {
     return _isBackup;
   }
 
-  Future<void> _initUser(UserEnity.User user) async {
+  Future<void> _initUser(UserEntity user) async {
     this._id = user.userId;
     this._passwordHash = user.passwordHash;
     this._salt = user.passwordSalt;

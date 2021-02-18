@@ -10,7 +10,7 @@ class AccountEntity {
   final String accountId;
 
   @ForeignKey(
-      childColumns: ['user_id'], parentColumns: ['user_id'], entity: User)
+      childColumns: ['user_id'], parentColumns: ['user_id'], entity: UserEntity)
   @ColumnInfo(name: 'user_id')
   final String userId;
 

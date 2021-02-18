@@ -20,7 +20,7 @@ void main() {
   group('database tests', () {
     group('user', () {
       test('find user', () async {
-        User _user = User(
+        UserEntity _user = UserEntity(
             '1qaz2wsx', keystore, 'password_hash1qaz2wsx', 'saltxyz', false);
         await opt.userDao.insertUser(_user);
 
@@ -77,7 +77,7 @@ void main() {
       ];
 
       test('insert accounts', () async {
-        final User user = await opt.userDao.findUser();
+        final UserEntity user = await opt.userDao.findUser();
 
         List<AccountEntity> _accounts = accounts
             .map(

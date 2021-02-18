@@ -1,7 +1,7 @@
 import 'package:floor/floor.dart';
 
-@entity
-class User {
+@Entity(tableName: 'User')
+class UserEntity {
   @primaryKey
   @ColumnInfo(name: 'user_id')
   final String userId;
@@ -17,13 +17,18 @@ class User {
   @ColumnInfo(name: 'backup_status', nullable: false)
   final bool backupStatus;
 
-  User(this.userId, this.keystore, this.passwordHash, this.passwordSalt,
-      this.backupStatus);
+  UserEntity(
+    this.userId,
+    this.keystore,
+    this.passwordHash,
+    this.passwordSalt,
+    this.backupStatus,
+  );
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is User &&
+      other is UserEntity &&
           runtimeType == other.runtimeType &&
           userId == other.userId &&
           keystore == other.keystore;

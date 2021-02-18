@@ -122,7 +122,6 @@ class AccountCore {
     List l = res.data ?? [];
     final user = await DBOperator().userDao.findUser();
 
-
     for (var d in l) {
       final String id = d['account_id'];
       bool exist = result.indexWhere((el) => el.accountId == id) > -1;

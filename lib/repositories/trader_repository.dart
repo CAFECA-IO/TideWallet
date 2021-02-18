@@ -1,4 +1,3 @@
-
 import 'package:decimal/decimal.dart';
 
 import '../models/account.model.dart';
@@ -24,6 +23,15 @@ class TraderRepository {
   }
 
   Decimal calculateToUSD(Currency _curr) {
-     return _trader.calculateToUSD(_curr);
+    return _trader.calculateToUSD(_curr);
+  }
+
+  Decimal calculateFeeToUSD(Currency _curr, Decimal _amount) {
+    return _trader.calculateFeeToUSD(_curr, _amount);
+  }
+
+  Decimal calculateFeeToFiat(Currency _curr, Decimal _amount) {
+    return _trader.calculateFeeToUSD(_curr, _amount) /
+        _selectedFiat.exchangeRate;
   }
 }

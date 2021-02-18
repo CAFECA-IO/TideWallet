@@ -27,6 +27,8 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
   UserBloc _userBloc;
   Currency _currency;
   Transaction _transaction;
+  String _feeToFiat;
+  String _pwd;
   final t = I18n.t;
 
   @override
@@ -34,6 +36,8 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
     Map<String, dynamic> arg = ModalRoute.of(context).settings.arguments;
     _currency = arg["currency"];
     _transaction = arg["transaction"];
+    _feeToFiat = arg["feeToFiat"];
+
     _bloc = BlocProvider.of<TransactionBloc>(context);
     _userBloc = BlocProvider.of<UserBloc>(context);
     super.didChangeDependencies();
@@ -126,7 +130,7 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
                     SizedBox(height: 4),
                     Align(
                       child: Text(
-                        "≈ 10 USD", // TODO
+                        "≈ $_feeToFiat",
                         style: Theme.of(context).textTheme.caption,
                       ),
                       alignment: Alignment.centerLeft,
@@ -139,7 +143,7 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
                 cubit: _userBloc,
                 listener: (context, state) {
                   if (state is PasswordVerified) {
-                    _bloc.add(CreateTransaction());
+                    _bloc.add(PublishTransaction(state.password));
                   }
                   if (state is PasswordInvalid) {
                     DialogController.show(

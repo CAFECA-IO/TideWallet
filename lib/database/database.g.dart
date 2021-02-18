@@ -72,6 +72,8 @@ class _$AppDatabase extends AppDatabase {
 
   AccountCurrencyDao _accountCurrencyDaoInstance;
 
+  UtxoDao _utxoDaoInstance;
+
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
@@ -101,6 +103,8 @@ class _$AppDatabase extends AppDatabase {
             'CREATE TABLE IF NOT EXISTS `Network` (`network_id` TEXT, `network` TEXT NOT NULL, `coin_type` INTEGER, `type` INTEGER, `chain_id` INTEGER, PRIMARY KEY (`network_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `AccountCurrency` (`accountcurrency_id` TEXT NOT NULL, `account_id` TEXT, `currency_id` TEXT, `balance` TEXT, `number_of_used_external_key` INTEGER, `number_of_used_internal_key` INTEGER, `last_sync_time` INTEGER, `chain_id` INTEGER, PRIMARY KEY (`accountcurrency_id`))');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `Utxo` (`utxo_id` TEXT, `currency_id` TEXT, `tx_id` TEXT, `vout` INTEGER, `type` TEXT, `amount` TEXT, `chain_index` INTEGER, `key_index` INTEGER, `script` TEXT, `timestamp` INTEGER, `locked` INTEGER, `sequence` INTEGER, PRIMARY KEY (`utxo_id`))');
 
         await database.execute(
             '''CREATE VIEW IF NOT EXISTS `JoinCurrency` AS SELECT * FROM AccountCurrency INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id INNER JOIN Account ON AccountCurrency.account_id = Account.account_id INNER JOIN Network ON Account.network_id = Network.network_id''');
@@ -142,15 +146,20 @@ class _$AppDatabase extends AppDatabase {
     return _accountCurrencyDaoInstance ??=
         _$AccountCurrencyDao(database, changeListener);
   }
+
+  @override
+  UtxoDao get utxoDao {
+    return _utxoDaoInstance ??= _$UtxoDao(database, changeListener);
+  }
 }
 
 class _$UserDao extends UserDao {
   _$UserDao(this.database, this.changeListener)
       : _queryAdapter = QueryAdapter(database),
-        _userInsertionAdapter = InsertionAdapter(
+        _userEntityInsertionAdapter = InsertionAdapter(
             database,
             'User',
-            (User item) => <String, dynamic>{
+            (UserEntity item) => <String, dynamic>{
                   'user_id': item.userId,
                   'keystore': item.keystore,
                   'password_hash': item.passwordHash,
@@ -164,12 +173,12 @@ class _$UserDao extends UserDao {
 
   final QueryAdapter _queryAdapter;
 
-  final InsertionAdapter<User> _userInsertionAdapter;
+  final InsertionAdapter<UserEntity> _userEntityInsertionAdapter;
 
   @override
-  Future<User> findUser() async {
+  Future<UserEntity> findUser() async {
     return _queryAdapter.query('SELECT * FROM User limit 1',
-        mapper: (Map<String, dynamic> row) => User(
+        mapper: (Map<String, dynamic> row) => UserEntity(
             row['user_id'] as String,
             row['keystore'] as String,
             row['password_hash'] as String,
@@ -178,8 +187,8 @@ class _$UserDao extends UserDao {
   }
 
   @override
-  Future<void> insertUser(User user) async {
-    await _userInsertionAdapter.insert(user, OnConflictStrategy.replace);
+  Future<void> insertUser(UserEntity user) async {
+    await _userEntityInsertionAdapter.insert(user, OnConflictStrategy.replace);
   }
 }
 
@@ -518,5 +527,109 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
   Future<List<int>> insertCurrencies(List<AccountCurrencyEntity> currencies) {
     return _accountCurrencyEntityInsertionAdapter.insertListAndReturnIds(
         currencies, OnConflictStrategy.replace);
+  }
+}
+
+class _$UtxoDao extends UtxoDao {
+  _$UtxoDao(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database),
+        _utxoEntityInsertionAdapter = InsertionAdapter(
+            database,
+            'Utxo',
+            (UtxoEntity item) => <String, dynamic>{
+                  'utxo_id': item.utxoId,
+                  'currency_id': item.currencyId,
+                  'tx_id': item.txId,
+                  'vout': item.vout,
+                  'type': item.type,
+                  'amount': item.amount,
+                  'chain_index': item.chainIndex,
+                  'key_index': item.keyIndex,
+                  'script': item.script,
+                  'timestamp': item.timestamp,
+                  'locked': item.locked == null ? null : (item.locked ? 1 : 0),
+                  'sequence': item.sequence
+                }),
+        _utxoEntityUpdateAdapter = UpdateAdapter(
+            database,
+            'Utxo',
+            ['utxo_id'],
+            (UtxoEntity item) => <String, dynamic>{
+                  'utxo_id': item.utxoId,
+                  'currency_id': item.currencyId,
+                  'tx_id': item.txId,
+                  'vout': item.vout,
+                  'type': item.type,
+                  'amount': item.amount,
+                  'chain_index': item.chainIndex,
+                  'key_index': item.keyIndex,
+                  'script': item.script,
+                  'timestamp': item.timestamp,
+                  'locked': item.locked == null ? null : (item.locked ? 1 : 0),
+                  'sequence': item.sequence
+                });
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<UtxoEntity> _utxoEntityInsertionAdapter;
+
+  final UpdateAdapter<UtxoEntity> _utxoEntityUpdateAdapter;
+
+  @override
+  Future<List<UtxoEntity>> findAllUtxosByCurrencyId(String id) async {
+    return _queryAdapter.queryList('SELECT * FROM Utxo WHERE currency_id = ?',
+        arguments: <dynamic>[id],
+        mapper: (Map<String, dynamic> row) => UtxoEntity(
+            row['utxo_id'] as String,
+            row['currency_id'] as String,
+            row['tx_id'] as String,
+            row['vout'] as int,
+            row['type'] as String,
+            row['amount'] as String,
+            row['chain_index'] as int,
+            row['key_index'] as int,
+            row['script'] as String,
+            row['timestamp'] as int,
+            row['locked'] == null ? null : (row['locked'] as int) != 0,
+            row['sequence'] as int));
+  }
+
+  @override
+  Future<UtxoEntity> findUtxoById(String id) async {
+    return _queryAdapter.query('SELECT * FROM Utxo WHERE utxo_id = ? limit 1',
+        arguments: <dynamic>[id],
+        mapper: (Map<String, dynamic> row) => UtxoEntity(
+            row['utxo_id'] as String,
+            row['currency_id'] as String,
+            row['tx_id'] as String,
+            row['vout'] as int,
+            row['type'] as String,
+            row['amount'] as String,
+            row['chain_index'] as int,
+            row['key_index'] as int,
+            row['script'] as String,
+            row['timestamp'] as int,
+            row['locked'] == null ? null : (row['locked'] as int) != 0,
+            row['sequence'] as int));
+  }
+
+  @override
+  Future<void> insertUtxo(UtxoEntity utxo) async {
+    await _utxoEntityInsertionAdapter.insert(utxo, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<List<int>> insertUtxos(List<UtxoEntity> utxos) {
+    return _utxoEntityInsertionAdapter.insertListAndReturnIds(
+        utxos, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> updateUtxo(UtxoEntity utxo) async {
+    await _utxoEntityUpdateAdapter.update(utxo, OnConflictStrategy.abort);
   }
 }

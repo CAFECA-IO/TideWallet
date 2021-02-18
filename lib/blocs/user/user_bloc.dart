@@ -19,12 +19,11 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       bool existed = await _repo.checkUser();
 
       if (existed) {
-         yield UserSuccess();
+        yield UserSuccess();
       }
     }
 
     if (event is UserCreate) {
-
       yield UserLoading();
       bool success = await _repo.createUser(event.password, event.walletName);
       if (success) {
@@ -42,7 +41,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     if (event is VerifyPassword) {
       yield VerifyingPassword();
       if (_repo.verifyPassword(event.password)) {
-        yield PasswordVerified();
+        yield PasswordVerified(event.password);
       } else {
         yield PasswordInvalid();
       }

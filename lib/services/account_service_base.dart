@@ -1,20 +1,19 @@
 import 'dart:async';
-
 import 'package:decimal/decimal.dart';
+
 import '../constants/endpoint.dart';
+import '../constants/account_config.dart';
 import '../cores/account.dart';
 import '../database/db_operator.dart';
 import '../database/entity/account_currency.dart';
+import '../database/entity/account.dart';
+import '../database/entity/currency.dart';
+import '../helpers/logger.dart';
 import '../helpers/http_agent.dart';
 import '../models/account.model.dart';
 import '../models/api_response.mode.dart';
-
-import '../constants/account_config.dart';
-import '../services/account_service.dart';
-import '../helpers/logger.dart';
-import '../database/entity/account.dart';
-import '../database/entity/currency.dart';
-
+import '../models/utxo.model.dart';
+import '../models/transaction.model.dart';
 import 'account_service.dart';
 
 class AccountServiceBase extends AccountService {
@@ -26,24 +25,25 @@ class AccountServiceBase extends AccountService {
 
   get base => this._base;
   get lastSyncTimestamp => this._lastSyncTimestamp;
+  get accountId => this._accountId;
 
   AccountServiceBase();
 
   @override
-  Decimal calculateFastDee() {
-    // TODO: implement calculateFastDee
+  Decimal calculateFastFee() {
+    // TODO: implement calculateFastFee
     throw UnimplementedError();
   }
 
   @override
-  Decimal calculateSlowDee() {
-    // TODO: implement calculateSlowDee
+  Decimal calculateSlowFee() {
+    // TODO: implement calculateSlowFee
     throw UnimplementedError();
   }
 
   @override
-  Decimal calculateStandardDee() {
-    // TODO: implement calculateStandardDee
+  Decimal calculateStandardFee() {
+    // TODO: implement calculateStandardFee
     throw UnimplementedError();
   }
 
@@ -72,7 +72,7 @@ class AccountServiceBase extends AccountService {
     AccountCurrencyEntity select = await DBOperator()
         .accountCurrencyDao
         .findOneByAccountyId(this._accountId);
-    
+
     if (select != null) {
       this._lastSyncTimestamp = select.lastSyncTime;
     } else {
@@ -92,25 +92,20 @@ class AccountServiceBase extends AccountService {
   }
 
   @override
-  Decimal toCoinUnit() {
+  Decimal toCoinUnit(Decimal smallUnit) {
     // TODO: implement toCoinUnit
     throw UnimplementedError();
   }
 
   @override
-  Decimal toSmallUnit() {
+  Decimal toSmallUnit(Decimal coinUnit) {
     // TODO: implement toSmallUnit
     throw UnimplementedError();
   }
 
   @override
-  publishTransaction() {
-    // TODO: implement publishTransaction
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<String> getReceivingAddress() async {
+  Future<Map<TransactionPriority, Decimal>> getTransactionFee(
+      String blockchainId) async {
     // TODO: implement publishTransaction
     throw UnimplementedError();
   }
@@ -162,15 +157,14 @@ class AccountServiceBase extends AccountService {
     List cs = jcs
         .map(
           (c) => Currency(
-            accountIndex: c.accountIndex,
-            accountType: this.base,
-            cointype: c.coinType,
-            amount: c.balance,
-            imgPath: c.image,
-            symbol: c.symbol,
-            blockchainId: c.blockchainId,
-            chainId: c.chainId
-          ),
+              accountIndex: c.accountIndex,
+              accountType: this.base,
+              cointype: c.coinType,
+              amount: c.balance,
+              imgPath: c.image,
+              symbol: c.symbol,
+              blockchainId: c.blockchainId,
+              chainId: c.chainId),
         )
         .toList();
 
@@ -198,5 +192,73 @@ class AccountServiceBase extends AccountService {
       tokens = tokens.map((t) => CurrencyEntity.fromJson(t)).toList();
       await DBOperator().currencyDao.insertCurrencies(tokens);
     }
+    @override
+    Future<List> getChangingAddress(String currencyId) async {
+      // TODO: implement publishTransaction
+      throw UnimplementedError();
+    }
+
+    @override
+    Future<List> getReceivingAddress(String currencyId) async {
+      // TODO: implement publishTransaction
+      throw UnimplementedError();
+    }
+
+    @override
+    Future<Decimal> estimateGasLimit(String blockchainId, String from,
+        String to, String amount, String data) {
+      // TODO: implement estimateGasLimit
+      throw UnimplementedError();
+    }
+
+    @override
+    Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) {
+      // TODO: implement getUnspentTxOut
+      throw UnimplementedError();
+    }
+
+    @override
+    Future<int> getNonce(String blockchainId) {
+      // TODO: implement getNon
+      throw UnimplementedError();
+    }
+  }
+
+  @override
+  Future<Decimal> estimateGasLimit(
+      String blockchainId, String from, String to, String amount, String data) {
+    // TODO: implement estimateGasLimit
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List> getChangingAddress(String currencyId) {
+    // TODO: implement getChangingAddress
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<int> getNonce(String blockchainId) {
+    // TODO: implement getNonce
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List> getReceivingAddress(String currencyId) {
+    // TODO: implement getReceivingAddress
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) {
+    // TODO: implement getUnspentTxOut
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> publishTransaction(
+      String blockchainId, String currencyId, Transaction transaction) {
+    // TODO: implement publishTransaction
+    throw UnimplementedError();
   }
 }

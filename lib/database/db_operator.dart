@@ -1,8 +1,8 @@
-
 import 'dao/account_dao.dart';
 import 'dao/transaction_dao.dart';
 import 'dao/user_dao.dart';
 import 'dao/currency_dao.dart';
+import 'dao/utxo_dao.dart';
 import 'database.dart';
 import 'dao/account_currency_dao.dart';
 import 'dao/network_dao.dart';
@@ -20,18 +20,18 @@ class DBOperator {
   TransactionDao get transactionDao => database.transactionDao;
   NetworkDao get networkDao => database.networkDao;
   AccountCurrencyDao get accountCurrencyDao => database.accountCurrencyDao;
+  UtxoDao get utxoDao => database.utxoDao;
 
   factory DBOperator() => instance;
 
   static final DBOperator instance = DBOperator._privateConstructor();
 
-  init({ bool inMemory = false }) async {
+  init({bool inMemory = false}) async {
     if (_isInit) return;
 
     AppDatabase db;
     if (inMemory) {
       db = await $FloorAppDatabase.inMemoryDatabaseBuilder().build();
-
     } else {
       db = await $FloorAppDatabase.databaseBuilder(DB_NAME).build();
     }
@@ -43,6 +43,4 @@ class DBOperator {
   down() async {
     await this.database?.close();
   }
-
-  
 }

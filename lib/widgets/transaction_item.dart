@@ -93,7 +93,7 @@ class TransactionItem extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  Formatter.dateTime(transaction.timestamp),
+                  Formatter.dateTime(transaction.dateTime),
                   style: transaction.status == TransactionStatus.fail
                       ? Theme.of(context)
                           .textTheme
