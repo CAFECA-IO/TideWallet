@@ -12,7 +12,7 @@ class NetworkEntity {
   @ColumnInfo(name: 'coin_type')
   final int coinType;
 
-  final int type;
+  final bool publish;
 
   @ColumnInfo(name: 'chain_id')
   final int chainId;
@@ -21,7 +21,7 @@ class NetworkEntity {
     this.networkId,
     this.network,
     this.coinType,
-    this.type,
+    this.publish,
     this.chainId
   });
 
@@ -32,15 +32,15 @@ class NetworkEntity {
           runtimeType == other.runtimeType &&
           networkId == other.networkId &&
           network == other.network &&
-          type == other.type;
+          publish == other.publish;
 
   @override
-  int get hashCode => networkId.hashCode ^ network.hashCode ^ type.hashCode;
+  int get hashCode => networkId.hashCode ^ network.hashCode ^ publish.hashCode;
 
   NetworkEntity.fromJson(Map json)
       : this.networkId = json['blockchain_id'],
         this.network = json['name'],
         this.coinType = json['coin_type'],
         this.chainId = json['network_id'],
-        this.type = json['publish'] ? 1 : 0;
+        this.publish = json['publish'];
 }

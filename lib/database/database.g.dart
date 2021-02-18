@@ -100,7 +100,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Transaction` (`transaction_id` TEXT, `account_id` TEXT, `currency_id` TEXT, `tx_id` TEXT, `source_address` TEXT, `destinction_address` TEXT, `timestamp` INTEGER, `confirmation` INTEGER, `gas_price` TEXT, `gas_used` INTEGER, `nonce` INTEGER, `block` INTEGER, `locktime` INTEGER, `fee` TEXT NOT NULL, `note` TEXT, `status` INTEGER, PRIMARY KEY (`transaction_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Network` (`network_id` TEXT, `network` TEXT NOT NULL, `coin_type` INTEGER, `type` INTEGER, `chain_id` INTEGER, PRIMARY KEY (`network_id`))');
+            'CREATE TABLE IF NOT EXISTS `Network` (`network_id` TEXT, `network` TEXT NOT NULL, `coin_type` INTEGER, `publish` INTEGER, `chain_id` INTEGER, PRIMARY KEY (`network_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `AccountCurrency` (`accountcurrency_id` TEXT NOT NULL, `account_id` TEXT, `currency_id` TEXT, `balance` TEXT, `number_of_used_external_key` INTEGER, `number_of_used_internal_key` INTEGER, `last_sync_time` INTEGER, `chain_id` INTEGER, PRIMARY KEY (`accountcurrency_id`))');
         await database.execute(
@@ -414,7 +414,8 @@ class _$NetworkDao extends NetworkDao {
                   'network_id': item.networkId,
                   'network': item.network,
                   'coin_type': item.coinType,
-                  'type': item.type,
+                  'publish':
+                      item.publish == null ? null : (item.publish ? 1 : 0),
                   'chain_id': item.chainId
                 });
 
@@ -433,7 +434,8 @@ class _$NetworkDao extends NetworkDao {
             networkId: row['network_id'] as String,
             network: row['network'] as String,
             coinType: row['coin_type'] as int,
-            type: row['type'] as int,
+            publish:
+                row['publish'] == null ? null : (row['publish'] as int) != 0,
             chainId: row['chain_id'] as int));
   }
 
@@ -515,7 +517,8 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
             image: row['image'] as String,
             blockchainId: row['network_id'] as String,
             chainId: row['chain_id'] as int,
-            type: row['type'] as int));
+            publish:
+                row['publish'] == null ? null : (row['publish'] as int) != 0));
   }
 
   @override

@@ -71,6 +71,8 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
         });
       });
 
+      _accounts.sort((a, b) => a.accountType.index.compareTo(b.accountType.index));
+
       yield AccountLoaded(_accounts, total: _total);
     }
   }

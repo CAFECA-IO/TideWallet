@@ -113,16 +113,20 @@ class AccountServiceBase extends AccountService {
   Future<List> getData() async {
     APIResponse res = await HTTPAgent()
         .get(Endpoint.SUSANOO + '/wallet/account/${this._accountId}');
-    if (res.data == null) return [];
-    final acc = res.data[0];
-    List tks = acc['tokens'];
+    final acc = res.data;
 
-    // CurrencyEntity.Currency.fromJson(acc);
+    if (acc != null) {
+      List tks = acc['tokens'];
 
-    // final result = [Currency.fromMap(acc)] +
-    //     tks.map((e) => Currency.fromMap({...e, 'accountType': this.base, 'accountId': this.accountId})).toList();
+      // CurrencyEntity.Currency.fromJson(acc);
 
-    return [acc] + tks;
+      // final result = [Currency.fromMap(acc)] +
+      //     tks.map((e) => Currency.fromMap({...e, 'accountType': this.base, 'accountId': this.accountId})).toList();
+
+      return [acc] + tks;
+    }
+
+    return [];
   }
 
   _sync() async {
@@ -165,7 +169,7 @@ class AccountServiceBase extends AccountService {
               symbol: c.symbol,
               blockchainId: c.blockchainId,
               chainId: c.chainId,
-              publish: c.type == 1,
+              publish: c.publish,
               id: c.currencyId),
         )
         .toList();

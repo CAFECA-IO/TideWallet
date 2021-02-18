@@ -95,7 +95,7 @@ class JoinCurrency {
   @ColumnInfo(name: 'chain_id')
   final int chainId;
 
-  final int type;
+  final bool publish;
 
   JoinCurrency({
     this.currencyId,
@@ -107,6 +107,6 @@ class JoinCurrency {
     this.image,
     this.blockchainId,
     this.chainId,
-    this.type,
+    this.publish,
   });
 }

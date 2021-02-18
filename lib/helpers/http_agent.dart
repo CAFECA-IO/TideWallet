@@ -33,7 +33,7 @@ class HTTPAgent {
   setInterceptor() {
     _dio.interceptors.add(_logInterceptor);
     _dio.interceptors.add(_tokenInterceptor);
-    _dio.interceptors.add(ErrorInterceptor(this._refreshToken));
+    _dio.interceptors.add(ErrorInterceptor(this._dio, this._refreshToken));
     _retryInterceptor = RetryInterceptor(
       this._dio,
       options: const RetryOptions(

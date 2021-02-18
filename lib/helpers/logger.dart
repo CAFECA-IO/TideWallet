@@ -59,6 +59,16 @@ class Log {
         "$msg (${StackTrace.current.toString().split('\n')[1].split('(')[1].split(')')[0]})");
     logToServer('\x1B[91m[ERROR]\x1B[0m $msg');
   }
+  
+  static void eth(dynamic msg) {
+    if (Config.logLevel > 3) return;
+    print('\x1B[94m' + '| 🔹 $msg |' + '\x1B[0m');
+  }
+  
+  static void btc(dynamic msg) {
+    if (Config.logLevel > 3) return;
+    print('\x1B[33m' + '| ₿ $msg |' + '\x1B[0m');
+  }
 
   static void logToServer(dynamic data) async {
     if (!Config.remoteLog) return;

@@ -20,9 +20,10 @@ class ErrorInterceptor extends Interceptor {
   static const PUBLISH_TX_ERROR = '05000001';
   static const UNKNOWN_ERROR = '09000000';
 
+  final Dio dio;
   Function _refreshToken;
 
-  ErrorInterceptor(this._refreshToken);
+  ErrorInterceptor(this.dio, this._refreshToken);
   @override
   Future onResponse(Response response) async {
     if (response.data[KEY] != NO_ERROR) {
@@ -33,7 +34,15 @@ class ErrorInterceptor extends Interceptor {
           bool success = await this._refreshToken();
 
           if (success) {
-            return response.request;
+            return await this.dio.request(
+                  response.request.path,
+                  cancelToken: response.request.cancelToken,
+                  data: response.request.data,
+                  onReceiveProgress: response.request.onReceiveProgress,
+                  onSendProgress: response.request.onSendProgress,
+                  queryParameters: response.request.queryParameters,
+                  options: response.request,
+                );
           }
           break;
         default:

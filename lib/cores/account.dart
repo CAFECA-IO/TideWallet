@@ -105,7 +105,7 @@ class AccountCore {
       networks = l.map((chain) => NetworkEntity.fromJson(chain)).toList();
 
       if (publish) {
-        networks.remove((NetworkEntity n) => n.type != 1);
+        networks.remove((NetworkEntity n) => !n.publish);
       }
       await DBOperator().networkDao.insertNetworks(networks);
     }
