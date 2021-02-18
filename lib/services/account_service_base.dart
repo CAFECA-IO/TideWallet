@@ -158,13 +158,15 @@ class AccountServiceBase extends AccountService {
         .map(
           (c) => Currency(
               accountIndex: c.accountIndex,
-              accountType: this.base,
+              accountType: this._base,
               cointype: c.coinType,
               amount: c.balance,
               imgPath: c.image,
               symbol: c.symbol,
               blockchainId: c.blockchainId,
-              chainId: c.chainId),
+              chainId: c.chainId,
+              publish: c.type == 1,
+              id: c.currencyId),
         )
         .toList();
 

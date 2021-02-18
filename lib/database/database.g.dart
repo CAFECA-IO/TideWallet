@@ -514,7 +514,8 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
             coinType: row['coin_type'] as int,
             image: row['image'] as String,
             blockchainId: row['network_id'] as String,
-            chainId: row['chain_id'] as int));
+            chainId: row['chain_id'] as int,
+            type: row['type'] as int));
   }
 
   @override
