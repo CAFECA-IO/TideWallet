@@ -3,10 +3,10 @@ import 'package:convert/convert.dart';
 
 import 'account.dart';
 import '../../models/utxo.model.dart';
-import '../../models/bitcoin_transaction.model.dart';
 
-@entity
-class Utxo {
+
+@Entity(tableName: 'Utxo')
+class UtxoEntity {
   @primaryKey
   @ColumnInfo(name: 'utxo_id')
   final String utxoId;
@@ -14,7 +14,7 @@ class Utxo {
   @ForeignKey(
       childColumns: ['account_id'],
       parentColumns: ['account_id'],
-      entity: Account)
+      entity: AccountEntity)
   // @ColumnInfo(name: 'account_id')
   // final String accountId;
 
@@ -44,7 +44,7 @@ class Utxo {
 
   final int sequence;
 
-  Utxo(
+  UtxoEntity(
       this.utxoId,
       // this.accountId,
       this.currencyId,
@@ -59,12 +59,12 @@ class Utxo {
       this.locked,
       this.sequence);
 
-  Utxo.fromUnspentUtxo(UnspentTxOut _utxo)
+  UtxoEntity.fromUnspentUtxo(UnspentTxOut _utxo)
       : this.utxoId = _utxo.id,
         this.currencyId = _utxo.currencyId,
         this.txId = _utxo.txId,
         this.vout = _utxo.vout,
-        this.type = _utxo.type.value,
+        this.type = _utxo.type.toString(),
         this.amount = _utxo.amount.toString(),
         this.chainIndex = _utxo.chainIndex,
         this.keyIndex = _utxo.keyIndex,

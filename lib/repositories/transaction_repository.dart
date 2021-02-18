@@ -21,7 +21,7 @@ import '../helpers/utils.dart';
 import '../helpers/ethereum_based_utils.dart';
 import '../helpers/rlp.dart' as rlp;
 import '../database/db_operator.dart';
-import '../database/entity/user.dart' as UserEnity;
+import '../database/entity/user.dart';
 
 class TransactionRepository {
   static const int AVERAGE_FETCH_FEE_TIME = 1 * 60 * 60 * 1000; // milliseconds
@@ -142,7 +142,7 @@ class TransactionRepository {
   }
 
   Future<Uint8List> _getSeed(String pwd) async {
-    UserEnity.User user = await DBOperator().userDao.findUser();
+    UserEntity user = await DBOperator().userDao.findUser();
     web3dart.Wallet wallet = PaperWallet.jsonToWallet([user.keystore, pwd]);
     List<int> seed = PaperWallet.magicSeed(wallet.privateKey.privateKey);
     return Uint8List.fromList(seed);

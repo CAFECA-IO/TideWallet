@@ -11,7 +11,7 @@ class Transaction {
   @ForeignKey(
       childColumns: ['account_id'],
       parentColumns: ['account_id'],
-      entity: Account)
+      entity: AccountEntity)
   @ColumnInfo(name: 'account_id')
   final String accountId;
 

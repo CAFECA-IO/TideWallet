@@ -4,7 +4,7 @@ import 'package:decimal/decimal.dart';
 import 'package:convert/convert.dart';
 import 'package:tidewallet3/models/bitcoin_transaction.model.dart';
 
-import '../database/entity/utxo.dart' as UtxoEntity;
+import '../database/entity/utxo.dart';
 
 class UnspentTxOut {
   static const String ClassName = "utxo";
@@ -130,7 +130,7 @@ class UnspentTxOut {
         locked = map[FieldName_Locked],
         sequence = map[FieldName_Sequence];
 
-  UnspentTxOut.fromUtxoEntity(UtxoEntity.Utxo utxo)
+  UnspentTxOut.fromUtxoEntity(UtxoEntity utxo)
       : id = utxo.utxoId,
         currencyId = utxo.currencyId,
         txId = utxo.txId,

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:web3dart/web3dart.dart';
 
@@ -12,10 +11,12 @@ import '../helpers/http_agent.dart';
 import '../helpers/cryptor.dart';
 import '../helpers/prefer_manager.dart';
 import '../database/db_operator.dart';
-import '../database/entity/user.dart' as UserEnity;
+import '../database/entity/user.dart';
 import '../models/auth.model.dart';
+import '../models/api_response.mode.dart';
 
 class User {
+  String _id;
   Wallet _wallet;
   bool _isBackup = false;
   String _passwordHash;
@@ -23,13 +24,15 @@ class User {
 
   PrefManager _prefManager = PrefManager();
 
+  String get id => _id;
+
   // Deprecated
   bool get hasWallet {
     return _wallet != null;
   }
 
   Future<bool> checkUser() async {
-    UserEnity.User user = await DBOperator().userDao.findUser();
+    UserEntity user = await DBOperator().userDao.findUser();
     if (user != null) {
       this._initUser(user);
       return true;
@@ -37,7 +40,7 @@ class User {
     return false;
   }
 
-  Future<bool> createUser(String pwd) async {
+  Future<bool> createUser(String pwd, String walletName) async {
     Wallet wallet = await compute(PaperWallet.createWallet, pwd);
     List<int> seed =
         await compute(PaperWallet.magicSeed, wallet.privateKey.privateKey);
@@ -48,26 +51,31 @@ class User {
     this._passwordHash = _seasonedPassword(pwd);
 
     final Map payload = {
+      "wallet_name": walletName,
       "extend_public_key": extPK,
       "install_id": installId,
       "app_uuid": installId
     };
 
-    Response res = await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
-    Map data = res.data['payload'];
+    Log.debug(payload);
 
-    this._prefManager.setAuthItem(AuthItem.fromJson(data));
+    APIResponse res =
+        await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
 
-    String keystore = await compute(PaperWallet.walletToJson, wallet);
+    if (res.success) {
+      this._prefManager.setAuthItem(AuthItem.fromJson(res.data));
 
-    UserEnity.User user = UserEnity.User(
-        data['user_id'], keystore, this._passwordHash, this._salt, false);
-    await DBOperator().userDao.insertUser(user);
+      String keystore = await compute(PaperWallet.walletToJson, wallet);
 
-    await this._initUser(user);
-    this._wallet = wallet;
-    // TODO
-    return res.data['success'];
+      UserEntity user = UserEntity(
+          res.data['user_id'], keystore, this._passwordHash, this._salt, false);
+      await DBOperator().userDao.insertUser(user);
+
+      await this._initUser(user);
+      this._wallet = wallet;
+    }
+
+    return res.success;
   }
 
   bool verifyPassword(String password) {
@@ -104,29 +112,31 @@ class User {
     this._passwordHash = _seasonedPassword(pwd);
 
     final Map payload = {
+      "wallet_name": '',
       "extend_public_key": extPK,
       "install_id": installId,
       "app_uuid": installId
     };
 
-    Response res = await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
-    Map data = res.data['payload'];
+    APIResponse res =
+        await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
 
-    this._prefManager.setAuthItem(AuthItem.fromJson(data));
+    if (res.success) {
+      this._prefManager.setAuthItem(AuthItem.fromJson(res.data));
 
-    UserEnity.User user = UserEnity.User(
-        data['user_id'], wallet, this._passwordHash, this._salt, false);
-    await DBOperator().userDao.insertUser(user);
+      UserEntity user = UserEntity(
+          res.data['user_id'], wallet, this._passwordHash, this._salt, false);
+      await DBOperator().userDao.insertUser(user);
 
-    await this._initUser(user);
-    this._wallet = w;
+      await this._initUser(user);
+      this._wallet = w;
+    }
 
-    // TODO
-    return res.data['success'];
+    return res.success;
   }
 
   Future<bool> checkWalletBackup() async {
-    UserEnity.User _user = await DBOperator().userDao.findUser();
+    UserEntity _user = await DBOperator().userDao.findUser();
     if (_user != null) {
       return _user.backupStatus;
     }
@@ -139,7 +149,8 @@ class User {
     return _isBackup;
   }
 
-  Future<void> _initUser(UserEnity.User user) async {
+  Future<void> _initUser(UserEntity user) async {
+    this._id = user.userId;
     this._passwordHash = user.passwordHash;
     this._salt = user.passwordSalt;
     this._isBackup = user.backupStatus;

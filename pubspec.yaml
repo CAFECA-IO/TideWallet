@@ -37,12 +37,6 @@ dependencies:
   bloc: ^6.1.1
   flutter_bloc: ^6.1.1
 
-  # hash 
-  bird_cryptography: ^0.0.1+2
-
-  # bitcoin
-  bs58check: ^1.0.1
-
   equatable: ^1.2.5
   
   rxdart: ^0.24.1
@@ -58,14 +52,17 @@ dependencies:
   sqflite: ^1.3.2+2
   floor: ^0.18.0
 
-
   # crypto
   web3dart: ^1.2.3
   bip32: ^1.0.6
   sha3: ^0.1.2
   hex: ^0.1.2
-
-
+  # bitcoin
+  bs58check: ^1.0.1
+  bitcoins: ^1.0.5
+  # hash
+  bird_cryptography: ^0.0.1+2
+  
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0

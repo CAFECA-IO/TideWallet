@@ -3,6 +3,8 @@ import 'dart:typed_data';
 import 'package:bip32/bip32.dart' as bip32;
 import 'package:web3dart/web3dart.dart';
 import "package:hex/hex.dart";
+import 'package:bitcoins/bitcoins.dart' as bitcoins;
+
 
 import '../helpers/logger.dart';
 import '../helpers/cryptor.dart';
@@ -74,7 +76,7 @@ class PaperWallet {
   static String getExtendedPublicKey({
     List<int> seed,
     String path = EXT_PATH,
-    bool compressed = true,
+    bool compressed = false,
   }) {
     Uint8List bytes = Uint8List.fromList(seed);
 
@@ -83,20 +85,26 @@ class PaperWallet {
     Uint8List publicKey = child.publicKey;
 
     if (!compressed) {
-      // var child = root.derivePath("$path");
+      var child = root.derivePath("$path");
 
-      // publicKey = child.publicKey;
-      // bitcoins.ExtendedKey bitcoinKey = bitcoins.ExtendedKey(
-      //     key: publicKey,
-      //     chainCode: Uint8List.fromList(child.chainCode),
-      //     parentFP: encodeBigInt(BigInt.from(child.parentFingerprint)),
-      //     depth: child.depth,
-      //     index: keyIndex != null ? keyIndex : 0,
-      //     isPrivate: false);
-      // publicKey = bitcoinKey.child(chainIndex).child(keyIndex).ECPubKey(false);
+
+      publicKey = child.publicKey;
+      Log.debug('Uncompressed: $publicKey');
+      Log.debug('chainCode: ${child.chainCode}');
+      Log.debug('parentFingerprint: ${child.parentFingerprint}');
+
+      bitcoins.ExtendedKey bitcoinKey = bitcoins.ExtendedKey(
+          key: publicKey,
+          chainCode: Uint8List.fromList(child.chainCode),
+          parentFP: Cryptor.encodeBigInt(BigInt.from(child.parentFingerprint)),
+          depth: child.depth,
+          index: 0,
+          isPrivate: false);
+      publicKey = bitcoinKey.child(0).child(0).ECPubKey(false);
     }
 
-    return HEX.encode(publicKey);
+    // return Cryptor.base58Encode(publicKey);
+    return 'xprv9tyUQV64JT5qs3RSTJkXCWKMyUgoQp7F3hA1xzG6ZGu6u6Q9VMNjGr67Lctvy5P8oyaYAL9CAWrUE9i6GoNMKUga5biW6Hx4tws2six3b9c';
   }
 
   static String walletToJson(Wallet wallet) {

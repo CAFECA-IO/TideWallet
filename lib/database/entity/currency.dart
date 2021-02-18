@@ -1,7 +1,7 @@
 import 'package:floor/floor.dart';
 
-@entity
-class Currency {
+@Entity(tableName: 'Currency')
+class CurrencyEntity {
   @primaryKey
   @ColumnInfo(name: 'currency_id')
   final String currencyId;
@@ -26,7 +26,9 @@ class Currency {
 
   final String contract;
 
-  Currency({
+  final String image;
+
+  CurrencyEntity({
     this.currencyId,
     this.name,
     this.coinType,
@@ -37,12 +39,26 @@ class Currency {
     this.decimals,
     this.totalSupply,
     this.type,
+    this.image,
   });
+
+  CurrencyEntity.fromJson(Map json): 
+    this.currencyId = json['currency_id'] ?? json['token_id'],
+    this.name = json['name'],
+    this.coinType = json['coinType'],
+    this.description = json['description'],
+    this.address = json['contract'],
+    this.contract = json['contract'],
+    this.symbol = json['symbol'],
+    this.decimals = json['decimals'],
+    this.totalSupply = json['total_supply'],
+    this.type = json['type'] == 0 ? 'fiat' : json['type'] == 1 ? 'currency' : 'token',
+    this.image = json['icon'];
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Currency &&
+      other is CurrencyEntity &&
           runtimeType == other.runtimeType &&
           currencyId == other.currencyId &&
           coinType == other.coinType &&
@@ -51,3 +67,4 @@ class Currency {
   @override
   int get hashCode => currencyId.hashCode ^ coinType.hashCode ^ symbol.hashCode;
 }
+
