@@ -41,6 +41,6 @@ class NetworkEntity {
       : this.networkId = json['blockchain_id'],
         this.network = json['name'],
         this.coinType = json['coin_type'],
-        this.chainId = json['network_id'],
+        this.chainId = json['network_id'], // TODO: Change 'network_id' to 'chain_id'
         this.publish = json['publish'];
 }

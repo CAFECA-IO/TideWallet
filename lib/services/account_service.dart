@@ -29,8 +29,8 @@ abstract class AccountService {
   Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId);
 
   getTransactions();
-  prepareTransaction();
 
+  // TODO: Keep or remove
   // prepareTransaction();
   Future<void> publishTransaction(
       String blockchainId, String currencyId, Transaction transaction);
