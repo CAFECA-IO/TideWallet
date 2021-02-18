@@ -40,7 +40,7 @@ class User {
     return false;
   }
 
-  Future<bool> createUser(String pwd) async {
+  Future<bool> createUser(String pwd, String walletName) async {
     Wallet wallet = await compute(PaperWallet.createWallet, pwd);
     List<int> seed =
         await compute(PaperWallet.magicSeed, wallet.privateKey.privateKey);
@@ -51,23 +51,30 @@ class User {
     this._passwordHash = _seasonedPassword(pwd);
 
     final Map payload = {
+      "wallet_name": walletName,
       "extend_public_key": extPK,
       "install_id": installId,
       "app_uuid": installId
     };
 
-    APIResponse res = await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
+    Log.debug(payload);
 
-    this._prefManager.setAuthItem(AuthItem.fromJson(res.data));
+    APIResponse res =
+        await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
 
-    String keystore = await compute(PaperWallet.walletToJson, wallet);
+    if (res.success) {
+      this._prefManager.setAuthItem(AuthItem.fromJson(res.data));
 
-    UserEnity.User user = UserEnity.User(
-        res.data['user_id'], keystore, this._passwordHash, this._salt, false);
-    await DBOperator().userDao.insertUser(user);
+      String keystore = await compute(PaperWallet.walletToJson, wallet);
 
-    await this._initUser(user);
-    this._wallet = wallet;
+      UserEnity.User user = UserEnity.User(
+          res.data['user_id'], keystore, this._passwordHash, this._salt, false);
+      await DBOperator().userDao.insertUser(user);
+
+      await this._initUser(user);
+      this._wallet = wallet;
+    }
+
     return res.success;
   }
 
@@ -105,23 +112,26 @@ class User {
     this._passwordHash = _seasonedPassword(pwd);
 
     final Map payload = {
+      "wallet_name": '',
       "extend_public_key": extPK,
       "install_id": installId,
       "app_uuid": installId
     };
 
-    APIResponse res = await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
+    APIResponse res =
+        await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
 
-    this._prefManager.setAuthItem(AuthItem.fromJson(res.data));
+    if (res.success) {
+      this._prefManager.setAuthItem(AuthItem.fromJson(res.data));
 
-    UserEnity.User user = UserEnity.User(
-        res.data['user_id'], wallet, this._passwordHash, this._salt, false);
-    await DBOperator().userDao.insertUser(user);
+      UserEnity.User user = UserEnity.User(
+          res.data['user_id'], wallet, this._passwordHash, this._salt, false);
+      await DBOperator().userDao.insertUser(user);
 
-    await this._initUser(user);
-    this._wallet = w;
+      await this._initUser(user);
+      this._wallet = w;
+    }
 
-    // TODO
     return res.success;
   }
 

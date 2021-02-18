@@ -25,6 +25,7 @@ class AccountServiceBase extends AccountService {
   int _lastSyncTimestamp;
 
   get base => this._base;
+  get lastSyncTimestamp => this._lastSyncTimestamp;
 
   AccountServiceBase();
 
@@ -66,7 +67,7 @@ class AccountServiceBase extends AccountService {
   }
 
   @override
-  void start() async {
+  Future start() async {
     await this._getSuppertedToken();
     AccountCurrencyEntity select = await DBOperator()
         .accountCurrencyDao
@@ -167,6 +168,8 @@ class AccountServiceBase extends AccountService {
             amount: c.balance,
             imgPath: c.image,
             symbol: c.symbol,
+            blockchainId: c.blockchainId,
+            chainId: c.chainId
           ),
         )
         .toList();

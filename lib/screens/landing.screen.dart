@@ -44,7 +44,7 @@ class _LandingScreenState extends State<LandingScreen> {
           DialogController.showUnDissmissible(context, LoadingDialog());
         }
 
-        if (state is UserSuccess) {
+        if (state is UserSuccess || state is UserFail) {
           DialogController.dismiss(context);
         }
       },

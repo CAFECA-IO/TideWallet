@@ -4,9 +4,10 @@ import '../constants/account_config.dart';
 abstract class AccountService {
   int syncInterval = 10 * 10 * 1000;
   ACCOUNT base;
+  int lastSyncTimestamp;
 
   void init(String id, ACCOUNT base, { int interval });
-  void start();
+  Future start();
   void stop();
   Decimal toCoinUnit();
   Decimal toSmallUnit();

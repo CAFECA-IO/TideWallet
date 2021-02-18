@@ -95,7 +95,7 @@ class JoinCurrency {
   final String blockchainId;
 
   @ColumnInfo(name: 'chain_id')
-  final String chainId;
+  final int chainId;
 
   JoinCurrency({
     this.currencyId,

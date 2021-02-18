@@ -83,7 +83,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
                           color: MyColors.font_01, shape: BoxShape.circle),
-                      child: Image.asset(
+                      child: Image.network(
                         state.currency?.imgPath ?? _currency.imgPath,
                         width: 32.0,
                         height: 32.0,

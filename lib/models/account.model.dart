@@ -15,6 +15,8 @@ class Currency {
   final String inUSD;
   final String name;
   final ACCOUNT accountType;
+  final String blockchainId;
+  final int chainId;
 
   Currency(
       {
@@ -27,6 +29,8 @@ class Currency {
       this.name,
       this.accountIndex,
       this.accountType,
+      this.blockchainId,
+      this.chainId,
     });
 
   Currency copyWith({
@@ -38,6 +42,8 @@ class Currency {
     String inUSD,
     String name,
     ACCOUNT accountType,
+    String blockchainId,
+    int chainId,
   }) {
     return Currency(
       cointype: cointype ?? this.cointype,
@@ -47,7 +53,9 @@ class Currency {
       symbol: symbol ?? this.symbol,
       imgPath: imgPath ?? this.imgPath,
       name: name ?? this.name,
-      accountType: accountType ?? this.accountType
+      accountType: accountType ?? this.accountType,
+      blockchainId: blockchainId ?? this.blockchainId,
+      chainId: chainId ?? this.chainId,
     );
   }
 
@@ -59,11 +67,12 @@ class Currency {
         accountIndex = map['accountIndex'],
         symbol = map['symbol'],
         name = map['name'],
-        imgPath = map['imgPath'] ?? "assets/images/xpa.png",
+        imgPath = map['imgPath'],
         amount = map['balance'] ?? '0',
         inUSD = map['inUSD'] ?? '0',
-        accountType = map['accountType'];
-
+        accountType = map['accountType'],
+        blockchainId = map['blockchain_id'],
+        chainId = map['chain_id'];
 }
 
 class AccountMessage {

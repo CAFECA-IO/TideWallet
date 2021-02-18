@@ -207,7 +207,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                       children: [
                         Container(
                           // child: Image.asset('assets/images/ic_btc_web.png'),
-                          child: Image.asset(_currency.imgPath),
+                          child: Image.network(_currency.imgPath),
                           width: 24,
                         ),
                         SizedBox(

@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:decimal/decimal.dart';
+import 'package:tidewallet3/helpers/logger.dart';
 
 import 'account_service_decorator.dart';
 import '../constants/account_config.dart';
 import '../services/account_service.dart';
 
 class BitcoinService extends AccountServiceDecorator {
+  Timer _utxoTimer;
   BitcoinService(AccountService service) : super(service) {
     this.base = ACCOUNT.BTC;
     this.syncInterval = 5 * 60 * 1000;
@@ -48,13 +50,21 @@ class BitcoinService extends AccountServiceDecorator {
   }
 
   @override
-  void start() async {
-    this.service.start();
+  Future start() async {
+    await this.service.start();
+
+    await this._syncUTXO();
+
+    this._utxoTimer = Timer.periodic(Duration(milliseconds: this.syncInterval), (_) {
+      this._syncUTXO();
+    });
   }
 
   @override
   void stop() {
     this.service.stop();
+
+    _utxoTimer?.cancel();
   }
 
   @override
@@ -79,5 +89,13 @@ class BitcoinService extends AccountServiceDecorator {
   Future<String> getReceivingAddress() async {
     // TODO: implement publishTransaction
     throw UnimplementedError();
+  }
+
+  Future _syncUTXO() async {
+    int now = DateTime.now().millisecondsSinceEpoch;
+
+    if (now - this.service.lastSyncTimestamp > this.syncInterval) {
+      Log.info('_syncUTXO');
+    }
   }
 }

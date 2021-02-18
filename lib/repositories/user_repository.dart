@@ -7,7 +7,7 @@ class UserRepository {
 
   User get user => _user;
 
-  Future<bool> createUser(String pwd) => _user.createUser(pwd);
+  Future<bool> createUser(String pwd, String walletName) => _user.createUser(pwd, walletName);
 
   Future<bool> checkUser() => _user.checkUser();
 

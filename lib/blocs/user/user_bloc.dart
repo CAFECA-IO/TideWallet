@@ -26,7 +26,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     if (event is UserCreate) {
 
       yield UserLoading();
-      bool success = await _repo.createUser(event.password);
+      bool success = await _repo.createUser(event.password, event.walletName);
       if (success) {
         yield UserSuccess();
       } else {

@@ -7,7 +7,6 @@ import '../models/transaction.model.dart';
 import '../constants/account_config.dart';
 import '../services/account_service.dart';
 import '../mock/endpoint.dart';
-import '../cores/account.dart';
 import '../helpers/logger.dart';
 
 class EthereumService extends AccountServiceDecorator {
@@ -47,8 +46,8 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   @override
-  void start() {
-    this.service.start();
+  Future start() async {
+    await this.service.start();
   }
 
   @override
