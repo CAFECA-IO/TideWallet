@@ -68,7 +68,7 @@ class AccountServiceBase extends AccountService {
 
   @override
   Future start() async {
-    await this._getSuppertedToken();
+    await this._getSupportedToken();
     AccountCurrencyEntity select = await DBOperator()
         .accountCurrencyDao
         .findOneByAccountyId(this._accountId);
@@ -182,7 +182,7 @@ class AccountServiceBase extends AccountService {
     AccountCore().messenger.add(currMsg);
   }
 
-  Future _getSuppertedToken() async {
+  Future _getSupportedToken() async {
     AccountEntity acc =
         await DBOperator().accountDao.findAccount(this._accountId);
 

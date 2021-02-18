@@ -69,7 +69,7 @@ class Currency {
 
   Currency.fromMap(
     Map map,
-  )   : id = map['id'],
+  )   : id = map['currency_id'],
         cointype = map['cointype'],
         purpose = map['purpose'],
         accountIndex = map['accountIndex'],
