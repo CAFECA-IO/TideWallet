@@ -20,7 +20,7 @@ void main() {
   group('database tests', () {
     group('user', () {
       test('find user', () async {
-        User _user = User(
+        UserEntity _user = UserEntity(
             '1qaz2wsx', keystore, 'password_hash1qaz2wsx', 'saltxyz', false);
         await opt.userDao.insertUser(_user);
 
@@ -77,25 +77,30 @@ void main() {
       ];
 
       test('insert accounts', () async {
-        final User user = await opt.userDao.findUser();
+        final UserEntity user = await opt.userDao.findUser();
 
-        List<Account> _accounts = accounts
-            .map((acc) => Account(
+        List<AccountEntity> _accounts = accounts
+            .map(
+              (acc) => AccountEntity(
                 accountId: acc['account_id'],
                 userId: user.userId,
-                purpose: acc['purpose'],
-                accountIndex: int.tryParse(acc['account_index'])))
+                // purpose: acc['purpose'],
+                // accountIndex: int.tryParse(
+                //   acc['account_index'],
+                // ),
+              ),
+            )
             .toList();
         List<int> _result = await opt.accountDao.insertAccounts(_accounts);
-        List<Account> actual = await opt.accountDao.findAllAccounts();
+        List<AccountEntity> actual = await opt.accountDao.findAllAccounts();
 
         expect(actual, equals(_accounts));
       });
 
       test('insert currencies', () async {
-        List<Currency> _currencies = currencies
+        List<CurrencyEntity> _currencies = currencies
             .map(
-              (c) => Currency(
+              (c) => CurrencyEntity(
                   currencyId: c['token_id'],
                   name: c['name'],
                   coinType: 60,

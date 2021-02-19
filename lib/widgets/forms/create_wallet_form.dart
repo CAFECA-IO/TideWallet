@@ -31,7 +31,6 @@ class _CreateWalletFormState extends State<CreateWalletForm> {
   void dispose() {
     super.dispose();
     _bloc.close();
-    _userBloc.close();
   }
 
   @override
@@ -64,7 +63,7 @@ class _CreateWalletFormState extends State<CreateWalletForm> {
 
         if (_state.error == CreateFormError.none) {
           Navigator.of(context).pop();
-          _userBloc.add(UserCreate(_state.password));
+          _userBloc.add(UserCreate(_state.password, _state.name));
         }
       },
       child: BlocBuilder<CreateWalletBloc, CreateWalletState>(

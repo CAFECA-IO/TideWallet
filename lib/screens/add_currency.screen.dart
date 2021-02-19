@@ -79,7 +79,7 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
                 children: [
                   Container(
                     alignment: Alignment.center,
-                    child: Image.asset(
+                    child: Image.network(
                       state.result.imgUrl,
                       width: 80.0,
                       height: 80.0,

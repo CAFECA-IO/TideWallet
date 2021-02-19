@@ -76,11 +76,11 @@ class Currency {
         symbol = map['symbol'],
         name = map['name'],
         imgPath = map['imgPath'],
-        amount = map['amount'] ?? '0',
+        amount = map['balance'] ?? '0',
         inUSD = map['inUSD'] ?? '0',
         accountType = map['accountType'],
-        blockchainId = map['blockchainId'],
-        chainId = map['chainId'],
+        blockchainId = map['blockchain_id'],
+        chainId = map['chain_id'],
         decimals = map['decimals'],
         publish = map['publish'];
 }

@@ -11,8 +11,9 @@ class UserCheck extends UserEvent {}
 
 class UserCreate extends UserEvent {
   final String password;
+  final String walletName;
 
-  UserCreate(this.password);
+  UserCreate(this.password, this.walletName);
 }
 
 class UserRestore extends UserEvent {}

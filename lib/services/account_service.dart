@@ -5,11 +5,13 @@ import '../models/transaction.model.dart';
 import '../models/utxo.model.dart';
 
 abstract class AccountService {
-  int syncInterval = 10 * 1000;
+  int syncInterval = 10 * 10 * 1000;
   ACCOUNT base;
+  int lastSyncTimestamp;
+  String accountId;
 
-  void init();
-  void start();
+  void init(String id, ACCOUNT base, {int interval});
+  Future start();
   void stop();
   // Decimal toCoinUnit(Decimal smallUnit);
   // Decimal toSmallUnit(Decimal coinUnit);
@@ -27,6 +29,8 @@ abstract class AccountService {
   Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId);
 
   getTransactions();
+
+  // TODO: Keep or remove
   // prepareTransaction();
   Future<void> publishTransaction(
       String blockchainId, String currencyId, Transaction transaction);
