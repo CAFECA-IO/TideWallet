@@ -51,6 +51,8 @@ class TransactionEntity {
 
   final String direction;
 
+  final String amount;
+
   TransactionEntity({
     this.transactionId,
     this.accountId,
@@ -67,6 +69,7 @@ class TransactionEntity {
     this.fee,
     this.status,
     this.timestamp,
-    this.direction
+    this.direction,
+    this.amount
   });
 }

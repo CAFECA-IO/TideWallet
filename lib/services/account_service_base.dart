@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:decimal/decimal.dart';
-import 'package:tidewallet3/database/entity/transaction.dart';
 
 import '../constants/endpoint.dart';
 import '../constants/account_config.dart';
@@ -9,6 +8,7 @@ import '../database/db_operator.dart';
 import '../database/entity/account_currency.dart';
 import '../database/entity/account.dart';
 import '../database/entity/currency.dart';
+import '../database/entity/transaction.dart';
 import '../helpers/logger.dart';
 import '../helpers/http_agent.dart';
 import '../models/account.model.dart';
@@ -211,7 +211,7 @@ class AccountServiceBase extends AccountService {
       final transactions = await this._getTransactions(currency);
       AccountMessage txMsg = AccountMessage(
           evt: ACCOUNT_EVT.OnUpdateTransactions,
-          value: {"currency": currency, "transactions": transactions});
+          value: {"currency": currency, "transactions": transactions.map((tx) => Transaction.fromTransactionEntity(tx))});
       AccountCore().messenger.add(txMsg);
     }
   }
@@ -226,6 +226,7 @@ class AccountServiceBase extends AccountService {
       txs = txs
           .map((tx) => TransactionEntity(
               transactionId: tx['txid'],
+              amount: tx['amount'],
               accountId: this._accountId,
               currencyId: currency.currencyId,
               txId: tx['txid'],
@@ -240,6 +241,7 @@ class AccountServiceBase extends AccountService {
               timestamp: tx['timestamp']))
           .toList();
 
+      await DBOperator().transactionDao.insertTransactions(txs);
       return txs;
     } else {
       return this._loadTransactions(currency.currencyId);

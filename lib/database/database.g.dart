@@ -98,7 +98,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Currency` (`currency_id` TEXT, `name` TEXT, `coin_type` INTEGER, `description` TEXT, `symbol` TEXT, `decimals` INTEGER, `address` TEXT, `type` TEXT, `total_supply` TEXT, `contract` TEXT, `image` TEXT, PRIMARY KEY (`currency_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `TransactionEntity` (`transaction_id` TEXT, `account_id` TEXT, `currency_id` TEXT, `tx_id` TEXT, `source_address` TEXT, `destinction_address` TEXT, `timestamp` INTEGER, `confirmation` INTEGER, `gas_price` TEXT, `gas_used` INTEGER, `block` INTEGER, `fee` TEXT NOT NULL, `note` TEXT, `status` TEXT, `direction` TEXT, PRIMARY KEY (`transaction_id`))');
+            'CREATE TABLE IF NOT EXISTS `TransactionEntity` (`transaction_id` TEXT, `account_id` TEXT, `currency_id` TEXT, `tx_id` TEXT, `source_address` TEXT, `destinction_address` TEXT, `timestamp` INTEGER, `confirmation` INTEGER, `gas_price` TEXT, `gas_used` INTEGER, `block` INTEGER, `fee` TEXT NOT NULL, `note` TEXT, `status` TEXT, `direction` TEXT, `amount` TEXT, PRIMARY KEY (`transaction_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Network` (`network_id` TEXT, `network` TEXT NOT NULL, `coin_type` INTEGER, `publish` INTEGER, `chain_id` INTEGER, PRIMARY KEY (`network_id`))');
         await database.execute(
@@ -327,7 +327,8 @@ class _$TransactionDao extends TransactionDao {
                   'fee': item.fee,
                   'note': item.note,
                   'status': item.status,
-                  'direction': item.direction
+                  'direction': item.direction,
+                  'amount': item.amount
                 }),
         _transactionEntityUpdateAdapter = UpdateAdapter(
             database,
@@ -348,7 +349,8 @@ class _$TransactionDao extends TransactionDao {
                   'fee': item.fee,
                   'note': item.note,
                   'status': item.status,
-                  'direction': item.direction
+                  'direction': item.direction,
+                  'amount': item.amount
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -382,7 +384,8 @@ class _$TransactionDao extends TransactionDao {
             fee: row['fee'] as String,
             status: row['status'] as String,
             timestamp: row['timestamp'] as int,
-            direction: row['direction'] as String));
+            direction: row['direction'] as String,
+            amount: row['amount'] as String));
   }
 
   @override
