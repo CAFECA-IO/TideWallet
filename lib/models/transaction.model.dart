@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 import 'dart:convert';
 import 'dart:ui';
-
 import 'package:decimal/decimal.dart';
 import 'package:convert/convert.dart';
 
@@ -11,6 +10,7 @@ import './utxo.model.dart';
 import './bitcoin_transaction.model.dart';
 import './ethereum_transaction.model.dart';
 import './ethereum_token_transaction.model.dart';
+import '../database/entity/transaction.dart';
 
 class Transaction {
   String id;
@@ -108,6 +108,21 @@ class Transaction {
     _address = (direction == TransactionDirection.sent)
         ? transaction.to
         : transaction.from;
+  }
+
+  Transaction.fromTransactionEntity(TransactionEntity entity) {
+    txId = entity.txId;
+    id = entity.transactionId;
+    direction = entity.direction == 'moved' ?  TransactionDirection.moved : entity.direction == 'send' ? TransactionDirection.sent : TransactionDirection.received;
+    amount = Decimal.parse(entity.amount);
+    status = entity.status == 'pending' ? TransactionStatus.pending : entity.status == 'success' ? TransactionStatus.success : TransactionStatus.fail;
+    timestamp = entity.timestamp;
+    confirmations = entity.confirmation;
+    _address = (direction == TransactionDirection.sent)
+        ? entity.destinctionAddress
+        : entity.sourceAddress;
+    fee = Decimal.parse(entity.fee);
+    note = hex.decode(entity.note);
   }
 }
 

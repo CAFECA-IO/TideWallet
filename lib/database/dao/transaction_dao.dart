@@ -5,14 +5,14 @@ import '../entity/transaction.dart';
 @dao
 abstract class TransactionDao {
   @Query('SELECT * FROM Transaction WHERE currency_id = :id')
-  Future<Transaction> findAllTransactionsByCurrencyId(String id);
+  Future<List<TransactionEntity>> findAllTransactionsByCurrencyId(String id);
 
   @Insert(onConflict: OnConflictStrategy.replace)
-  Future<void> insertTransaction(Transaction tx);
+  Future<void> insertTransaction(TransactionEntity tx);
 
   @update
-  Future<void> updateTransaction(Transaction tx);
+  Future<void> updateTransaction(TransactionEntity tx);
 
-  @insert
-  Future<List<int>> insertTransactions(List<Transaction> transactions);
+  @Insert(onConflict: OnConflictStrategy.replace)
+  Future<List<int>> insertTransactions(List<TransactionEntity> transactions);
 }

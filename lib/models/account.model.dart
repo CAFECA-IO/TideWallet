@@ -6,7 +6,7 @@ import '../constants/account_config.dart';
 enum ACCOUNT_EVT { OnUpdateAccount, OnUpdateCurrency, OnUpdateTransactions }
 
 class Currency {
-  final String id;
+  final String id; // AccountCurrencyEntity id for Backend 
   final int cointype;
   final int purpose;
   final int accountIndex;
@@ -20,6 +20,7 @@ class Currency {
   final int chainId;
   final int decimals;
   final bool publish;
+  final String currencyId; // CurrencyEntity currency_id for APP 
 
   Currency(
       {this.id,
@@ -35,7 +36,8 @@ class Currency {
       this.chainId,
       this.blockchainId,
       this.decimals,
-      this.publish});
+      this.publish,
+      this.currencyId});
 
   Currency copyWith(
       {String id,
@@ -82,7 +84,8 @@ class Currency {
         blockchainId = map['blockchain_id'],
         chainId = map['chain_id'],
         decimals = map['decimals'],
-        publish = map['publish'];
+        publish = map['publish'],
+        currencyId = map['currency_id'];
 }
 
 class AccountMessage {
