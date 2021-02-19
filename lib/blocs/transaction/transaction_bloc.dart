@@ -42,10 +42,17 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       _repo.setCurrency(event.currency);
       if (state is TransactionInitial) {
         TransactionInitial _state = state;
-        yield _state.copyWith(spandable: Decimal.parse(event.currency.amount));
-      } else
-        yield TransactionInitial(
-            spandable: Decimal.parse(event.currency.amount));
+        //TODO TEST
+        yield _state.copyWith(spandable: Decimal.parse('0.14'));
+        
+        // yield _state.copyWith(spandable: Decimal.parse(event.currency.amount));
+      } else {
+        //TODO TEST
+        yield TransactionInitial(spandable: Decimal.parse('0.14'));
+       
+        // yield TransactionInitial(
+        //   spandable: Decimal.parse(event.currency.amount));
+      }
     }
     if (state is TransactionSent) return;
     if (state is TransactionPublishing) return;
@@ -87,26 +94,31 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       List<dynamic> result;
       List<bool> _rules = [_state.rules[0], _rule2];
       Decimal _fee;
-      if (_state.rules[0]) {
+      Decimal _gasPrice;
+      Decimal _gasLimit;
+      if (_state.rules[0] && event.amount.isNotEmpty) {
         result = await _repo.getTransactionFee(
             amount: Decimal.parse(event.amount), address: _state.address);
         if (result.length == 1) {
           _fee = result[0][TransactionPriority.standard];
           _rule2 = _repo.verifyAmount(Decimal.parse(event.amount), fee: _fee);
         } else if (result.length == 2) {
-          _fee = result[0][TransactionPriority.standard] * result[1];
+          _gasPrice = result[0][TransactionPriority.standard];
+          _gasLimit = result[1];
+          _fee = _gasPrice * _gasLimit;
           _rule2 = _repo.verifyAmount(Decimal.parse(event.amount), fee: _fee);
         }
         _rules = [_state.rules[0], _rule2];
         Log.debug(_rules);
         String _feeToFiat =
-            _traderRepo.calculateFeeToFiat(_repo.currency, _fee).toString() +
-                _traderRepo.selectedFiat.name;
+            _traderRepo.calculateFeeToFiat(_repo.currency, _fee).toString();
         yield _state.copyWith(
           amount: Decimal.parse(event.amount),
           rules: _rules,
           fee: _fee,
           feeToFiat: _feeToFiat,
+          gasLimit: _gasLimit,
+          gasPrice: _gasPrice,
         );
       } else {
         yield _state.copyWith(
@@ -133,8 +145,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           _rule2 = _repo.verifyAmount(_state.amount, fee: _fee);
         }
         String _feeToFiat =
-            _traderRepo.calculateFeeToFiat(_repo.currency, _fee).toString() +
-                _traderRepo.selectedFiat.name;
+            _traderRepo.calculateFeeToFiat(_repo.currency, _fee).toString();
         yield _state.copyWith(
             priority: event.priority,
             fee: _fee,
@@ -154,8 +165,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         _rule2 = _repo.verifyAmount(_state.amount, fee: _fee);
         List<bool> _rules = [_state.rules[0], _rule2];
         String _feeToFiat =
-            _traderRepo.calculateFeeToFiat(_repo.currency, _fee).toString() +
-                _traderRepo.selectedFiat.name;
+            _traderRepo.calculateFeeToFiat(_repo.currency, _fee).toString();
         yield _state.copyWith(
             gasLimit: Decimal.parse(event.gasLimit),
             rules: _rules,
@@ -172,8 +182,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         _rule2 = _repo.verifyAmount(_state.amount, fee: _fee);
         List<bool> _rules = [_state.rules[0], _rule2];
         String _feeToFiat =
-            _traderRepo.calculateFeeToFiat(_repo.currency, _fee).toString() +
-                _traderRepo.selectedFiat.name;
+            _traderRepo.calculateFeeToFiat(_repo.currency, _fee).toString();
         yield _state.copyWith(
             gasPrice: Decimal.parse(event.gasPrice),
             rules: _rules,
@@ -184,6 +193,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     if (event is PublishTransaction) {
       yield TransactionPublishing();
       try {
+        Log.debug('PublishTransaction _state: ${_state.props}}'); //--
+
         Transaction tansaction = await _repo.prepareTransaction(
             event.password, _state.address, _state.amount,
             fee: _state.fee,

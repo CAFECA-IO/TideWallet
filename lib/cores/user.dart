@@ -57,8 +57,6 @@ class User {
       "app_uuid": installId
     };
 
-    Log.debug(payload);
-
     APIResponse res =
         await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
 

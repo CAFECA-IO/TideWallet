@@ -15,7 +15,7 @@ abstract class TransactionService {
       Decimal amount,
       Uint8List message});
   Transaction prepareTransaction(
-      bool publish, String to, Decimal amount, Uint8List message,
+      bool publish, String to, Decimal amount, String message,
       {Decimal fee,
       Decimal gasPrice,
       Decimal gasLimit,

@@ -53,7 +53,7 @@ class _ScanAddressScreenState extends State<ScanAddressScreen> {
               cubit: _bloc,
               builder: (context, state) {
                 if (state is TransactionInitial &&
-                    state.address.isNotEmpty &&
+                    (state.address != null && state.address.isNotEmpty) &&
                     !state.rules[0]) {
                   print(state.rules[0]);
                   return Positioned(

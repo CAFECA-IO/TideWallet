@@ -8,7 +8,6 @@ import 'package:decimal/decimal.dart';
 import 'utils.dart';
 import 'rlp.dart' as rlp;
 import 'logger.dart';
-import '../cores/signer.dart';
 import '../models/ethereum_transaction.model.dart';
 
 bool isValidFormat(String address) {
@@ -37,7 +36,14 @@ String eip55Address(String address) {
   return newAddr;
 }
 
-Uint8List getEthereumAddressBytes(String address) {}
+Uint8List getEthereumAddressBytes(String address) {
+  if (!isValidFormat(address)) {
+    throw ArgumentError.value(address, "address", "invalid address");
+  }
+  final String addr = stripHexPrefix(address).toLowerCase();
+  Uint8List buffer = Uint8List.fromList(hex.decode(addr));
+  return buffer;
+}
 
 bool verifyEthereumAddress(String address) {
   if (address.contains(':')) {
@@ -62,7 +68,7 @@ Uint8List encodeToRlp(EthereumTransaction transaction) {
   final list = [
     transaction.nonce,
     BigInt.parse(transaction.gasPrice.toString()),
-    transaction.gasUsed,
+    transaction.gasUsed.toInt(),
   ];
 
   if (transaction.to != null) {

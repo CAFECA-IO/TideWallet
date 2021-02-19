@@ -28,7 +28,7 @@ class TransactionInitial extends TransactionState {
   static const defaultValid = [false, false];
 
   TransactionInitial(
-      {this.address = "",
+      {this.address,
       this.amount,
       this.spandable,
       this.priority = TransactionPriority.standard,
