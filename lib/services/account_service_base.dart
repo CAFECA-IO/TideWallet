@@ -211,7 +211,7 @@ class AccountServiceBase extends AccountService {
       final transactions = await this._getTransactions(currency);
       AccountMessage txMsg = AccountMessage(
           evt: ACCOUNT_EVT.OnUpdateTransactions,
-          value: {"currency": currency, "transactions": transactions.map((tx) => Transaction.fromTransactionEntity(tx))});
+          value: {"currency": currency, "transactions": transactions.map((tx) => Transaction.fromTransactionEntity(tx)).toList()});
       AccountCore().messenger.add(txMsg);
     }
   }
