@@ -98,7 +98,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Currency` (`currency_id` TEXT, `name` TEXT, `coin_type` INTEGER, `description` TEXT, `symbol` TEXT, `decimals` INTEGER, `address` TEXT, `type` TEXT, `total_supply` TEXT, `contract` TEXT, `image` TEXT, PRIMARY KEY (`currency_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Transaction` (`transaction_id` TEXT, `account_id` TEXT, `currency_id` TEXT, `tx_id` TEXT, `source_address` TEXT, `destinction_address` TEXT, `timestamp` INTEGER, `confirmation` INTEGER, `gas_price` TEXT, `gas_used` INTEGER, `nonce` INTEGER, `block` INTEGER, `locktime` INTEGER, `fee` TEXT NOT NULL, `note` TEXT, `status` INTEGER, PRIMARY KEY (`transaction_id`))');
+            'CREATE TABLE IF NOT EXISTS `TransactionEntity` (`transaction_id` TEXT, `account_id` TEXT, `currency_id` TEXT, `tx_id` TEXT, `source_address` TEXT, `destinction_address` TEXT, `timestamp` INTEGER, `confirmation` INTEGER, `gas_price` TEXT, `gas_used` INTEGER, `block` INTEGER, `fee` TEXT NOT NULL, `note` TEXT, `status` TEXT, `direction` TEXT, PRIMARY KEY (`transaction_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Network` (`network_id` TEXT, `network` TEXT NOT NULL, `coin_type` INTEGER, `publish` INTEGER, `chain_id` INTEGER, PRIMARY KEY (`network_id`))');
         await database.execute(
@@ -309,10 +309,10 @@ class _$CurrencyDao extends CurrencyDao {
 class _$TransactionDao extends TransactionDao {
   _$TransactionDao(this.database, this.changeListener)
       : _queryAdapter = QueryAdapter(database),
-        _transactionInsertionAdapter = InsertionAdapter(
+        _transactionEntityInsertionAdapter = InsertionAdapter(
             database,
-            'Transaction',
-            (Transaction item) => <String, dynamic>{
+            'TransactionEntity',
+            (TransactionEntity item) => <String, dynamic>{
                   'transaction_id': item.transactionId,
                   'account_id': item.accountId,
                   'currency_id': item.currencyId,
@@ -323,18 +323,17 @@ class _$TransactionDao extends TransactionDao {
                   'confirmation': item.confirmation,
                   'gas_price': item.gasPrice,
                   'gas_used': item.gasUsed,
-                  'nonce': item.nonce,
                   'block': item.block,
-                  'locktime': item.locktime,
                   'fee': item.fee,
                   'note': item.note,
-                  'status': item.status
+                  'status': item.status,
+                  'direction': item.direction
                 }),
-        _transactionUpdateAdapter = UpdateAdapter(
+        _transactionEntityUpdateAdapter = UpdateAdapter(
             database,
-            'Transaction',
+            'TransactionEntity',
             ['transaction_id'],
-            (Transaction item) => <String, dynamic>{
+            (TransactionEntity item) => <String, dynamic>{
                   'transaction_id': item.transactionId,
                   'account_id': item.accountId,
                   'currency_id': item.currencyId,
@@ -345,12 +344,11 @@ class _$TransactionDao extends TransactionDao {
                   'confirmation': item.confirmation,
                   'gas_price': item.gasPrice,
                   'gas_used': item.gasUsed,
-                  'nonce': item.nonce,
                   'block': item.block,
-                  'locktime': item.locktime,
                   'fee': item.fee,
                   'note': item.note,
-                  'status': item.status
+                  'status': item.status,
+                  'direction': item.direction
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -359,16 +357,17 @@ class _$TransactionDao extends TransactionDao {
 
   final QueryAdapter _queryAdapter;
 
-  final InsertionAdapter<Transaction> _transactionInsertionAdapter;
+  final InsertionAdapter<TransactionEntity> _transactionEntityInsertionAdapter;
 
-  final UpdateAdapter<Transaction> _transactionUpdateAdapter;
+  final UpdateAdapter<TransactionEntity> _transactionEntityUpdateAdapter;
 
   @override
-  Future<Transaction> findAllTransactionsByCurrencyId(String id) async {
-    return _queryAdapter.query(
+  Future<List<TransactionEntity>> findAllTransactionsByCurrencyId(
+      String id) async {
+    return _queryAdapter.queryList(
         'SELECT * FROM Transaction WHERE currency_id = ?',
         arguments: <dynamic>[id],
-        mapper: (Map<String, dynamic> row) => Transaction(
+        mapper: (Map<String, dynamic> row) => TransactionEntity(
             transactionId: row['transaction_id'] as String,
             accountId: row['account_id'] as String,
             currencyId: row['currency_id'] as String,
@@ -380,27 +379,27 @@ class _$TransactionDao extends TransactionDao {
             gasUsed: row['gas_used'] as int,
             note: row['note'] as String,
             block: row['block'] as int,
-            locktime: row['locktime'] as int,
             fee: row['fee'] as String,
-            nonce: row['nonce'] as int,
-            status: row['status'] as int,
-            timestamp: row['timestamp'] as int));
+            status: row['status'] as String,
+            timestamp: row['timestamp'] as int,
+            direction: row['direction'] as String));
   }
 
   @override
-  Future<void> insertTransaction(Transaction tx) async {
-    await _transactionInsertionAdapter.insert(tx, OnConflictStrategy.replace);
+  Future<void> insertTransaction(TransactionEntity tx) async {
+    await _transactionEntityInsertionAdapter.insert(
+        tx, OnConflictStrategy.replace);
   }
 
   @override
-  Future<List<int>> insertTransactions(List<Transaction> transactions) {
-    return _transactionInsertionAdapter.insertListAndReturnIds(
-        transactions, OnConflictStrategy.abort);
+  Future<List<int>> insertTransactions(List<TransactionEntity> transactions) {
+    return _transactionEntityInsertionAdapter.insertListAndReturnIds(
+        transactions, OnConflictStrategy.replace);
   }
 
   @override
-  Future<void> updateTransaction(Transaction tx) async {
-    await _transactionUpdateAdapter.update(tx, OnConflictStrategy.abort);
+  Future<void> updateTransaction(TransactionEntity tx) async {
+    await _transactionEntityUpdateAdapter.update(tx, OnConflictStrategy.abort);
   }
 }
 
@@ -508,6 +507,7 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
         'SELECT * FROM JoinCurrency WHERE JoinCurrency.account_id = ?',
         arguments: <dynamic>[id],
         mapper: (Map<String, dynamic> row) => JoinCurrency(
+            accountcurrencyId: row['accountcurrency_id'] as String,
             currencyId: row['currency_id'] as String,
             symbol: row['symbol'] as String,
             name: row['name'] as String,

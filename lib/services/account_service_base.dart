@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:decimal/decimal.dart';
+import 'package:tidewallet3/database/entity/transaction.dart';
 
 import '../constants/endpoint.dart';
 import '../constants/account_config.dart';
@@ -137,7 +138,8 @@ class AccountServiceBase extends AccountService {
       final v = currs
           .map(
             (c) => AccountCurrencyEntity(
-                accountcurrencyId: c['currency_id'] ?? c['token_id'],
+                accountcurrencyId: c['account_id'] ??
+                    c['account_token_id'], // TODO: Change name
                 accountId: this._accountId,
                 numberOfUsedExternalKey: c['number_of_external_key'],
                 numberOfUsedInternalKey: c['number_of_internal_key'],
@@ -151,6 +153,7 @@ class AccountServiceBase extends AccountService {
     }
 
     await this._pushResult();
+    await this._syncTransactions();
   }
 
   Future _pushResult() async {
@@ -170,7 +173,8 @@ class AccountServiceBase extends AccountService {
               blockchainId: c.blockchainId,
               chainId: c.chainId,
               publish: c.publish,
-              id: c.currencyId),
+              id: c.accountcurrencyId,
+              currencyId: c.currencyId),
         )
         .toList();
 
@@ -198,36 +202,52 @@ class AccountServiceBase extends AccountService {
       tokens = tokens.map((t) => CurrencyEntity.fromJson(t)).toList();
       await DBOperator().currencyDao.insertCurrencies(tokens);
     }
-    @override
-    Future<List> getChangingAddress(String currencyId) async {
-      // TODO: implement publishTransaction
-      throw UnimplementedError();
-    }
+  }
 
-    @override
-    Future<List> getReceivingAddress(String currencyId) async {
-      // TODO: implement publishTransaction
-      throw UnimplementedError();
-    }
+  Future _syncTransactions() async {
+    final currencies = AccountCore().currencies[this._base];
 
-    @override
-    Future<Decimal> estimateGasLimit(String blockchainId, String from,
-        String to, String amount, String data) {
-      // TODO: implement estimateGasLimit
-      throw UnimplementedError();
+    for (var currency in currencies) {
+      final transactions = await this._getTransactions(currency);
+      AccountMessage txMsg = AccountMessage(
+          evt: ACCOUNT_EVT.OnUpdateTransactions,
+          value: {"currency": currency, "transactions": transactions});
+      AccountCore().messenger.add(txMsg);
     }
+  }
 
-    @override
-    Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) {
-      // TODO: implement getUnspentTxOut
-      throw UnimplementedError();
-    }
+  Future<List<TransactionEntity>> _getTransactions(Currency currency) async {
+    APIResponse res =
+        await HTTPAgent().get(Endpoint.SUSANOO + '/wallet/account/txs/${currency.id}');
 
-    @override
-    Future<int> getNonce(String blockchainId) {
-      // TODO: implement getNon
-      throw UnimplementedError();
+    if (res.success) {
+      List txs = res.data;
+
+      txs = txs
+          .map((tx) => TransactionEntity(
+              transactionId: tx['txid'],
+              accountId: this._accountId,
+              currencyId: currency.currencyId,
+              txId: tx['txid'],
+              confirmation: tx['confirmations'],
+              sourceAddress: tx['source_addresses'],
+              destinctionAddress: tx['destination_addresses'],
+              gasPrice: tx['gas_price'],
+              gasUsed: tx['gas_limit'],
+              fee: tx['fee'],
+              direction: tx['direction'],
+              status: tx['status'],
+              timestamp: tx['timestamp']))
+          .toList();
+
+      return txs;
+    } else {
+      return this._loadTransactions(currency.currencyId);
     }
+  }
+
+  Future<List<TransactionEntity>> _loadTransactions(String currencyId) async {
+    return DBOperator().transactionDao.findAllTransactionsByCurrencyId(currencyId);
   }
 
   @override

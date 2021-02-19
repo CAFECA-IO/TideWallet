@@ -97,8 +97,6 @@ class PaperWallet {
     final serialization =
         bitcoinKey.toBase58(Uint8List.fromList(publicPrefix));
 
-    return 'xprv9tyUQV64JT5qs3RSTJkXCWKMyUgoQp7F3hA1xzG6ZGu6u6Q9VMNjGr67Lctvy5P8oyaYAL9CAWrUE9i6GoNMKUga5biW6Hx4tws2six3b9c';
-
     return serialization;
   }
 
