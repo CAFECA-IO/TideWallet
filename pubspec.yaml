@@ -42,6 +42,7 @@ dependencies:
 
   # bitcoin
   bs58check: ^1.0.1
+  bitcoins: ^1.0.2
 
   equatable: ^1.2.5
   

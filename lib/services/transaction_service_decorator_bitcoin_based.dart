@@ -81,7 +81,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     bool publish,
     String to,
     Decimal amount,
-    Uint8List message, {
+    String message, {
     Uint8List privKey,
     Decimal gasPrice,
     Decimal gasLimit,

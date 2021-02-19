@@ -7,6 +7,9 @@ import '../models/utxo.model.dart';
 import '../models/ethereum_transaction.model.dart';
 import '../helpers/ethereum_based_utils.dart';
 import '../helpers/utils.dart';
+import '../helpers/converter.dart';
+
+import '../helpers/rlp.dart' as rlp;
 
 class EthereumBasedTransactionServiceDecorator extends TransactionService {
   final TransactionService service;
@@ -20,8 +23,8 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
     Uint8List rawDataHash = keccak256(payload);
     MsgSignature signature = Signer().sign(rawDataHash, privKey);
     final chainIdV = transaction.chainId != null
-        ? (transaction.signature.v - 27 + (transaction.chainId * 2 + 35))
-        : transaction.signature.v;
+        ? (signature.v - 27 + (transaction.chainId * 2 + 35))
+        : signature.v;
     signature = MsgSignature(signature.r, signature.s, chainIdV);
     transaction.signature = signature;
     return transaction;
@@ -32,7 +35,7 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
     bool publish,
     String to,
     Decimal amount,
-    Uint8List message, {
+    String message, {
     Uint8List privKey, //ETH
     Decimal gasPrice, //ETH
     Decimal gasLimit, //ETH
@@ -45,14 +48,14 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
     int changeIndex,
   }) {
     EthereumTransaction transaction = EthereumTransaction.prepareTransaction(
-      from: changeAddress, // !! TODO
+      // from: changeAddress, // --
       to: to,
       nonce: nonce,
-      amount: amount,
-      gasPrice: gasPrice,
+      amount: Converter.toEthSmallestUnit(amount),
+      gasPrice: Converter.toEthSmallestUnit(gasPrice),
       gasUsed: gasLimit,
-      message: message ?? Uint8List(0),
-      chainId: chainId, // TODO
+      message: message == null ? Uint8List(0) : rlp.toBuffer(message),
+      chainId: chainId,
       signature: MsgSignature(BigInt.zero, BigInt.zero, chainId),
     );
     return _signTransaction(transaction, privKey);

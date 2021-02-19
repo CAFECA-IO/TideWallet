@@ -10,7 +10,7 @@ import '../models/transaction.model.dart';
 class TransactionServiceBased extends TransactionService {
   @override
   Transaction prepareTransaction(
-      bool publish, String to, Decimal amount, Uint8List message,
+      bool publish, String to, Decimal amount, String message,
       {Decimal fee,
       Decimal gasPrice,
       Decimal gasLimit,

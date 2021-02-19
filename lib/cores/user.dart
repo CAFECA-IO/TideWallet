@@ -52,11 +52,12 @@ class User {
       "install_id": installId,
       "app_uuid": installId
     };
+//TODO TEST
+    // Response res = await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
+    Map data = payload; //res.data['payload'];
 
-    Response res = await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
-    Map data = res.data['payload'];
-
-    this._prefManager.setAuthItem(AuthItem.fromJson(data));
+//TODO TEST
+    // this._prefManager.setAuthItem(AuthItem.fromJson(data));
 
     String keystore = await compute(PaperWallet.walletToJson, wallet);
 
@@ -67,7 +68,9 @@ class User {
     await this._initUser(user);
     this._wallet = wallet;
     // TODO
-    return res.data['success'];
+    
+//TODO TEST
+    return true; //res.data['success'];
   }
 
   bool verifyPassword(String password) {

@@ -23,6 +23,6 @@ class Converter {
   }
 
   static Decimal toEthSmallestUnit(Decimal eth) {
-    return eth * _btcInSatoshi;
+    return eth * _ethInWei;
   }
 }

@@ -58,6 +58,12 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
       body: BlocListener<TransactionBloc, TransactionState>(
         cubit: _bloc,
         listener: (context, state) async {
+          if (state is CreateTransactionFail) {
+            DialogController.dismiss(context);
+            DialogController.show(
+                context, ErrorDialog(t('create_transaction_fail')));
+            // TODO
+          }
           if (state is TransactionPublishing) {
             DialogController.showUnDissmissible(context, LoadingDialog());
           }

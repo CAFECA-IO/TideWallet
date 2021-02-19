@@ -2,13 +2,15 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:bip32/bip32.dart' as bip32;
 import 'package:web3dart/web3dart.dart';
-import "package:hex/hex.dart";
+import 'package:convert/convert.dart';
+import 'package:bitcoins/bitcoins.dart';
 
 import '../helpers/logger.dart';
 import '../helpers/cryptor.dart';
+import '../helpers/utils.dart';
 
 class PaperWallet {
-  static const String EXT_PATH = "m/44'/0'/0'";
+  static const String EXT_PATH = "m/44'/60'/0'";
   static const int EXT_CHAININDEX = 0;
   static const int EXT_KEYINDEX = 0;
 
@@ -39,7 +41,7 @@ class PaperWallet {
   static List<int> magicSeed(Uint8List pk) {
     List<int> seed = Cryptor.keccak256round(pk, round: 2);
 
-    String string = HEX.encode(seed);
+    String string = hex.encode(seed);
     Log.info('Seed: $string');
 
     return seed;
@@ -47,27 +49,43 @@ class PaperWallet {
 
   static Future<Uint8List> getPubKey(
     Uint8List seed,
-    int changeIndex,
+    int chainIndex,
     int keyIndex, {
     String path = EXT_PATH,
     bool compressed = true,
   }) async {
     Uint8List bytes = Uint8List.fromList(seed);
     bip32.BIP32 root = bip32.BIP32.fromSeed(bytes);
-    bip32.BIP32 child = root.derivePath("$path/$changeIndex/$keyIndex");
-    return child.publicKey;
+    bip32.BIP32 child = root.derivePath("$path/$chainIndex/$keyIndex");
+    Uint8List publicKey = child.publicKey;
+    Log.debug('compressed publicKey: ${hex.encode(publicKey)}');
+
+    if (!compressed) {
+      bip32.BIP32 child = root.derivePath("$path");
+      publicKey = child.publicKey;
+      ExtendedKey bitcoinKey = ExtendedKey(
+          key: publicKey,
+          chainCode: Uint8List.fromList(child.chainCode),
+          parentFP: encodeBigInt(BigInt.from(child.parentFingerprint)),
+          depth: child.depth,
+          index: keyIndex != null ? keyIndex : 0,
+          isPrivate: false);
+      publicKey = bitcoinKey.child(chainIndex).child(keyIndex).ECPubKey(false);
+      Log.debug('uncompressed publicKey: ${hex.encode(publicKey)}');
+    }
+    return publicKey;
   }
 
   static Future<Uint8List> getPrivKey(
     Uint8List seed,
-    int changeIndex,
+    int chainIndex,
     int keyIndex, {
     String path = EXT_PATH,
     bool compressed = true,
   }) async {
     Uint8List bytes = Uint8List.fromList(seed);
     bip32.BIP32 root = bip32.BIP32.fromSeed(bytes);
-    bip32.BIP32 child = root.derivePath("$path/$changeIndex/$keyIndex");
+    bip32.BIP32 child = root.derivePath("$path/$chainIndex/$keyIndex");
     return child.privateKey;
   }
 
@@ -82,21 +100,7 @@ class PaperWallet {
     var child = root.derivePath("$path/0/0");
     Uint8List publicKey = child.publicKey;
 
-    if (!compressed) {
-      // var child = root.derivePath("$path");
-
-      // publicKey = child.publicKey;
-      // bitcoins.ExtendedKey bitcoinKey = bitcoins.ExtendedKey(
-      //     key: publicKey,
-      //     chainCode: Uint8List.fromList(child.chainCode),
-      //     parentFP: encodeBigInt(BigInt.from(child.parentFingerprint)),
-      //     depth: child.depth,
-      //     index: keyIndex != null ? keyIndex : 0,
-      //     isPrivate: false);
-      // publicKey = bitcoinKey.child(chainIndex).child(keyIndex).ECPubKey(false);
-    }
-
-    return HEX.encode(publicKey);
+    return hex.encode(publicKey);
   }
 
   static String walletToJson(Wallet wallet) {

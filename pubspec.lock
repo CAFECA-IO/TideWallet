@@ -36,6 +36,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.5.0-nullsafety.1"
+  base_x:
+    dependency: transitive
+    description:
+      name: base_x
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   bip32:
     dependency: "direct main"
     description:
@@ -57,6 +64,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.1+2"
+  bitcoins:
+    dependency: "direct main"
+    description:
+      name: bitcoins
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.5"
   bloc:
     dependency: "direct main"
     description:
@@ -71,6 +85,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0-nullsafety.1"
+  bs58:
+    dependency: transitive
+    description:
+      name: bs58
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   bs58check:
     dependency: "direct main"
     description:
@@ -343,6 +364,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.0"
+  hash:
+    dependency: transitive
+    description:
+      name: hash
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.3"
   hex:
     dependency: "direct main"
     description:
@@ -601,7 +629,7 @@ packages:
       name: qr_code_scanner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.2"
+    version: "0.3.4"
   qr_flutter:
     dependency: "direct main"
     description:
@@ -704,7 +732,7 @@ packages:
       name: source_gen
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.10+1"
+    version: "0.9.10+2"
   source_span:
     dependency: transitive
     description:
