@@ -23,6 +23,8 @@ import '../helpers/rlp.dart' as rlp;
 import '../database/db_operator.dart';
 import '../database/entity/user.dart';
 
+import '../helpers/logger.dart';
+
 class TransactionRepository {
   static const int AVERAGE_FETCH_FEE_TIME = 1 * 60 * 60 * 1000; // milliseconds
   Currency _currency;
@@ -56,7 +58,9 @@ class TransactionRepository {
   Currency get currency => this._currency;
 
   bool verifyAmount(Decimal amount, {Decimal fee}) {
-    return Decimal.parse(_currency.amount) - amount - fee > Decimal.zero;
+    //TODO TEST
+    // return Decimal.parse(_currency.amount) - amount - fee > Decimal.zero;
+    return Decimal.parse('5') - amount - fee > Decimal.zero;
   }
 
   Future<List<Transaction>> getTransactions() async {
@@ -69,6 +73,8 @@ class TransactionRepository {
 
   Future<List<dynamic>> getTransactionFee(
       {String address, Decimal amount, Uint8List message}) async {
+    // TODO TEST
+    Log.warning('getTransactionFee');
     if (_fee == null ||
         DateTime.now().millisecondsSinceEpoch - _timestamp >
             AVERAGE_FETCH_FEE_TIME) {
@@ -156,14 +162,12 @@ class TransactionRepository {
   Future<Uint8List> getPrivKey(
       String pwd, int changeIndex, int keyIndex) async {
     Uint8List seed = await _getSeed(pwd);
+    Log.debug('getPrivKey seed: ${hex.encode(seed)}'); // TODO TEST --
     return PaperWallet.getPrivKey(seed, changeIndex, keyIndex);
   }
 
   Future<Transaction> prepareTransaction(String pwd, String to, Decimal amount,
-      {Decimal fee,
-      Decimal gasPrice,
-      Decimal gasLimit,
-      Uint8List message}) async {
+      {Decimal fee, Decimal gasPrice, Decimal gasLimit, String message}) async {
     switch (this._currency.accountType) {
       case ACCOUNT.BTC:
         String changeAddress;
@@ -197,33 +201,37 @@ class TransactionRepository {
         return transaction;
         break;
       case ACCOUNT.ETH:
-        String from =
-            (await _accountService.getReceivingAddress(_currency.id))[0];
-        int nonce = await _accountService.getNonce(this._currency.blockchainId);
+        // String from =
+        //     (await _accountService.getReceivingAddress(_currency.id))[0];
+        //TODO TEST
+        int nonce =
+            4; // await _accountService.getNonce(this._currency.blockchainId);
         if (currency.symbol.toLowerCase() != 'eth') {
           // ERC20
           List<int> erc20Func =
               keccak256(utf8.encode('transfer(address,uint256)'));
-          message = Uint8List.fromList(erc20Func.take(4).toList() +
-              hex.decode(to.substring(2).padLeft(64, '0')) +
-              hex.decode(hex
-                  .encode(encodeBigInt(
-                      toTokenSmallestUnit(amount, _currency.decimals)))
-                  .padLeft(64, '0')) +
-              rlp.toBuffer(message));
+          message = '0x' +
+              hex.encode(erc20Func.take(4).toList() +
+                  hex.decode(to.substring(2).padLeft(64, '0')) +
+                  hex.decode(hex
+                      .encode(encodeBigInt(
+                          toTokenSmallestUnit(amount, _currency.decimals)))
+                      .padLeft(64, '0')) +
+                  rlp.toBuffer(message));
         }
+
         Transaction transaction = _transactionService.prepareTransaction(
           this._currency.publish,
           to,
           amount,
           message,
-          changeAddress: from,
           nonce: nonce,
           gasPrice: gasPrice,
           gasLimit: gasLimit,
-          chainId: _currency.chainId,
+          chainId: _currency.chainId ?? 3, // TODO TEST
           privKey: await getPrivKey(pwd, 0, 0),
         );
+        Log.debug('transaction: ${transaction.serializeTransaction}');
         return transaction;
         break;
       case ACCOUNT.XRP:

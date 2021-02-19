@@ -11,7 +11,7 @@ class EthereumTransaction extends Transaction {
   String id;
   String currencyId;
   String txHash;
-  final String from;
+  String from;
   final String to;
   int timestamp;
   int confirmations;
@@ -45,7 +45,8 @@ class EthereumTransaction extends Transaction {
   }) : message = message ?? Uint8List(0);
 
   EthereumTransaction.prepareTransaction(
-      {this.from,
+      {
+      // this.from,
       this.to,
       this.nonce,
       this.amount,
