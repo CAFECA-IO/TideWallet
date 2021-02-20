@@ -6,6 +6,7 @@ import 'dao/utxo_dao.dart';
 import 'database.dart';
 import 'dao/account_currency_dao.dart';
 import 'dao/network_dao.dart';
+import 'dao/exchange_rate_dao.dart';
 
 class DBOperator {
   AppDatabase database;
@@ -21,6 +22,7 @@ class DBOperator {
   NetworkDao get networkDao => database.networkDao;
   AccountCurrencyDao get accountCurrencyDao => database.accountCurrencyDao;
   UtxoDao get utxoDao => database.utxoDao;
+  ExchangeRateDao get exchangeRateDao => database.exchangeRateDao;
 
   factory DBOperator() => instance;
 

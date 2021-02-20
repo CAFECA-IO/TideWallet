@@ -43,14 +43,21 @@ class RestoreWalletBloc extends Bloc<RestoreWalletEvent, RestoreWalletState> {
       PaperWalletSuccess _state = state;
 
       yield PaperWallletRestoring();
-      User _user = await _repo.restorePaperWallet(_state.paperWallet, event.password);
-      if (_user == null) {
-        yield PaperWalletRestoreFail();
-
-        this.add(CleanWalletResult());
+      final w = await _repo.restorePaperWallet(_state.paperWallet, event.password);
+      if (w == null) {
+        yield PaperWalletRestoreFail(error: RESTORE_ERROR.PASSWORD);
       } else {
-        yield PaperWalletRestored();
+        User _user =
+            await _repo.restoreUser(w, _state.paperWallet, event.password);
+        if (_user == null) {
+          yield PaperWalletRestoreFail();
+
+          this.add(CleanWalletResult());
+        } else {
+          yield PaperWalletRestored();
+        }
       }
+
     }
   }
 }

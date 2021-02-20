@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:web3dart/web3dart.dart';
 
 import '../cores/user.dart';
 
@@ -24,8 +25,10 @@ class UserRepository {
     return _user.validPaperWallet(wallet);
   }
 
-  Future<User> restorePaperWallet(String wallet, String pwd) async {
-    final bool reault = await _user.restorePaperWallet(wallet, pwd);
+  Future<Wallet> restorePaperWallet(String wallet, String pwd) => _user.restorePaperWallet(wallet, pwd);
+
+  Future<User> restoreUser(Wallet wallet, String keystore, String pwd) async {
+    final bool reault = await _user.restoreUser(wallet, keystore, pwd);
     if (reault) {
       return _user;
     } else {
