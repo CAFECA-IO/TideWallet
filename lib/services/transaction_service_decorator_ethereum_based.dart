@@ -9,7 +9,7 @@ import '../helpers/ethereum_based_utils.dart';
 import '../helpers/cryptor.dart';
 import '../helpers/converter.dart';
 
-import '../helpers/rlp.dart' as rlp;
+import '../helpers/logger.dart';
 
 class EthereumBasedTransactionServiceDecorator extends TransactionService {
   final TransactionService service;
@@ -20,8 +20,14 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
   EthereumTransaction _signTransaction(
       EthereumTransaction transaction, Uint8List privKey) {
     Uint8List payload = encodeToRlp(transaction);
-    Uint8List rawDataHash = Cryptor.keccak256round(payload, round: 1);
+    Log.debug('payload: $payload, privKey: $privKey');
+    Uint8List rawDataHash =
+        Uint8List.fromList(Cryptor.keccak256round(payload, round: 1));
+    Log.debug('rawDataHash: $rawDataHash');
+
     MsgSignature signature = Signer().sign(rawDataHash, privKey);
+    Log.debug('signature: $signature');
+
     final chainIdV = transaction.chainId != null
         ? (signature.v - 27 + (transaction.chainId * 2 + 35))
         : signature.v;
@@ -35,7 +41,7 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
     bool publish,
     String to,
     Decimal amount,
-    String message, {
+    Uint8List message, {
     Uint8List privKey, //ETH
     Decimal gasPrice, //ETH
     Decimal gasLimit, //ETH
@@ -54,7 +60,7 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
       amount: Converter.toEthSmallestUnit(amount),
       gasPrice: Converter.toEthSmallestUnit(gasPrice),
       gasUsed: gasLimit,
-      message: message == null ? Uint8List(0) : rlp.toBuffer(message),
+      message: message,
       chainId: chainId,
       signature: MsgSignature(BigInt.zero, BigInt.zero, chainId),
     );
