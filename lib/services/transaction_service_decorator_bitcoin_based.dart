@@ -12,6 +12,7 @@ import '../models/bitcoin_transaction.model.dart';
 import '../helpers/bitcoin_based_utils.dart';
 import '../helpers/logger.dart';
 import '../helpers/rlp.dart' as rlp;
+import '../helpers/cryptor.dart';
 
 class BitcoinBasedTransactionServiceDecorator extends TransactionService {
   static const int _Index_ExternalChain = 0;

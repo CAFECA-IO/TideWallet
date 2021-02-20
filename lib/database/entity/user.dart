@@ -35,4 +35,20 @@ class UserEntity {
 
   @override
   int get hashCode => userId.hashCode ^ keystore.hashCode;
+
+  UserEntity copyWith({
+    String userId,
+    String keystore,
+    String passwordHash,
+    String passwordSalt,
+    bool backupStatus,
+  }) {
+    return UserEntity(
+      userId ?? this.userId,
+      keystore ?? this.keystore,
+      passwordHash ?? this.passwordHash,
+      passwordSalt ?? this.passwordSalt,
+      backupStatus ?? this.backupStatus,
+    );
+  }
 }

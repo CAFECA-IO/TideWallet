@@ -8,6 +8,7 @@ import 'cryptor.dart';
 import 'rlp.dart' as rlp;
 import 'logger.dart';
 import '../models/ethereum_transaction.model.dart';
+import 'cryptor.dart';
 
 bool isValidFormat(String address) {
   return RegExp(r"^[0-9a-fA-F]{40}$").hasMatch(stripHexPrefix(address));

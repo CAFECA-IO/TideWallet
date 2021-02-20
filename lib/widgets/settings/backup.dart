@@ -37,7 +37,6 @@ class _BackupSettingState extends State<BackupSetting> {
         if (state is BackupAuth) {
           DialogController.dismiss(context);
           showModalBottomSheet(
-            // isDismissible: false,
             isScrollControlled: true,
             context: context,
             shape: bottomSheetShape,

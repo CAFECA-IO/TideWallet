@@ -4,8 +4,6 @@ import 'dart:typed_data';
 import 'logger.dart';
 import 'utils.dart';
 import 'package:convert/convert.dart';
-// import 'package:ethereum_util/src/utils.dart'
-//     show intToBuffer, isHexString, padToEven, stripHexPrefix;
 
 //Copy and pasted from the rlp nodejs library, translated to dart on a
 //best-effort basis.

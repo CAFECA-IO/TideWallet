@@ -146,5 +146,6 @@
   "have_any_questions_please_contact_us": "若您對本隱私權政策有任何問題，請聯繫我們",
   "update_time": "，最後更新日期：{{year}}年{{month}}月{{day}}日。",
   "fiat": "法幣",
-  "not_found": "Not Found"
+  "not_found": "Not Found",
+  "error_restore": "還原錢包失敗"
 }
