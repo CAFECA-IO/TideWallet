@@ -7,6 +7,6 @@ abstract class ExchangeRateDao {
   @Insert(onConflict: OnConflictStrategy.replace)
   Future<List<int>> insertExchangeRates(List<ExchangeRateEntity> rates);
 
-  // @Query('SELECT * FROM ExchangeRate')
-  // Future<List<ExchangeRateEntity>> findAllExchageRates();
+  @Query('SELECT * FROM ExchangeRate')
+  Future<List<ExchangeRateEntity>> findAllExchageRates();
 }

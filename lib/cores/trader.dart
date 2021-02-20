@@ -1,9 +1,10 @@
 import 'package:decimal/decimal.dart';
-// import 'package:tidewallet3/database/db_operator.dart';
 
-import '../mock/endpoint.dart';
-
+import '../database/entity/exchage_rate.dart';
+import '../database/db_operator.dart';
+import '../helpers/http_agent.dart';
 import '../models/account.model.dart';
+import '../constants/endpoint.dart';
 
 class Trader {
   static const syncInterval = 24 * 60 * 60 * 1000;
@@ -11,18 +12,45 @@ class Trader {
   List<Fiat> _cryptos = [];
 
   Future<List<Fiat>> getFiatList() async {
-    // final local = await DBOperator().currencyDao.findAllExchageRates();
-    // int now = DateTime.now().millisecondsSinceEpoch;
+    final local = await DBOperator().exchangeRateDao.findAllExchageRates();
+    int now = DateTime.now().millisecondsSinceEpoch;
 
-    // if (local.isEmpty || now - local[0].lastSyncTime > syncInterval) {
+    if (local.isEmpty || now - local[0].lastSyncTime > syncInterval) {
+      final rates = await Future.wait([
+        HTTPAgent().get(Endpoint.SUSANOO + '/fiats/rate'),
+        HTTPAgent().get(Endpoint.SUSANOO + '/crypto/rate'),
+      ]);
 
-    // } else {
-    //   this._fiats = 
-    // }
-    final result = await exchangeRate();
+      List fiats = rates[0].data;
+      List cryptos = rates[1].data;
 
-    this._fiats = result['fiat'].map((e) => Fiat.fromMap(e)).toList();
-    this._cryptos = result['crypto'].map((e) => Fiat.fromMap(e)).toList();
+      await DBOperator().exchangeRateDao.insertExchangeRates([
+        ...fiats.map(
+          (e) => ExchangeRateEntity.fromJson(
+            {...e, "timestamp": now, "type": "fiat"},
+          ),
+        ),
+        ...cryptos.map(
+          (e) => ExchangeRateEntity.fromJson(
+            {...e, "timestamp": now, "type": "currency"},
+          ),
+        ),
+      ]);
+
+      this._fiats = fiats.map((r) => Fiat.fromMap(r)).toList();
+      this._cryptos = cryptos.map((r) => Fiat.fromMap(r)).toList();
+    } else {
+      this._fiats = local
+          .where((rate) => rate.type == 'fiat')
+          .toList()
+          .map((entity) => Fiat.fromExchangeRateEntity(entity))
+          .toList();
+      this._cryptos = local
+          .where((rate) => rate.type != 'fiat')
+          .toList()
+          .map((entity) => Fiat.fromExchangeRateEntity(entity))
+          .toList();
+    }
 
     return this._fiats;
   }

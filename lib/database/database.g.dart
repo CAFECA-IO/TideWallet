@@ -108,7 +108,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Utxo` (`utxo_id` TEXT, `currency_id` TEXT, `tx_id` TEXT, `vout` INTEGER, `type` TEXT, `amount` TEXT, `chain_index` INTEGER, `key_index` INTEGER, `script` TEXT, `timestamp` INTEGER, `locked` INTEGER, `sequence` INTEGER, PRIMARY KEY (`utxo_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `ExchangeRate` (`exchange_rate_id` TEXT, `rate` TEXT, `lastSyncTime` INTEGER, `symbol` TEXT, PRIMARY KEY (`exchange_rate_id`))');
+            'CREATE TABLE IF NOT EXISTS `ExchangeRate` (`exchange_rate_id` TEXT, `rate` TEXT, `lastSyncTime` INTEGER, `type` TEXT, PRIMARY KEY (`exchange_rate_id`))');
 
         await database.execute(
             '''CREATE VIEW IF NOT EXISTS `JoinCurrency` AS SELECT * FROM AccountCurrency INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id INNER JOIN Account ON AccountCurrency.account_id = Account.account_id INNER JOIN Network ON Account.network_id = Network.network_id''');
@@ -671,22 +671,35 @@ class _$UtxoDao extends UtxoDao {
 
 class _$ExchangeRateDao extends ExchangeRateDao {
   _$ExchangeRateDao(this.database, this.changeListener)
-      : _exchangeRateEntityInsertionAdapter = InsertionAdapter(
+      : _queryAdapter = QueryAdapter(database),
+        _exchangeRateEntityInsertionAdapter = InsertionAdapter(
             database,
             'ExchangeRate',
             (ExchangeRateEntity item) => <String, dynamic>{
                   'exchange_rate_id': item.exchangeRateId,
                   'rate': item.rate,
                   'lastSyncTime': item.lastSyncTime,
-                  'symbol': item.symbol
+                  'type': item.type
                 });
 
   final sqflite.DatabaseExecutor database;
 
   final StreamController<String> changeListener;
 
+  final QueryAdapter _queryAdapter;
+
   final InsertionAdapter<ExchangeRateEntity>
       _exchangeRateEntityInsertionAdapter;
+
+  @override
+  Future<List<ExchangeRateEntity>> findAllExchageRates() async {
+    return _queryAdapter.queryList('SELECT * FROM ExchangeRate',
+        mapper: (Map<String, dynamic> row) => ExchangeRateEntity(
+            exchangeRateId: row['exchange_rate_id'] as String,
+            rate: row['rate'] as String,
+            lastSyncTime: row['lastSyncTime'] as int,
+            type: row['type'] as String));
+  }
 
   @override
   Future<List<int>> insertExchangeRates(List<ExchangeRateEntity> rates) {

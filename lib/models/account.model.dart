@@ -2,6 +2,7 @@ import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 // import 'package:tidewallet3/database/entity/currency.dart';
 
+import '../database/entity/exchage_rate.dart';
 import '../constants/account_config.dart';
 
 enum ACCOUNT_EVT { OnUpdateAccount, OnUpdateCurrency, OnUpdateTransactions }
@@ -128,4 +129,8 @@ class Fiat {
   // Fiat.fromExChangeRateCurrencyEntity(ExchageRateCurrency entity)
   //     : name = entity.symbol,
   //       exchangeRate = Decimal.parse(entity.rate);
+
+  Fiat.fromExchangeRateEntity(ExchangeRateEntity entity)
+      : name = entity.exchangeRateId,
+        exchangeRate = Decimal.parse(entity.rate);
 }
