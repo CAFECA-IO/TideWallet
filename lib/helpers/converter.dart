@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:decimal/decimal.dart';
 import 'utils.dart';
 
@@ -24,5 +25,10 @@ class Converter {
 
   static Decimal toEthSmallestUnit(Decimal eth) {
     return eth * _ethInWei;
+  }
+
+  static BigInt toTokenSmallestUnit(Decimal value, int decimals) {
+    return BigInt.parse(
+        (value * Decimal.fromInt(pow(10, decimals))).toString());
   }
 }

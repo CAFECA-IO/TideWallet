@@ -112,7 +112,7 @@ class PaperWallet {
       bitcoins.ExtendedKey bitcoinKey = bitcoins.ExtendedKey(
           key: publicKey,
           chainCode: Uint8List.fromList(child.chainCode),
-          parentFP: Cryptor.encodeBigInt(BigInt.from(child.parentFingerprint)),
+          parentFP: encodeBigInt(BigInt.from(child.parentFingerprint)),
           depth: child.depth,
           index: 0,
           isPrivate: false);

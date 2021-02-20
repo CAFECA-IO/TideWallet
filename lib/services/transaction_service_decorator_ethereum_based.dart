@@ -6,7 +6,7 @@ import '../cores/signer.dart';
 import '../models/utxo.model.dart';
 import '../models/ethereum_transaction.model.dart';
 import '../helpers/ethereum_based_utils.dart';
-import '../helpers/utils.dart';
+import '../helpers/cryptor.dart';
 import '../helpers/converter.dart';
 
 import '../helpers/rlp.dart' as rlp;
@@ -20,7 +20,7 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
   EthereumTransaction _signTransaction(
       EthereumTransaction transaction, Uint8List privKey) {
     Uint8List payload = encodeToRlp(transaction);
-    Uint8List rawDataHash = keccak256(payload);
+    Uint8List rawDataHash = Cryptor.keccak256round(payload, round: 1);
     MsgSignature signature = Signer().sign(rawDataHash, privKey);
     final chainIdV = transaction.chainId != null
         ? (signature.v - 27 + (transaction.chainId * 2 + 35))
