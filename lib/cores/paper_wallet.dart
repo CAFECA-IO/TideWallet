@@ -11,7 +11,7 @@ import '../helpers/cryptor.dart';
 import '../helpers/utils.dart';
 
 class PaperWallet {
-  static const String EXT_PATH = "m/44'/60'/0'";
+  static const String EXT_PATH = "m/44'/0'/0'";
   static const int EXT_CHAININDEX = 0;
   static const int EXT_KEYINDEX = 0;
 
@@ -90,37 +90,31 @@ class PaperWallet {
     return child.privateKey;
   }
 
+  // see: https://iancoleman.io/bip39
+  // see: https://learnmeabitcoin.com/technical/extended-keys
   static String getExtendedPublicKey({
     List<int> seed,
     String path = EXT_PATH,
-    bool compressed = false,
   }) {
+    const publicPrefix = [0x04, 0x88, 0xb2, 0x1e];
+    const childNumber = 2147483648; // 2 ^ 31;
     Uint8List bytes = Uint8List.fromList(seed);
 
     var root = bip32.BIP32.fromSeed(bytes);
-    var child = root.derivePath("$path/0/0");
+    var child = root.derivePath("$path");
     Uint8List publicKey = child.publicKey;
 
-    if (!compressed) {
-      var child = root.derivePath("$path");
+    bitcoins.ExtendedKey bitcoinKey = bitcoins.ExtendedKey(
+      key: publicKey,
+      chainCode: Uint8List.fromList(child.chainCode),
+      parentFP: encodeBigInt(BigInt.from(child.parentFingerprint)),
+      depth: child.depth,
+      index: childNumber,
+      isPrivate: false,
+    );
+    final serialization = bitcoinKey.toBase58(Uint8List.fromList(publicPrefix));
 
-      publicKey = child.publicKey;
-      Log.debug('Uncompressed: $publicKey');
-      Log.debug('chainCode: ${child.chainCode}');
-      Log.debug('parentFingerprint: ${child.parentFingerprint}');
-
-      bitcoins.ExtendedKey bitcoinKey = bitcoins.ExtendedKey(
-          key: publicKey,
-          chainCode: Uint8List.fromList(child.chainCode),
-          parentFP: encodeBigInt(BigInt.from(child.parentFingerprint)),
-          depth: child.depth,
-          index: 0,
-          isPrivate: false);
-      publicKey = bitcoinKey.child(0).child(0).ECPubKey(false);
-    }
-
-    // return Cryptor.base58Encode(publicKey);
-    return 'xprv9tyUQV64JT5qs3RSTJkXCWKMyUgoQp7F3hA1xzG6ZGu6u6Q9VMNjGr67Lctvy5P8oyaYAL9CAWrUE9i6GoNMKUga5biW6Hx4tws2six3b9c';
+    return serialization;
   }
 
   static String walletToJson(Wallet wallet) {

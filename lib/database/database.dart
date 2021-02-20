@@ -24,7 +24,7 @@ part 'database.g.dart'; // the generated code will be there
 
 @Database(
   version: 1,
-  entities: [UserEntity, AccountEntity, CurrencyEntity, Transaction, NetworkEntity, AccountCurrencyEntity, UtxoEntity],
+  entities: [UserEntity, AccountEntity, CurrencyEntity, TransactionEntity, NetworkEntity, AccountCurrencyEntity, UtxoEntity],
   views: [JoinCurrency]
 )
 abstract class AppDatabase extends FloorDatabase {

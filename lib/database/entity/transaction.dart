@@ -3,7 +3,7 @@ import 'package:floor/floor.dart';
 import 'account.dart';
 
 @entity
-class Transaction {
+class TransactionEntity {
   @primaryKey
   @ColumnInfo(name: 'transaction_id')
   final String transactionId;
@@ -37,20 +37,23 @@ class Transaction {
   @ColumnInfo(name: 'gas_used')
   final int gasUsed;
 
-  final int nonce;
 
   final int block;
 
-  final int locktime;
+  // final int locktime;
 
   @ColumnInfo(nullable: false)
   final String fee;
 
   final String note;
 
-  final int status;
+  final String status; // success/pending/fail
 
-  Transaction({
+  final String direction;
+
+  final String amount;
+
+  TransactionEntity({
     this.transactionId,
     this.accountId,
     this.currencyId,
@@ -62,10 +65,11 @@ class Transaction {
     this.gasUsed,
     this.note,
     this.block,
-    this.locktime,
+    // this.locktime,
     this.fee,
-    this.nonce,
     this.status,
     this.timestamp,
+    this.direction,
+    this.amount
   });
 }

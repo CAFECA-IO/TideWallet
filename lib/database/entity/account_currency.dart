@@ -70,6 +70,9 @@ class AccountCurrencyEntity {
     'SELECT * FROM AccountCurrency INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id INNER JOIN Account ON AccountCurrency.account_id = Account.account_id INNER JOIN Network ON Account.network_id = Network.network_id',
     viewName: 'JoinCurrency')
 class JoinCurrency {
+  @ColumnInfo(name: 'accountcurrency_id', nullable: false)
+  final String accountcurrencyId;
+
   final String symbol;
 
   @ColumnInfo(name: 'currency_id')
@@ -98,6 +101,7 @@ class JoinCurrency {
   final bool publish;
 
   JoinCurrency({
+    this.accountcurrencyId,
     this.currencyId,
     this.symbol,
     this.name,
