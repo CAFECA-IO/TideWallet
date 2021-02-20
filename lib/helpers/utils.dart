@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:convert/convert.dart';
-import 'package:bird_cryptography/bird_cryptography.dart' as bird;
 
 String randomHex(int length) {
   const array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f'];
@@ -11,32 +10,6 @@ String randomHex(int length) {
         .toString(); //        subPSKID.add(array[i]);
   }
   return hex;
-}
-
-List<int> keccak256(List<int> data) {
-  final bird.CryptographyHashes dartHashes = bird.CryptographyHashes.dart;
-  final bird.CryptographyHash keccak256 = dartHashes.keccak256();
-  List<int> keccak256Data = keccak256
-      .digestRaw((data is Uint8List) ? data : Uint8List.fromList(data));
-  return keccak256Data;
-}
-
-String keccak256Hash(String data) {
-  return hex.encode(keccak256(hex.decode(data)));
-}
-
-List<int> sha256(List<int> data) {
-  final bird.CryptographyHashes dartHashes = bird.CryptographyHashes.dart;
-  final bird.CryptographyHash sha256 = dartHashes.sha256();
-  List<int> shaData = sha256.digestRaw(Uint8List.fromList(data));
-  return shaData;
-}
-
-List<int> ripemd160(List<int> data) {
-  final bird.CryptographyHashes dartHashes = bird.CryptographyHashes.dart;
-  final bird.CryptographyHash ripemd160 = dartHashes.ripemd160();
-  List<int> ripemd160Data = ripemd160.digestRaw(Uint8List.fromList(data));
-  return ripemd160Data;
 }
 
 bool isHexString(String value, {int length = 0}) {

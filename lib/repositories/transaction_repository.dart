@@ -17,6 +17,7 @@ import '../services/transaction_service_based.dart';
 import '../services/transaction_service_bitcoin.dart';
 import '../services/transaction_service_ethereum.dart';
 import '../constants/account_config.dart';
+import '../helpers/cryptor.dart';
 import '../helpers/utils.dart';
 import '../helpers/ethereum_based_utils.dart';
 import '../helpers/rlp.dart' as rlp;
@@ -208,8 +209,9 @@ class TransactionRepository {
             4; // await _accountService.getNonce(this._currency.blockchainId);
         if (currency.symbol.toLowerCase() != 'eth') {
           // ERC20
-          List<int> erc20Func =
-              keccak256(utf8.encode('transfer(address,uint256)'));
+          List<int> erc20Func = Cryptor.keccak256round(
+              utf8.encode('transfer(address,uint256)'),
+              round: 1);
           message = '0x' +
               hex.encode(erc20Func.take(4).toList() +
                   hex.decode(to.substring(2).padLeft(64, '0')) +

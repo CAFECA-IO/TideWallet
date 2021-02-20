@@ -6,6 +6,7 @@ import 'package:convert/convert.dart';
 import 'package:decimal/decimal.dart';
 
 import 'utils.dart';
+import 'cryptor.dart';
 import 'rlp.dart' as rlp;
 import 'logger.dart';
 import '../models/ethereum_transaction.model.dart';
@@ -20,8 +21,8 @@ String eip55Address(String address) {
   }
 
   final String addr = stripHexPrefix(address).toLowerCase();
-  final Uint8List hash =
-      ascii.encode(hex.encode(keccak256(ascii.encode(addr))));
+  final Uint8List hash = ascii
+      .encode(hex.encode(Cryptor.keccak256round(ascii.encode(addr), round: 1)));
 
   var newAddr = "0x";
 

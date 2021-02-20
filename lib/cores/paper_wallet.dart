@@ -107,13 +107,12 @@ class PaperWallet {
     bitcoins.ExtendedKey bitcoinKey = bitcoins.ExtendedKey(
       key: publicKey,
       chainCode: Uint8List.fromList(child.chainCode),
-      parentFP: Cryptor.encodeBigInt(BigInt.from(child.parentFingerprint)),
+      parentFP: encodeBigInt(BigInt.from(child.parentFingerprint)),
       depth: child.depth,
       index: childNumber,
       isPrivate: false,
     );
-    final serialization =
-        bitcoinKey.toBase58(Uint8List.fromList(publicPrefix));
+    final serialization = bitcoinKey.toBase58(Uint8List.fromList(publicPrefix));
 
     return serialization;
   }

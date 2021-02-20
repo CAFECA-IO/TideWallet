@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'package:bs58check/bs58check.dart' as bs58check;
 import 'package:convert/convert.dart';
 
-import 'utils.dart';
+import 'cryptor.dart';
 import 'bech32.dart';
 import 'segwit.dart';
 import 'logger.dart';
@@ -45,8 +45,8 @@ Uint8List compressedPubKey(List<int> uncompressedPubKey) {
 }
 
 Uint8List toPubKeyHash(List<int> pubKey) {
-  List<int> pubKeyHash =
-      ripemd160(sha256(pubKey)); //TODO pubKey is Compressed or UnCompressed
+  List<int> publicKey = pubKey.length > 33 ? compressedPubKey(pubKey) : pubKey;
+  List<int> pubKeyHash = Cryptor.hash160(publicKey);
   return pubKeyHash;
 }
 
@@ -79,13 +79,13 @@ Uint8List pubkeyToP2PKScript(List<int> pubKey) {
   data.addAll(publicKey);
   data.add(OP_CHECKSIG);
   return Uint8List.fromList(data);
-  ;
 }
 
 Uint8List pubkeyToBIP49RedeemScript(List<int> pubKey) {
+  List<int> publicKey = pubKey.length > 33 ? compressedPubKey(pubKey) : pubKey;
+  List<int> pubKeyHash = Cryptor.hash160(publicKey);
   List<int> rs = [0x00, 0x14];
-  rs.addAll(
-      ripemd160(sha256(pubKey))); //TODO pubKey is Compressed or UnCompressed
+  rs.addAll(pubKeyHash);
   return Uint8List.fromList(rs);
 }
 
