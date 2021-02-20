@@ -5,6 +5,7 @@ import 'package:convert/convert.dart';
 import 'transaction_service.dart';
 import '../cores/signer.dart';
 import '../helpers/utils.dart';
+import '../helpers/cryptor.dart';
 import '../models/utxo.model.dart';
 import '../models/transaction.model.dart';
 import '../models/bitcoin_transaction.model.dart';
@@ -82,7 +83,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     bool publish,
     String to,
     Decimal amount,
-    String message, {
+    Uint8List message, {
     Uint8List privKey,
     Decimal gasPrice,
     Decimal gasLimit,

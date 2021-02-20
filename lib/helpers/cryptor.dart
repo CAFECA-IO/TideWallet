@@ -6,9 +6,12 @@ import 'package:bird_cryptography/bird_cryptography.dart' as bird;
 import 'package:crypto/src/sha256.dart' as SHA256;
 import 'package:convert/convert.dart';
 
+import 'logger.dart';
+
 class Cryptor {
   static List<int> keccak256round(List<int> buffer, {int round = 2}) {
     List<int> result = buffer;
+    Log.debug('keccak256round buffer: $buffer');
     if (round > 0) {
       SHA3 k = SHA3(256, KECCAK_PADDING, 256);
       k.update(result);
@@ -19,6 +22,7 @@ class Cryptor {
       return keccak256round(result, round: round - 1);
     }
 
+    Log.debug('keccak256round result2: $result');
     return result;
   }
 

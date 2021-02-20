@@ -1,11 +1,10 @@
 import 'dart:convert';
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
-import 'package:decimal/decimal.dart';
 
 import 'utils.dart';
+import 'cryptor.dart';
 import 'rlp.dart' as rlp;
 import 'logger.dart';
 import '../models/ethereum_transaction.model.dart';

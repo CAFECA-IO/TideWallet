@@ -7,6 +7,7 @@ import '../models/utxo.model.dart';
 abstract class AccountService {
   int syncInterval = 10 * 10 * 1000;
   ACCOUNT base;
+  String path;
   int lastSyncTimestamp;
   String accountId;
 
@@ -25,13 +26,12 @@ abstract class AccountService {
       String blockchainId);
   Future<Decimal> estimateGasLimit(
       String blockchainId, String from, String to, String amount, String data);
-  Future<int> getNonce(String blockchainId);
+  Future<int> getNonce(String blockchainId, String address);
   Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId);
 
   getTransactions();
 
   // TODO: Keep or remove
   // prepareTransaction();
-  Future<void> publishTransaction(
-      String blockchainId, String currencyId, Transaction transaction);
+  Future<void> publishTransaction(String blockchainId, Transaction transaction);
 }
