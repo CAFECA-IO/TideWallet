@@ -11,6 +11,7 @@ import '../models/bitcoin_transaction.model.dart';
 import '../helpers/bitcoin_based_utils.dart';
 import '../helpers/logger.dart';
 import '../helpers/rlp.dart' as rlp;
+import '../helpers/cryptor.dart';
 
 class BitcoinBasedTransactionServiceDecorator extends TransactionService {
   static const int _Index_ExternalChain = 0;
@@ -50,7 +51,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     int index = 0;
     while (index < transaction.inputs.length) {
       Uint8List rawData = transaction.getRawDataToSign(index);
-      Uint8List rawDataHash = sha256(sha256(rawData));
+      Uint8List rawDataHash = Cryptor.sha256round(rawData);
       Log.debug('rawData: ${hex.encode(rawData)}');
       Log.debug('rawDataHash: ${hex.encode(rawDataHash)}');
       UnspentTxOut utxo = transaction.inputs[index].utxo;

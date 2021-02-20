@@ -9,6 +9,7 @@ import 'utils.dart';
 import 'rlp.dart' as rlp;
 import 'logger.dart';
 import '../models/ethereum_transaction.model.dart';
+import 'cryptor.dart';
 
 bool isValidFormat(String address) {
   return RegExp(r"^[0-9a-fA-F]{40}$").hasMatch(stripHexPrefix(address));
@@ -20,8 +21,8 @@ String eip55Address(String address) {
   }
 
   final String addr = stripHexPrefix(address).toLowerCase();
-  final Uint8List hash =
-      ascii.encode(hex.encode(keccak256(ascii.encode(addr))));
+  final Uint8List hash = ascii
+      .encode(hex.encode(Cryptor.keccak256round(ascii.encode(addr), round: 1)));
 
   var newAddr = "0x";
 
@@ -89,10 +90,4 @@ Uint8List encodeToRlp(EthereumTransaction transaction) {
   }
   Log.debug('list: $list');
   return rlp.encode(list);
-}
-
-BigInt toTokenSmallestUnit(Decimal value, int decimals) {
-  Log.debug('decimals: $decimals');
-  Log.debug('decimals: ${pow(10, decimals)}');
-  return BigInt.parse((value * Decimal.fromInt(pow(10, decimals))).toString());
 }

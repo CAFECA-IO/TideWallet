@@ -5,7 +5,7 @@ import 'package:decimal/decimal.dart';
 import '../helpers/bitcoin_based_utils.dart';
 import '../helpers/logger.dart';
 import '../helpers/converter.dart';
-import '../helpers/utils.dart';
+import '../helpers/cryptor.dart';
 
 import 'transaction.model.dart';
 import 'utxo.model.dart';
@@ -355,8 +355,8 @@ class BitcoinTransaction extends Transaction {
         outputs.addAll(
             this._outputs[index].amountInBuffer + this._outputs[index].script);
 
-      List<int> hashPrevouts = sha256(sha256(prevouts));
-      List<int> hashSequence = sha256(sha256(sequences));
+      List<int> hashPrevouts = Cryptor.sha256round(prevouts);
+      List<int> hashSequence = Cryptor.sha256round(sequences);
 
       Log.verbose('hashPrevouts: ${hex.encode(hashPrevouts)}');
       Log.verbose('hashSequence: ${hex.encode(hashSequence)}');
@@ -413,7 +413,7 @@ class BitcoinTransaction extends Transaction {
       */
       if (outputs.isNotEmpty) {
         Log.debug('outputs: ${hex.encode(outputs)}');
-        List<int> hashOutputs = sha256(sha256(outputs));
+        List<int> hashOutputs = Cryptor.sha256round(outputs);
         data.addAll(hashOutputs);
         Log.verbose('hashOutputs: ${hex.encode(hashOutputs)}');
       } else
@@ -504,8 +504,8 @@ class BitcoinTransaction extends Transaction {
       data.addAll(output.amountInBuffer + output.script);
     }
     // txId
-    this.txId = hex
-        .encode(sha256(sha256([...data, ...this._lockTime])).reversed.toList());
+    this.txId = hex.encode(
+        Cryptor.sha256round([...data, ...this._lockTime]).reversed.toList());
 
     //witness
     if (segwit) {
@@ -529,6 +529,6 @@ class BitcoinTransaction extends Transaction {
   }
 
   Uint8List get transactionHash {
-    return sha256(sha256(serializeTransaction));
+    return Cryptor.sha256round(serializeTransaction);
   }
 }

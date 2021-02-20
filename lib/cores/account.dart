@@ -12,7 +12,6 @@ import '../database/entity/account.dart';
 import '../database/entity/network.dart';
 import '../database/db_operator.dart';
 import '../database/entity/currency.dart';
-import '../helpers/logger.dart';
 import '../helpers/http_agent.dart';
 
 class AccountCore {
