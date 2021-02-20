@@ -165,6 +165,17 @@ class _$UserDao extends UserDao {
                   'password_hash': item.passwordHash,
                   'password_salt': item.passwordSalt,
                   'backup_status': item.backupStatus ? 1 : 0
+                }),
+        _userEntityUpdateAdapter = UpdateAdapter(
+            database,
+            'User',
+            ['user_id'],
+            (UserEntity item) => <String, dynamic>{
+                  'user_id': item.userId,
+                  'keystore': item.keystore,
+                  'password_hash': item.passwordHash,
+                  'password_salt': item.passwordSalt,
+                  'backup_status': item.backupStatus ? 1 : 0
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -174,6 +185,8 @@ class _$UserDao extends UserDao {
   final QueryAdapter _queryAdapter;
 
   final InsertionAdapter<UserEntity> _userEntityInsertionAdapter;
+
+  final UpdateAdapter<UserEntity> _userEntityUpdateAdapter;
 
   @override
   Future<UserEntity> findUser() async {
@@ -189,6 +202,11 @@ class _$UserDao extends UserDao {
   @override
   Future<void> insertUser(UserEntity user) async {
     await _userEntityInsertionAdapter.insert(user, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<void> updateUser(UserEntity user) async {
+    await _userEntityUpdateAdapter.update(user, OnConflictStrategy.abort);
   }
 }
 

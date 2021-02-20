@@ -8,4 +8,7 @@ abstract class UserDao {
 
   @Insert(onConflict: OnConflictStrategy.replace)
   Future<void> insertUser(UserEntity user);
+
+  @update
+  Future<void> updateUser(UserEntity user);
 }

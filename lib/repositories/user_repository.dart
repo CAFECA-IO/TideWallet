@@ -7,7 +7,8 @@ class UserRepository {
 
   User get user => _user;
 
-  Future<bool> createUser(String pwd, String walletName) => _user.createUser(pwd, walletName);
+  Future<bool> createUser(String pwd, String walletName) =>
+      _user.createUser(pwd, walletName);
 
   Future<bool> checkUser() => _user.checkUser();
 
@@ -36,8 +37,5 @@ class UserRepository {
 
   Future<bool> backupWallet() => _user.backupWallet();
 
-  Future<String> getPaperWallet() async {
-    await Future.delayed(Duration(milliseconds: 500));
-    return 'wallet';
-  }
+  Future<String> getPaperWallet() => user.getKeystore();
 }

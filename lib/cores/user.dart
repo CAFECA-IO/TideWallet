@@ -142,8 +142,15 @@ class User {
   }
 
   Future<bool> backupWallet() async {
-    await Future.delayed(Duration(milliseconds: 500));
-    _isBackup = true;
+    try {
+      UserEntity _user = await DBOperator().userDao.findUser();
+
+      await DBOperator().userDao.updateUser(_user.copyWith(backupStatus: true));
+      _isBackup = true;
+    } catch(e) {
+      Log.error(e);
+    }
+
     return _isBackup;
   }
 
@@ -152,6 +159,8 @@ class User {
     this._passwordHash = user.passwordHash;
     this._salt = user.passwordSalt;
     this._isBackup = user.backupStatus;
+
+    Log.debug('ID ${this._id}');
 
     AuthItem item = await _prefManager.getAuthItem();
     if (item != null) {
@@ -174,5 +183,11 @@ class User {
     }
 
     return null;
+  }
+
+  Future<String> getKeystore() async {
+    final user = await DBOperator().userDao.findUser();
+
+    return user?.keystore;
   }
 }
