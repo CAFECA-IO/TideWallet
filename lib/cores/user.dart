@@ -88,7 +88,7 @@ class User {
     try {
       Map v = json.decode(wallet);
 
-      return v['address'] != null && v['crypto'] != null;
+      return v['crypto'] != null;
     } catch (e) {
       Log.warning(e);
     }
@@ -96,21 +96,22 @@ class User {
     return false;
   }
 
-  Future<bool> restorePaperWallet(String wallet, String pwd) async {
-    Wallet w = await compute(PaperWallet.jsonToWallet, [wallet, pwd]);
+  Future<Wallet> restorePaperWallet(String keystore, String pwd) async {
+    Wallet w = await compute(PaperWallet.jsonToWallet, [keystore, pwd]);
 
-    if (w == null) {
-      return false;
-    }
+    return w;
+  }
+
+  Future<bool> restoreUser(Wallet wallet, String keystore, String pwd) async {
     List<int> seed =
-        await compute(PaperWallet.magicSeed, w.privateKey.privateKey);
+        await compute(PaperWallet.magicSeed, wallet.privateKey.privateKey);
     String extPK = PaperWallet.getExtendedPublicKey(seed: seed);
 
     String installId = await this._prefManager.getInstallationId();
     this._passwordHash = _seasonedPassword(pwd);
 
     final Map payload = {
-      "wallet_name": '',
+      "wallet_name": 'Recover Wallet',
       "extend_public_key": extPK,
       "install_id": installId,
       "app_uuid": installId
@@ -123,11 +124,11 @@ class User {
       this._prefManager.setAuthItem(AuthItem.fromJson(res.data));
 
       UserEntity user = UserEntity(
-          res.data['user_id'], wallet, this._passwordHash, this._salt, false);
+          res.data['user_id'], keystore, this._passwordHash, this._salt, false);
       await DBOperator().userDao.insertUser(user);
 
       await this._initUser(user);
-      this._wallet = w;
+      this._wallet = wallet;
     }
 
     return res.success;
@@ -142,8 +143,15 @@ class User {
   }
 
   Future<bool> backupWallet() async {
-    await Future.delayed(Duration(milliseconds: 500));
-    _isBackup = true;
+    try {
+      UserEntity _user = await DBOperator().userDao.findUser();
+
+      await DBOperator().userDao.updateUser(_user.copyWith(backupStatus: true));
+      _isBackup = true;
+    } catch (e) {
+      Log.error(e);
+    }
+
     return _isBackup;
   }
 
@@ -174,5 +182,11 @@ class User {
     }
 
     return null;
+  }
+
+  Future<String> getKeystore() async {
+    final user = await DBOperator().userDao.findUser();
+
+    return user?.keystore;
   }
 }

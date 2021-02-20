@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:web3dart/web3dart.dart';
 
 import '../cores/user.dart';
 
@@ -7,7 +8,8 @@ class UserRepository {
 
   User get user => _user;
 
-  Future<bool> createUser(String pwd, String walletName) => _user.createUser(pwd, walletName);
+  Future<bool> createUser(String pwd, String walletName) =>
+      _user.createUser(pwd, walletName);
 
   Future<bool> checkUser() => _user.checkUser();
 
@@ -23,8 +25,10 @@ class UserRepository {
     return _user.validPaperWallet(wallet);
   }
 
-  Future<User> restorePaperWallet(String wallet, String pwd) async {
-    final bool reault = await _user.restorePaperWallet(wallet, pwd);
+  Future<Wallet> restorePaperWallet(String wallet, String pwd) => _user.restorePaperWallet(wallet, pwd);
+
+  Future<User> restoreUser(Wallet wallet, String keystore, String pwd) async {
+    final bool reault = await _user.restoreUser(wallet, keystore, pwd);
     if (reault) {
       return _user;
     } else {
@@ -36,8 +40,5 @@ class UserRepository {
 
   Future<bool> backupWallet() => _user.backupWallet();
 
-  Future<String> getPaperWallet() async {
-    await Future.delayed(Duration(milliseconds: 500));
-    return 'wallet';
-  }
+  Future<String> getPaperWallet() => user.getKeystore();
 }

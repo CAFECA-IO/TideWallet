@@ -120,6 +120,7 @@
   "intellectual_property_rights_1": "本服務中，任何形式的圖文內容均為本公司之資產，受版權法、商標法、及其他對應法律之保護，您可在個人、非商用的前提下，瀏覽、下載、複印本服務呈現之內容，但必須保留本公司完整的所有權聲明。\n",
   "contact_us": "聯絡我們\n",
   "have_any_questions_please_contact_us": "若您對本隱私權政策有任何問題，請聯繫我們",
-  "update_time": "，最後更新日期：{{year}}年{{month}}月{{day}}日。"
+  "update_time": "，最後更新日期：{{year}}年{{month}}月{{day}}日。",
+  "error_restore": "還原錢包失敗"
 }
 

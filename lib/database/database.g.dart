@@ -74,6 +74,8 @@ class _$AppDatabase extends AppDatabase {
 
   UtxoDao _utxoDaoInstance;
 
+  ExchangeRateDao _exchangeRateDaoInstance;
+
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
@@ -105,6 +107,8 @@ class _$AppDatabase extends AppDatabase {
             'CREATE TABLE IF NOT EXISTS `AccountCurrency` (`accountcurrency_id` TEXT NOT NULL, `account_id` TEXT, `currency_id` TEXT, `balance` TEXT, `number_of_used_external_key` INTEGER, `number_of_used_internal_key` INTEGER, `last_sync_time` INTEGER, `chain_id` INTEGER, PRIMARY KEY (`accountcurrency_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Utxo` (`utxo_id` TEXT, `currency_id` TEXT, `tx_id` TEXT, `vout` INTEGER, `type` TEXT, `amount` TEXT, `chain_index` INTEGER, `key_index` INTEGER, `script` TEXT, `timestamp` INTEGER, `locked` INTEGER, `sequence` INTEGER, PRIMARY KEY (`utxo_id`))');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `ExchangeRate` (`exchange_rate_id` TEXT, `rate` TEXT, `lastSyncTime` INTEGER, `type` TEXT, PRIMARY KEY (`exchange_rate_id`))');
 
         await database.execute(
             '''CREATE VIEW IF NOT EXISTS `JoinCurrency` AS SELECT * FROM AccountCurrency INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id INNER JOIN Account ON AccountCurrency.account_id = Account.account_id INNER JOIN Network ON Account.network_id = Network.network_id''');
@@ -151,6 +155,12 @@ class _$AppDatabase extends AppDatabase {
   UtxoDao get utxoDao {
     return _utxoDaoInstance ??= _$UtxoDao(database, changeListener);
   }
+
+  @override
+  ExchangeRateDao get exchangeRateDao {
+    return _exchangeRateDaoInstance ??=
+        _$ExchangeRateDao(database, changeListener);
+  }
 }
 
 class _$UserDao extends UserDao {
@@ -159,6 +169,17 @@ class _$UserDao extends UserDao {
         _userEntityInsertionAdapter = InsertionAdapter(
             database,
             'User',
+            (UserEntity item) => <String, dynamic>{
+                  'user_id': item.userId,
+                  'keystore': item.keystore,
+                  'password_hash': item.passwordHash,
+                  'password_salt': item.passwordSalt,
+                  'backup_status': item.backupStatus ? 1 : 0
+                }),
+        _userEntityUpdateAdapter = UpdateAdapter(
+            database,
+            'User',
+            ['user_id'],
             (UserEntity item) => <String, dynamic>{
                   'user_id': item.userId,
                   'keystore': item.keystore,
@@ -175,6 +196,8 @@ class _$UserDao extends UserDao {
 
   final InsertionAdapter<UserEntity> _userEntityInsertionAdapter;
 
+  final UpdateAdapter<UserEntity> _userEntityUpdateAdapter;
+
   @override
   Future<UserEntity> findUser() async {
     return _queryAdapter.query('SELECT * FROM User limit 1',
@@ -189,6 +212,11 @@ class _$UserDao extends UserDao {
   @override
   Future<void> insertUser(UserEntity user) async {
     await _userEntityInsertionAdapter.insert(user, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<void> updateUser(UserEntity user) async {
+    await _userEntityUpdateAdapter.update(user, OnConflictStrategy.abort);
   }
 }
 
@@ -638,5 +666,44 @@ class _$UtxoDao extends UtxoDao {
   @override
   Future<void> updateUtxo(UtxoEntity utxo) async {
     await _utxoEntityUpdateAdapter.update(utxo, OnConflictStrategy.abort);
+  }
+}
+
+class _$ExchangeRateDao extends ExchangeRateDao {
+  _$ExchangeRateDao(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database),
+        _exchangeRateEntityInsertionAdapter = InsertionAdapter(
+            database,
+            'ExchangeRate',
+            (ExchangeRateEntity item) => <String, dynamic>{
+                  'exchange_rate_id': item.exchangeRateId,
+                  'rate': item.rate,
+                  'lastSyncTime': item.lastSyncTime,
+                  'type': item.type
+                });
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<ExchangeRateEntity>
+      _exchangeRateEntityInsertionAdapter;
+
+  @override
+  Future<List<ExchangeRateEntity>> findAllExchageRates() async {
+    return _queryAdapter.queryList('SELECT * FROM ExchangeRate',
+        mapper: (Map<String, dynamic> row) => ExchangeRateEntity(
+            exchangeRateId: row['exchange_rate_id'] as String,
+            rate: row['rate'] as String,
+            lastSyncTime: row['lastSyncTime'] as int,
+            type: row['type'] as String));
+  }
+
+  @override
+  Future<List<int>> insertExchangeRates(List<ExchangeRateEntity> rates) {
+    return _exchangeRateEntityInsertionAdapter.insertListAndReturnIds(
+        rates, OnConflictStrategy.replace);
   }
 }

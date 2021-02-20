@@ -1,12 +1,14 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
+// import 'package:tidewallet3/database/entity/currency.dart';
 
+import '../database/entity/exchage_rate.dart';
 import '../constants/account_config.dart';
 
 enum ACCOUNT_EVT { OnUpdateAccount, OnUpdateCurrency, OnUpdateTransactions }
 
 class Currency {
-  final String id; // AccountCurrencyEntity id for Backend 
+  final String id; // AccountCurrencyEntity id for Backend
   final int cointype;
   final int purpose;
   final int accountIndex;
@@ -20,7 +22,7 @@ class Currency {
   final int chainId;
   final int decimals;
   final bool publish;
-  final String currencyId; // CurrencyEntity currency_id for APP 
+  final String currencyId; // CurrencyEntity currency_id for APP
 
   Currency(
       {this.id,
@@ -123,4 +125,12 @@ class Fiat {
   Fiat.fromMap(Map map)
       : name = map['name'],
         exchangeRate = Decimal.tryParse(map['rate']);
+
+  // Fiat.fromExChangeRateCurrencyEntity(ExchageRateCurrency entity)
+  //     : name = entity.symbol,
+  //       exchangeRate = Decimal.parse(entity.rate);
+
+  Fiat.fromExchangeRateEntity(ExchangeRateEntity entity)
+      : name = entity.exchangeRateId,
+        exchangeRate = Decimal.parse(entity.rate);
 }

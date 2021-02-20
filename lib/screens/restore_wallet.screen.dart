@@ -70,7 +70,11 @@ class _RestoreWalletScreenState extends State<RestoreWalletScreen> {
           if (state is PaperWalletRestoreFail) {
             DialogController.dismiss(context);
 
-            DialogController.show(context, ErrorDialog(t('error_password')));
+            if (state.error == RESTORE_ERROR.PASSWORD) {
+              DialogController.show(context, ErrorDialog(t('error_password')));
+            } else {
+              DialogController.show(context, ErrorDialog(t('error_restore')));
+            }
           }
         },
         child: Container(
