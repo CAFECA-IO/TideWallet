@@ -56,7 +56,6 @@ dependencies:
   web3dart: ^1.2.3
   bip32: ^1.0.6
   sha3: ^0.1.2
-  hex: ^0.1.2
   # bitcoin
   bs58check: ^1.0.1
   bitcoins: ^1.0.5

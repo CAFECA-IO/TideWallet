@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:bip32/bip32.dart' as bip32;
 import 'package:web3dart/web3dart.dart';
 import 'package:convert/convert.dart';
-import 'package:bitcoins/bitcoins.dart';
 import 'package:bitcoins/bitcoins.dart' as bitcoins;
 
 import '../helpers/logger.dart';
@@ -64,7 +63,7 @@ class PaperWallet {
     if (!compressed) {
       bip32.BIP32 child = root.derivePath("$path");
       publicKey = child.publicKey;
-      ExtendedKey bitcoinKey = ExtendedKey(
+      bitcoins.ExtendedKey bitcoinKey = bitcoins.ExtendedKey(
           key: publicKey,
           chainCode: Uint8List.fromList(child.chainCode),
           parentFP: encodeBigInt(BigInt.from(child.parentFingerprint)),
