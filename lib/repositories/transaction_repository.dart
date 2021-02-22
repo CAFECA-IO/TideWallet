@@ -76,7 +76,7 @@ class TransactionRepository {
     // TEST: is BackendAddress correct?
     // IMPORTANT: seed cannot reach
     String seed =
-        'f4c89758ec4e6f696cdcae91c4f1730c6dc724cf9e8b2d1a44b20bae8c48e9c9';
+        '59f45d6afb9bc00380fed2fcfdd5b36819acab89054980ad6e5ff90ba19c5347';
     Uint8List publicKey = await PaperWallet.getPubKey(hex.decode(seed), 0, 0,
         compressed: false, path: _accountService.path);
     // Uint8List privKey = await PaperWallet.getPrivKey(hex.decode(seed), 0, 0);
