@@ -174,9 +174,16 @@ class AccountServiceBase extends AccountService {
               chainId: c.chainId,
               publish: c.publish,
               id: c.accountcurrencyId,
-              currencyId: c.currencyId),
+              currencyId: c.currencyId,
+              contract: c.contract,
+              decimals: c.decimals,
+              type: c.type),
         )
         .toList();
+
+    cs.forEach((element) {
+      Log.debug(element.symbol);
+    });
 
     AccountMessage msg =
         AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: cs[0]);

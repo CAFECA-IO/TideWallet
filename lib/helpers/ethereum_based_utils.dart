@@ -11,7 +11,13 @@ import '../models/ethereum_transaction.model.dart';
 import 'cryptor.dart';
 
 bool isValidFormat(String address) {
-  return RegExp(r"^[0-9a-fA-F]{40}$").hasMatch(stripHexPrefix(address));
+  String addr;
+  try {
+    addr = stripHexPrefix(address);
+  } catch (e) {
+    return false;
+  }
+  return RegExp(r"^[0-9a-fA-F]{40}$").hasMatch(addr);
 }
 
 String eip55Address(String address) {
@@ -53,7 +59,11 @@ bool verifyEthereumAddress(String address) {
     return false;
   }
   address = stripHexPrefix(address);
-
+  // if all lowercase or all uppercase, as in checksum is not present
+  if (RegExp(r"^[0-9a-f]{40}$").hasMatch(address) ||
+      RegExp(r"^[0-9A-F]{40}$").hasMatch(address)) {
+    return true;
+  }
   String checksumAddress;
   try {
     checksumAddress = eip55Address(address);

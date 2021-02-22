@@ -56,6 +56,7 @@ class AccountCore {
             account = ACCOUNT.BTC;
             break;
           case 60:
+          case 603:
             svc = EthereumService(AccountServiceBase());
             account = ACCOUNT.ETH;
             break;
@@ -104,7 +105,7 @@ class AccountCore {
       networks = l.map((chain) => NetworkEntity.fromJson(chain)).toList();
 
       if (publish) {
-        networks.remove((NetworkEntity n) => !n.publish);
+        networks.removeWhere((NetworkEntity n) => !n.publish);
       }
       await DBOperator().networkDao.insertNetworks(networks);
     }
