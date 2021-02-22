@@ -21,7 +21,6 @@ import '../helpers/cryptor.dart';
 import '../helpers/utils.dart';
 import '../helpers/converter.dart';
 import '../helpers/rlp.dart' as rlp;
-import '../helpers/cryptor.dart';
 import '../database/db_operator.dart';
 import '../database/entity/user.dart';
 
@@ -233,7 +232,7 @@ class TransactionRepository {
       case ACCOUNT.ETH:
         int nonce = await _accountService.getNonce(
             this._currency.blockchainId, this._address);
-        if (currency.symbol.toLowerCase() != 'eth') {
+        if (currency.type.toLowerCase() == '2') {
           // ERC20
           List<int> erc20Func = Cryptor.keccak256round(
               utf8.encode('transfer(address,uint256)'),
@@ -246,6 +245,9 @@ class TransactionRepository {
                           amount, _currency.decimals)))
                       .padLeft(64, '0')) +
                   rlp.toBuffer(message));
+          Log.debug('to: $to');
+          to = this._currency.contract;
+          Log.debug('to replace by this._currency.contract: $to');
         }
 
         Log.debug('_currency.chainId: ${_currency.chainId}');

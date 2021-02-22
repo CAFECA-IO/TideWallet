@@ -96,17 +96,25 @@ class JoinCurrency {
 
   final bool publish;
 
-  JoinCurrency({
-    this.accountcurrencyId,
-    this.currencyId,
-    this.symbol,
-    this.name,
-    this.balance,
-    this.accountIndex,
-    this.coinType,
-    this.image,
-    this.blockchainId,
-    this.chainId,
-    this.publish,
-  });
+  final String contract;
+
+  final int decimals;
+
+  final String type;
+
+  JoinCurrency(
+      {this.accountcurrencyId,
+      this.currencyId,
+      this.symbol,
+      this.name,
+      this.balance,
+      this.accountIndex,
+      this.coinType,
+      this.image,
+      this.blockchainId,
+      this.chainId,
+      this.publish,
+      this.contract,
+      this.decimals,
+      this.type});
 }

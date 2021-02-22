@@ -23,6 +23,8 @@ class Currency {
   final int decimals;
   final bool publish;
   final String currencyId; // CurrencyEntity currency_id for APP
+  final String contract;
+  final String type;
 
   Currency(
       {this.id,
@@ -39,7 +41,9 @@ class Currency {
       this.blockchainId,
       this.decimals,
       this.publish,
-      this.currencyId});
+      this.currencyId,
+      this.contract,
+      this.type});
 
   Currency copyWith(
       {String id,
@@ -54,7 +58,9 @@ class Currency {
       String blockchainId,
       int chainId,
       int decimals,
-      bool publish}) {
+      bool publish,
+      String contract,
+      String type}) {
     return Currency(
         id: id ?? this.id,
         cointype: cointype ?? this.cointype,
@@ -68,7 +74,9 @@ class Currency {
         blockchainId: blockchainId ?? this.blockchainId,
         chainId: chainId ?? this.chainId,
         decimals: decimals ?? this.decimals,
-        publish: publish ?? this.publish);
+        publish: publish ?? this.publish,
+        contract: contract ?? this.contract,
+        type: type ?? this.type);
   }
 
   Currency.fromMap(
@@ -87,7 +95,9 @@ class Currency {
         chainId = map['chain_id'],
         decimals = map['decimals'],
         publish = map['publish'],
-        currencyId = map['currency_id'];
+        currencyId = map['currency_id'],
+        contract = map['contract'],
+        type = map['type'];
 }
 
 class AccountMessage {
