@@ -98,7 +98,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Account` (`account_id` TEXT, `user_id` TEXT, `network_id` TEXT, `account_index` INTEGER, PRIMARY KEY (`account_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Currency` (`currency_id` TEXT, `name` TEXT, `coin_type` INTEGER, `description` TEXT, `symbol` TEXT, `decimals` INTEGER, `address` TEXT, `type` TEXT, `total_supply` TEXT, `contract` TEXT, `image` TEXT, PRIMARY KEY (`currency_id`))');
+            'CREATE TABLE IF NOT EXISTS `Currency` (`currency_id` TEXT, `name` TEXT, `description` TEXT, `symbol` TEXT, `decimals` INTEGER, `address` TEXT, `type` TEXT, `total_supply` TEXT, `contract` TEXT, `image` TEXT, PRIMARY KEY (`currency_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `TransactionEntity` (`transaction_id` TEXT, `account_id` TEXT, `currency_id` TEXT, `tx_id` TEXT, `source_address` TEXT, `destinction_address` TEXT, `timestamp` INTEGER, `confirmation` INTEGER, `gas_price` TEXT, `gas_used` INTEGER, `block` INTEGER, `fee` TEXT NOT NULL, `note` TEXT, `status` TEXT, `direction` TEXT, `amount` TEXT, PRIMARY KEY (`transaction_id`))');
         await database.execute(
@@ -285,7 +285,6 @@ class _$CurrencyDao extends CurrencyDao {
             (CurrencyEntity item) => <String, dynamic>{
                   'currency_id': item.currencyId,
                   'name': item.name,
-                  'coin_type': item.coinType,
                   'description': item.description,
                   'symbol': item.symbol,
                   'decimals': item.decimals,
@@ -310,7 +309,6 @@ class _$CurrencyDao extends CurrencyDao {
         mapper: (Map<String, dynamic> row) => CurrencyEntity(
             currencyId: row['currency_id'] as String,
             name: row['name'] as String,
-            coinType: row['coin_type'] as int,
             symbol: row['symbol'] as String,
             description: row['description'] as String,
             address: row['address'] as String,
@@ -546,7 +544,10 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
             blockchainId: row['network_id'] as String,
             chainId: row['chain_id'] as int,
             publish:
-                row['publish'] == null ? null : (row['publish'] as int) != 0));
+                row['publish'] == null ? null : (row['publish'] as int) != 0,
+            contract: row['contract'] as String,
+            decimals: row['decimals'] as int,
+            type: row['type'] as String));
   }
 
   @override

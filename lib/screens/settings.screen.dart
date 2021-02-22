@@ -92,7 +92,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   void dispose() {
-    _backupBloc.close();
     super.dispose();
   }
 

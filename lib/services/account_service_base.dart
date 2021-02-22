@@ -161,7 +161,7 @@ class AccountServiceBase extends AccountService {
         .accountCurrencyDao
         .findJoinedByAccountyId(this._accountId);
 
-    List cs = jcs
+    List<Currency> cs = jcs
         .map(
           (c) => Currency(
               accountIndex: c.accountIndex,
@@ -180,10 +180,6 @@ class AccountServiceBase extends AccountService {
               type: c.type),
         )
         .toList();
-
-    cs.forEach((element) {
-      Log.debug(element.symbol);
-    });
 
     AccountMessage msg =
         AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: cs[0]);

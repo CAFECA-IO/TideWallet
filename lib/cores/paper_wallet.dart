@@ -37,6 +37,23 @@ class PaperWallet {
     return wallet;
   }
 
+  // param [
+  //   Wallet: wallet
+  //   String: password
+  // ]
+  static Wallet updatePassword(List param) {
+    Wallet wallet = param[0];
+    String password = param[1];
+    Credentials fromHex =
+        EthPrivateKey.fromHex(hex.encode(wallet.privateKey.privateKey));
+
+    var rng = new Random.secure();
+
+    final w = Wallet.createNew(fromHex, password, rng);
+
+    return w;
+  }
+
   //
   static List<int> magicSeed(Uint8List pk) {
     List<int> seed = Cryptor.keccak256round(pk, round: 2);
@@ -106,7 +123,7 @@ class PaperWallet {
 
     // TODO: USE ROOT
     // var child = root;
-    
+
     Uint8List publicKey = child.publicKey;
 
     bitcoins.ExtendedKey bitcoinKey = bitcoins.ExtendedKey(

@@ -59,6 +59,18 @@ class UpdatePasswordBloc
       yield _state.copyWith(error: this.validateState(_state));
     }
 
+    if (event is UpdatePassword) {
+      yield PasswordUpdating();
+
+      final success = await _userRepo.updatePassword(_state.currentPassword, _state.password);
+
+      if (success) {
+        yield PasswordUpdated();
+      } else {
+        yield PasswordUpdateFail();
+      }
+    }
+
     if (event is CleanUpdatePassword) {
       yield _state.copyWith(error: null);
     }

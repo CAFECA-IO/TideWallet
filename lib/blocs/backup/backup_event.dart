@@ -16,3 +16,5 @@ class VerifyBackupPassword extends BackupEvent {
 }
 
 class Backup extends BackupEvent {}
+
+class CleanBackupAuth extends BackupEvent {}

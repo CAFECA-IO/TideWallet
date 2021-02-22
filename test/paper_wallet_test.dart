@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tidewallet3/cores/paper_wallet.dart';
+import 'package:tidewallet3/helpers/logger.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:convert/convert.dart';
 
@@ -12,6 +13,18 @@ void main() {
       Wallet _w = PaperWallet.recoverFromJson(wallet.toJson(), pwd);
 
       expect(wallet.toJson(), _w.toJson());
+    });
+
+    test('update password', () {
+      final pwd = 'Paul123456';
+      final expectOrigin = wallet;
+
+      final keystore = PaperWallet.updatePassword([expectOrigin, pwd]);
+
+      Wallet w = PaperWallet.recoverFromJson(keystore.toJson(), pwd);
+
+      expect(expectOrigin.toJson(), isNot(equals(w.toJson())));
+      expect(expectOrigin.privateKey.privateKey, w.privateKey.privateKey);
     });
 
     test('recover with wrong password', () {

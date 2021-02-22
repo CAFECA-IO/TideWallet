@@ -23,5 +23,3 @@ class PasswordVerified extends UserState {
 }
 
 class PasswordInvalid extends UserState {}
-
-class PasswordUpdated extends UserState {}

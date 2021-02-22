@@ -23,4 +23,6 @@ class InputRePassword extends UpdatePasswordEvent {
 
 class SubmitUpdatePassword extends UpdatePasswordEvent {}
 
+class UpdatePassword extends UpdatePasswordEvent {}
+
 class CleanUpdatePassword extends UpdatePasswordEvent {}

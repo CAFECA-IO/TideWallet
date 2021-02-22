@@ -22,6 +22,7 @@ class _BackupSettingState extends State<BackupSetting> {
   BackupBloc _backupBloc;
   // final GlobalKey globalKey = GlobalKey();
   final t = I18n.t;
+  bool _clickedBackup = false;
 
   @override
   void didChangeDependencies() {
@@ -61,6 +62,7 @@ class _BackupSettingState extends State<BackupSetting> {
                             t('save_image'),
                             () {
                               _backupBloc.add(Backup());
+                              this._clickedBackup = true;
                               Navigator.of(context).pop();
                             },
                             textColor: Theme.of(context).primaryColor,
@@ -73,7 +75,11 @@ class _BackupSettingState extends State<BackupSetting> {
               );
             },
           ).then((value) {
-            Log.debug(_backupBloc.state);
+            if (!this._clickedBackup) {
+              _backupBloc.add(CleanBackupAuth());
+            }
+
+            this._clickedBackup = false;
           });
         }
 

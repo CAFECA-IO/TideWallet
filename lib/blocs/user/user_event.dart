@@ -23,7 +23,3 @@ class VerifyPassword extends UserEvent {
   VerifyPassword(this.password);
 }
 
-class UpdatePassword extends UserEvent {
-  final String password;
-  UpdatePassword(this.password);
-}
