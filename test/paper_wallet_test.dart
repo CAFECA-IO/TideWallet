@@ -49,7 +49,7 @@ void main() {
       String key = PaperWallet.getExtendedPublicKey(seed: hex.decode(seed));
 
       const String expectKey =
-          'xpub6BkDbi1YizgiJtXySxhdKVXruzsgB8E3pERHXL9GAwHdo2dMSkHCndsvdvoKdFQTdwqcRtqrDxbKszYLdcsX8Hk9f9XbdgQ1vHb1N9ASxtr';
+          'xpub6CFP3LWKoXn9p3YrJ5RygQHKba9p2QJ8dk7uqe3XxhjZrRH9EUnsExXy4EMTPkDrZ77npmeo12negCaXKiWiVro5JUcPYLxHCYBkTQJxiKV';
       expect(key, expectKey);
     });
   });

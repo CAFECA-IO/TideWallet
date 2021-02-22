@@ -10,7 +10,7 @@ import '../helpers/cryptor.dart';
 import '../helpers/utils.dart';
 
 class PaperWallet {
-  static const String EXT_PATH = "m/44'/0'/0'";
+  static const String EXT_PATH = "m/84'/3324'/0'";
   static const int EXT_CHAININDEX = 0;
   static const int EXT_KEYINDEX = 0;
 
@@ -114,15 +114,11 @@ class PaperWallet {
   }) {
     const publicPrefix = [0x04, 0x88, 0xb2, 0x1e];
     const childNumber = 2147483648; // 2 ^ 31;
-    // TODO: USE 0
-    // const childNumber = 0;
+   
     Uint8List bytes = Uint8List.fromList(seed);
 
     var root = bip32.BIP32.fromSeed(bytes);
     var child = root.derivePath("$path");
-
-    // TODO: USE ROOT
-    // var child = root;
 
     Uint8List publicKey = child.publicKey;
 
