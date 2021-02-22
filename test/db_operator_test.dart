@@ -103,7 +103,6 @@ void main() {
               (c) => CurrencyEntity(
                   currencyId: c['token_id'],
                   name: c['name'],
-                  coinType: 60,
                   totalSupply: c['total_supply'],
                   contract: c['contract'],
                   decimals: c['decimals'],

@@ -181,10 +181,6 @@ class AccountServiceBase extends AccountService {
         )
         .toList();
 
-    cs.forEach((element) {
-      Log.debug(element.symbol);
-    });
-
     AccountMessage msg =
         AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: cs[0]);
     AccountCore().currencies[this._base] = cs;

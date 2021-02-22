@@ -8,9 +8,6 @@ class CurrencyEntity {
 
   final String name;
 
-  @ColumnInfo(name: 'coin_type')
-  final int coinType;
-
   final String description;
 
   final String symbol;
@@ -31,7 +28,6 @@ class CurrencyEntity {
   CurrencyEntity({
     this.currencyId,
     this.name,
-    this.coinType,
     this.symbol,
     this.description,
     this.address,
@@ -45,7 +41,6 @@ class CurrencyEntity {
   CurrencyEntity.fromJson(Map json)
       : this.currencyId = json['currency_id'] ?? json['token_id'],
         this.name = json['name'],
-        this.coinType = json['coinType'],
         this.description = json['description'],
         this.address = json['contract'],
         this.contract = json['contract'],
@@ -65,11 +60,10 @@ class CurrencyEntity {
       other is CurrencyEntity &&
           runtimeType == other.runtimeType &&
           currencyId == other.currencyId &&
-          coinType == other.coinType &&
           symbol == other.symbol;
 
   @override
-  int get hashCode => currencyId.hashCode ^ coinType.hashCode ^ symbol.hashCode;
+  int get hashCode => currencyId.hashCode ^ symbol.hashCode;
 }
 
 // @DatabaseView(
