@@ -161,11 +161,11 @@ Uint8List toBuffer(dynamic data) {
       return Uint8List.fromList(utf8.encode(data));
     }
   } else if (data is int) {
-    // if (data == 0) return Uint8List(0);
+    if (data == 0) return Uint8List(0);
 
     return Uint8List.fromList(intToBuffer(data));
   } else if (data is BigInt) {
-    // if (data == BigInt.zero) return Uint8List(0);
+    if (data == BigInt.zero) return Uint8List(0);
 
     return Uint8List.fromList(encodeBigInt(data));
   } else if (data is List<int>) {

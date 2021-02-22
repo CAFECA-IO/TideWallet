@@ -14,7 +14,6 @@ import '../constants/endpoint.dart';
 import '../services/account_service.dart';
 import '../mock/endpoint.dart';
 import '../helpers/logger.dart';
-import '../cores/account.dart';
 import '../helpers/http_agent.dart';
 
 import '../cores/paper_wallet.dart';
@@ -25,6 +24,7 @@ class EthereumService extends AccountServiceDecorator {
   EthereumService(AccountService service) : super(service) {
     this.base = ACCOUNT.ETH;
     this.syncInterval = 5 * 60 * 1000;
+    this.path = "m/44'/60'/0'";
   }
   String _address;
   String _contract; // ?
@@ -97,16 +97,17 @@ class EthereumService extends AccountServiceDecorator {
   @override
   Future<Decimal> estimateGasLimit(String blockchainId, String from, String to,
       String amount, String message) async {
-    //TODO TEST
-    // APIResponse response = await HTTPAgent().post(
-    //     '${Endpoint.SUSANOO}/blockchain/$blockchainId/gas-limit', {
-    //   "fromAddress": from,
-    //   "toAddress": to,
-    //   "value": amount,
-    //   "data": message
-    // });
-    // Map<String, dynamic> data = response.data;
-    int gasLimit = 21000; //data['gasLimit'];
+    Map<String, dynamic> payload = {
+      "fromAddress": from,
+      "toAddress": to,
+      "value": amount,
+      "data": message
+    };
+    APIResponse response = await HTTPAgent().post(
+        '${Endpoint.SUSANOO}/blockchain/$blockchainId/gas-limit', payload);
+    Log.debug(payload);
+    Map<String, dynamic> data = response.data;
+    int gasLimit = int.parse(data['gasLimit']);
     return Decimal.fromInt(gasLimit);
   }
 
@@ -114,44 +115,27 @@ class EthereumService extends AccountServiceDecorator {
   Future<Map<TransactionPriority, Decimal>> getTransactionFee(
       String blockchainId) async {
     // TODO getSyncFeeAutomatically
-    //TODO TEST
-    // APIResponse response =
-    //     await HTTPAgent().get('${Endpoint.SUSANOO}/blockchain/$blockchainId/fee');
-    // Map<String, dynamic> data = response.data;
+    APIResponse response = await HTTPAgent()
+        .get('${Endpoint.SUSANOO}/blockchain/$blockchainId/fee');
+    Map<String, dynamic> data = response.data;
     Map<TransactionPriority, Decimal> transactionFee = {
-      // TransactionPriority.slow: Decimal.parse(data['slow'].toString()),
-      TransactionPriority.standard: Decimal.parse(
-          '0.00000000111503492'), //Decimal.parse(data['standard'].toString()),
-      // TransactionPriority.fast: Decimal.parse(data['fast'].toString()),
+      TransactionPriority.slow: Decimal.parse(data['slow'].toString()),
+      TransactionPriority.standard: Decimal.parse(data['standard'].toString()),
+      TransactionPriority.fast: Decimal.parse(data['fast'].toString()),
     };
     return transactionFee;
   }
 
   @override
   Future<List> getReceivingAddress(String currencyId) async {
-    // if (this._address == null) {
-    //   APIResponse response = await HTTPAgent()
-    //       .get('${Endpoint.SUSANOO}/wallet/account/address/$currencyId/receive');
-    //   Map data = response.data['payload'];
-    //   String address = data['address'];
-    //   this._address = address;
-    // }
-// TODO TEST
-    String seed =
-        '8c337518ad6f9311738380d8b878189987397fc53e7eb529723226930b789eab';
-    Uint8List publicKey =
-        await PaperWallet.getPubKey(hex.decode(seed), 0, 0, compressed: false);
-    Uint8List privKey = await PaperWallet.getPrivKey(hex.decode(seed), 0, 0);
-
-    Log.debug('privKey: ${hex.encode(privKey)}');
-    String address = '0x' +
-        hex
-            .encode(Cryptor.keccak256round(
-                publicKey.length % 2 != 0 ? publicKey.sublist(1) : publicKey,
-                round: 1))
-            .substring(24, 64);
-    this._address = address;
-    Log.debug(this._address);
+    if (this._address == null) {
+      APIResponse response = await HTTPAgent().get(
+          '${Endpoint.SUSANOO}/wallet/account/address/$currencyId/receive');
+      Map data = response.data;
+      String address = data['address'];
+      this._address = address;
+      Log.debug(this._address);
+    }
     return [this._address];
   }
 
@@ -161,9 +145,9 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   @override
-  Future<int> getNonce(String blockchainId) async {
-    APIResponse response = await HTTPAgent()
-        .get('${Endpoint.SUSANOO}/blockchain/$blockchainId/nonce');
+  Future<int> getNonce(String blockchainId, String address) async {
+    APIResponse response = await HTTPAgent().get(
+        '${Endpoint.SUSANOO}/blockchain/$blockchainId/address/$address/nonce');
     Map data = response.data;
     int nonce = int.parse(data['nonce']);
     return nonce;
@@ -171,15 +155,16 @@ class EthereumService extends AccountServiceDecorator {
 
   @override
   Future<void> publishTransaction(
-      String blockchainId, String currencyId, Transaction transaction) async {
+      String blockchainId, Transaction transaction) async {
     //TODO TEST
     Log.debug("publishTransaction");
 
     Log.debug(transaction.serializeTransaction);
     Log.debug(hex.encode(transaction.serializeTransaction));
-    // await HTTPAgent().post(
-    //   '${Endpoint.SUSANOO}/blockchain/$blockchainId/push-tx/$currencyId',
-    //   {"hex": hex.encode(transaction.serializeTransaction)});
+
+    await HTTPAgent().post(
+        '${Endpoint.SUSANOO}/blockchain/$blockchainId/push-tx',
+        {"hex": '0x' + hex.encode(transaction.serializeTransaction)});
     return;
   }
 

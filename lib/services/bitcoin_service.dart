@@ -64,7 +64,7 @@ class BitcoinService extends AccountServiceDecorator {
   }
 
   @override
-  Future<int> getNonce(String blockchainId) {
+  Future<int> getNonce(String blockchainId, String address) {
     // TODO: implement getNonce
     throw UnimplementedError();
   }
@@ -121,9 +121,9 @@ class BitcoinService extends AccountServiceDecorator {
 
   @override
   Future<void> publishTransaction(
-      String blockchainId, String currencyId, Transaction transaction) async {
+      String blockchainId, Transaction transaction) async {
     await HTTPAgent().post(
-        '${Endpoint.SUSANOO}/blockchain/$blockchainId/push-tx/$currencyId',
+        '${Endpoint.SUSANOO}/blockchain/$blockchainId/push-tx',
         {"hex": hex.encode(transaction.serializeTransaction)});
     // updateUsedUtxo
     BitcoinTransaction _transaction = transaction;

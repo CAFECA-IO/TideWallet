@@ -42,16 +42,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       _repo.setCurrency(event.currency);
       if (state is TransactionInitial) {
         TransactionInitial _state = state;
-        //TODO TEST
-        yield _state.copyWith(spandable: Decimal.parse('0.14'));
-        
-        // yield _state.copyWith(spandable: Decimal.parse(event.currency.amount));
+        yield _state.copyWith(spandable: Decimal.parse(event.currency.amount));
       } else {
-        //TODO TEST
-        yield TransactionInitial(spandable: Decimal.parse('0.14'));
-       
-        // yield TransactionInitial(
-        //   spandable: Decimal.parse(event.currency.amount));
+        yield TransactionInitial(
+            spandable: Decimal.parse(event.currency.amount));
       }
     }
     if (state is TransactionSent) return;
@@ -97,8 +91,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       Decimal _gasPrice;
       Decimal _gasLimit;
       if (_state.rules[0] && event.amount.isNotEmpty) {
+        // TODO TEST
+        Log.debug('event is VerifyAmount: ${event.amount}');
+
         result = await _repo.getTransactionFee(
             amount: Decimal.parse(event.amount), address: _state.address);
+        // TODO TEST
+        Log.debug('getTransactionFee result: $result');
         if (result.length == 1) {
           _fee = result[0][TransactionPriority.standard];
           _rule2 = _repo.verifyAmount(Decimal.parse(event.amount), fee: _fee);

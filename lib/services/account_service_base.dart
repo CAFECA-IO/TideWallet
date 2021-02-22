@@ -209,16 +209,20 @@ class AccountServiceBase extends AccountService {
 
     for (var currency in currencies) {
       final transactions = await this._getTransactions(currency);
-      AccountMessage txMsg = AccountMessage(
-          evt: ACCOUNT_EVT.OnUpdateTransactions,
-          value: {"currency": currency, "transactions": transactions.map((tx) => Transaction.fromTransactionEntity(tx)).toList()});
+      AccountMessage txMsg =
+          AccountMessage(evt: ACCOUNT_EVT.OnUpdateTransactions, value: {
+        "currency": currency,
+        "transactions": transactions
+            .map((tx) => Transaction.fromTransactionEntity(tx))
+            .toList()
+      });
       AccountCore().messenger.add(txMsg);
     }
   }
 
   Future<List<TransactionEntity>> _getTransactions(Currency currency) async {
-    APIResponse res =
-        await HTTPAgent().get(Endpoint.SUSANOO + '/wallet/account/txs/${currency.id}');
+    APIResponse res = await HTTPAgent()
+        .get(Endpoint.SUSANOO + '/wallet/account/txs/${currency.id}');
 
     if (res.success) {
       List txs = res.data;
@@ -249,7 +253,9 @@ class AccountServiceBase extends AccountService {
   }
 
   Future<List<TransactionEntity>> _loadTransactions(String currencyId) async {
-    return DBOperator().transactionDao.findAllTransactionsByCurrencyId(currencyId);
+    return DBOperator()
+        .transactionDao
+        .findAllTransactionsByCurrencyId(currencyId);
   }
 
   @override
@@ -266,7 +272,7 @@ class AccountServiceBase extends AccountService {
   }
 
   @override
-  Future<int> getNonce(String blockchainId) {
+  Future<int> getNonce(String blockchainId, String address) {
     // TODO: implement getNonce
     throw UnimplementedError();
   }
@@ -285,7 +291,7 @@ class AccountServiceBase extends AccountService {
 
   @override
   Future<void> publishTransaction(
-      String blockchainId, String currencyId, Transaction transaction) {
+      String blockchainId, Transaction transaction) {
     // TODO: implement publishTransaction
     throw UnimplementedError();
   }

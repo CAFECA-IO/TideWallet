@@ -17,6 +17,7 @@ import '../services/transaction_service_based.dart';
 import '../services/transaction_service_bitcoin.dart';
 import '../services/transaction_service_ethereum.dart';
 import '../constants/account_config.dart';
+import '../helpers/cryptor.dart';
 import '../helpers/utils.dart';
 import '../helpers/converter.dart';
 import '../helpers/rlp.dart' as rlp;
@@ -59,9 +60,12 @@ class TransactionRepository {
   Currency get currency => this._currency;
 
   bool verifyAmount(Decimal amount, {Decimal fee}) {
-    //TODO TEST
-    // return Decimal.parse(_currency.amount) - amount - fee > Decimal.zero;
-    return Decimal.parse('5') - amount - fee > Decimal.zero;
+    bool result =
+        Decimal.parse(_currency.amount) - amount - fee >= Decimal.zero;
+    Log.debug('verifyAmount: $result');
+    // TODO TEST
+    result = true;
+    return result;
   }
 
   Future<List<Transaction>> getTransactions() async {
@@ -69,12 +73,29 @@ class TransactionRepository {
   }
 
   Future<String> getReceivingAddress() async {
-    return (await _accountService.getReceivingAddress(this._currency.id))[0];
+    // TEST: is BackendAddress correct?
+    // IMPORTANT: seed cannot reach
+    String seed =
+        '9f2c797ca3e00c644ec25dfdae46ae0818c870bab684a1bb5e5ac53db96da978';
+    Uint8List publicKey = await PaperWallet.getPubKey(hex.decode(seed), 0, 0,
+        compressed: false, path: _accountService.path);
+    // Uint8List privKey = await PaperWallet.getPrivKey(hex.decode(seed), 0, 0);
+    // Log.debug('privKey: ${hex.encode(privKey)}');
+    String address = '0x' +
+        hex
+            .encode(Cryptor.keccak256round(
+                publicKey.length % 2 != 0 ? publicKey.sublist(1) : publicKey,
+                round: 1))
+            .substring(24, 64);
+    this._address = address;
+    Log.debug(address);
+// TEST(end)
+    return address;
+    // return (await _accountService.getReceivingAddress(this._currency.id))[0];
   }
 
   Future<List<dynamic>> getTransactionFee(
       {String address, Decimal amount, Uint8List message}) async {
-    // TODO TEST
     Log.warning('getTransactionFee');
     if (_fee == null ||
         DateTime.now().millisecondsSinceEpoch - _timestamp >
@@ -124,7 +145,9 @@ class TransactionRepository {
             _address,
             address,
             amount.toString(),
-            hex.encode(message ?? Uint8List(0)));
+            '0x' +
+                hex.encode(
+                    message == null ? Uint8List(0) : rlp.toBuffer(message)));
         return [_fee, _gasLimit];
         break;
       case ACCOUNT.XRP:
@@ -157,14 +180,17 @@ class TransactionRepository {
 
   Future<Uint8List> getPubKey(String pwd, int changeIndex, int keyIndex) async {
     Uint8List seed = await _getSeed(pwd);
-    return PaperWallet.getPubKey(seed, changeIndex, keyIndex);
+    return await PaperWallet.getPubKey(seed, changeIndex, keyIndex,
+        path: _accountService.path);
   }
 
   Future<Uint8List> getPrivKey(
       String pwd, int changeIndex, int keyIndex) async {
     Uint8List seed = await _getSeed(pwd);
-    Log.debug('getPrivKey seed: ${hex.encode(seed)}'); // TODO TEST --
-    return PaperWallet.getPrivKey(seed, changeIndex, keyIndex);
+    Uint8List result = await PaperWallet.getPrivKey(seed, changeIndex, keyIndex,
+        path: _accountService.path);
+    Log.warning("getPrivKey result: ${hex.encode(result)}");
+    return result;
   }
 
   Future<Transaction> prepareTransaction(String pwd, String to, Decimal amount,
@@ -193,7 +219,10 @@ class TransactionRepository {
           } else if (utxoAmount == (amount + fee)) break;
         }
         Transaction transaction = _transactionService.prepareTransaction(
-            this._currency.publish, to, amount, message,
+            this._currency.publish,
+            to,
+            amount,
+            message == null ? Uint8List(0) : rlp.toBuffer(message),
             currencyId: this._currency.id,
             fee: fee,
             unspentTxOuts: unspentTxOuts,
@@ -202,11 +231,8 @@ class TransactionRepository {
         return transaction;
         break;
       case ACCOUNT.ETH:
-        // String from =
-        //     (await _accountService.getReceivingAddress(_currency.id))[0];
-        //TODO TEST
-        int nonce =
-            4; // await _accountService.getNonce(this._currency.blockchainId);
+        int nonce = await _accountService.getNonce(
+            this._currency.blockchainId, this._address);
         if (currency.symbol.toLowerCase() != 'eth') {
           // ERC20
           List<int> erc20Func = Cryptor.keccak256round(
@@ -222,18 +248,23 @@ class TransactionRepository {
                   rlp.toBuffer(message));
         }
 
+        Log.debug('_currency.chainId: ${_currency.chainId}');
+        Log.debug('gasPrice: $gasPrice');
+
         Transaction transaction = _transactionService.prepareTransaction(
           this._currency.publish,
           to,
           amount,
-          message,
-          nonce: nonce,
-          gasPrice: gasPrice,
+          message == null ? Uint8List(0) : rlp.toBuffer(message),
+          nonce: nonce, // TODO TEST api nonce is not correct
+          gasPrice:
+              Decimal.parse('0.00000000111503492'), //gasPrice, // TODO TEST
           gasLimit: gasLimit,
           chainId: _currency.chainId ?? 3, // TODO TEST
           privKey: await getPrivKey(pwd, 0, 0),
         );
-        Log.debug('transaction: ${transaction.serializeTransaction}');
+        Log.debug(
+            'transaction: ${hex.encode(transaction.serializeTransaction)}');
         return transaction;
         break;
       case ACCOUNT.XRP:
@@ -247,6 +278,6 @@ class TransactionRepository {
 
   Future<void> publishTransaction(Transaction transaction) async {
     return await _accountService.publishTransaction(
-        this._currency.blockchainId, _currency.id, transaction);
+        this._currency.blockchainId, transaction);
   }
 }
