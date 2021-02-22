@@ -78,6 +78,8 @@ class _BackupSettingState extends State<BackupSetting> {
             if (!this._clickedBackup) {
               _backupBloc.add(CleanBackupAuth());
             }
+
+            this._clickedBackup = false;
           });
         }
 
