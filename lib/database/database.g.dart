@@ -104,7 +104,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Network` (`network_id` TEXT, `network` TEXT NOT NULL, `coin_type` INTEGER, `publish` INTEGER, `chain_id` INTEGER, PRIMARY KEY (`network_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `AccountCurrency` (`accountcurrency_id` TEXT NOT NULL, `account_id` TEXT, `currency_id` TEXT, `balance` TEXT, `number_of_used_external_key` INTEGER, `number_of_used_internal_key` INTEGER, `last_sync_time` INTEGER, `chain_id` INTEGER, PRIMARY KEY (`accountcurrency_id`))');
+            'CREATE TABLE IF NOT EXISTS `AccountCurrency` (`accountcurrency_id` TEXT NOT NULL, `account_id` TEXT, `currency_id` TEXT, `balance` TEXT, `number_of_used_external_key` INTEGER, `number_of_used_internal_key` INTEGER, `last_sync_time` INTEGER, PRIMARY KEY (`accountcurrency_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Utxo` (`utxo_id` TEXT, `currency_id` TEXT, `tx_id` TEXT, `vout` INTEGER, `type` TEXT, `amount` TEXT, `chain_index` INTEGER, `key_index` INTEGER, `script` TEXT, `timestamp` INTEGER, `locked` INTEGER, `sequence` INTEGER, PRIMARY KEY (`utxo_id`))');
         await database.execute(
@@ -489,8 +489,7 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
                   'balance': item.balance,
                   'number_of_used_external_key': item.numberOfUsedExternalKey,
                   'number_of_used_internal_key': item.numberOfUsedInternalKey,
-                  'last_sync_time': item.lastSyncTime,
-                  'chain_id': item.chainId
+                  'last_sync_time': item.lastSyncTime
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -512,8 +511,7 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
             balance: row['balance'] as String,
             numberOfUsedExternalKey: row['number_of_used_external_key'] as int,
             numberOfUsedInternalKey: row['number_of_used_internal_key'] as int,
-            lastSyncTime: row['last_sync_time'] as int,
-            chainId: row['chain_id'] as int));
+            lastSyncTime: row['last_sync_time'] as int));
   }
 
   @override
@@ -528,8 +526,7 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
             balance: row['balance'] as String,
             numberOfUsedExternalKey: row['number_of_used_external_key'] as int,
             numberOfUsedInternalKey: row['number_of_used_internal_key'] as int,
-            lastSyncTime: row['last_sync_time'] as int,
-            chainId: row['chain_id'] as int));
+            lastSyncTime: row['last_sync_time'] as int));
   }
 
   @override
