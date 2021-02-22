@@ -49,3 +49,18 @@ class UpdatePasswordStateCheck extends UpdatePasswordState {
   List<Object> get props =>
       [currentPassword, password, rePassword, rules, error];
 }
+
+class PasswordUpdating extends UpdatePasswordState {
+  @override
+  List<Object> get props => [];
+}
+
+class PasswordUpdated extends UpdatePasswordState {
+  @override
+  List<Object> get props => [];
+}
+
+class PasswordUpdateFail extends UpdatePasswordState {
+  @override
+  List<Object> get props => [];
+}

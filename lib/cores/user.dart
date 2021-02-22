@@ -17,7 +17,6 @@ import '../models/api_response.mode.dart';
 
 class User {
   String _id;
-  Wallet _wallet;
   bool _isBackup = false;
   String _passwordHash;
   String _salt = Random.secure().toString();
@@ -26,10 +25,7 @@ class User {
 
   String get id => _id;
 
-  // Deprecated
-  bool get hasWallet {
-    return _wallet != null;
-  }
+
 
   Future<bool> checkUser() async {
     UserEntity user = await DBOperator().userDao.findUser();
@@ -70,7 +66,6 @@ class User {
       await DBOperator().userDao.insertUser(user);
 
       await this._initUser(user);
-      this._wallet = wallet;
     }
 
     return res.success;
@@ -80,8 +75,38 @@ class User {
     return _seasonedPassword(password) == this._passwordHash;
   }
 
-  void updatePassword(String password) {
-    this._passwordHash = _seasonedPassword(password);
+  Future<bool> updatePassword(String oldPassword, String newpassword) async {
+    UserEntity user = await DBOperator().userDao.findUser();
+
+    final wallet = await this.restorePaperWallet(user.keystore, oldPassword);
+    final w = await compute(PaperWallet.updatePassword, [wallet, newpassword]);
+
+    final originSalt = this._salt;
+
+    this._salt = Random.secure().toString();
+    final passwordHash = _seasonedPassword(newpassword);
+    String keystore = await compute(PaperWallet.walletToJson, w);
+
+
+    final userUpdated = user.copyWith(
+      keystore: keystore,
+      passwordHash: passwordHash,
+      passwordSalt: this._salt,
+      backupStatus: false,
+    );
+
+    try {
+      await DBOperator().userDao.updateUser(userUpdated);
+      this._passwordHash = passwordHash;
+      this._isBackup = false;
+
+      return true;
+    } catch (e) {
+      Log.error(e);
+      this._salt = originSalt;
+
+      return false;
+    }
   }
 
   bool validPaperWallet(String wallet) {
@@ -128,7 +153,6 @@ class User {
       await DBOperator().userDao.insertUser(user);
 
       await this._initUser(user);
-      this._wallet = wallet;
     }
 
     return res.success;
@@ -174,14 +198,6 @@ class User {
 
     Uint8List bytes = Uint8List.fromList(tmp);
     return String.fromCharCodes(bytes);
-  }
-
-  Uint8List getPrivateKey() {
-    if (_wallet != null) {
-      return _wallet.privateKey.privateKey;
-    }
-
-    return null;
   }
 
   Future<String> getKeystore() async {

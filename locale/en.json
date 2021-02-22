@@ -147,5 +147,7 @@
   "update_time": "，最後更新日期：{{year}}年{{month}}月{{day}}日。",
   "fiat": "法幣",
   "not_found": "Not Found",
-  "error_restore": "還原錢包失敗"
+  "error_restore": "還原錢包失敗",
+  "error_update_password": "更新密碼失敗",
+  "success_update_password": "成功更新密碼"
 }

@@ -4,6 +4,7 @@ import 'dart:core';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../theme.dart';
+import '../constants/endpoint.dart';
 import '../widgets/appBar.dart';
 import '../helpers/i18n.dart';
 
@@ -11,11 +12,11 @@ class TermsScreen extends StatelessWidget {
   static const routeName = '/terms';
   final t = I18n.t;
 
-  final emailAddress = 'info@tidewallet.io';
+  final emailAddress = Endpoint.EMAIL;
 
   final Uri _emailLaunchUri = Uri(
     scheme: 'mailto',
-    path: 'info@tidewallet.io',
+    path: Endpoint.EMAIL,
     // queryParameters: {'subject': 'Example Subject & Symbols are allowed!'}
   );
 

@@ -161,7 +161,7 @@ class AccountServiceBase extends AccountService {
         .accountCurrencyDao
         .findJoinedByAccountyId(this._accountId);
 
-    List cs = jcs
+    List<Currency> cs = jcs
         .map(
           (c) => Currency(
               accountIndex: c.accountIndex,

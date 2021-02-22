@@ -4,13 +4,14 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../widgets/appBar.dart';
 import '../helpers/i18n.dart';
+import '../constants/endpoint.dart';
 
 class FeedbackScreen extends StatelessWidget {
   static const routeName = '/feedback';
   final t = I18n.t;
   final Uri _emailLaunchUri = Uri(
     scheme: 'mailto',
-    path: 'info@tidewallet.io',
+    path: Endpoint.EMAIL,
     // queryParameters: {'subject': 'Example Subject & Symbols are allowed!'}
   );
   @override

@@ -46,8 +46,5 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         yield PasswordInvalid();
       }
     }
-    if (event is UpdatePassword) {
-      yield PasswordUpdated();
-    }
   }
 }

@@ -4,4 +4,6 @@ class Endpoint {
 
   static const String SUSANOO = _SUSANOO + _version;
 
+  static const EMAIL = 'info@tidewallet.io';
+
 }

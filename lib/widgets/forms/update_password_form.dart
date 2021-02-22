@@ -3,11 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 import '../../blocs/update_password/update_password_bloc.dart';
-import '../../blocs/user/user_bloc.dart';
+import '../../blocs/backup/backup_bloc.dart';
 import '../inputs/password_input.dart';
 import '../buttons/secondary_button.dart';
+import '../dialogs/loading_dialog.dart';
 import '../dialogs/dialog_controller.dart';
 import '../dialogs/error_dialog.dart';
+import '../dialogs/success_dialog.dart';
 import '../../helpers/i18n.dart';
 import '../../repositories/user_repository.dart';
 
@@ -21,7 +23,7 @@ class UpdatePasswordForm extends StatefulWidget {
 
 class _UpdatePasswordFormState extends State<UpdatePasswordForm> {
   UpdatePasswordBloc _bloc;
-  UserBloc _userBloc;
+  BackupBloc _backupBloc;
   UserRepository _userRepo;
 
   final t = I18n.t;
@@ -29,8 +31,8 @@ class _UpdatePasswordFormState extends State<UpdatePasswordForm> {
   @override
   void didChangeDependencies() {
     _userRepo = Provider.of<UserRepository>(context);
+    _backupBloc = BlocProvider.of<BackupBloc>(context);
     _bloc = UpdatePasswordBloc(_userRepo);
-    _userBloc = BlocProvider.of<UserBloc>(context);
     super.didChangeDependencies();
   }
 
@@ -44,32 +46,58 @@ class _UpdatePasswordFormState extends State<UpdatePasswordForm> {
   Widget build(BuildContext context) {
     return BlocListener<UpdatePasswordBloc, UpdatePasswordState>(
       cubit: _bloc,
-      listener: (context, state) {
-        UpdatePasswordStateCheck _state = state;
-        if (_state.error != null && _state.error != UpdateFormError.none) {
-          String _text = '';
-          switch (_state.error) {
-            case UpdateFormError.wrongPassword:
-              _text = t('wrong_password');
-              break;
-            case UpdateFormError.passwordInvalid:
-              _text = t('create_wallet_invalid_password');
-              break;
-            case UpdateFormError.passwordNotMatch:
-              _text = t('create_wallet_password_unmatch');
-              break;
-            default:
+      listener: (context, state) async {
+        if (state is UpdatePasswordStateCheck) {
+          UpdatePasswordStateCheck _state = state;
+          if (_state.error != null && _state.error != UpdateFormError.none) {
+            String _text = '';
+            switch (_state.error) {
+              case UpdateFormError.wrongPassword:
+                _text = t('wrong_password');
+                break;
+              case UpdateFormError.passwordInvalid:
+                _text = t('create_wallet_invalid_password');
+                break;
+              case UpdateFormError.passwordNotMatch:
+                _text = t('create_wallet_password_unmatch');
+                break;
+              default:
+            }
+            DialogController.show(context, ErrorDialog(_text), onDismiss: () {
+              _bloc.add(
+                CleanUpdatePassword(),
+              );
+            });
           }
-          DialogController.show(context, ErrorDialog(_text), onDismiss: () {
+
+          if (_state.error == UpdateFormError.none) {
+            _bloc.add(UpdatePassword());
+          }
+        }
+
+        if (state is PasswordUpdating) {
+          DialogController.showUnDissmissible(context, LoadingDialog());
+        }
+        if (state is PasswordUpdated) {
+          DialogController.dismiss(context);
+          DialogController.showUnDissmissible(
+              context, SuccessDialog(t('success_update_password')));
+
+          _backupBloc.add(CheckBackup());
+
+          await Future.delayed(Duration(milliseconds: 300));
+          DialogController.dismiss(context);
+          Navigator.of(context).pop();
+        }
+        if (state is PasswordUpdateFail) {
+          DialogController.dismiss(context);
+
+          DialogController.show(
+              context, ErrorDialog(t('error_update_password')), onDismiss: () {
             _bloc.add(
               CleanUpdatePassword(),
             );
           });
-        }
-
-        if (_state.error == UpdateFormError.none) {
-          Navigator.of(context).pop();
-          _userBloc.add(UpdatePassword(_state.password));
         }
       },
       child: BlocBuilder<UpdatePasswordBloc, UpdatePasswordState>(
