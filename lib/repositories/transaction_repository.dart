@@ -232,7 +232,8 @@ class TransactionRepository {
       case ACCOUNT.ETH:
         int nonce = await _accountService.getNonce(
             this._currency.blockchainId, this._address);
-        if (currency.type.toLowerCase() == '2') {
+
+        if (currency.symbol.toLowerCase() != 'eth') {
           // ERC20
           List<int> erc20Func = Cryptor.keccak256round(
               utf8.encode('transfer(address,uint256)'),
@@ -242,16 +243,17 @@ class TransactionRepository {
                   hex.decode(to.substring(2).padLeft(64, '0')) +
                   hex.decode(hex
                       .encode(encodeBigInt(Converter.toTokenSmallestUnit(
-                          amount, _currency.decimals)))
+                          amount, _currency.decimals ?? 18)))
                       .padLeft(64, '0')) +
-                  rlp.toBuffer(message));
-          Log.debug('to: $to');
-          to = this._currency.contract;
-          Log.debug('to replace by this._currency.contract: $to');
+                  rlp.toBuffer(message ?? Uint8List(0)));
+
+          amount = Decimal.zero;
+          // to = this._currency.contract;
+          to = '0xfaCCcF05e2C4fac8DCDD17d3A567CaFea71583E0'; // TODO TEST
+          gasLimit = Decimal.fromInt(52212); // TODO TEST
         }
 
         Log.debug('_currency.chainId: ${_currency.chainId}');
-        Log.debug('gasPrice: $gasPrice');
 
         Transaction transaction = _transactionService.prepareTransaction(
           this._currency.publish,
@@ -261,8 +263,8 @@ class TransactionRepository {
           nonce: nonce, // TODO TEST api nonce is not correct
           gasPrice:
               Decimal.parse('0.00000000111503492'), //gasPrice, // TODO TEST
-          gasLimit: gasLimit,
-          chainId: _currency.chainId ?? 3, // TODO TEST
+          gasLimit: gasLimit, // TODO TEST
+          chainId: 3, // TODO TEST
           privKey: await getPrivKey(pwd, 0, 0),
         );
         Log.debug(
