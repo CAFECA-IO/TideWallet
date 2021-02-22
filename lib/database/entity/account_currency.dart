@@ -34,9 +34,6 @@ class AccountCurrencyEntity {
   @ColumnInfo(name: 'last_sync_time')
   final int lastSyncTime;
 
-  @ColumnInfo(name: 'chain_id')
-  final int chainId;
-
   AccountCurrencyEntity(
       {this.accountcurrencyId,
       this.accountId,
@@ -44,8 +41,7 @@ class AccountCurrencyEntity {
       this.balance,
       this.numberOfUsedExternalKey,
       this.numberOfUsedInternalKey,
-      this.lastSyncTime,
-      this.chainId});
+      this.lastSyncTime});
 
   @override
   bool operator ==(Object other) =>
@@ -100,17 +96,25 @@ class JoinCurrency {
 
   final bool publish;
 
-  JoinCurrency({
-    this.accountcurrencyId,
-    this.currencyId,
-    this.symbol,
-    this.name,
-    this.balance,
-    this.accountIndex,
-    this.coinType,
-    this.image,
-    this.blockchainId,
-    this.chainId,
-    this.publish,
-  });
+  final String contract;
+
+  final int decimals;
+
+  final String type;
+
+  JoinCurrency(
+      {this.accountcurrencyId,
+      this.currencyId,
+      this.symbol,
+      this.name,
+      this.balance,
+      this.accountIndex,
+      this.coinType,
+      this.image,
+      this.blockchainId,
+      this.chainId,
+      this.publish,
+      this.contract,
+      this.decimals,
+      this.type});
 }

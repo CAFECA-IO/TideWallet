@@ -21,7 +21,6 @@ import '../helpers/cryptor.dart';
 import '../helpers/utils.dart';
 import '../helpers/converter.dart';
 import '../helpers/rlp.dart' as rlp;
-import '../helpers/cryptor.dart';
 import '../database/db_operator.dart';
 import '../database/entity/user.dart';
 
@@ -76,7 +75,7 @@ class TransactionRepository {
     // TEST: is BackendAddress correct?
     // IMPORTANT: seed cannot reach
     String seed =
-        '9f2c797ca3e00c644ec25dfdae46ae0818c870bab684a1bb5e5ac53db96da978';
+        '59f45d6afb9bc00380fed2fcfdd5b36819acab89054980ad6e5ff90ba19c5347';
     Uint8List publicKey = await PaperWallet.getPubKey(hex.decode(seed), 0, 0,
         compressed: false, path: _accountService.path);
     // Uint8List privKey = await PaperWallet.getPrivKey(hex.decode(seed), 0, 0);
@@ -233,6 +232,7 @@ class TransactionRepository {
       case ACCOUNT.ETH:
         int nonce = await _accountService.getNonce(
             this._currency.blockchainId, this._address);
+
         if (currency.symbol.toLowerCase() != 'eth') {
           // ERC20
           List<int> erc20Func = Cryptor.keccak256round(
@@ -243,13 +243,17 @@ class TransactionRepository {
                   hex.decode(to.substring(2).padLeft(64, '0')) +
                   hex.decode(hex
                       .encode(encodeBigInt(Converter.toTokenSmallestUnit(
-                          amount, _currency.decimals)))
+                          amount, _currency.decimals ?? 18)))
                       .padLeft(64, '0')) +
-                  rlp.toBuffer(message));
+                  rlp.toBuffer(message ?? Uint8List(0)));
+
+          amount = Decimal.zero;
+          // to = this._currency.contract;
+          to = '0xfaCCcF05e2C4fac8DCDD17d3A567CaFea71583E0'; // TODO TEST
+          gasLimit = Decimal.fromInt(52212); // TODO TEST
         }
 
         Log.debug('_currency.chainId: ${_currency.chainId}');
-        Log.debug('gasPrice: $gasPrice');
 
         Transaction transaction = _transactionService.prepareTransaction(
           this._currency.publish,
@@ -259,8 +263,8 @@ class TransactionRepository {
           nonce: nonce, // TODO TEST api nonce is not correct
           gasPrice:
               Decimal.parse('0.00000000111503492'), //gasPrice, // TODO TEST
-          gasLimit: gasLimit,
-          chainId: _currency.chainId ?? 3, // TODO TEST
+          gasLimit: gasLimit, // TODO TEST
+          chainId: 3, // TODO TEST
           privKey: await getPrivKey(pwd, 0, 0),
         );
         Log.debug(

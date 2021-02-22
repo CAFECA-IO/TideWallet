@@ -85,7 +85,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
                 Container(
                   height: 40,
                   child: Text(
-                    _currency.accountType != ACCOUNT.BTC
+                    _currency.accountType == ACCOUNT.BTC
                         ? t('btc_receving_address_hint')
                         : '',
                     style: Theme.of(context).textTheme.subtitle2,

@@ -75,6 +75,10 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
       appBar: GeneralAppbar(
         title: t('send_coin'),
         routeName: CreateTransactionScreen.routeName,
+        leadingFunc: () {
+          _bloc.add(ResetAddress());
+          Navigator.of(context).pop();
+        },
       ),
       resizeToAvoidBottomInset: false,
       body: BlocBuilder<TransactionBloc, TransactionState>(
