@@ -71,6 +71,9 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
         yield BackupAuth(wallet);
       } else {
         yield BackupDenied();
+
+        await Future.delayed(Duration(milliseconds: 200));
+        yield UnBackup();
       }
     }
 
@@ -88,6 +91,10 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
         await Future.delayed(Duration(milliseconds: 300));
         yield UnBackup();
       }
+    }
+
+    if (event is CleanBackupAuth) {
+      yield UnBackup();
     }
   }
 }
