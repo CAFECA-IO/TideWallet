@@ -39,7 +39,7 @@ class AccountCore {
   }
 
   _initAccounts() async {
-    final chains = await this.getNetworks();
+    final chains = await this.getNetworks(publish: false);
     final accounts = await this.getAccounts();
     await this.getSupportedCurrencies();
 
@@ -52,6 +52,7 @@ class AccountCore {
         ACCOUNT account;
         switch (chains[blockIndex].coinType) {
           case 0:
+          case 1:
             svc = BitcoinService(AccountServiceBase());
             account = ACCOUNT.BTC;
             break;
@@ -104,9 +105,11 @@ class AccountCore {
       List l = res.data;
       networks = l.map((chain) => NetworkEntity.fromJson(chain)).toList();
 
-      if (publish) {
+      if (publish)
         networks.removeWhere((NetworkEntity n) => !n.publish);
-      }
+      else
+        networks.removeWhere((NetworkEntity n) => n.publish);
+
       await DBOperator().networkDao.insertNetworks(networks);
     }
 

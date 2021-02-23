@@ -7,7 +7,7 @@ import '../models/utxo.model.dart';
 abstract class AccountService {
   int syncInterval = 10 * 10 * 1000;
   ACCOUNT base;
-  String path;
+  // String path = "m/84'/3324'/0'";
   int lastSyncTimestamp;
   String accountId;
 

@@ -73,24 +73,10 @@ class TransactionRepository {
 
   Future<String> getReceivingAddress() async {
     // TEST: is BackendAddress correct?
-    // IMPORTANT: seed cannot reach
-    String seed =
-        '59f45d6afb9bc00380fed2fcfdd5b36819acab89054980ad6e5ff90ba19c5347';
-    Uint8List publicKey = await PaperWallet.getPubKey(hex.decode(seed), 0, 0,
-        compressed: false, path: _accountService.path);
-    // Uint8List privKey = await PaperWallet.getPrivKey(hex.decode(seed), 0, 0);
-    // Log.debug('privKey: ${hex.encode(privKey)}');
-    String address = '0x' +
-        hex
-            .encode(Cryptor.keccak256round(
-                publicKey.length % 2 != 0 ? publicKey.sublist(1) : publicKey,
-                round: 1))
-            .substring(24, 64);
-    this._address = address;
-    Log.debug(address);
-// TEST(end)
+    List result = await _accountService.getReceivingAddress(this._currency.id);
+    String address = result[0];
+
     return address;
-    // return (await _accountService.getReceivingAddress(this._currency.id))[0];
   }
 
   Future<List<dynamic>> getTransactionFee(
@@ -179,15 +165,14 @@ class TransactionRepository {
 
   Future<Uint8List> getPubKey(String pwd, int changeIndex, int keyIndex) async {
     Uint8List seed = await _getSeed(pwd);
-    return await PaperWallet.getPubKey(seed, changeIndex, keyIndex,
-        path: _accountService.path);
+    return await PaperWallet.getPubKey(seed, changeIndex, keyIndex);
   }
 
   Future<Uint8List> getPrivKey(
       String pwd, int changeIndex, int keyIndex) async {
     Uint8List seed = await _getSeed(pwd);
-    Uint8List result = await PaperWallet.getPrivKey(seed, changeIndex, keyIndex,
-        path: _accountService.path);
+    Uint8List result =
+        await PaperWallet.getPrivKey(seed, changeIndex, keyIndex);
     Log.warning("getPrivKey result: ${hex.encode(result)}");
     return result;
   }

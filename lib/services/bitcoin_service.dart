@@ -16,11 +16,16 @@ import '../constants/account_config.dart';
 import '../database/db_operator.dart';
 import '../database/entity/utxo.dart';
 
+import 'dart:typed_data'; //TODO TEST
+import '../cores/paper_wallet.dart'; //TODO TEST
+import '../helpers/bitcoin_based_utils.dart'; //TODO TEST
+
 class BitcoinService extends AccountServiceDecorator {
   Timer _utxoTimer;
   BitcoinService(AccountService service) : super(service) {
     this.base = ACCOUNT.BTC;
     this.syncInterval = 1 * 60 * 1000;
+    // this.path = "m/44'/0'/0'";
   }
   Timer _timer;
   int _numberOfUsedExternalKey;
@@ -109,6 +114,16 @@ class BitcoinService extends AccountServiceDecorator {
     Map data = response.data;
     String address = data['address'];
     _numberOfUsedExternalKey = data['key_index'];
+
+    Log.debug('api address: $address');
+    Log.debug('api keyIndex: $_numberOfUsedExternalKey');
+    String seed =
+        '74a0b10d85dea97d53ff42a89f34a8447bbd041dcb573333358a03d5d1cfff0e';
+    // '59f45d6afb9bc00380fed2fcfdd5b36819acab89054980ad6e5ff90ba19c5347'; // 上一個有eth的 seed
+    Uint8List publicKey = await PaperWallet.getPubKey(
+        hex.decode(seed), 0, _numberOfUsedExternalKey);
+    String calAddress = pubKeyToP2wpkhAddress(publicKey, 'tb');
+    Log.debug('calculated address: $calAddress');
     return [address, _numberOfUsedExternalKey];
   }
 

@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 import 'package:bs58check/bs58check.dart' as bs58check;
 import 'package:convert/convert.dart';
+import 'package:bitbox/bitbox.dart';
+import 'package:bitcoin_flutter/bitcoin_flutter.dart' as bitcoinFlutter;
 
 import 'cryptor.dart';
 import 'bech32.dart';
@@ -82,11 +84,97 @@ Uint8List pubkeyToP2PKScript(List<int> pubKey) {
 }
 
 Uint8List pubkeyToBIP49RedeemScript(List<int> pubKey) {
-  List<int> publicKey = pubKey.length > 33 ? compressedPubKey(pubKey) : pubKey;
-  List<int> pubKeyHash = Cryptor.hash160(publicKey);
+  List<int> pubKeyHash = toPubKeyHash(pubKey);
   List<int> rs = [0x00, 0x14];
   rs.addAll(pubKeyHash);
   return Uint8List.fromList(rs);
+}
+
+//44
+String pubKeyToP2pkhAddress(List<int> pubKey, int p2pkhAddressPrefix) {
+  final List<int> fingerprint = toPubKeyHash(pubKey);
+  final List<int> hashPubKey =
+      Uint8List.fromList([p2pkhAddressPrefix] + fingerprint);
+  final String address = bs58check.encode(hashPubKey);
+  return address;
+}
+
+String pubKeyToP2pkhCashAddress(List<int> pubKey, int p2pkhAddressPrefix) {
+  // Compressed Public Key to P2PKH Cash Address
+  String lagacyAddress = pubKeyToP2pkhAddress(pubKey, p2pkhAddressPrefix);
+  String address = Address.toCashAddress(lagacyAddress, true);
+  Log.debug('cashAddress: $address');
+  return address;
+}
+
+bitcoinFlutter.NetworkType litecoin = new bitcoinFlutter.NetworkType(
+    messagePrefix: '\x19Litecoin Signed Message:\n',
+    bech32: 'ltc',
+    bip32:
+        new bitcoinFlutter.Bip32Type(public: 0x019da462, private: 0x019d9cfe),
+    pubKeyHash: 0x30,
+    scriptHash: 0x32,
+    wif: 0xb0);
+
+bitcoinFlutter.NetworkType litecoinT = new bitcoinFlutter.NetworkType(
+    messagePrefix: '\x19Litecoin Signed Message:\n',
+    bech32: 'tltc',
+    bip32:
+        new bitcoinFlutter.Bip32Type(public: 0x019da462, private: 0x019d9cfe),
+    pubKeyHash: 0x30,
+    scriptHash: 0x32,
+    wif: 0xb0);
+
+//84
+String pubKeyToP2wpkhAddress(List<int> pubKey, String bech32Hrp) {
+  String address;
+  if (bech32Hrp == 'bc') {
+    address = bitcoinFlutter
+        .P2WPKH(
+            data:
+                bitcoinFlutter.PaymentData(pubkey: Uint8List.fromList(pubKey)),
+            network: bitcoinFlutter.bitcoin)
+        .data
+        .address;
+  } else if (bech32Hrp == 'tb') {
+    address = bitcoinFlutter
+        .P2WPKH(
+            data:
+                bitcoinFlutter.PaymentData(pubkey: Uint8List.fromList(pubKey)),
+            network: bitcoinFlutter.testnet)
+        .data
+        .address;
+  } else if (bech32Hrp == 'ltc') {
+    address = bitcoinFlutter
+        .P2WPKH(
+            data:
+                bitcoinFlutter.PaymentData(pubkey: Uint8List.fromList(pubKey)),
+            network: litecoin)
+        .data
+        .address;
+  } else if (bech32Hrp == 'tltc') {
+    address = bitcoinFlutter
+        .P2WPKH(
+            data:
+                bitcoinFlutter.PaymentData(pubkey: Uint8List.fromList(pubKey)),
+            network: litecoinT)
+        .data
+        .address;
+  }
+  return address;
+}
+
+//49
+String pubKeyToP2wpkhNestedInP2shAddress(
+    List<int> pubKey, int p2shAddressPrefix) {
+  List<int> redeemScript = pubkeyToBIP49RedeemScript(pubKey);
+  List<int> fingerprint = toPubKeyHash(redeemScript);
+  // List<int> checksum = sha256(sha256(fingerprint)).sublist(0, 4);
+  // bs58check library 會幫加checksum
+  String address =
+      bs58check.encode(Uint8List.fromList([p2shAddressPrefix] + fingerprint));
+
+  return address;
 }
 
 Uint8List decodeAddress(String address) {
