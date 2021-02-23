@@ -45,8 +45,7 @@ class EthereumTransaction extends Transaction {
   }) : message = message ?? Uint8List(0);
 
   EthereumTransaction.prepareTransaction(
-      {
-      // this.from,
+      {this.from,
       this.to,
       this.nonce,
       this.amount,
@@ -54,7 +53,10 @@ class EthereumTransaction extends Transaction {
       this.gasUsed,
       this.message,
       this.chainId,
-      this.signature});
+      this.signature}) {
+    this.destinationAddresses = this.to;
+    this.sourceAddresses = this.from;
+  }
 
   @override
   Uint8List get serializeTransaction => encodeToRlp(this);

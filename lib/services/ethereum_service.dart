@@ -128,10 +128,11 @@ class EthereumService extends AccountServiceDecorator {
   @override
   Future<List> getReceivingAddress(String currencyId) async {
     if (this._address == null) {
-      // APIResponse response = await HTTPAgent().get(
-      //     '${Endpoint.SUSANOO}/wallet/account/address/$currencyId/receive');
-      // Map data = response.data;
-      // String address = data['address'];
+      APIResponse response = await HTTPAgent().get(
+          '${Endpoint.SUSANOO}/wallet/account/address/$currencyId/receive');
+      Map data = response.data;
+      String address = data['address'];
+      Log.debug('address: $address');
       // IMPORTANT: seed cannot reach
       String seed =
           '74a0b10d85dea97d53ff42a89f34a8447bbd041dcb573333358a03d5d1cfff0e';
@@ -140,17 +141,17 @@ class EthereumService extends AccountServiceDecorator {
           compressed: false);
       // Uint8List privKey = await PaperWallet.getPrivKey(hex.decode(seed), 0, 0);
       // Log.debug('privKey: ${hex.encode(privKey)}');
-      String address = '0x' +
+      String caculatedAddress = '0x' +
           hex
               .encode(Cryptor.keccak256round(
                   publicKey.length % 2 != 0 ? publicKey.sublist(1) : publicKey,
                   round: 1))
               .substring(24, 64);
       this._address = address;
-      Log.debug(address);
+
 // TEST(end)
       this._address = address;
-      Log.debug(this._address);
+      Log.debug('caculatedAddress: $caculatedAddress');
     }
     return [this._address, null];
   }

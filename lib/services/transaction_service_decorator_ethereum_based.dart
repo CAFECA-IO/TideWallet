@@ -53,7 +53,7 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
     int changeIndex,
   }) {
     EthereumTransaction transaction = EthereumTransaction.prepareTransaction(
-      // from: changeAddress, // --
+      from: changeAddress,
       to: to,
       nonce: nonce,
       amount: Converter.toEthSmallestUnit(amount),

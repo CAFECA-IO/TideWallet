@@ -23,6 +23,8 @@ import '../helpers/converter.dart';
 import '../helpers/rlp.dart' as rlp;
 import '../database/db_operator.dart';
 import '../database/entity/user.dart';
+import '../database/entity/account_currency.dart';
+import '../database/entity/transaction.dart';
 
 import '../helpers/logger.dart';
 
@@ -171,16 +173,22 @@ class TransactionRepository {
   Future<Uint8List> getPrivKey(
       String pwd, int changeIndex, int keyIndex) async {
     Uint8List seed = await _getSeed(pwd);
+    // Uint8List result = await PaperWallet.getPrivKey(
+    //     Uint8List.fromList(hex.decode(
+    //         '59f45d6afb9bc00380fed2fcfdd5b36819acab89054980ad6e5ff90ba19c5347')),
+    //     changeIndex,
+    //     keyIndex);
     Uint8List result =
         await PaperWallet.getPrivKey(seed, changeIndex, keyIndex);
     Log.warning("getPrivKey result: ${hex.encode(result)}");
     return result;
   }
 
-  Future<Transaction> prepareTransaction(String pwd, String to, Decimal amount,
+  Future<List> prepareTransaction(String pwd, String to, Decimal amount,
       {Decimal fee, Decimal gasPrice, Decimal gasLimit, String message}) async {
     switch (this._currency.accountType) {
       case ACCOUNT.BTC:
+        fee = Decimal.parse('0.00016704'); // TODO TEST
         String changeAddress;
         int changeIndex;
         List<UnspentTxOut> unspentTxOuts =
@@ -212,7 +220,11 @@ class TransactionRepository {
             unspentTxOuts: unspentTxOuts,
             changeIndex: changeIndex,
             changeAddress: changeAddress);
-        return transaction;
+        Decimal balance = Decimal.parse(this._currency.amount) - fee;
+        return [
+          transaction,
+          balance.toString()
+        ]; // [Transaction, String(balance)]
         break;
       case ACCOUNT.ETH:
         int nonce = await _accountService.getNonce(
@@ -238,23 +250,23 @@ class TransactionRepository {
           gasLimit = Decimal.fromInt(52212); // TODO TEST
         }
 
-        Log.debug('_currency.chainId: ${_currency.chainId}');
-
         Transaction transaction = _transactionService.prepareTransaction(
-          this._currency.publish,
-          to,
-          amount,
-          message == null ? Uint8List(0) : rlp.toBuffer(message),
-          nonce: nonce, // TODO TEST api nonce is not correct
-          gasPrice:
-              Decimal.parse('0.00000000111503492'), //gasPrice, // TODO TEST
-          gasLimit: gasLimit, // TODO TEST
-          chainId: 3, // TODO TEST
-          privKey: await getPrivKey(pwd, 0, 0),
-        );
+            this._currency.publish,
+            to,
+            amount,
+            message == null ? Uint8List(0) : rlp.toBuffer(message),
+            nonce: nonce, // TODO TEST api nonce is not correct
+            gasPrice:
+                Decimal.parse('0.00000000111503492'), //gasPrice, // TODO TEST
+            gasLimit: gasLimit, // TODO TEST
+            chainId: _currency.chainId,
+            privKey: await getPrivKey(pwd, 0, 0),
+            changeAddress: this._address);
         Log.debug(
             'transaction: ${hex.encode(transaction.serializeTransaction)}');
-        return transaction;
+        Decimal balance =
+            Decimal.parse(this._currency.amount) - gasPrice * gasLimit;
+        return [transaction, balance];
         break;
       case ACCOUNT.XRP:
         return null;
@@ -265,8 +277,60 @@ class TransactionRepository {
     }
   }
 
-  Future<void> publishTransaction(Transaction transaction) async {
-    return await _accountService.publishTransaction(
+  Future<void> publishTransaction(
+      Transaction transaction, String balance) async {
+    await _accountService.publishTransaction(
         this._currency.blockchainId, transaction);
+
+    // TODO updateCurrencyAmount
+    AccountCurrencyEntity account = await DBOperator()
+        .accountCurrencyDao
+        .findOneByAccountyId(this._currency.id);
+    AccountCurrencyEntity updateAccount = AccountCurrencyEntity(
+        accountcurrencyId: account.accountcurrencyId,
+        accountId: account.accountId,
+        numberOfUsedExternalKey: account.numberOfUsedExternalKey,
+        numberOfUsedInternalKey: account.numberOfUsedInternalKey,
+        currencyId: account.currencyId,
+        lastSyncTime: account.lastSyncTime,
+        balance: '');
+    await DBOperator().accountCurrencyDao.insertAccount(updateAccount);
+
+    AccountMessage currMsg = AccountMessage(
+        evt: ACCOUNT_EVT.OnUpdateCurrency,
+        value: AccountCore().currencies[this._accountService.base]);
+    listener.add(currMsg);
+
+    // TODO insertTransaction
+    TransactionEntity tx = TransactionEntity(
+        transactionId: transaction.id,
+        amount: transaction.amount.toString(),
+        accountId: account.accountId,
+        currencyId: currency.currencyId,
+        txId: transaction.txId,
+        confirmation: 0,
+        sourceAddress: transaction.sourceAddresses,
+        destinctionAddress: transaction.destinationAddresses,
+        gasPrice: transaction.gasPrice.toString(),
+        gasUsed: transaction.gasUsed.toInt(),
+        fee: transaction.fee.toString(),
+        direction: TransactionDirection.sent.title,
+        status: transaction.status.title,
+        timestamp: transaction.timestamp);
+    await DBOperator().transactionDao.insertTransaction(tx);
+
+    // inform screen
+    List transactions = await DBOperator()
+        .transactionDao
+        .findAllTransactionsByCurrencyId(this._currency.id);
+    AccountMessage txMsg =
+        AccountMessage(evt: ACCOUNT_EVT.OnUpdateTransactions, value: {
+      "currency": currency,
+      "transactions": transactions
+          .map((tx) => Transaction.fromTransactionEntity(tx))
+          .toList()
+    });
+    listener.add(txMsg);
+    return;
   }
 }

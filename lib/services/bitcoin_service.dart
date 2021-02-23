@@ -153,8 +153,10 @@ class BitcoinService extends AccountServiceDecorator {
           .utxoDao
           .insertUtxo(UtxoEntity.fromUnspentUtxo(transaction.changeUtxo));
     }
-    // informBackend
-    // updateCurrencyAmount
+    // TODO informBackend
+// await HTTPAgent().post(
+//         '${Endpoint.SUSANOO}/blockchain/$blockchainId/change-utxo',
+//         {"changeUtxo": transaction.changeUtxo});
     return;
   }
 

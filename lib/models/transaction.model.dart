@@ -23,6 +23,10 @@ class Transaction {
   Decimal fee; // in eth
   String txId;
   Uint8List note;
+  String sourceAddresses;
+  String destinationAddresses;
+  Decimal gasPrice; // in Wei
+  Decimal gasUsed;
 
   DateTime get dateTime =>
       DateTime.fromMillisecondsSinceEpoch(timestamp, isUtc: false);
@@ -113,9 +117,17 @@ class Transaction {
   Transaction.fromTransactionEntity(TransactionEntity entity) {
     txId = entity.txId;
     id = entity.transactionId;
-    direction = entity.direction == 'moved' ?  TransactionDirection.moved : entity.direction == 'send' ? TransactionDirection.sent : TransactionDirection.received;
+    direction = entity.direction == 'moved'
+        ? TransactionDirection.moved
+        : entity.direction == 'send'
+            ? TransactionDirection.sent
+            : TransactionDirection.received;
     amount = Decimal.parse(entity.amount);
-    status = entity.status == 'pending' ? TransactionStatus.pending : entity.status == 'success' ? TransactionStatus.success : TransactionStatus.fail;
+    status = entity.status == 'pending'
+        ? TransactionStatus.pending
+        : entity.status == 'success'
+            ? TransactionStatus.success
+            : TransactionStatus.fail;
     timestamp = entity.timestamp;
     confirmations = entity.confirmation;
     _address = (direction == TransactionDirection.sent)

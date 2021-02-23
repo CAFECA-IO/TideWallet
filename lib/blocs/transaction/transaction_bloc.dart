@@ -194,12 +194,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       try {
         Log.debug('PublishTransaction _state: ${_state.props}}'); //--
 
-        Transaction tansaction = await _repo.prepareTransaction(
+        List result = await _repo.prepareTransaction(
             event.password, _state.address, _state.amount,
             fee: _state.fee,
             gasPrice: _state.gasPrice,
             gasLimit: _state.gasLimit);
-        await _repo.publishTransaction(tansaction);
+        Transaction transaction = result[0];
+        String balance = result[1];
+        await _repo.publishTransaction(transaction, balance);
         yield TransactionSent();
       } catch (e) {
         yield CreateTransactionFail();

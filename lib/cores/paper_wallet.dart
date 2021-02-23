@@ -11,6 +11,7 @@ import '../helpers/utils.dart';
 
 class PaperWallet {
   static const String EXT_PATH = "m/84'/3324'/0'";
+  // static const String EXT_PATH = "m/44'/60'/0'";
   static const int EXT_CHAININDEX = 0;
   static const int EXT_KEYINDEX = 0;
 
