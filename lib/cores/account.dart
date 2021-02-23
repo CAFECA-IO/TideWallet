@@ -39,7 +39,7 @@ class AccountCore {
   }
 
   _initAccounts() async {
-    final chains = await this.getNetworks();
+    final chains = await this.getNetworks(publish: false);
     final accounts = await this.getAccounts();
     await this.getSupportedCurrencies();
 

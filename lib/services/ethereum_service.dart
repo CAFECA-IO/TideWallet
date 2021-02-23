@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:convert/convert.dart';
 import 'package:decimal/decimal.dart';
+import 'package:flutter/widgets.dart';
 
 import 'account_service_decorator.dart';
 
@@ -24,7 +25,6 @@ class EthereumService extends AccountServiceDecorator {
   EthereumService(AccountService service) : super(service) {
     this.base = ACCOUNT.ETH;
     this.syncInterval = 5 * 60 * 1000;
-    this.path = "m/44'/60'/0'";
   }
   String _address;
   String _contract; // ?
@@ -128,14 +128,32 @@ class EthereumService extends AccountServiceDecorator {
 
   @override
   Future<List> getReceivingAddress(String currencyId) async {
-    if (this._address == null) {
-      APIResponse response = await HTTPAgent().get(
-          '${Endpoint.SUSANOO}/wallet/account/address/$currencyId/receive');
-      Map data = response.data;
-      String address = data['address'];
-      this._address = address;
-      Log.debug(this._address);
-    }
+    // if (this._address == null) {
+    APIResponse response = await HTTPAgent()
+        .get('${Endpoint.SUSANOO}/wallet/account/address/$currencyId/receive');
+    Map data = response.data;
+    String address = data['address'];
+    this._address = address;
+    Log.debug(this._address);
+
+    // TEST
+    String seed =
+        '74a0b10d85dea97d53ff42a89f34a8447bbd041dcb573333358a03d5d1cfff0e';
+    Uint8List publicKey =
+        await PaperWallet.getPubKey(hex.decode(seed), 0, 0, compressed: false);
+    // Uint8List privKey = await PaperWallet.getPrivKey(hex.decode(seed), 0, 0);
+    // Log.debug('privKey: ${hex.encode(privKey)}');
+    String calculatedaddress = '0x' +
+        hex
+            .encode(Cryptor.keccak256round(
+                publicKey.length % 2 != 0 ? publicKey.sublist(1) : publicKey,
+                round: 1))
+            .substring(24, 64);
+
+    Log.debug(calculatedaddress);
+    // TEST(end)
+    // }
+
     return [this._address];
   }
 

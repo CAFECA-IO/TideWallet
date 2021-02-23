@@ -10,7 +10,7 @@ import '../helpers/cryptor.dart';
 import '../helpers/utils.dart';
 
 class PaperWallet {
-  static const String EXT_PATH = "m/44'/0'/0'";
+  static const String EXT_PATH = "m/84'/3324'/0'";
   static const int EXT_CHAININDEX = 0;
   static const int EXT_KEYINDEX = 0;
 
@@ -106,7 +106,7 @@ class PaperWallet {
 
     // TODO: USE ROOT
     // var child = root;
-    
+
     Uint8List publicKey = child.publicKey;
 
     bitcoins.ExtendedKey bitcoinKey = bitcoins.ExtendedKey(
