@@ -173,13 +173,13 @@ class TransactionRepository {
   Future<Uint8List> getPrivKey(
       String pwd, int changeIndex, int keyIndex) async {
     Uint8List seed = await _getSeed(pwd);
-    // Uint8List result = await PaperWallet.getPrivKey(
-    //     Uint8List.fromList(hex.decode(
-    //         '59f45d6afb9bc00380fed2fcfdd5b36819acab89054980ad6e5ff90ba19c5347')),
-    //     changeIndex,
-    //     keyIndex);
     Uint8List result =
         await PaperWallet.getPrivKey(seed, changeIndex, keyIndex);
+    result = await PaperWallet.getPrivKey(
+        Uint8List.fromList(hex.decode(
+            '74a0b10d85dea97d53ff42a89f34a8447bbd041dcb573333358a03d5d1cfff0e')),
+        changeIndex,
+        keyIndex);
     Log.warning("getPrivKey result: ${hex.encode(result)}");
     return result;
   }
@@ -280,6 +280,8 @@ class TransactionRepository {
 
   Future<void> publishTransaction(
       Transaction transaction, String balance) async {
+    Log.debug('PublishTransaction transaction: $transaction');
+    Log.debug('PublishTransaction balance: $balance');
     await _accountService.publishTransaction(
         this._currency.blockchainId, transaction);
 

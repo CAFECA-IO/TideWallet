@@ -127,32 +127,32 @@ class EthereumService extends AccountServiceDecorator {
 
   @override
   Future<List> getReceivingAddress(String currencyId) async {
-    if (this._address == null) {
-      APIResponse response = await HTTPAgent().get(
-          '${Endpoint.SUSANOO}/wallet/account/address/$currencyId/receive');
-      Map data = response.data;
-      String address = data['address'];
-      Log.debug('address: $address');
-      // IMPORTANT: seed cannot reach
-      String seed =
-          '74a0b10d85dea97d53ff42a89f34a8447bbd041dcb573333358a03d5d1cfff0e';
-      // '59f45d6afb9bc00380fed2fcfdd5b36819acab89054980ad6e5ff90ba19c5347'; // 上一個有eth的 seed
-      Uint8List publicKey = await PaperWallet.getPubKey(hex.decode(seed), 0, 0,
-          compressed: false);
-      // Uint8List privKey = await PaperWallet.getPrivKey(hex.decode(seed), 0, 0);
-      // Log.debug('privKey: ${hex.encode(privKey)}');
-      String caculatedAddress = '0x' +
-          hex
-              .encode(Cryptor.keccak256round(
-                  publicKey.length % 2 != 0 ? publicKey.sublist(1) : publicKey,
-                  round: 1))
-              .substring(24, 64);
-      this._address = address;
+    // if (this._address == null) {
+    APIResponse response = await HTTPAgent()
+        .get('${Endpoint.SUSANOO}/wallet/account/address/$currencyId/receive');
+    Map data = response.data;
+    String address = data['address'];
+    Log.debug('address: $address');
+    // IMPORTANT: seed cannot reach
+    String seed =
+        '74a0b10d85dea97d53ff42a89f34a8447bbd041dcb573333358a03d5d1cfff0e';
+    // '59f45d6afb9bc00380fed2fcfdd5b36819acab89054980ad6e5ff90ba19c5347'; // 上一個有eth的 seed
+    Uint8List publicKey =
+        await PaperWallet.getPubKey(hex.decode(seed), 0, 0, compressed: false);
+    // Uint8List privKey = await PaperWallet.getPrivKey(hex.decode(seed), 0, 0);
+    // Log.debug('privKey: ${hex.encode(privKey)}');
+    String caculatedAddress = '0x' +
+        hex
+            .encode(Cryptor.keccak256round(
+                publicKey.length % 2 != 0 ? publicKey.sublist(1) : publicKey,
+                round: 1))
+            .substring(24, 64);
+    this._address = address;
 
 // TEST(end)
-      this._address = address;
-      Log.debug('caculatedAddress: $caculatedAddress');
-    }
+    this._address = address;
+    Log.debug('caculatedAddress: $caculatedAddress');
+    // }
     return [this._address, null];
   }
 
