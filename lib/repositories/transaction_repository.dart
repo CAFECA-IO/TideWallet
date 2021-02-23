@@ -249,23 +249,24 @@ class TransactionRepository {
           to = '0xfaCCcF05e2C4fac8DCDD17d3A567CaFea71583E0'; // TODO TEST
           gasLimit = Decimal.fromInt(52212); // TODO TEST
         }
-
+        gasPrice = Decimal.parse('0.00000000111503492'); // TODO TEST
         Transaction transaction = _transactionService.prepareTransaction(
             this._currency.publish,
             to,
             amount,
             message == null ? Uint8List(0) : rlp.toBuffer(message),
             nonce: nonce, // TODO TEST api nonce is not correct
-            gasPrice:
-                Decimal.parse('0.00000000111503492'), //gasPrice, // TODO TEST
-            gasLimit: gasLimit, // TODO TEST
+            gasPrice: gasPrice,
+            gasLimit: gasLimit,
             chainId: _currency.chainId,
             privKey: await getPrivKey(pwd, 0, 0),
             changeAddress: this._address);
         Log.debug(
             'transaction: ${hex.encode(transaction.serializeTransaction)}');
+
         Decimal balance =
             Decimal.parse(this._currency.amount) - gasPrice * gasLimit;
+        Log.debug('balance: $balance');
         return [transaction, balance];
         break;
       case ACCOUNT.XRP:
@@ -293,13 +294,15 @@ class TransactionRepository {
         numberOfUsedInternalKey: account.numberOfUsedInternalKey,
         currencyId: account.currencyId,
         lastSyncTime: account.lastSyncTime,
-        balance: '');
+        balance: balance);
     await DBOperator().accountCurrencyDao.insertAccount(updateAccount);
+    Log.debug('balance1: $balance');
 
     AccountMessage currMsg = AccountMessage(
         evt: ACCOUNT_EVT.OnUpdateCurrency,
         value: AccountCore().currencies[this._accountService.base]);
     listener.add(currMsg);
+    Log.debug('balance2: $balance');
 
     // TODO insertTransaction
     TransactionEntity tx = TransactionEntity(
@@ -318,6 +321,7 @@ class TransactionRepository {
         status: transaction.status.title,
         timestamp: transaction.timestamp);
     await DBOperator().transactionDao.insertTransaction(tx);
+    Log.debug('balance3: $balance');
 
     // inform screen
     List transactions = await DBOperator()
@@ -330,6 +334,8 @@ class TransactionRepository {
           .map((tx) => Transaction.fromTransactionEntity(tx))
           .toList()
     });
+    Log.debug('balance4: $balance');
+
     listener.add(txMsg);
     return;
   }
