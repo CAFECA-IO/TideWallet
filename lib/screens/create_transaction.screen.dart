@@ -1,3 +1,4 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -334,9 +335,10 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                                   arguments: {
                                     "currency": _currency,
                                     "transaction": Transaction(
-                                      address: state.address,
+                                      address: _addressController.text,
                                       direction: TransactionDirection.sent,
-                                      amount: state.amount,
+                                      amount:
+                                          Decimal.parse(_amountController.text),
                                       fee: state.fee,
                                     ),
                                     "feeToFiat":

@@ -229,7 +229,7 @@ class TransactionRepository {
       case ACCOUNT.ETH:
         int nonce = await _accountService.getNonce(
             this._currency.blockchainId, this._address);
-
+        nonce = 4; // TODO TEST api nonce is not correct
         if (currency.symbol.toLowerCase() != 'eth') {
           // ERC20
           List<int> erc20Func = Cryptor.keccak256round(
@@ -254,7 +254,7 @@ class TransactionRepository {
             to,
             amount,
             message == null ? Uint8List(0) : rlp.toBuffer(message),
-            nonce: 2, //nonce, // TODO TEST api nonce is not correct
+            nonce: nonce,
             gasPrice: gasPrice,
             gasLimit: gasLimit,
             chainId: _currency.chainId,
@@ -300,9 +300,9 @@ class TransactionRepository {
         balance: balance);
     await DBOperator().accountCurrencyDao.insertAccount(updateAccount);
 
-    AccountMessage currMsg = AccountMessage(
-        evt: ACCOUNT_EVT.OnUpdateCurrency, value: this._currency);
-    listener.add(currMsg);
+    // AccountMessage currMsg = AccountMessage(
+    //     evt: ACCOUNT_EVT.OnUpdateCurrency, value: this._currency);
+    // listener.add(currMsg);
 
     // TODO insertTransaction
     TransactionEntity tx = TransactionEntity(
