@@ -254,7 +254,7 @@ class TransactionRepository {
             to,
             amount,
             message == null ? Uint8List(0) : rlp.toBuffer(message),
-            nonce: nonce, // TODO TEST api nonce is not correct
+            nonce: 2, //nonce, // TODO TEST api nonce is not correct
             gasPrice: gasPrice,
             gasLimit: gasLimit,
             chainId: _currency.chainId,
@@ -299,13 +299,10 @@ class TransactionRepository {
         lastSyncTime: account.lastSyncTime,
         balance: balance);
     await DBOperator().accountCurrencyDao.insertAccount(updateAccount);
-    Log.debug('balance1: $balance');
 
     AccountMessage currMsg = AccountMessage(
-        evt: ACCOUNT_EVT.OnUpdateCurrency,
-        value: AccountCore().currencies[this._accountService.base]);
+        evt: ACCOUNT_EVT.OnUpdateCurrency, value: this._currency);
     listener.add(currMsg);
-    Log.debug('balance2: $balance');
 
     // TODO insertTransaction
     TransactionEntity tx = TransactionEntity(
@@ -324,7 +321,6 @@ class TransactionRepository {
         status: transaction.status.title,
         timestamp: transaction.timestamp);
     await DBOperator().transactionDao.insertTransaction(tx);
-    Log.debug('balance3: $balance');
 
     // inform screen
     List transactions = await DBOperator()
@@ -332,7 +328,7 @@ class TransactionRepository {
         .findAllTransactionsByCurrencyId(this._currency.id);
     AccountMessage txMsg =
         AccountMessage(evt: ACCOUNT_EVT.OnUpdateTransactions, value: {
-      "currency": currency,
+      "currency": this._currency,
       "transactions": transactions
           .map((tx) => Transaction.fromTransactionEntity(tx))
           .toList()

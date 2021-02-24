@@ -415,7 +415,7 @@ class _$TransactionDao extends TransactionDao {
   Future<List<TransactionEntity>> findAllTransactionsByCurrencyId(
       String id) async {
     return _queryAdapter.queryList(
-        'SELECT * FROM _Transaction WHERE Transaction.currency_id = ?',
+        'SELECT * FROM _Transaction WHERE _Transaction.currency_id = ?',
         arguments: <dynamic>[id],
         mapper: (Map<String, dynamic> row) => TransactionEntity(
             transactionId: row['transaction_id'] as String,
@@ -439,7 +439,7 @@ class _$TransactionDao extends TransactionDao {
   @override
   Future<TransactionEntity> findTransactionsByTxId(String id) async {
     return _queryAdapter.query(
-        'SELECT * FROM _Transaction WHERE Transaction.tx_id = ? limit 1',
+        'SELECT * FROM _Transaction WHERE _Transaction.tx_id = ? limit 1',
         arguments: <dynamic>[id],
         mapper: (Map<String, dynamic> row) => TransactionEntity(
             transactionId: row['transaction_id'] as String,
