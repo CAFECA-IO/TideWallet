@@ -69,10 +69,12 @@ class AccountServiceBase extends AccountService {
 
   @override
   Future start() async {
-    await this._getSupportedToken();
     AccountCurrencyEntity select = await DBOperator()
         .accountCurrencyDao
         .findOneByAccountyId(this._accountId);
+
+    await this._pushResult();
+    await this._getSupportedToken();
 
     if (select != null) {
       this._lastSyncTimestamp = select.lastSyncTime;
@@ -160,6 +162,8 @@ class AccountServiceBase extends AccountService {
     List<JoinCurrency> jcs = await DBOperator()
         .accountCurrencyDao
         .findJoinedByAccountyId(this._accountId);
+
+    if (jcs.isEmpty) return;
 
     List<Currency> cs = jcs
         .map(

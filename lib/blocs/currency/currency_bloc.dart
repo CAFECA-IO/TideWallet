@@ -24,9 +24,11 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
       if (msg.evt == ACCOUNT_EVT.OnUpdateCurrency) {
         this.add(UpdateCurrencies(msg.value));
       }
-    });
 
-    this._repo.coreInit();
+      if (msg.evt == ACCOUNT_EVT.ClearAll) {
+        this.add(CleanCurrencie());
+      }
+    });
   }
 
   @override
@@ -68,6 +70,11 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
 
         yield CurrencyLoaded(_list, total: _total);
       }
+    }
+
+    if (event is CleanCurrencie) {
+       List<Currency> empty = [];
+      yield CurrencyLoaded(empty, total: Decimal.zero);
     }
   }
 }

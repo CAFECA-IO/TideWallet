@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'package:convert/convert.dart';
 import 'package:decimal/decimal.dart';
 
@@ -23,7 +22,7 @@ import '../helpers/logger.dart';
 class EthereumService extends AccountServiceDecorator {
   EthereumService(AccountService service) : super(service) {
     this.base = ACCOUNT.ETH;
-    this.syncInterval = 5 * 60 * 1000;
+    this.syncInterval =  7500;
     this.path = "m/44'/60'/0'";
   }
   String _address;

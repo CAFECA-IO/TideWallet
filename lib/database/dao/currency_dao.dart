@@ -10,6 +10,6 @@ abstract class CurrencyDao {
   @Insert(onConflict: OnConflictStrategy.replace)
   Future<List<int>> insertCurrencies(List<CurrencyEntity> currencies);
 
-   @Query('SELECT * FROM Currency')
+  @Query('SELECT * FROM Currency')
   Future<List<CurrencyEntity>> findAllCurrencies();
 }

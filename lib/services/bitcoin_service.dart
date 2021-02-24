@@ -20,12 +20,10 @@ class BitcoinService extends AccountServiceDecorator {
   Timer _utxoTimer;
   BitcoinService(AccountService service) : super(service) {
     this.base = ACCOUNT.BTC;
-    this.syncInterval = 1 * 60 * 1000;
+    this.syncInterval = 5 * 60 * 1000;
   }
-  Timer _timer;
   int _numberOfUsedExternalKey;
   int _numberOfUsedInternalKey;
-  int _lastSyncTimestamp;
 
   @override
   getTransactions() {

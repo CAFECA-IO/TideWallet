@@ -22,9 +22,12 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
       if (msg.evt == ACCOUNT_EVT.OnUpdateAccount) {
         this.add(UpdateAccount(msg.value));
       }
-    });
 
-    this._repo.coreInit();
+
+      if (msg.evt == ACCOUNT_EVT.ClearAll) {
+        this.add(CleanAccount());
+      }
+    });
   }
 
   @override
@@ -74,6 +77,11 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
       _accounts.sort((a, b) => a.accountType.index.compareTo(b.accountType.index));
 
       yield AccountLoaded(_accounts, total: _total);
+    }
+
+    if (event is CleanAccount) {
+      List<Currency> empty = [];
+      yield AccountLoaded(empty, total: Decimal.zero);
     }
   }
 }
