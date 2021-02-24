@@ -4,7 +4,6 @@ import 'package:convert/convert.dart';
 import 'account.dart';
 import '../../models/utxo.model.dart';
 
-
 @Entity(tableName: 'Utxo')
 class UtxoEntity {
   @primaryKey
@@ -44,6 +43,8 @@ class UtxoEntity {
 
   final int sequence;
 
+  final String address;
+
   UtxoEntity(
       this.utxoId,
       // this.accountId,
@@ -57,6 +58,7 @@ class UtxoEntity {
       this.script,
       this.timestamp,
       this.locked,
+      this.address,
       this.sequence);
 
   UtxoEntity.fromUnspentUtxo(UnspentTxOut _utxo)
@@ -71,5 +73,6 @@ class UtxoEntity {
         this.script = hex.encode(_utxo.script),
         this.timestamp = _utxo.timestamp,
         this.locked = true,
-        this.sequence = _utxo.sequence;
+        this.sequence = _utxo.sequence,
+        this.address = _utxo.address;
 }

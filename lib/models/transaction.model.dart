@@ -17,7 +17,7 @@ class Transaction {
   TransactionDirection direction;
   Decimal amount; // in eth
   TransactionStatus status;
-  int timestamp; // in second
+  int timestamp; // in second //TODO uncheck
   int confirmations;
   String _address;
   Decimal fee; // in eth
@@ -76,48 +76,10 @@ class Transaction {
     this.note,
   }) : _address = address;
 
-  Transaction.fromBitcoinTransaction(BitcoinTransaction transaction) {
-    txId = transaction.txId;
-    amount = transaction.amount;
-    timestamp = transaction.timestamp;
-    confirmations = transaction.confirmations;
-
-    fee = transaction.fee;
-    direction = transaction.direction;
-    _address = (direction == TransactionDirection.sent)
-        ? transaction.destinationAddresses
-        : transaction.sourceAddresses;
-  }
-
-  Transaction.fromEthereumTransaction(EthereumTransaction transaction) {
-    txId = transaction.txHash;
-    amount = transaction.amount;
-    timestamp = transaction.timestamp;
-    confirmations = transaction.confirmations;
-
-    // var gasPrice = BigInt.parse(transaction.gasPrice.toString());
-    // var gasUsed = BigInt.from(transaction.gasUsed.toInt());
-    // var feeWei = gasPrice * gasUsed;
-    // // _fee = _account.toCoinUnit(feeWei).toString();
-  }
-
-  Transaction.fromEthereumTokenTransaction(
-      EthereumTokenTransaction transaction) {
-    txId = transaction.txHash;
-    amount = transaction.amount;
-    timestamp = transaction.timestamp;
-    confirmations = 1; // useless to token
-    fee = Decimal.zero; // useless to token
-    direction = TransactionDirection.sent;
-    _address = (direction == TransactionDirection.sent)
-        ? transaction.to
-        : transaction.from;
-  }
-
   Transaction.fromTransactionEntity(TransactionEntity entity) {
     txId = entity.txId;
     id = entity.transactionId;
-    direction = entity.direction == 'moved'
+    direction = entity.direction == 'move'
         ? TransactionDirection.moved
         : entity.direction == 'send'
             ? TransactionDirection.sent
@@ -133,8 +95,18 @@ class Transaction {
     _address = (direction == TransactionDirection.sent)
         ? entity.destinctionAddress
         : entity.sourceAddress;
-    fee = Decimal.parse(entity.fee);
+    fee = entity.fee != null ? Decimal.parse(entity.fee) : null;
     note = hex.decode(entity.note);
+    // TODO
+    //  try {
+    //   // try to read as utf8
+    //   note = utf8.decode(script);
+    //   Log.debug('utf8 note: $note');
+    // } catch (e) {
+    //   // try to read as ascii
+    //   note = new String.fromCharCodes(script);
+    //   Log.debug('ascii note: $note');
+    // }
   }
 }
 

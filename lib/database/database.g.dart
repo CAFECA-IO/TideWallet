@@ -106,7 +106,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `AccountCurrency` (`accountcurrency_id` TEXT NOT NULL, `account_id` TEXT, `currency_id` TEXT, `balance` TEXT, `number_of_used_external_key` INTEGER, `number_of_used_internal_key` INTEGER, `last_sync_time` INTEGER, PRIMARY KEY (`accountcurrency_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Utxo` (`utxo_id` TEXT, `currency_id` TEXT, `tx_id` TEXT, `vout` INTEGER, `type` TEXT, `amount` TEXT, `chain_index` INTEGER, `key_index` INTEGER, `script` TEXT, `timestamp` INTEGER, `locked` INTEGER, `sequence` INTEGER, PRIMARY KEY (`utxo_id`))');
+            'CREATE TABLE IF NOT EXISTS `Utxo` (`utxo_id` TEXT, `currency_id` TEXT, `tx_id` TEXT, `vout` INTEGER, `type` TEXT, `amount` TEXT, `chain_index` INTEGER, `key_index` INTEGER, `script` TEXT, `timestamp` INTEGER, `locked` INTEGER, `sequence` INTEGER, `address` TEXT, PRIMARY KEY (`utxo_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `ExchangeRate` (`exchange_rate_id` TEXT, `rate` TEXT, `lastSyncTime` INTEGER, `type` TEXT, PRIMARY KEY (`exchange_rate_id`))');
 
@@ -377,6 +377,28 @@ class _$TransactionDao extends TransactionDao {
                   'status': item.status,
                   'direction': item.direction,
                   'amount': item.amount
+                }),
+        _transactionEntityDeletionAdapter = DeletionAdapter(
+            database,
+            '_Transaction',
+            ['transaction_id'],
+            (TransactionEntity item) => <String, dynamic>{
+                  'transaction_id': item.transactionId,
+                  'account_id': item.accountId,
+                  'currency_id': item.currencyId,
+                  'tx_id': item.txId,
+                  'source_address': item.sourceAddress,
+                  'destinction_address': item.destinctionAddress,
+                  'timestamp': item.timestamp,
+                  'confirmation': item.confirmation,
+                  'gas_price': item.gasPrice,
+                  'gas_used': item.gasUsed,
+                  'block': item.block,
+                  'fee': item.fee,
+                  'note': item.note,
+                  'status': item.status,
+                  'direction': item.direction,
+                  'amount': item.amount
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -388,6 +410,8 @@ class _$TransactionDao extends TransactionDao {
   final InsertionAdapter<TransactionEntity> _transactionEntityInsertionAdapter;
 
   final UpdateAdapter<TransactionEntity> _transactionEntityUpdateAdapter;
+
+  final DeletionAdapter<TransactionEntity> _transactionEntityDeletionAdapter;
 
   @override
   Future<List<TransactionEntity>> findAllTransactions() async {
@@ -415,7 +439,7 @@ class _$TransactionDao extends TransactionDao {
   Future<List<TransactionEntity>> findAllTransactionsByCurrencyId(
       String id) async {
     return _queryAdapter.queryList(
-        'SELECT * FROM _Transaction WHERE _Transaction.currency_id = ?',
+        'SELECT * FROM _Transaction WHERE _Transaction.account_id = ?',
         arguments: <dynamic>[id],
         mapper: (Map<String, dynamic> row) => TransactionEntity(
             transactionId: row['transaction_id'] as String,
@@ -475,6 +499,11 @@ class _$TransactionDao extends TransactionDao {
   @override
   Future<void> updateTransaction(TransactionEntity tx) async {
     await _transactionEntityUpdateAdapter.update(tx, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<void> deleteTransactions(List<TransactionEntity> txs) async {
+    await _transactionEntityDeletionAdapter.deleteList(txs);
   }
 }
 
@@ -627,7 +656,8 @@ class _$UtxoDao extends UtxoDao {
                   'script': item.script,
                   'timestamp': item.timestamp,
                   'locked': item.locked == null ? null : (item.locked ? 1 : 0),
-                  'sequence': item.sequence
+                  'sequence': item.sequence,
+                  'address': item.address
                 }),
         _utxoEntityUpdateAdapter = UpdateAdapter(
             database,
@@ -645,7 +675,8 @@ class _$UtxoDao extends UtxoDao {
                   'script': item.script,
                   'timestamp': item.timestamp,
                   'locked': item.locked == null ? null : (item.locked ? 1 : 0),
-                  'sequence': item.sequence
+                  'sequence': item.sequence,
+                  'address': item.address
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -674,6 +705,7 @@ class _$UtxoDao extends UtxoDao {
             row['script'] as String,
             row['timestamp'] as int,
             row['locked'] == null ? null : (row['locked'] as int) != 0,
+            row['address'] as String,
             row['sequence'] as int));
   }
 
@@ -693,6 +725,7 @@ class _$UtxoDao extends UtxoDao {
             row['script'] as String,
             row['timestamp'] as int,
             row['locked'] == null ? null : (row['locked'] as int) != 0,
+            row['address'] as String,
             row['sequence'] as int));
   }
 

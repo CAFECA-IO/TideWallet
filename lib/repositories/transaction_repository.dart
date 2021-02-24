@@ -70,7 +70,20 @@ class TransactionRepository {
   }
 
   Future<List<Transaction>> getTransactions() async {
-    return await _accountService.getTransactions();
+    List<TransactionEntity> transactions =
+        await DBOperator().transactionDao.findAllTransactions();
+    Log.debug('this._currency.id: ${this._currency.id}');
+    for (TransactionEntity tx in transactions) {
+      Log.debug('transactions accountId: ${tx.accountId}');
+      Log.debug('transactions currencyId: ${tx.currencyId}');
+      Log.debug('transactions txid: ${tx.txId}');
+      Log.debug('transactions fee: ${tx.fee}');
+    }
+
+    List<Transaction> txs = transactions
+        .map((tx) => Transaction.fromTransactionEntity(tx))
+        .toList();
+    return txs;
   }
 
   Future<String> getReceivingAddress() async {
@@ -229,7 +242,7 @@ class TransactionRepository {
       case ACCOUNT.ETH:
         int nonce = await _accountService.getNonce(
             this._currency.blockchainId, this._address);
-        nonce = 4; // TODO TEST api nonce is not correct
+        nonce = 2; // TODO TEST api nonce is not correct
         if (currency.symbol.toLowerCase() != 'eth') {
           // ERC20
           List<int> erc20Func = Cryptor.keccak256round(
@@ -259,7 +272,9 @@ class TransactionRepository {
             gasLimit: gasLimit,
             chainId: _currency.chainId,
             privKey: await getPrivKey(pwd, 0, 0),
-            changeAddress: this._address);
+            changeAddress: this._address,
+            fee: gasPrice * gasLimit);
+
         Log.debug(
             'transaction: ${hex.encode(transaction.serializeTransaction)}');
 
@@ -283,9 +298,13 @@ class TransactionRepository {
       Transaction transaction, String balance) async {
     Log.debug('PublishTransaction transaction: $transaction');
     Log.debug('PublishTransaction balance: $balance');
-    bool result = await _accountService.publishTransaction(
+    List result = await _accountService.publishTransaction(
         this._currency.blockchainId, transaction);
-    if (!result) return result;
+    Log.debug('PublishTransaction result: $result');
+
+    if (!result[0]) return result[0];
+    Log.debug('PublishTransaction result: ${result[0]}');
+
     // TODO updateCurrencyAmount
     AccountCurrencyEntity account = await DBOperator()
         .accountCurrencyDao
@@ -295,32 +314,34 @@ class TransactionRepository {
         accountId: account.accountId,
         numberOfUsedExternalKey: account.numberOfUsedExternalKey,
         numberOfUsedInternalKey: account.numberOfUsedInternalKey,
-        currencyId: account.currencyId,
+        currencyId: this._currency.id,
         lastSyncTime: account.lastSyncTime,
         balance: balance);
     await DBOperator().accountCurrencyDao.insertAccount(updateAccount);
+    Log.debug('PublishTransaction updateAccount: $updateAccount');
 
     // AccountMessage currMsg = AccountMessage(
     //     evt: ACCOUNT_EVT.OnUpdateCurrency, value: this._currency);
     // listener.add(currMsg);
 
     // TODO insertTransaction
+    transaction = result[1];
+
     TransactionEntity tx = TransactionEntity(
         transactionId: transaction.id,
         amount: transaction.amount.toString(),
         accountId: account.accountId,
-        currencyId: account.currencyId,
+        currencyId: this._currency.id,
         txId: transaction.txId,
-        confirmation: 0,
         sourceAddress: transaction.sourceAddresses,
         destinctionAddress: transaction.destinationAddresses,
         gasPrice: transaction.gasPrice.toString(),
         gasUsed: transaction.gasUsed.toInt(),
-        fee: transaction.fee.toString(),
-        direction: TransactionDirection.sent.title,
-        status: transaction.status.title,
-        timestamp: transaction.timestamp);
+        note: hex.encode(transaction.note),
+        fee: transaction.fee.toString());
+
     await DBOperator().transactionDao.insertTransaction(tx);
+    Log.debug('PublishTransaction tx: $tx');
 
     // inform screen
     List transactions = await DBOperator()
@@ -333,9 +354,9 @@ class TransactionRepository {
           .map((tx) => Transaction.fromTransactionEntity(tx))
           .toList()
     });
-    // Log.debug('transactions: $transactions');
+    Log.debug('transactions: $transactions');
 
     listener.add(txMsg);
-    return result;
+    return result[0];
   }
 }

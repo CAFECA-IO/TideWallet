@@ -23,12 +23,14 @@ class TransactionStatusBloc
     _subscription?.cancel();
     this._repo.listener.listen((msg) {
       if (msg.evt == ACCOUNT_EVT.OnUpdateAccount) {
-        Log.warning("msg.value ${(msg.value as Currency).name}");
+        Log.warning("currency ${msg.value}");
         Currency currency = msg.value;
 
         this.add(UpdateCurrency(_addUSD(currency)));
       }
       if (msg.evt == ACCOUNT_EVT.OnUpdateTransactions) {
+        Log.warning("transactions ${msg.value['transactions']}");
+
         Currency currency = msg.value['currency'];
 
         this.add(UpdateTransactionList(
@@ -47,10 +49,11 @@ class TransactionStatusBloc
   ) async* {
     if (event is UpdateCurrency) {
       if (state.currency == null) {
-        print('event.currency: ${event.currency}');
+        Log.debug('event.currency: ${event.currency}');
         _repo.setCurrency(event.currency);
-        final List<Transaction> transactions =
-            []; //_repo.getTransactions() ?? [];
+        final List<Transaction> transactions = await _repo.getTransactions();
+        Log.debug('transactions: $transactions');
+
         yield TransactionStatusLoaded(event.currency, transactions, null);
       } else if (state.currency.symbol == event.currency.symbol) {
         yield TransactionStatusLoaded(

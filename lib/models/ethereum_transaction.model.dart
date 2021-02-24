@@ -54,6 +54,8 @@ class EthereumTransaction extends Transaction {
       this.message,
       this.chainId,
       this.signature}) {
+    this.direction = TransactionDirection.sent;
+    this.status = TransactionStatus.pending;
     this.destinationAddresses = this.to;
     this.sourceAddresses = this.from;
   }

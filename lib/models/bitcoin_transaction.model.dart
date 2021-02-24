@@ -228,8 +228,8 @@ class BitcoinTransaction extends Transaction {
   int confirmations;
   TransactionDirection direction;
   TransactionStatus status;
-  String sourceAddresses;
-  String destinationAddresses;
+  String sourceAddresses = '';
+  String destinationAddresses = '';
   Decimal amount;
   Decimal fee;
   Uint8List note;
@@ -290,6 +290,7 @@ class BitcoinTransaction extends Transaction {
   void addInput(UnspentTxOut utxo, HashType hashType) {
     Input input = Input(utxo, utxo.publickey, hashType);
     _inputs.add(input);
+    this.sourceAddresses += this.sourceAddresses + utxo.address;
   }
 
   void addOutput(
@@ -313,6 +314,7 @@ class BitcoinTransaction extends Transaction {
     Output output =
         Output(amount, address, Uint8List.fromList(scriptLength + script));
     _outputs.add(output);
+    this.destinationAddresses = this.destinationAddresses += address;
   }
 
   void addData(List<int> data) {

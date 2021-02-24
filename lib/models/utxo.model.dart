@@ -27,7 +27,7 @@ class UnspentTxOut {
   final String txId;
   final int vout;
   final BitcoinTransactionType type;
-  // final String address;
+  final String address;
   final Decimal amount; // in btc
   final int chainIndex;
   final int keyIndex;
@@ -47,7 +47,7 @@ class UnspentTxOut {
         FieldName_TxId: txId,
         FieldName_Vout: vout,
         FieldName_Type: type,
-        // FieldName_Address: address,
+        FieldName_Address: address,
         FieldName_Amount: amount,
         FieldName_ChainIndex: chainIndex,
         FieldName_KeyIndex: keyIndex,
@@ -85,7 +85,7 @@ class UnspentTxOut {
     this.txId,
     this.vout,
     this.type,
-    // this.address,
+    this.address,
     this.amount,
     this.chainIndex,
     this.keyIndex,
@@ -106,7 +106,7 @@ class UnspentTxOut {
         txId = list[2],
         vout = list[3],
         type = list[4],
-        // address = list[5],
+        address = list[5],
         amount = list[5],
         chainIndex = list[6],
         keyIndex = list[7],
@@ -121,7 +121,7 @@ class UnspentTxOut {
         txId = map[FieldName_TxId],
         vout = map[FieldName_Vout],
         type = map[FieldName_Type],
-        // address = map[FieldName_Address],
+        address = map[FieldName_Address],
         amount = map[FieldName_Amount],
         chainIndex = map[FieldName_ChainIndex],
         keyIndex = map[FieldName_KeyIndex],
@@ -143,5 +143,6 @@ class UnspentTxOut {
         data = hex.decode(utxo.script),
         timestamp = utxo.timestamp,
         locked = utxo.locked,
+        address = utxo.address,
         sequence = utxo.sequence;
 }

@@ -135,7 +135,7 @@ class BitcoinService extends AccountServiceDecorator {
   }
 
   @override
-  Future<bool> publishTransaction(
+  Future<List> publishTransaction(
       String blockchainId, Transaction transaction) async {
     APIResponse response = await HTTPAgent().post(
         '${Endpoint.SUSANOO}/blockchain/$blockchainId/push-tx',
@@ -164,7 +164,7 @@ class BitcoinService extends AccountServiceDecorator {
 //         {"changeUtxo": transaction.changeUtxo});
     }
 
-    return success;
+    return [success]; // TODO return transaction
   }
 
   Future _syncUTXO() async {
