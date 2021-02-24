@@ -151,7 +151,7 @@ class TransactionRepository {
     if (this._address == null) {
       _address = (await _accountService.getChangingAddress(_currency.id))[0];
     }
-    verified = address != _address;
+    verified = address != _address && address.length > 0;
     if (verified) {
       verified = _transactionService.verifyAddress(address, publish);
     }
@@ -177,7 +177,7 @@ class TransactionRepository {
         await PaperWallet.getPrivKey(seed, changeIndex, keyIndex);
     // result = await PaperWallet.getPrivKey(
     //     Uint8List.fromList(hex.decode(
-    //         'e44914bee7e336f54a746421e2d7f9c99daccfac274ad03605b73c39601274ab')),
+    //         'd36777597b9c5cc58a64a4fb842a206bd86da50f276b783aae0cf87e5b058821')),
     //     changeIndex,
     //     keyIndex);
     Log.warning("getPrivKey result: ${hex.encode(result)}");
@@ -248,13 +248,13 @@ class TransactionRepository {
           to = this._currency.contract;
           gasLimit = Decimal.fromInt(52212); // TODO TEST
         }
-        gasPrice = Decimal.parse('0.00000000111503492'); // TODO TEST
+
         Transaction transaction = _transactionService.prepareTransaction(
             this._currency.publish,
             to,
             amount,
             message == null ? Uint8List(0) : rlp.toBuffer(message),
-            nonce: 1, //nonce, // TODO TEST api nonce is not correct
+            nonce: nonce, // TODO TEST api nonce is not correct
             gasPrice: gasPrice,
             gasLimit: gasLimit,
             chainId: _currency.chainId,
@@ -264,7 +264,8 @@ class TransactionRepository {
             'transaction: ${hex.encode(transaction.serializeTransaction)}');
 
         Decimal balance =
-            Decimal.parse(this._currency.amount) - gasPrice * gasLimit;
+            // Decimal.parse(this._currency.amount) - gasPrice * gasLimit;
+            Decimal.parse('1') - gasPrice * gasLimit;
 
         Log.debug('balance: $balance');
         return [transaction, balance.toString()];
@@ -311,7 +312,7 @@ class TransactionRepository {
         transactionId: transaction.id,
         amount: transaction.amount.toString(),
         accountId: account.accountId,
-        currencyId: this._currency.id,
+        currencyId: account.currencyId,
         txId: transaction.txId,
         confirmation: 0,
         sourceAddress: transaction.sourceAddresses,
@@ -336,7 +337,7 @@ class TransactionRepository {
           .map((tx) => Transaction.fromTransactionEntity(tx))
           .toList()
     });
-    Log.debug('balance4: $balance');
+    // Log.debug('transactions: $transactions');
 
     listener.add(txMsg);
     return result;

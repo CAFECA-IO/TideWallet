@@ -1,9 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 
+import '../lib/database/entity/transaction.dart';
 import '../lib/database/entity/currency.dart';
 import '../lib/database/db_operator.dart';
 import '../lib/database/entity/account.dart';
 import '../lib/database/entity/user.dart';
+import '../lib/helpers/logger.dart';
 
 void main() {
   const String keystore =
@@ -112,6 +114,34 @@ void main() {
         List<int> _result = await opt.currencyDao.insertCurrencies(_currencies);
 
         expect(_result.length, _currencies.length);
+      });
+
+      test('insert transaction', () async {
+        TransactionEntity _transaction = TransactionEntity(
+          transactionId: "transaction.id",
+          amount: "transaction.amount.toString()",
+          accountId: 'account.accountId',
+          currencyId: '5b1ea92e584bf50020130615',
+          txId: "transaction.txId",
+          confirmation: 0,
+          sourceAddress: "transaction.sourceAddresses",
+          destinctionAddress: "transaction.destinationAddresses",
+          gasPrice: "transaction.gasPrice.toString()",
+          gasUsed: 21000,
+          fee: "transaction.fee.toString()",
+          direction: 'sent',
+          status: "transaction.status.title",
+          timestamp: DateTime.now().millisecondsSinceEpoch,
+        );
+        try {
+          await opt.transactionDao.insertTransaction(_transaction);
+        } catch (e) {
+          Log.debug(e);
+          // throw e;
+        }
+
+        final actual = await opt.transactionDao.findAllTransactions();
+        // expect(actual[0], equals(_transaction));
       });
     });
   });

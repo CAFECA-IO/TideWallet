@@ -100,7 +100,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Currency` (`currency_id` TEXT, `name` TEXT, `description` TEXT, `symbol` TEXT, `decimals` INTEGER, `address` TEXT, `type` TEXT, `total_supply` TEXT, `contract` TEXT, `image` TEXT, PRIMARY KEY (`currency_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `TransactionEntity` (`transaction_id` TEXT, `account_id` TEXT, `currency_id` TEXT, `tx_id` TEXT, `source_address` TEXT, `destinction_address` TEXT, `timestamp` INTEGER, `confirmation` INTEGER, `gas_price` TEXT, `gas_used` INTEGER, `block` INTEGER, `fee` TEXT NOT NULL, `note` TEXT, `status` TEXT, `direction` TEXT, `amount` TEXT, PRIMARY KEY (`transaction_id`))');
+            'CREATE TABLE IF NOT EXISTS `_Transaction` (`transaction_id` TEXT, `account_id` TEXT, `currency_id` TEXT, `tx_id` TEXT, `source_address` TEXT, `destinction_address` TEXT, `timestamp` INTEGER, `confirmation` INTEGER, `gas_price` TEXT, `gas_used` INTEGER, `block` INTEGER, `fee` TEXT NOT NULL, `note` TEXT, `status` TEXT, `direction` TEXT, `amount` TEXT, PRIMARY KEY (`transaction_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Network` (`network_id` TEXT, `network` TEXT NOT NULL, `coin_type` INTEGER, `publish` INTEGER, `chain_id` INTEGER, PRIMARY KEY (`network_id`))');
         await database.execute(
@@ -337,7 +337,7 @@ class _$TransactionDao extends TransactionDao {
       : _queryAdapter = QueryAdapter(database),
         _transactionEntityInsertionAdapter = InsertionAdapter(
             database,
-            'TransactionEntity',
+            '_Transaction',
             (TransactionEntity item) => <String, dynamic>{
                   'transaction_id': item.transactionId,
                   'account_id': item.accountId,
@@ -358,7 +358,7 @@ class _$TransactionDao extends TransactionDao {
                 }),
         _transactionEntityUpdateAdapter = UpdateAdapter(
             database,
-            'TransactionEntity',
+            '_Transaction',
             ['transaction_id'],
             (TransactionEntity item) => <String, dynamic>{
                   'transaction_id': item.transactionId,
@@ -390,10 +390,56 @@ class _$TransactionDao extends TransactionDao {
   final UpdateAdapter<TransactionEntity> _transactionEntityUpdateAdapter;
 
   @override
+  Future<List<TransactionEntity>> findAllTransactions() async {
+    return _queryAdapter.queryList('SELECT * FROM _Transaction',
+        mapper: (Map<String, dynamic> row) => TransactionEntity(
+            transactionId: row['transaction_id'] as String,
+            accountId: row['account_id'] as String,
+            currencyId: row['currency_id'] as String,
+            txId: row['tx_id'] as String,
+            confirmation: row['confirmation'] as int,
+            sourceAddress: row['source_address'] as String,
+            destinctionAddress: row['destinction_address'] as String,
+            gasPrice: row['gas_price'] as String,
+            gasUsed: row['gas_used'] as int,
+            note: row['note'] as String,
+            block: row['block'] as int,
+            fee: row['fee'] as String,
+            status: row['status'] as String,
+            timestamp: row['timestamp'] as int,
+            direction: row['direction'] as String,
+            amount: row['amount'] as String));
+  }
+
+  @override
   Future<List<TransactionEntity>> findAllTransactionsByCurrencyId(
       String id) async {
     return _queryAdapter.queryList(
-        'SELECT * FROM Transaction WHERE Transaction.currency_id = ?',
+        'SELECT * FROM _Transaction WHERE Transaction.currency_id = ?',
+        arguments: <dynamic>[id],
+        mapper: (Map<String, dynamic> row) => TransactionEntity(
+            transactionId: row['transaction_id'] as String,
+            accountId: row['account_id'] as String,
+            currencyId: row['currency_id'] as String,
+            txId: row['tx_id'] as String,
+            confirmation: row['confirmation'] as int,
+            sourceAddress: row['source_address'] as String,
+            destinctionAddress: row['destinction_address'] as String,
+            gasPrice: row['gas_price'] as String,
+            gasUsed: row['gas_used'] as int,
+            note: row['note'] as String,
+            block: row['block'] as int,
+            fee: row['fee'] as String,
+            status: row['status'] as String,
+            timestamp: row['timestamp'] as int,
+            direction: row['direction'] as String,
+            amount: row['amount'] as String));
+  }
+
+  @override
+  Future<TransactionEntity> findTransactionsByTxId(String id) async {
+    return _queryAdapter.query(
+        'SELECT * FROM _Transaction WHERE Transaction.tx_id = ? limit 1',
         arguments: <dynamic>[id],
         mapper: (Map<String, dynamic> row) => TransactionEntity(
             transactionId: row['transaction_id'] as String,
