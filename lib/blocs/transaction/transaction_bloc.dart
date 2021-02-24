@@ -200,11 +200,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             gasPrice: _state.gasPrice,
             gasLimit: _state.gasLimit);
         Log.debug('PublishTransaction result: $result'); //--
-   
-        await _repo.publishTransaction(result[0], result[1]);
-        Log.warning('PublishTransaction result: $result'); //--
 
-        yield TransactionSent();
+        bool success =
+            await _repo.publishTransaction(result[0] as Transaction, result[1]);
+        Log.warning('PublishTransaction success: $success'); //--
+        if (success)
+          yield TransactionSent();
+        else
+          yield CreateTransactionFail();
       } catch (e) {
         yield CreateTransactionFail();
       }

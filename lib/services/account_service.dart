@@ -33,5 +33,5 @@ abstract class AccountService {
 
   // TODO: Keep or remove
   // prepareTransaction();
-  Future<void> publishTransaction(String blockchainId, Transaction transaction);
+  Future<bool> publishTransaction(String blockchainId, Transaction transaction);
 }

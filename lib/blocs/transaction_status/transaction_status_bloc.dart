@@ -23,7 +23,7 @@ class TransactionStatusBloc
     _subscription?.cancel();
     this._repo.listener.listen((msg) {
       if (msg.evt == ACCOUNT_EVT.OnUpdateAccount) {
-        Log.debug("msg.value ${(msg.value as Currency).name}");
+        Log.warning("msg.value ${(msg.value as Currency).name}");
         Currency currency = msg.value;
 
         this.add(UpdateCurrency(_addUSD(currency)));

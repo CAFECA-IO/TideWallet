@@ -4,7 +4,7 @@ import '../entity/transaction.dart';
 
 @dao
 abstract class TransactionDao {
-  @Query('SELECT * FROM Transaction WHERE currency_id = :id')
+  @Query('SELECT * FROM Transaction WHERE Transaction.currency_id = :id')
   Future<List<TransactionEntity>> findAllTransactionsByCurrencyId(String id);
 
   @Insert(onConflict: OnConflictStrategy.replace)

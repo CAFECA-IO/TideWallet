@@ -135,29 +135,36 @@ class BitcoinService extends AccountServiceDecorator {
   }
 
   @override
-  Future<void> publishTransaction(
+  Future<bool> publishTransaction(
       String blockchainId, Transaction transaction) async {
-    await HTTPAgent().post(
+    APIResponse response = await HTTPAgent().post(
         '${Endpoint.SUSANOO}/blockchain/$blockchainId/push-tx',
         {"hex": hex.encode(transaction.serializeTransaction)});
-    // updateUsedUtxo
-    BitcoinTransaction _transaction = transaction;
-    _transaction.inputs.forEach((Input input) async {
-      UnspentTxOut _utxo = input.utxo;
-      _utxo.locked = true;
-      await DBOperator().utxoDao.updateUtxo(UtxoEntity.fromUnspentUtxo(_utxo));
-    });
-    // insertChangeUtxo
-    if (transaction.changeUtxo != null) {
-      await DBOperator()
-          .utxoDao
-          .insertUtxo(UtxoEntity.fromUnspentUtxo(transaction.changeUtxo));
-    }
-    // TODO informBackend
+    bool success = response.success;
+
+    if (success) {
+      // updateUsedUtxo
+      BitcoinTransaction _transaction = transaction;
+      _transaction.inputs.forEach((Input input) async {
+        UnspentTxOut _utxo = input.utxo;
+        _utxo.locked = true;
+        await DBOperator()
+            .utxoDao
+            .updateUtxo(UtxoEntity.fromUnspentUtxo(_utxo));
+      });
+      // insertChangeUtxo
+      if (transaction.changeUtxo != null) {
+        await DBOperator()
+            .utxoDao
+            .insertUtxo(UtxoEntity.fromUnspentUtxo(transaction.changeUtxo));
+      }
+      // TODO informBackend
 // await HTTPAgent().post(
 //         '${Endpoint.SUSANOO}/blockchain/$blockchainId/change-utxo',
 //         {"changeUtxo": transaction.changeUtxo});
-    return;
+    }
+
+    return success;
   }
 
   Future _syncUTXO() async {

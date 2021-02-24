@@ -175,11 +175,11 @@ class TransactionRepository {
     Uint8List seed = await _getSeed(pwd);
     Uint8List result =
         await PaperWallet.getPrivKey(seed, changeIndex, keyIndex);
-    result = await PaperWallet.getPrivKey(
-        Uint8List.fromList(hex.decode(
-            '74a0b10d85dea97d53ff42a89f34a8447bbd041dcb573333358a03d5d1cfff0e')),
-        changeIndex,
-        keyIndex);
+    // result = await PaperWallet.getPrivKey(
+    //     Uint8List.fromList(hex.decode(
+    //         'e44914bee7e336f54a746421e2d7f9c99daccfac274ad03605b73c39601274ab')),
+    //     changeIndex,
+    //     keyIndex);
     Log.warning("getPrivKey result: ${hex.encode(result)}");
     return result;
   }
@@ -245,8 +245,7 @@ class TransactionRepository {
                   rlp.toBuffer(message ?? Uint8List(0)));
 
           amount = Decimal.zero;
-          // to = this._currency.contract;
-          to = '0xfaCCcF05e2C4fac8DCDD17d3A567CaFea71583E0'; // TODO TEST
+          to = this._currency.contract;
           gasLimit = Decimal.fromInt(52212); // TODO TEST
         }
         gasPrice = Decimal.parse('0.00000000111503492'); // TODO TEST
@@ -255,7 +254,7 @@ class TransactionRepository {
             to,
             amount,
             message == null ? Uint8List(0) : rlp.toBuffer(message),
-            nonce: nonce, // TODO TEST api nonce is not correct
+            nonce: 1, //nonce, // TODO TEST api nonce is not correct
             gasPrice: gasPrice,
             gasLimit: gasLimit,
             chainId: _currency.chainId,
@@ -266,8 +265,9 @@ class TransactionRepository {
 
         Decimal balance =
             Decimal.parse(this._currency.amount) - gasPrice * gasLimit;
+
         Log.debug('balance: $balance');
-        return [transaction, balance];
+        return [transaction, balance.toString()];
         break;
       case ACCOUNT.XRP:
         return null;
@@ -278,13 +278,13 @@ class TransactionRepository {
     }
   }
 
-  Future<void> publishTransaction(
+  Future<bool> publishTransaction(
       Transaction transaction, String balance) async {
     Log.debug('PublishTransaction transaction: $transaction');
     Log.debug('PublishTransaction balance: $balance');
-    await _accountService.publishTransaction(
+    bool result = await _accountService.publishTransaction(
         this._currency.blockchainId, transaction);
-
+    if (!result) return result;
     // TODO updateCurrencyAmount
     AccountCurrencyEntity account = await DBOperator()
         .accountCurrencyDao
@@ -311,7 +311,7 @@ class TransactionRepository {
         transactionId: transaction.id,
         amount: transaction.amount.toString(),
         accountId: account.accountId,
-        currencyId: currency.currencyId,
+        currencyId: this._currency.id,
         txId: transaction.txId,
         confirmation: 0,
         sourceAddress: transaction.sourceAddresses,
@@ -339,6 +339,6 @@ class TransactionRepository {
     Log.debug('balance4: $balance');
 
     listener.add(txMsg);
-    return;
+    return result;
   }
 }

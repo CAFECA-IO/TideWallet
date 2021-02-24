@@ -171,7 +171,7 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   @override
-  Future<void> publishTransaction(
+  Future<bool> publishTransaction(
       String blockchainId, Transaction transaction) async {
     //TODO TEST
     Log.debug("publishTransaction");
@@ -179,10 +179,12 @@ class EthereumService extends AccountServiceDecorator {
     Log.debug(transaction.serializeTransaction);
     Log.debug(hex.encode(transaction.serializeTransaction));
 
-    await HTTPAgent().post(
+    APIResponse response = await HTTPAgent().post(
         '${Endpoint.SUSANOO}/blockchain/$blockchainId/push-tx',
         {"hex": '0x' + hex.encode(transaction.serializeTransaction)});
-    return;
+    bool success = response.success;
+
+    return success;
   }
 
   @override
