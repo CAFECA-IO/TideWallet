@@ -29,14 +29,14 @@ class AccountRepository {
     return address.startsWith('0x');
   }
 
-  Future<Token> getTokenInfo(String address) {
-    return EthereumService.getTokeninfo(address);
+  Future<Token> getTokenInfo(String bkid, String address) {
+    return EthereumService.getTokeninfo(bkid, address);
   }
 
-  Future<bool> addToken(Token token) async {
+  Future<bool> addToken(String bkid, Token token) async {
     EthereumService _ethService = AccountCore().getService(ACCOUNT.ETH);
 
-    return _ethService.addToken(token);
+    return _ethService.addToken(bkid, token);
   }
 
   close() {

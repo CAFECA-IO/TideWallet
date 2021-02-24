@@ -5,7 +5,12 @@ import 'package:flutter/material.dart';
 import '../database/entity/exchage_rate.dart';
 import '../constants/account_config.dart';
 
-enum ACCOUNT_EVT { OnUpdateAccount, OnUpdateCurrency, OnUpdateTransactions, ClearAll }
+enum ACCOUNT_EVT {
+  OnUpdateAccount,
+  OnUpdateCurrency,
+  OnUpdateTransactions,
+  ClearAll
+}
 
 class Currency {
   final String id; // AccountCurrencyEntity id for Backend
@@ -112,18 +117,19 @@ class Token {
   final String name;
   final int decimal;
   final String imgUrl;
-  final int totalSupply;
+  final String totalSupply;
   final String contract;
   final String description;
 
-  Token(
-      {this.symbol,
-      this.name,
-      this.decimal,
-      this.imgUrl,
-      this.totalSupply,
-      this.contract,
-      this.description});
+  Token({
+    this.symbol,
+    this.name,
+    this.decimal,
+    this.imgUrl,
+    this.totalSupply,
+    this.contract,
+    this.description,
+  });
 }
 
 class Fiat {

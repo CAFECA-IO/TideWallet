@@ -108,19 +108,24 @@ class JoinCurrency {
 
   final String type;
 
-  JoinCurrency(
-      {this.accountcurrencyId,
-      this.currencyId,
-      this.symbol,
-      this.name,
-      this.balance,
-      this.accountIndex,
-      this.coinType,
-      this.image,
-      this.blockchainId,
-      this.chainId,
-      this.publish,
-      this.contract,
-      this.decimals,
-      this.type});
+  @ColumnInfo(name: 'account_id')
+  final String accountId;
+
+  JoinCurrency({
+    this.accountcurrencyId,
+    this.currencyId,
+    this.symbol,
+    this.name,
+    this.balance,
+    this.accountIndex,
+    this.coinType,
+    this.image,
+    this.blockchainId,
+    this.chainId,
+    this.publish,
+    this.contract,
+    this.decimals,
+    this.type,
+    this.accountId,
+  });
 }

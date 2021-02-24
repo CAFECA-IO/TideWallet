@@ -565,7 +565,8 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
                 row['publish'] == null ? null : (row['publish'] as int) != 0,
             contract: row['contract'] as String,
             decimals: row['decimals'] as int,
-            type: row['type'] as String));
+            type: row['type'] as String,
+            accountId: row['account_id'] as String));
   }
 
   @override

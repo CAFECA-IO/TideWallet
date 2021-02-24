@@ -69,28 +69,31 @@ class EthereumService extends AccountServiceDecorator {
     throw UnimplementedError();
   }
 
-  static Future<Token> getTokeninfo(String _address) async {
+  static Future<Token> getTokeninfo(String blockchainId, String address) async {
     Future.delayed(Duration(milliseconds: 1000));
-    Map result = await getETHTokeninfo(_address);
-    if (result != null && result['success']) {
+    APIResponse res = await HTTPAgent().get(Endpoint.SUSANOO + '/blockchain/$blockchainId/contract/$address');
+
+    Log.debug(res);
+    if (res.data != null && res.success) {
       Token _token = Token(
-          symbol: result['symbol'],
-          name: result['name'],
-          decimal: result['decimal'],
-          imgUrl: result['imgPath'],
-          description: result['description'],
-          contract: result['contract'],
-          totalSupply: result['totalSupply']);
+          symbol: res.data['symbol'],
+          name: res.data['name'],
+          decimal: res.data['decimal'],
+          imgUrl: res.data['imageUrl'],
+          description: res.data['description'],
+          contract: res.data['contract'],
+          totalSupply: res.data['total_supply']);
       return _token;
     } else {
       return null;
     }
+
   }
 
-  Future<bool> addToken(Token tk) async {
-    await Future.delayed(Duration(milliseconds: 500));
+  Future<bool> addToken(String blockchainId, Token tk) async {
+    APIResponse res = await HTTPAgent().post(Endpoint.SUSANOO + '/wallet/blockchain/$blockchainId/contract/${tk.contract}', {});
 
-    return true;
+    return res.success;
   }
 
   @override

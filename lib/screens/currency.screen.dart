@@ -27,7 +27,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
   CurrencyBloc _bloc;
   AccountRepository _repo;
   TraderRepository _traderRepo;
-  ACCOUNT _accountType;
+  Currency _parent;
 
   @override
   void didChangeDependencies() {
@@ -35,9 +35,9 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
     _repo = Provider.of<AccountRepository>(context);
     _traderRepo = Provider.of<TraderRepository>(context);
 
-    this._accountType = arg['account'].accountType;
+    this._parent = arg['account'];
     _bloc = CurrencyBloc(_repo, _traderRepo)
-      ..add(GetCurrencyList(this._accountType));
+      ..add(GetCurrencyList(this._parent.accountType));
     super.didChangeDependencies();
   }
 
@@ -109,12 +109,12 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
                                 .copyWith(color: Colors.white)),
                       ),
                     ),
-                    this._accountType == ACCOUNT.ETH
+                    this._parent.accountType == ACCOUNT.ETH
                         ? Positioned(
                             child: InkWell(
                               onTap: () {
                                 Navigator.of(context)
-                                    .pushNamed(AddCurrencyScreen.routeName);
+                                    .pushNamed(AddCurrencyScreen.routeName, arguments: {"account": this._parent});
                               },
                               child: Container(
                                 child: Text(
