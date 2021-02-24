@@ -138,7 +138,7 @@ class EthereumService extends AccountServiceDecorator {
 
     // TEST
     String seed =
-        '74a0b10d85dea97d53ff42a89f34a8447bbd041dcb573333358a03d5d1cfff0e';
+        'e44914bee7e336f54a746421e2d7f9c99daccfac274ad03605b73c39601274ab';
     Uint8List publicKey =
         await PaperWallet.getPubKey(hex.decode(seed), 0, 0, compressed: false);
     // Uint8List privKey = await PaperWallet.getPrivKey(hex.decode(seed), 0, 0);

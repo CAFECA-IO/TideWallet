@@ -239,6 +239,7 @@ class TransactionRepository {
         }
 
         Log.debug('_currency.chainId: ${_currency.chainId}');
+        Log.debug('nonce: $nonce');
         gasPrice = Decimal.parse('0.00000000111503492'); // TODO TEST
         Transaction transaction = _transactionService.prepareTransaction(
           this._currency.publish,
