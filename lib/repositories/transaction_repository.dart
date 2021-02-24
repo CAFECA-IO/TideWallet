@@ -79,6 +79,7 @@ class TransactionRepository {
       Log.debug('transactions txid: ${tx.txId}');
       Log.debug('transactions fee: ${tx.fee}');
     }
+    await DBOperator().transactionDao.deleteTransactions(transactions);
 
     List<Transaction> txs = transactions
         .map((tx) => Transaction.fromTransactionEntity(tx))
@@ -242,7 +243,7 @@ class TransactionRepository {
       case ACCOUNT.ETH:
         int nonce = await _accountService.getNonce(
             this._currency.blockchainId, this._address);
-        nonce = 2; // TODO TEST api nonce is not correct
+        nonce = 12; // TODO TEST api nonce is not correct
         if (currency.symbol.toLowerCase() != 'eth') {
           // ERC20
           List<int> erc20Func = Cryptor.keccak256round(
@@ -261,7 +262,9 @@ class TransactionRepository {
           to = this._currency.contract;
           gasLimit = Decimal.fromInt(52212); // TODO TEST
         }
-
+        Log.debug('nonce: $nonce');
+        Log.debug('gasPrice: $gasPrice');
+        Log.debug('gasLimit: $gasLimit');
         Transaction transaction = _transactionService.prepareTransaction(
             this._currency.publish,
             to,
@@ -272,8 +275,7 @@ class TransactionRepository {
             gasLimit: gasLimit,
             chainId: _currency.chainId,
             privKey: await getPrivKey(pwd, 0, 0),
-            changeAddress: this._address,
-            fee: gasPrice * gasLimit);
+            changeAddress: this._address);
 
         Log.debug(
             'transaction: ${hex.encode(transaction.serializeTransaction)}');
@@ -296,13 +298,16 @@ class TransactionRepository {
 
   Future<bool> publishTransaction(
       Transaction transaction, String balance) async {
-    Log.debug('PublishTransaction transaction: $transaction');
+    Log.debug('PublishTransaction transaction: ${transaction.fee}');
     Log.debug('PublishTransaction balance: $balance');
     List result = await _accountService.publishTransaction(
         this._currency.blockchainId, transaction);
     Log.debug('PublishTransaction result: $result');
+    bool success = result[0];
+    Transaction _transaction = result[1];
+    Log.debug('PublishTransaction _transaction: $_transaction');
 
-    if (!result[0]) return result[0];
+    if (!success) return success;
     Log.debug('PublishTransaction result: ${result[0]}');
 
     // TODO updateCurrencyAmount
@@ -325,23 +330,34 @@ class TransactionRepository {
     // listener.add(currMsg);
 
     // TODO insertTransaction
-    transaction = result[1];
+    Log.debug(
+        '_transaction.amount.toString(): ${_transaction.amount.toString()}');
+    Log.debug('account.accountId: ${account.accountId}');
+    Log.debug('this._currency.id: ${this._currency.id}');
+    Log.debug('_transaction.txId: ${_transaction.txId}');
+    Log.debug('_transaction.sourceAddresses: ${_transaction.sourceAddresses}');
+    Log.debug(
+        '_transaction.destinationAddresses: ${_transaction.destinationAddresses}');
+    Log.debug(
+        '_transaction.gasPrice.toString(): ${_transaction.gasPrice.toString()}');
+    Log.debug('_transaction.gasUsed.toInt(): ${_transaction.gasUsed.toInt()}');
+    Log.debug('hex.encode(_transaction.message): ${_transaction.message}');
+    Log.debug('transaction.fee.toString(): ${transaction.fee.toString()}');
 
     TransactionEntity tx = TransactionEntity(
-        transactionId: transaction.id,
-        amount: transaction.amount.toString(),
+        transactionId: _transaction.id,
+        amount: _transaction.amount.toString(),
         accountId: account.accountId,
         currencyId: this._currency.id,
-        txId: transaction.txId,
-        sourceAddress: transaction.sourceAddresses,
-        destinctionAddress: transaction.destinationAddresses,
-        gasPrice: transaction.gasPrice.toString(),
-        gasUsed: transaction.gasUsed.toInt(),
-        note: hex.encode(transaction.note),
-        fee: transaction.fee.toString());
-
-    await DBOperator().transactionDao.insertTransaction(tx);
+        txId: _transaction.txId,
+        sourceAddress: _transaction.sourceAddresses,
+        destinctionAddress: _transaction.destinationAddresses,
+        gasPrice: _transaction.gasPrice.toString(),
+        gasUsed: _transaction.gasUsed.toInt(),
+        note: hex.encode(_transaction.message),
+        fee: _transaction.fee.toString());
     Log.debug('PublishTransaction tx: $tx');
+    await DBOperator().transactionDao.insertTransaction(tx);
 
     // inform screen
     List transactions = await DBOperator()

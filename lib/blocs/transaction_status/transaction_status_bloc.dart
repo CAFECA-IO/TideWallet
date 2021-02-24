@@ -51,6 +51,7 @@ class TransactionStatusBloc
       if (state.currency == null) {
         Log.debug('event.currency: ${event.currency}');
         _repo.setCurrency(event.currency);
+
         final List<Transaction> transactions = await _repo.getTransactions();
         Log.debug('transactions: $transactions');
 

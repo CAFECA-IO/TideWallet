@@ -22,7 +22,7 @@ class Transaction {
   String _address;
   Decimal fee; // in eth
   String txId;
-  Uint8List note;
+  Uint8List message;
   String sourceAddresses;
   String destinationAddresses;
   Decimal gasPrice; // in Wei
@@ -33,17 +33,17 @@ class Transaction {
   String get address => _address;
 
   String get noteInString {
-    String _note = hex.encode(this.note);
+    String _message = hex.encode(this.message);
     try {
       // try to read as utf8
-      _note = utf8.decode(this.note);
-      Log.debug('utf8 note: $note');
+      _message = utf8.decode(this.message);
+      Log.debug('utf8 message: $message');
     } catch (e) {
       // try to read as ascii
-      _note = String.fromCharCodes(this.note);
-      Log.debug('ascii note: $note');
+      _message = String.fromCharCodes(this.message);
+      Log.debug('ascii message: $message');
     }
-    return _note;
+    return _message;
   }
 
   dynamic get inputs {
@@ -73,7 +73,7 @@ class Transaction {
     String address,
     this.fee,
     this.txId,
-    this.note,
+    this.message,
   }) : _address = address;
 
   Transaction.fromTransactionEntity(TransactionEntity entity) {
@@ -96,7 +96,7 @@ class Transaction {
         ? entity.destinctionAddress
         : entity.sourceAddress;
     fee = entity.fee != null ? Decimal.parse(entity.fee) : null;
-    note = hex.decode(entity.note);
+    message = hex.decode(entity.note);
     // TODO
     //  try {
     //   // try to read as utf8
