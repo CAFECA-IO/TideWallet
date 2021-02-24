@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../blocs/backup/backup_bloc.dart';
-import '../blocs/account/account_bloc.dart';
 import '../screens/update_password.screen.dart';
 import '../screens/feedback.screen.dart';
 import '../screens/terms.screen.dart';
@@ -11,6 +10,7 @@ import '../widgets/settings/backup.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/verify_password_dialog.dart';
 import '../widgets/settings/fiat.dart';
+import '../widgets/settings/reset.dart';
 import '../helpers/i18n.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -22,6 +22,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   BackupBloc _backupBloc;
+
   final t = I18n.t;
 
   Widget _item(String _title, Function _onTap) {
@@ -125,11 +126,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     );
                   },
                 ),
-              )
+              ),
+              ResetSetting(_item(t('setting_reset'), null)),
             ]),
-            _section(t('setting_normal'), [
-              FiatSetting(_item(t('setting_fiat'), null))
-            ]),
+            _section(t('setting_normal'),
+                [FiatSetting(_item(t('setting_fiat'), null))]),
             _section(t('setting_about'), [
               _item(t('setting_feedback'), () {
                 Navigator.of(context).pushNamed(FeedbackScreen.routeName);

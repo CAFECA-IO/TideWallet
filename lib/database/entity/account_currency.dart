@@ -3,16 +3,22 @@ import 'package:floor/floor.dart';
 import 'account.dart';
 import 'currency.dart';
 
-@Entity(tableName: 'AccountCurrency')
+@Entity(
+  tableName: 'AccountCurrency',
+  foreignKeys: [
+    ForeignKey(
+      childColumns: ['account_id'],
+      parentColumns: ['account_id'],
+      entity: AccountEntity,
+      onDelete: ForeignKeyAction.cascade,
+    )
+  ],
+)
 class AccountCurrencyEntity {
   @primaryKey
   @ColumnInfo(name: 'accountcurrency_id', nullable: false)
   final String accountcurrencyId;
 
-  @ForeignKey(
-      childColumns: ['account_id'],
-      parentColumns: ['account_id'],
-      entity: AccountEntity)
   @ColumnInfo(name: 'account_id')
   final String accountId;
 

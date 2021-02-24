@@ -23,3 +23,4 @@ class VerifyPassword extends UserEvent {
   VerifyPassword(this.password);
 }
 
+class UserReset extends UserEvent {}

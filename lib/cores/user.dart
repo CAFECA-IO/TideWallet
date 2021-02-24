@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:web3dart/web3dart.dart';
+import 'package:uuid/uuid.dart';
 
 import '../cores/paper_wallet.dart';
 import '../constants/endpoint.dart';
@@ -19,13 +20,11 @@ class User {
   String _id;
   bool _isBackup = false;
   String _passwordHash;
-  String _salt = Random.secure().toString();
+  String _salt = Uuid().v4();
 
   PrefManager _prefManager = PrefManager();
 
   String get id => _id;
-
-
 
   Future<bool> checkUser() async {
     UserEntity user = await DBOperator().userDao.findUser();
@@ -86,7 +85,6 @@ class User {
     this._salt = Random.secure().toString();
     final passwordHash = _seasonedPassword(newpassword);
     String keystore = await compute(PaperWallet.walletToJson, w);
-
 
     final userUpdated = user.copyWith(
       keystore: keystore,
@@ -204,5 +202,15 @@ class User {
     final user = await DBOperator().userDao.findUser();
 
     return user?.keystore;
+  }
+
+  Future<bool> deleteUser() async {
+    UserEntity user = await DBOperator().userDao.findUser();
+    final item = await DBOperator().userDao.deleteUser(user);
+
+    if (item < 0) return false;
+
+    await this._prefManager.clearAll();
+    return true;
   }
 }

@@ -4,7 +4,6 @@ import '../models/account.model.dart';
 import '../cores/account.dart';
 import '../constants/account_config.dart';
 import '../services/ethereum_service.dart';
-import '../helpers/utils.dart';
 
 class AccountRepository {
   PublishSubject<AccountMessage> get listener => AccountCore().messenger;
@@ -38,5 +37,15 @@ class AccountRepository {
     EthereumService _ethService = AccountCore().getService(ACCOUNT.ETH);
 
     return _ethService.addToken(token);
+  }
+
+  close() {
+    AccountCore().messenger.add(
+          AccountMessage(evt: ACCOUNT_EVT.ClearAll),
+        );
+    AccountCore().messenger.add(
+          AccountMessage(evt: ACCOUNT_EVT.ClearAll),
+        );
+    AccountCore().close();
   }
 }

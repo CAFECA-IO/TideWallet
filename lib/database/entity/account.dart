@@ -3,19 +3,29 @@ import 'package:floor/floor.dart';
 import 'network.dart';
 import 'user.dart';
 
-@Entity(tableName: 'Account')
+@Entity(
+  tableName: 'Account',
+  foreignKeys: [
+    ForeignKey(
+      childColumns: ['user_id'],
+      parentColumns: ['user_id'],
+      entity: UserEntity,
+      onDelete: ForeignKeyAction.cascade,
+    )
+  ],
+)
 class AccountEntity {
   @primaryKey
   @ColumnInfo(name: 'account_id')
   final String accountId;
 
-  @ForeignKey(
-      childColumns: ['user_id'], parentColumns: ['user_id'], entity: UserEntity)
   @ColumnInfo(name: 'user_id')
   final String userId;
 
   @ForeignKey(
-      childColumns: ['network_id'], parentColumns: ['network_id'], entity: NetworkEntity)
+      childColumns: ['network_id'],
+      parentColumns: ['network_id'],
+      entity: NetworkEntity)
   @ColumnInfo(name: 'network_id')
   final String networkId;
 
@@ -26,7 +36,6 @@ class AccountEntity {
 
   // @ColumnInfo(name: 'curve_type')
   // final bool curveType;
-  
 
   AccountEntity({
     this.accountId,
@@ -44,7 +53,7 @@ class AccountEntity {
           runtimeType == other.runtimeType &&
           accountId == other.accountId &&
           userId == other.userId;
-          // accountIndex == other.accountIndex;
+  // accountIndex == other.accountIndex;
 
   @override
   int get hashCode => accountId.hashCode;
