@@ -118,8 +118,8 @@ class BitcoinService extends AccountServiceDecorator {
     Log.debug('api address: $address');
     Log.debug('api keyIndex: $_numberOfUsedExternalKey');
     String seed =
-        '74a0b10d85dea97d53ff42a89f34a8447bbd041dcb573333358a03d5d1cfff0e';
-    // '59f45d6afb9bc00380fed2fcfdd5b36819acab89054980ad6e5ff90ba19c5347'; // 上一個有eth的 seed
+        '77a71bd38fe646a9602c73daedacd4a0ac2059b475c3ed6ac8b8ce04a68f920b';
+
     Uint8List publicKey = await PaperWallet.getPubKey(
         hex.decode(seed), 0, _numberOfUsedExternalKey);
     String calAddress = pubKeyToP2wpkhAddress(publicKey, 'tb');
@@ -129,8 +129,8 @@ class BitcoinService extends AccountServiceDecorator {
 
   @override
   Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) async {
-    List<UtxoEntity> utxos =
-        await DBOperator().utxoDao.findAllUtxosByCurrencyId(currencyId);
+    List<JoinUtxo> utxos =
+        await DBOperator().utxoDao.findAllJoinedUtxosById(currencyId);
     return utxos.map((utxo) => UnspentTxOut.fromUtxoEntity(utxo)).toList();
   }
 
@@ -172,7 +172,7 @@ class BitcoinService extends AccountServiceDecorator {
 
     if (now - this.service.lastSyncTimestamp > this.syncInterval) {
       Log.btc('_syncUTXO');
-      String currencyId = this.service.accountId;
+      String currencyId = this.service.accountId; // TODO accountcurrencyId
 
       // APIResponse response = await HTTPAgent()
       //     .get('${Endpoint.SUSANOO}/wallet/account/txs/uxto/$currencyId');

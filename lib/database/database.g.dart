@@ -100,18 +100,20 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Currency` (`currency_id` TEXT, `name` TEXT, `description` TEXT, `symbol` TEXT, `decimals` INTEGER, `address` TEXT, `type` TEXT, `total_supply` TEXT, `contract` TEXT, `image` TEXT, PRIMARY KEY (`currency_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `_Transaction` (`transaction_id` TEXT, `account_id` TEXT, `currency_id` TEXT, `tx_id` TEXT, `source_address` TEXT, `destinction_address` TEXT, `timestamp` INTEGER, `confirmation` INTEGER, `gas_price` TEXT, `gas_used` INTEGER, `block` INTEGER, `fee` TEXT NOT NULL, `note` TEXT, `status` TEXT, `direction` TEXT, `amount` TEXT, PRIMARY KEY (`transaction_id`))');
+            'CREATE TABLE IF NOT EXISTS `_Transaction` (`transaction_id` TEXT, `accountcurrency_id` TEXT, `tx_id` TEXT, `source_address` TEXT, `destinction_address` TEXT, `timestamp` INTEGER, `confirmation` INTEGER, `gas_price` TEXT, `gas_used` INTEGER, `block` INTEGER, `fee` TEXT NOT NULL, `note` TEXT, `status` TEXT, `direction` TEXT, `amount` TEXT, PRIMARY KEY (`transaction_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Network` (`network_id` TEXT, `network` TEXT NOT NULL, `coin_type` INTEGER, `publish` INTEGER, `chain_id` INTEGER, PRIMARY KEY (`network_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `AccountCurrency` (`accountcurrency_id` TEXT NOT NULL, `account_id` TEXT, `currency_id` TEXT, `balance` TEXT, `number_of_used_external_key` INTEGER, `number_of_used_internal_key` INTEGER, `last_sync_time` INTEGER, PRIMARY KEY (`accountcurrency_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Utxo` (`utxo_id` TEXT, `currency_id` TEXT, `tx_id` TEXT, `vout` INTEGER, `type` TEXT, `amount` TEXT, `chain_index` INTEGER, `key_index` INTEGER, `script` TEXT, `timestamp` INTEGER, `locked` INTEGER, `sequence` INTEGER, `address` TEXT, PRIMARY KEY (`utxo_id`))');
+            'CREATE TABLE IF NOT EXISTS `Utxo` (`utxo_id` TEXT, `accountcurrency_id` TEXT, `tx_id` TEXT, `vout` INTEGER, `type` TEXT, `amount` TEXT, `chain_index` INTEGER, `key_index` INTEGER, `script` TEXT, `timestamp` INTEGER, `locked` INTEGER, `sequence` INTEGER, `address` TEXT, PRIMARY KEY (`utxo_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `ExchangeRate` (`exchange_rate_id` TEXT, `rate` TEXT, `lastSyncTime` INTEGER, `type` TEXT, PRIMARY KEY (`exchange_rate_id`))');
 
         await database.execute(
             '''CREATE VIEW IF NOT EXISTS `JoinCurrency` AS SELECT * FROM AccountCurrency INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id INNER JOIN Account ON AccountCurrency.account_id = Account.account_id INNER JOIN Network ON Account.network_id = Network.network_id''');
+        await database.execute(
+            '''CREATE VIEW IF NOT EXISTS `JoinUtxo` AS SELECT * FROM Utxo INNER JOIN AccountCurrency ON Utxo.accountcurrency_id = AccountCurrency.AccountCurrency INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id''');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -340,8 +342,7 @@ class _$TransactionDao extends TransactionDao {
             '_Transaction',
             (TransactionEntity item) => <String, dynamic>{
                   'transaction_id': item.transactionId,
-                  'account_id': item.accountId,
-                  'currency_id': item.currencyId,
+                  'accountcurrency_id': item.accountcurrencyId,
                   'tx_id': item.txId,
                   'source_address': item.sourceAddress,
                   'destinction_address': item.destinctionAddress,
@@ -362,8 +363,7 @@ class _$TransactionDao extends TransactionDao {
             ['transaction_id'],
             (TransactionEntity item) => <String, dynamic>{
                   'transaction_id': item.transactionId,
-                  'account_id': item.accountId,
-                  'currency_id': item.currencyId,
+                  'accountcurrency_id': item.accountcurrencyId,
                   'tx_id': item.txId,
                   'source_address': item.sourceAddress,
                   'destinction_address': item.destinctionAddress,
@@ -384,8 +384,7 @@ class _$TransactionDao extends TransactionDao {
             ['transaction_id'],
             (TransactionEntity item) => <String, dynamic>{
                   'transaction_id': item.transactionId,
-                  'account_id': item.accountId,
-                  'currency_id': item.currencyId,
+                  'accountcurrency_id': item.accountcurrencyId,
                   'tx_id': item.txId,
                   'source_address': item.sourceAddress,
                   'destinction_address': item.destinctionAddress,
@@ -418,8 +417,7 @@ class _$TransactionDao extends TransactionDao {
     return _queryAdapter.queryList('SELECT * FROM _Transaction',
         mapper: (Map<String, dynamic> row) => TransactionEntity(
             transactionId: row['transaction_id'] as String,
-            accountId: row['account_id'] as String,
-            currencyId: row['currency_id'] as String,
+            accountcurrencyId: row['accountcurrency_id'] as String,
             txId: row['tx_id'] as String,
             confirmation: row['confirmation'] as int,
             sourceAddress: row['source_address'] as String,
@@ -436,15 +434,13 @@ class _$TransactionDao extends TransactionDao {
   }
 
   @override
-  Future<List<TransactionEntity>> findAllTransactionsByCurrencyId(
-      String id) async {
+  Future<List<TransactionEntity>> findAllTransactionsById(String id) async {
     return _queryAdapter.queryList(
-        'SELECT * FROM _Transaction WHERE _Transaction.account_id = ?',
+        'SELECT * FROM _Transaction WHERE _Transaction.accountcurrency_id = ?',
         arguments: <dynamic>[id],
         mapper: (Map<String, dynamic> row) => TransactionEntity(
             transactionId: row['transaction_id'] as String,
-            accountId: row['account_id'] as String,
-            currencyId: row['currency_id'] as String,
+            accountcurrencyId: row['accountcurrency_id'] as String,
             txId: row['tx_id'] as String,
             confirmation: row['confirmation'] as int,
             sourceAddress: row['source_address'] as String,
@@ -467,8 +463,7 @@ class _$TransactionDao extends TransactionDao {
         arguments: <dynamic>[id],
         mapper: (Map<String, dynamic> row) => TransactionEntity(
             transactionId: row['transaction_id'] as String,
-            accountId: row['account_id'] as String,
-            currencyId: row['currency_id'] as String,
+            accountcurrencyId: row['accountcurrency_id'] as String,
             txId: row['tx_id'] as String,
             confirmation: row['confirmation'] as int,
             sourceAddress: row['source_address'] as String,
@@ -646,7 +641,7 @@ class _$UtxoDao extends UtxoDao {
             'Utxo',
             (UtxoEntity item) => <String, dynamic>{
                   'utxo_id': item.utxoId,
-                  'currency_id': item.currencyId,
+                  'accountcurrency_id': item.accountcurrencyId,
                   'tx_id': item.txId,
                   'vout': item.vout,
                   'type': item.type,
@@ -665,7 +660,7 @@ class _$UtxoDao extends UtxoDao {
             ['utxo_id'],
             (UtxoEntity item) => <String, dynamic>{
                   'utxo_id': item.utxoId,
-                  'currency_id': item.currencyId,
+                  'accountcurrency_id': item.accountcurrencyId,
                   'tx_id': item.txId,
                   'vout': item.vout,
                   'type': item.type,
@@ -690,12 +685,14 @@ class _$UtxoDao extends UtxoDao {
   final UpdateAdapter<UtxoEntity> _utxoEntityUpdateAdapter;
 
   @override
-  Future<List<UtxoEntity>> findAllUtxosByCurrencyId(String id) async {
-    return _queryAdapter.queryList('SELECT * FROM Utxo WHERE currency_id = ?',
-        arguments: <dynamic>[id],
-        mapper: (Map<String, dynamic> row) => UtxoEntity(
-            row['utxo_id'] as String,
-            row['currency_id'] as String,
+  Future<List<JoinUtxo>> findAllJoinedUtxosById(
+      String accountcurrencyId) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM JoinUtxo WHERE JoinUtxo.accountcurrency_id = ?',
+        arguments: <dynamic>[accountcurrencyId],
+        mapper: (Map<String, dynamic> row) => JoinUtxo(
+            row['utxoId'] as String,
+            row['accountcurrency_id'] as String,
             row['tx_id'] as String,
             row['vout'] as int,
             row['type'] as String,
@@ -705,17 +702,19 @@ class _$UtxoDao extends UtxoDao {
             row['script'] as String,
             row['timestamp'] as int,
             row['locked'] == null ? null : (row['locked'] as int) != 0,
+            row['sequence'] as int,
             row['address'] as String,
-            row['sequence'] as int));
+            row['decimals'] as int));
   }
 
   @override
-  Future<UtxoEntity> findUtxoById(String id) async {
-    return _queryAdapter.query('SELECT * FROM Utxo WHERE utxo_id = ? limit 1',
+  Future<JoinUtxo> findJoinedUtxoById(String id) async {
+    return _queryAdapter.query(
+        'SELECT * FROM JoinUtxo WHERE JoinUtxo.utxo_id = ? limit 1',
         arguments: <dynamic>[id],
-        mapper: (Map<String, dynamic> row) => UtxoEntity(
-            row['utxo_id'] as String,
-            row['currency_id'] as String,
+        mapper: (Map<String, dynamic> row) => JoinUtxo(
+            row['utxoId'] as String,
+            row['accountcurrency_id'] as String,
             row['tx_id'] as String,
             row['vout'] as int,
             row['type'] as String,
@@ -725,8 +724,9 @@ class _$UtxoDao extends UtxoDao {
             row['script'] as String,
             row['timestamp'] as int,
             row['locked'] == null ? null : (row['locked'] as int) != 0,
+            row['sequence'] as int,
             row['address'] as String,
-            row['sequence'] as int));
+            row['decimals'] as int));
   }
 
   @override

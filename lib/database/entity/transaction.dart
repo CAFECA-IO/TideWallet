@@ -9,14 +9,11 @@ class TransactionEntity {
   final String transactionId;
 
   @ForeignKey(
-      childColumns: ['account_id'],
-      parentColumns: ['account_id'],
+      childColumns: ['accountcurrency_id'],
+      parentColumns: ['accountcurrency_id'],
       entity: AccountEntity)
-  @ColumnInfo(name: 'account_id')
-  final String accountId;
-
-  @ColumnInfo(name: 'currency_id')
-  final String currencyId;
+  @ColumnInfo(name: 'accountcurrency_id')
+  final String accountcurrencyId;
 
   @ColumnInfo(name: 'tx_id')
   final String txId;
@@ -54,8 +51,7 @@ class TransactionEntity {
 
   TransactionEntity(
       {this.transactionId,
-      this.accountId,
-      this.currencyId,
+      this.accountcurrencyId,
       this.txId,
       this.confirmation,
       this.sourceAddress,

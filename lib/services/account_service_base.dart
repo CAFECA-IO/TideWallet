@@ -9,7 +9,6 @@ import '../database/entity/account_currency.dart';
 import '../database/entity/account.dart';
 import '../database/entity/currency.dart';
 import '../database/entity/transaction.dart';
-import '../helpers/logger.dart';
 import '../helpers/http_agent.dart';
 import '../models/account.model.dart';
 import '../models/api_response.mode.dart';
@@ -233,16 +232,15 @@ class AccountServiceBase extends AccountService {
       txs = txs
           .map((tx) => TransactionEntity(
               transactionId: tx['txid'],
-              amount: tx['amount'],
-              accountId: this._accountId,
-              currencyId: currency.currencyId,
+              amount: tx['amount'].toString(),
+              accountcurrencyId: currency.id,
               txId: tx['txid'],
               confirmation: tx['confirmations'],
               sourceAddress: tx['source_addresses'],
               destinctionAddress: tx['destination_addresses'],
               gasPrice: tx['gas_price'],
               gasUsed: tx['gas_limit'],
-              fee: tx['fee'],
+              fee: tx['fee'].toString(),
               direction: tx['direction'],
               status: tx['status'],
               timestamp: tx['timestamp']))
@@ -256,9 +254,7 @@ class AccountServiceBase extends AccountService {
   }
 
   Future<List<TransactionEntity>> _loadTransactions(String currencyId) async {
-    return DBOperator()
-        .transactionDao
-        .findAllTransactionsByCurrencyId(currencyId);
+    return DBOperator().transactionDao.findAllTransactionsById(currencyId);
   }
 
   @override

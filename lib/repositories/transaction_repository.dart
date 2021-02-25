@@ -73,13 +73,9 @@ class TransactionRepository {
     List<TransactionEntity> transactions =
         await DBOperator().transactionDao.findAllTransactions();
     Log.debug('this._currency.id: ${this._currency.id}');
-    for (TransactionEntity tx in transactions) {
-      Log.debug('transactions accountId: ${tx.accountId}');
-      Log.debug('transactions currencyId: ${tx.currencyId}');
-      Log.debug('transactions txid: ${tx.txId}');
-      Log.debug('transactions fee: ${tx.fee}');
-    }
-    await DBOperator().transactionDao.deleteTransactions(transactions);
+
+    // TODO TEST
+    // await DBOperator().transactionDao.deleteTransactions(transactions);
 
     List<Transaction> txs = transactions
         .map((tx) => Transaction.fromTransactionEntity(tx))
@@ -212,7 +208,7 @@ class TransactionRepository {
           if (!utxo.locked ||
               !(utxo.amount > Decimal.zero) ||
               utxo.type == null) continue;
-          utxoAmount += utxo.amount;
+          utxoAmount += utxo.amountInSmallestUint; // in smallest uint
           utxo.privatekey =
               await getPrivKey(pwd, utxo.chainIndex, utxo.keyIndex);
           utxo.publickey = await getPubKey(pwd, utxo.chainIndex, utxo.keyIndex);
@@ -227,10 +223,10 @@ class TransactionRepository {
         Transaction transaction = _transactionService.prepareTransaction(
             this._currency.publish,
             to,
-            amount,
+            Converter.toCurrencySmallestUnit(amount, this._currency.decimals),
             message == null ? Uint8List(0) : rlp.toBuffer(message),
-            currencyId: this._currency.id,
-            fee: fee,
+            accountcurrencyId: this._currency.id,
+            fee: Converter.toCurrencySmallestUnit(fee, this._currency.decimals),
             unspentTxOuts: unspentTxOuts,
             changeIndex: changeIndex,
             changeAddress: changeAddress);
@@ -243,7 +239,7 @@ class TransactionRepository {
       case ACCOUNT.ETH:
         int nonce = await _accountService.getNonce(
             this._currency.blockchainId, this._address);
-        nonce = 12; // TODO TEST api nonce is not correct
+        nonce = 0; // TODO TEST api nonce is not correct
         if (currency.symbol.toLowerCase() != 'eth') {
           // ERC20
           List<int> erc20Func = Cryptor.keccak256round(
@@ -253,8 +249,10 @@ class TransactionRepository {
               hex.encode(erc20Func.take(4).toList() +
                   hex.decode(to.substring(2).padLeft(64, '0')) +
                   hex.decode(hex
-                      .encode(encodeBigInt(Converter.toTokenSmallestUnit(
-                          amount, _currency.decimals ?? 18)))
+                      .encode(encodeBigInt(BigInt.parse(
+                          Converter.toCurrencySmallestUnit(
+                                  amount, _currency.decimals ?? 18)
+                              .toString()))) // TODO TEST
                       .padLeft(64, '0')) +
                   rlp.toBuffer(message ?? Uint8List(0)));
 
@@ -268,10 +266,11 @@ class TransactionRepository {
         Transaction transaction = _transactionService.prepareTransaction(
             this._currency.publish,
             to,
-            amount,
+            Converter.toCurrencySmallestUnit(amount, this._currency.decimals),
             message == null ? Uint8List(0) : rlp.toBuffer(message),
             nonce: nonce,
-            gasPrice: gasPrice,
+            gasPrice: Converter.toCurrencySmallestUnit(
+                gasPrice, this._currency.decimals),
             gasLimit: gasLimit,
             chainId: _currency.chainId,
             privKey: await getPrivKey(pwd, 0, 0),
@@ -329,40 +328,36 @@ class TransactionRepository {
     //     evt: ACCOUNT_EVT.OnUpdateCurrency, value: this._currency);
     // listener.add(currMsg);
 
-    // TODO insertTransaction
-    Log.debug(
-        '_transaction.amount.toString(): ${_transaction.amount.toString()}');
-    Log.debug('account.accountId: ${account.accountId}');
-    Log.debug('this._currency.id: ${this._currency.id}');
-    Log.debug('_transaction.txId: ${_transaction.txId}');
-    Log.debug('_transaction.sourceAddresses: ${_transaction.sourceAddresses}');
-    Log.debug(
-        '_transaction.destinationAddresses: ${_transaction.destinationAddresses}');
-    Log.debug(
-        '_transaction.gasPrice.toString(): ${_transaction.gasPrice.toString()}');
-    Log.debug('_transaction.gasUsed.toInt(): ${_transaction.gasUsed.toInt()}');
-    Log.debug('hex.encode(_transaction.message): ${_transaction.message}');
-    Log.debug('transaction.fee.toString(): ${transaction.fee.toString()}');
+    // insertTransaction
 
     TransactionEntity tx = TransactionEntity(
-        transactionId: _transaction.id,
-        amount: _transaction.amount.toString(),
-        accountId: account.accountId,
-        currencyId: this._currency.id,
-        txId: _transaction.txId,
-        sourceAddress: _transaction.sourceAddresses,
-        destinctionAddress: _transaction.destinationAddresses,
-        gasPrice: _transaction.gasPrice.toString(),
-        gasUsed: _transaction.gasUsed.toInt(),
-        note: hex.encode(_transaction.message),
-        fee: _transaction.fee.toString());
+      transactionId: _transaction.id,
+      accountcurrencyId: this._currency.id,
+      txId: _transaction.txId,
+      amount:
+          Converter.toCurrencyUnit(_transaction.amount, this._currency.decimals)
+              .toString(), //TODO BTC?
+      fee: Converter.toCurrencyUnit(_transaction.fee, this._currency.decimals)
+          .toString(),
+      gasPrice: Converter.toCurrencyUnit(
+              _transaction.gasPrice, this._currency.decimals)
+          .toString(),
+      gasUsed: _transaction.gasUsed.toInt(),
+      direction: _transaction.direction.title,
+      sourceAddress: _transaction.sourceAddresses,
+      destinctionAddress: _transaction.destinationAddresses,
+      confirmation: _transaction.confirmations,
+      timestamp: _transaction.timestamp,
+      note: hex.encode(_transaction.message),
+      status: _transaction.status.title,
+    );
     Log.debug('PublishTransaction tx: $tx');
     await DBOperator().transactionDao.insertTransaction(tx);
 
     // inform screen
     List transactions = await DBOperator()
         .transactionDao
-        .findAllTransactionsByCurrencyId(this._currency.id);
+        .findAllTransactionsById(this._currency.id);
     AccountMessage txMsg =
         AccountMessage(evt: ACCOUNT_EVT.OnUpdateTransactions, value: {
       "currency": this._currency,

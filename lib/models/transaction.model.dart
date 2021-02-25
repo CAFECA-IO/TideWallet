@@ -6,10 +6,6 @@ import 'package:convert/convert.dart';
 
 import '../helpers/logger.dart';
 import '../theme.dart';
-import './utxo.model.dart';
-import './bitcoin_transaction.model.dart';
-import './ethereum_transaction.model.dart';
-import './ethereum_token_transaction.model.dart';
 import '../database/entity/transaction.dart';
 
 class Transaction {
@@ -32,7 +28,7 @@ class Transaction {
       DateTime.fromMillisecondsSinceEpoch(timestamp, isUtc: false);
   String get address => _address;
 
-  String get noteInString {
+  String get messageInString {
     String _message = hex.encode(this.message);
     try {
       // try to read as utf8
@@ -77,36 +73,26 @@ class Transaction {
   }) : _address = address;
 
   Transaction.fromTransactionEntity(TransactionEntity entity) {
-    txId = entity.txId;
     id = entity.transactionId;
+    txId = entity.txId;
+    amount = Decimal.parse(entity.amount);
+    fee = Decimal.parse(entity.fee);
     direction = entity.direction == 'move'
         ? TransactionDirection.moved
         : entity.direction == 'send'
             ? TransactionDirection.sent
             : TransactionDirection.received;
-    amount = Decimal.parse(entity.amount);
+    _address = (direction == TransactionDirection.sent)
+        ? entity.destinctionAddress
+        : entity.sourceAddress;
+    confirmations = entity.confirmation;
+    timestamp = entity.timestamp;
+    message = hex.decode(entity.note);
     status = entity.status == 'pending'
         ? TransactionStatus.pending
         : entity.status == 'success'
             ? TransactionStatus.success
             : TransactionStatus.fail;
-    timestamp = entity.timestamp;
-    confirmations = entity.confirmation;
-    _address = (direction == TransactionDirection.sent)
-        ? entity.destinctionAddress
-        : entity.sourceAddress;
-    fee = entity.fee != null ? Decimal.parse(entity.fee) : null;
-    message = hex.decode(entity.note);
-    // TODO
-    //  try {
-    //   // try to read as utf8
-    //   note = utf8.decode(script);
-    //   Log.debug('utf8 note: $note');
-    // } catch (e) {
-    //   // try to read as ascii
-    //   note = new String.fromCharCodes(script);
-    //   Log.debug('ascii note: $note');
-    // }
   }
 }
 

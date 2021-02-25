@@ -46,23 +46,24 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
     Decimal gasLimit, //ETH
     int nonce, //ETH
     int chainId, //ETH
-    String currencyId,
+    String accountcurrencyId,
     Decimal fee,
     List<UnspentTxOut> unspentTxOuts = const [],
     String changeAddress,
     int changeIndex,
   }) {
     EthereumTransaction transaction = EthereumTransaction.prepareTransaction(
-        from: changeAddress,
-        to: to,
-        nonce: nonce,
-        amount: Converter.toEthSmallestUnit(amount),
-        gasPrice: Converter.toEthSmallestUnit(gasPrice),
-        gasUsed: gasLimit,
-        message: message,
-        chainId: chainId,
-        signature: MsgSignature(BigInt.zero, BigInt.zero, chainId),
-        fee: gasLimit * gasPrice);
+      from: changeAddress,
+      to: to,
+      nonce: nonce,
+      amount: amount, // in wei
+      gasPrice: gasPrice, // in wei
+      gasUsed: gasLimit,
+      message: message,
+      chainId: chainId,
+      signature: MsgSignature(BigInt.zero, BigInt.zero, chainId),
+      fee: gasLimit * gasPrice, // in wei
+    );
     return _signTransaction(transaction, privKey);
   }
 

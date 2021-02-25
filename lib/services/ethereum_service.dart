@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'package:convert/convert.dart';
 import 'package:decimal/decimal.dart';
 
@@ -16,8 +15,8 @@ import '../mock/endpoint.dart';
 import '../helpers/logger.dart';
 import '../helpers/http_agent.dart';
 
-import '../cores/paper_wallet.dart'; //TODO TEST
-import '../helpers/cryptor.dart'; //TODO TEST
+// import '../cores/paper_wallet.dart'; //TODO TEST
+// import '../helpers/cryptor.dart'; //TODO TEST
 
 class EthereumService extends AccountServiceDecorator {
   EthereumService(AccountService service) : super(service) {
@@ -175,8 +174,6 @@ class EthereumService extends AccountServiceDecorator {
       String blockchainId, Transaction transaction) async {
     //TODO TEST
     Log.debug("publishTransaction");
-
-    Log.debug(transaction.serializeTransaction);
     Log.debug(hex.encode(transaction.serializeTransaction));
 
     APIResponse response = await HTTPAgent().post(
@@ -187,13 +184,6 @@ class EthereumService extends AccountServiceDecorator {
     transaction.txId = response.data['txid'];
     transaction.timestamp = DateTime.now().millisecondsSinceEpoch;
     transaction.confirmations = 0;
-    Log.debug("publishTransaction transaction.id: ${transaction.id}");
-    Log.debug("publishTransaction transaction.txId: ${transaction.txId}");
-    Log.debug(
-        "publishTransaction transaction.timestamp: ${transaction.timestamp}");
-    Log.debug(
-        "publishTransaction transaction.confirmations: ${transaction.confirmations}");
-
     return [success, transaction];
   }
 

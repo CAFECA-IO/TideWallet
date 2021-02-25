@@ -120,8 +120,7 @@ void main() {
         TransactionEntity _transaction = TransactionEntity(
           transactionId: "transaction.id",
           amount: "transaction.amount.toString()",
-          accountId: 'account.accountId',
-          currencyId: '5b1ea92e584bf50020130615',
+          accountcurrencyId: 'account.accountcurrencyId',
           txId: "transaction.txId",
           confirmation: 0,
           sourceAddress: "transaction.sourceAddresses",

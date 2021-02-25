@@ -89,7 +89,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     Decimal gasLimit,
     int nonce,
     int chainId,
-    String currencyId,
+    String accountcurrencyId,
     Decimal fee,
     List<UnspentTxOut> unspentTxOuts,
     int changeIndex,
@@ -97,7 +97,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
   }) {
     BitcoinTransaction transaction =
         BitcoinTransaction.prepareTransaction(publish, this.segwitType);
-    // amount,to
+    // to
     if (to.contains(':')) {
       to = to.split(':')[1];
     }
@@ -187,7 +187,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     if (change > Decimal.zero) {
       UnspentTxOut changeUtxo = UnspentTxOut(
           id: signedTransaction.txId.substring(0, 6),
-          currencyId: currencyId,
+          accountcurrencyId: accountcurrencyId,
           txId: signedTransaction.txId,
           vout: 1,
           type: this.segwitType == SegwitType.nonSegWit
