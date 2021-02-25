@@ -11,18 +11,17 @@ import '../models/api_response.mode.dart';
 import '../constants/account_config.dart';
 import '../constants/endpoint.dart';
 import '../services/account_service.dart';
-import '../mock/endpoint.dart';
 import '../helpers/logger.dart';
+import '../cores/account.dart';
 import '../helpers/http_agent.dart';
-
-import '../cores/paper_wallet.dart';
-import '../helpers/cryptor.dart';
-import '../helpers/logger.dart';
+import '../database/db_operator.dart';
+import '../database/entity/account_currency.dart';
+import '../database/entity/currency.dart';
 
 class EthereumService extends AccountServiceDecorator {
   EthereumService(AccountService service) : super(service) {
     this.base = ACCOUNT.ETH;
-    this.syncInterval =  7500;
+    this.syncInterval = 7500;
     this.path = "m/44'/60'/0'";
   }
   String _address;
@@ -71,9 +70,9 @@ class EthereumService extends AccountServiceDecorator {
 
   static Future<Token> getTokeninfo(String blockchainId, String address) async {
     Future.delayed(Duration(milliseconds: 1000));
-    APIResponse res = await HTTPAgent().get(Endpoint.SUSANOO + '/blockchain/$blockchainId/contract/$address');
+    APIResponse res = await HTTPAgent()
+        .get(Endpoint.SUSANOO + '/blockchain/$blockchainId/contract/$address');
 
-    Log.debug(res);
     if (res.data != null && res.success) {
       Token _token = Token(
           symbol: res.data['symbol'],
@@ -87,13 +86,70 @@ class EthereumService extends AccountServiceDecorator {
     } else {
       return null;
     }
-
   }
 
   Future<bool> addToken(String blockchainId, Token tk) async {
-    APIResponse res = await HTTPAgent().post(Endpoint.SUSANOO + '/wallet/blockchain/$blockchainId/contract/${tk.contract}', {});
+    APIResponse res = await HTTPAgent().post(
+        Endpoint.SUSANOO +
+            '/wallet/blockchain/$blockchainId/contract/${tk.contract}',
+        {});
+    if (res.success == false) return false;
 
-    return res.success;
+    String id = res.data['token_id'];
+
+    try {
+      APIResponse updateRes = await HTTPAgent()
+          .get(Endpoint.SUSANOO + '/wallet/account/${this.service.accountId}');
+
+      final acc = updateRes.data;
+      if (acc != null) {
+        List tks = [acc] + acc['tokens'];
+        final index =
+            tks.indexWhere((token) => token['contract'] == tk.contract);
+
+        await DBOperator().currencyDao.insertCurrency(
+              CurrencyEntity.fromJson(
+                {
+                  ...tks[index],
+                  'icon': tk.imgUrl ?? acc['icon'],
+                  'currency_id': id
+                },
+              ),
+            );
+        int now = DateTime.now().millisecondsSinceEpoch;
+        final v = tks
+            .map((c) =>
+                AccountCurrencyEntity.fromJson(c, this.service.accountId, now))
+            .toList();
+
+        await DBOperator().accountCurrencyDao.insertCurrencies(v);
+
+        List<JoinCurrency> jcs = await DBOperator()
+            .accountCurrencyDao
+            .findJoinedByAccountyId(this.service.accountId);
+
+        List<Currency> cs =
+            jcs.map((c) => Currency.fromJoinCurrency(c, this.base)).toList();
+
+        AccountMessage msg =
+            AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: cs[0]);
+        AccountCore().currencies[this.base] = cs;
+
+        AccountMessage currMsg = AccountMessage(
+            evt: ACCOUNT_EVT.OnUpdateCurrency,
+            value: AccountCore().currencies[this.base]);
+
+        AccountCore().messenger.add(msg);
+        AccountCore().messenger.add(currMsg);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      Log.error(e);
+
+      return false;
+    }
   }
 
   @override

@@ -104,7 +104,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Network` (`network_id` TEXT, `network` TEXT NOT NULL, `coin_type` INTEGER, `publish` INTEGER, `chain_id` INTEGER, PRIMARY KEY (`network_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `AccountCurrency` (`accountcurrency_id` TEXT NOT NULL, `account_id` TEXT, `currency_id` TEXT, `balance` TEXT, `number_of_used_external_key` INTEGER, `number_of_used_internal_key` INTEGER, `last_sync_time` INTEGER, FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`) ON UPDATE NO ACTION ON DELETE CASCADE, PRIMARY KEY (`accountcurrency_id`))');
+            'CREATE TABLE IF NOT EXISTS `AccountCurrency` (`accountcurrency_id` TEXT NOT NULL, `account_id` TEXT, `currency_id` TEXT, `balance` TEXT, `number_of_used_external_key` INTEGER, `number_of_used_internal_key` INTEGER, `last_sync_time` INTEGER, FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`) ON UPDATE NO ACTION ON DELETE CASCADE, FOREIGN KEY (`currency_id`) REFERENCES `Currency` (`currency_id`) ON UPDATE NO ACTION ON DELETE CASCADE, PRIMARY KEY (`accountcurrency_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Utxo` (`utxo_id` TEXT, `currency_id` TEXT, `tx_id` TEXT, `vout` INTEGER, `type` TEXT, `amount` TEXT, `chain_index` INTEGER, `key_index` INTEGER, `script` TEXT, `timestamp` INTEGER, `locked` INTEGER, `sequence` INTEGER, PRIMARY KEY (`utxo_id`))');
         await database.execute(
