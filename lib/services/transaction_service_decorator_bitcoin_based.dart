@@ -89,7 +89,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     Decimal gasLimit,
     int nonce,
     int chainId,
-    String currencyId,
+    String accountcurrencyId,
     Decimal fee,
     List<UnspentTxOut> unspentTxOuts,
     int changeIndex,
@@ -97,7 +97,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
   }) {
     BitcoinTransaction transaction =
         BitcoinTransaction.prepareTransaction(publish, this.segwitType);
-    // amount,to
+    // to
     if (to.contains(':')) {
       to = to.split(':')[1];
     }
@@ -125,6 +125,8 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
       Log.warning('unsupported Address');
     }
     transaction.addOutput(amount, to, script);
+    Log.warning('prepareTransaction amount: $amount');
+    Log.warning('prepareTransaction fee: $fee');
     // input
     if (unspentTxOuts == null || unspentTxOuts.isEmpty) return null;
     Decimal utxoAmount = Decimal.zero;
@@ -135,8 +137,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
 
       transaction.addInput(utxo, HashType.SIGHASH_ALL);
 
-      utxoAmount += utxo.amount;
-      if (utxoAmount >= (amount + fee)) break;
+      utxoAmount += utxo.amountInSmallestUint;
     }
     if (transaction.inputs.isEmpty || utxoAmount < (amount + fee)) {
       Log.warning('Insufficient utxo amount: $utxoAmount : ${amount + fee}');
@@ -185,9 +186,9 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
 
     // Add ChangeUtxo
     if (change > Decimal.zero) {
-      UnspentTxOut changeUtxo = UnspentTxOut(
+      UnspentTxOut changeUtxo = UnspentTxOut.fromSmallestUint(
           id: signedTransaction.txId.substring(0, 6),
-          currencyId: currencyId,
+          accountcurrencyId: accountcurrencyId,
           txId: signedTransaction.txId,
           vout: 1,
           type: this.segwitType == SegwitType.nonSegWit

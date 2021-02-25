@@ -23,16 +23,19 @@ class TransactionStatusBloc
     _subscription?.cancel();
     this._repo.listener.listen((msg) {
       if (msg.evt == ACCOUNT_EVT.OnUpdateAccount) {
-        Log.debug("msg.value ${(msg.value as Currency).name}");
         Currency currency = msg.value;
+        Log.warning("currency $currency");
+        Log.debug("currency ${currency.id}");
 
         this.add(UpdateCurrency(_addUSD(currency)));
       }
       if (msg.evt == ACCOUNT_EVT.OnUpdateTransactions) {
         Currency currency = msg.value['currency'];
+        List<Transaction> transactions = msg.value['transactions'];
+        Log.warning("currency ${currency.id}");
+        Log.debug("transactions $transactions");
 
-        this.add(UpdateTransactionList(
-            _addUSD(currency), msg.value['transactions']));
+        this.add(UpdateTransactionList(_addUSD(currency), transactions));
       }
     });
   }
@@ -47,10 +50,12 @@ class TransactionStatusBloc
   ) async* {
     if (event is UpdateCurrency) {
       if (state.currency == null) {
-        print('event.currency: ${event.currency}');
+        Log.debug('event.currency: ${event.currency}');
         _repo.setCurrency(event.currency);
-        final List<Transaction> transactions =
-            []; //_repo.getTransactions() ?? [];
+
+        final List<Transaction> transactions = await _repo.getTransactions();
+        Log.debug('transactions: $transactions');
+
         yield TransactionStatusLoaded(event.currency, transactions, null);
       } else if (state.currency.symbol == event.currency.symbol) {
         yield TransactionStatusLoaded(

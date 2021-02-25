@@ -59,6 +59,9 @@ dependencies:
   # bitcoin
   bs58check: ^1.0.1
   bitcoins: ^1.0.5
+  bitcoin_flutter: ^2.0.2
+  # bitcoin cash
+  bitbox: ^0.0.5
   # hash
   bird_cryptography: ^0.0.1+2
   

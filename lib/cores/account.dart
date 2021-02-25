@@ -33,6 +33,11 @@ class AccountCore {
     messenger = PublishSubject<AccountMessage>();
   }
 
+  // TODO TEST
+  setBitcoinAccountService() {
+    this._services.add(BitcoinService(AccountServiceBase()));
+  }
+
   init() async {
     //
     _isInit = true;

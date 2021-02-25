@@ -5,7 +5,12 @@ import 'package:flutter/material.dart';
 import '../database/entity/exchage_rate.dart';
 import '../constants/account_config.dart';
 
-enum ACCOUNT_EVT { OnUpdateAccount, OnUpdateCurrency, OnUpdateTransactions, ClearAll }
+enum ACCOUNT_EVT {
+  OnUpdateAccount,
+  OnUpdateCurrency,
+  OnUpdateTransactions,
+  ClearAll
+}
 
 class Currency {
   final String id; // AccountCurrencyEntity id for Backend
@@ -14,7 +19,7 @@ class Currency {
   final int accountIndex;
   final String symbol;
   final String imgPath;
-  final String amount;
+  String amount;
   final String inUSD;
   final String name;
   final ACCOUNT accountType;

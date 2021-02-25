@@ -24,11 +24,19 @@ import 'entity/exchage_rate.dart';
 
 part 'database.g.dart'; // the generated code will be there
 
-@Database(
-  version: 1,
-  entities: [UserEntity, AccountEntity, CurrencyEntity, TransactionEntity, NetworkEntity, AccountCurrencyEntity, UtxoEntity, ExchangeRateEntity],
-  views: [JoinCurrency]
-)
+@Database(version: 1, entities: [
+  UserEntity,
+  AccountEntity,
+  CurrencyEntity,
+  TransactionEntity,
+  NetworkEntity,
+  AccountCurrencyEntity,
+  UtxoEntity,
+  ExchangeRateEntity
+], views: [
+  JoinCurrency,
+  JoinUtxo
+])
 abstract class AppDatabase extends FloorDatabase {
   UserDao get userDao;
   AccountDao get accountDao;
@@ -37,5 +45,5 @@ abstract class AppDatabase extends FloorDatabase {
   NetworkDao get networkDao;
   AccountCurrencyDao get accountCurrencyDao;
   UtxoDao get utxoDao;
-  ExchangeRateDao get exchangeRateDao; 
+  ExchangeRateDao get exchangeRateDao;
 }

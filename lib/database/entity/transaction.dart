@@ -2,23 +2,18 @@ import 'package:floor/floor.dart';
 
 import 'account.dart';
 
-@entity
+@Entity(tableName: '_Transaction')
 class TransactionEntity {
   @primaryKey
   @ColumnInfo(name: 'transaction_id')
   final String transactionId;
 
   @ForeignKey(
-    childColumns: ['account_id'],
-    parentColumns: ['account_id'],
-    entity: AccountEntity,
-    onDelete: ForeignKeyAction.cascade,
-  )
-  @ColumnInfo(name: 'account_id')
-  final String accountId;
-
-  @ColumnInfo(name: 'currency_id')
-  final String currencyId;
+      childColumns: ['accountcurrency_id'],
+      parentColumns: ['accountcurrency_id'],
+      entity: AccountEntity)
+  @ColumnInfo(name: 'accountcurrency_id')
+  final String accountcurrencyId;
 
   @ColumnInfo(name: 'tx_id')
   final String txId;
@@ -56,8 +51,7 @@ class TransactionEntity {
 
   TransactionEntity(
       {this.transactionId,
-      this.accountId,
-      this.currencyId,
+      this.accountcurrencyId,
       this.txId,
       this.confirmation,
       this.sourceAddress,
