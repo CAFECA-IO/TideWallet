@@ -125,6 +125,8 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
       Log.warning('unsupported Address');
     }
     transaction.addOutput(amount, to, script);
+    Log.warning('prepareTransaction amount: $amount');
+    Log.warning('prepareTransaction fee: $fee');
     // input
     if (unspentTxOuts == null || unspentTxOuts.isEmpty) return null;
     Decimal utxoAmount = Decimal.zero;
@@ -135,8 +137,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
 
       transaction.addInput(utxo, HashType.SIGHASH_ALL);
 
-      utxoAmount += utxo.amount;
-      if (utxoAmount >= (amount + fee)) break;
+      utxoAmount += utxo.amountInSmallestUint;
     }
     if (transaction.inputs.isEmpty || utxoAmount < (amount + fee)) {
       Log.warning('Insufficient utxo amount: $utxoAmount : ${amount + fee}');
@@ -185,7 +186,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
 
     // Add ChangeUtxo
     if (change > Decimal.zero) {
-      UnspentTxOut changeUtxo = UnspentTxOut(
+      UnspentTxOut changeUtxo = UnspentTxOut.fromSmallestUint(
           id: signedTransaction.txId.substring(0, 6),
           accountcurrencyId: accountcurrencyId,
           txId: signedTransaction.txId,

@@ -131,6 +131,7 @@ class BitcoinService extends AccountServiceDecorator {
   Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) async {
     List<JoinUtxo> utxos =
         await DBOperator().utxoDao.findAllJoinedUtxosById(currencyId);
+
     return utxos.map((utxo) => UnspentTxOut.fromUtxoEntity(utxo)).toList();
   }
 

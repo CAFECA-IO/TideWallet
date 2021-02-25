@@ -70,8 +70,9 @@ class TransactionRepository {
   }
 
   Future<List<Transaction>> getTransactions() async {
-    List<TransactionEntity> transactions =
-        await DBOperator().transactionDao.findAllTransactions();
+    List<TransactionEntity> transactions = await DBOperator()
+        .transactionDao
+        .findAllTransactionsById(this._currency.id);
     Log.debug('this._currency.id: ${this._currency.id}');
 
     // TODO TEST
@@ -198,17 +199,25 @@ class TransactionRepository {
       {Decimal fee, Decimal gasPrice, Decimal gasLimit, String message}) async {
     switch (this._currency.accountType) {
       case ACCOUNT.BTC:
-        fee = Decimal.parse('0.00016704'); // TODO TEST
         String changeAddress;
         int changeIndex;
         List<UnspentTxOut> unspentTxOuts =
             await _accountService.getUnspentTxOut(_currency.id);
+        //TODO TEST
+        unspentTxOuts.forEach((utxo) {
+          Log.warning('utxo accountcurrencyId: ${utxo.accountcurrencyId}');
+          Log.debug('utxo amount: ${utxo.amount}');
+          Log.debug('utxo amountInSmallestUint: ${utxo.amountInSmallestUint}');
+        });
+        //TODO TEST
+        Log.warning('prepareTransaction amount: $amount');
+        Log.warning('prepareTransaction fee: $fee');
         Decimal utxoAmount = Decimal.zero;
         for (UnspentTxOut utxo in unspentTxOuts) {
           if (!utxo.locked ||
               !(utxo.amount > Decimal.zero) ||
               utxo.type == null) continue;
-          utxoAmount += utxo.amountInSmallestUint; // in smallest uint
+          utxoAmount += utxo.amount; // in smallest uint
           utxo.privatekey =
               await getPrivKey(pwd, utxo.chainIndex, utxo.keyIndex);
           utxo.publickey = await getPubKey(pwd, utxo.chainIndex, utxo.keyIndex);
@@ -309,7 +318,7 @@ class TransactionRepository {
     if (!success) return success;
     Log.debug('PublishTransaction result: ${result[0]}');
 
-    // TODO updateCurrencyAmount
+    // TODO updateCurrencyAmount ??
     AccountCurrencyEntity account = await DBOperator()
         .accountCurrencyDao
         .findOneByAccountyId(this._currency.id);
@@ -318,15 +327,16 @@ class TransactionRepository {
         accountId: account.accountId,
         numberOfUsedExternalKey: account.numberOfUsedExternalKey,
         numberOfUsedInternalKey: account.numberOfUsedInternalKey,
-        currencyId: this._currency.id,
+        currencyId: account.currencyId,
         lastSyncTime: account.lastSyncTime,
         balance: balance);
     await DBOperator().accountCurrencyDao.insertAccount(updateAccount);
     Log.debug('PublishTransaction updateAccount: $updateAccount');
-
-    // AccountMessage currMsg = AccountMessage(
-    //     evt: ACCOUNT_EVT.OnUpdateCurrency, value: this._currency);
-    // listener.add(currMsg);
+    Currency _curr = this._currency;
+    _curr.amount = balance;
+    AccountMessage currMsg =
+        AccountMessage(evt: ACCOUNT_EVT.OnUpdateCurrency, value: [_curr]);
+    listener.add(currMsg);
 
     // insertTransaction
 

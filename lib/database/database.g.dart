@@ -113,7 +113,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             '''CREATE VIEW IF NOT EXISTS `JoinCurrency` AS SELECT * FROM AccountCurrency INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id INNER JOIN Account ON AccountCurrency.account_id = Account.account_id INNER JOIN Network ON Account.network_id = Network.network_id''');
         await database.execute(
-            '''CREATE VIEW IF NOT EXISTS `JoinUtxo` AS SELECT * FROM Utxo INNER JOIN AccountCurrency ON Utxo.accountcurrency_id = AccountCurrency.AccountCurrency INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id''');
+            '''CREATE VIEW IF NOT EXISTS `JoinUtxo` AS SELECT * FROM Utxo INNER JOIN AccountCurrency ON Utxo.accountcurrency_id = AccountCurrency.accountcurrency_id INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id''');
 
         await callback?.onCreate?.call(database, version);
       },

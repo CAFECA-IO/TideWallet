@@ -14,7 +14,7 @@ class Currency {
   final int accountIndex;
   final String symbol;
   final String imgPath;
-  final String amount;
+  String amount;
   final String inUSD;
   final String name;
   final ACCOUNT accountType;

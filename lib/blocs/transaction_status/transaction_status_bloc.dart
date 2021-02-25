@@ -23,18 +23,19 @@ class TransactionStatusBloc
     _subscription?.cancel();
     this._repo.listener.listen((msg) {
       if (msg.evt == ACCOUNT_EVT.OnUpdateAccount) {
-        Log.warning("currency ${msg.value}");
         Currency currency = msg.value;
+        Log.warning("currency $currency");
+        Log.debug("currency ${currency.id}");
 
         this.add(UpdateCurrency(_addUSD(currency)));
       }
       if (msg.evt == ACCOUNT_EVT.OnUpdateTransactions) {
-        Log.warning("transactions ${msg.value['transactions']}");
-
         Currency currency = msg.value['currency'];
+        List<Transaction> transactions = msg.value['transactions'];
+        Log.warning("currency ${currency.id}");
+        Log.debug("transactions $transactions");
 
-        this.add(UpdateTransactionList(
-            _addUSD(currency), msg.value['transactions']));
+        this.add(UpdateTransactionList(_addUSD(currency), transactions));
       }
     });
   }

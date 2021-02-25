@@ -66,7 +66,7 @@ class UtxoEntity {
         this.amount = _utxo.amount.toString(),
         this.chainIndex = _utxo.chainIndex,
         this.keyIndex = _utxo.keyIndex,
-        this.script = hex.encode(_utxo.script),
+        this.script = hex.encode(_utxo.data),
         this.timestamp = _utxo.timestamp,
         this.locked = true,
         this.sequence = _utxo.sequence,
@@ -74,7 +74,7 @@ class UtxoEntity {
 }
 
 @DatabaseView(
-    'SELECT * FROM Utxo INNER JOIN AccountCurrency ON Utxo.accountcurrency_id = AccountCurrency.AccountCurrency INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id',
+    'SELECT * FROM Utxo INNER JOIN AccountCurrency ON Utxo.accountcurrency_id = AccountCurrency.accountcurrency_id INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id',
     viewName: 'JoinUtxo')
 class JoinUtxo {
   final String utxoId;

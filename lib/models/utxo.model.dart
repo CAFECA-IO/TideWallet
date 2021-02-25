@@ -54,7 +54,27 @@ class UnspentTxOut {
     this.publickey,
     // this.scriptPubKey,
   });
-  //  : _network = Config().network;
+
+  UnspentTxOut.fromSmallestUint({
+    this.id,
+    this.accountcurrencyId,
+    this.txId,
+    this.vout,
+    this.type,
+    this.address,
+    Decimal amount, // in currency uint
+    this.chainIndex,
+    this.keyIndex,
+    this.data,
+    this.timestamp,
+    this.locked,
+    this.sequence,
+    this.decimals,
+    // for transaction only
+    this.privatekey,
+    this.publickey,
+    // this.scriptPubKey,
+  }) : this.amount = Converter.toCurrencyUnit(amount, decimals);
 
   UnspentTxOut.fromUtxoEntity(JoinUtxo utxo)
       : id = utxo.utxoId,
