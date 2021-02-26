@@ -10,6 +10,9 @@ abstract class UtxoDao {
   @Query('SELECT * FROM Utxo')
   Future<List<UtxoEntity>> findAllUtxos();
 
+  @Query('SELECT * FROM Utxo WHERE Utxo.accountcurrency_id = :i')
+  Future<List<UtxoEntity>> findAllUtxosById(String accountcurrencyId);
+
   @Query('SELECT * FROM JoinUtxo WHERE JoinUtxo.utxo_id = :id limit 1')
   Future<JoinUtxo> findJoinedUtxoById(String id);
 
