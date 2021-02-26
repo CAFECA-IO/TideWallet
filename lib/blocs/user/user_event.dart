@@ -18,8 +18,4 @@ class UserCreate extends UserEvent {
 
 class UserRestore extends UserEvent {}
 
-class VerifyPassword extends UserEvent {
-  final String password;
-  VerifyPassword(this.password);
-}
-
+class UserReset extends UserEvent {}

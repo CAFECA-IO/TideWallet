@@ -18,3 +18,8 @@ class UpdateCurrencies extends CurrencyEvent {
 
   UpdateCurrencies(this.currenices);
 }
+
+class CleanCurrencie extends CurrencyEvent {
+  @override
+  List<Object> get props => [];
+}

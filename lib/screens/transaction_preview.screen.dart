@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 import './transaction_list.screen.dart';
 import '../models/transaction.model.dart';
 import '../models/account.model.dart';
-import '../helpers/i18n.dart';
-import '../blocs/user/user_bloc.dart';
+import '../repositories/user_repository.dart';
+import '../blocs/verify_password/verify_password_bloc.dart';
 import '../blocs/transaction/transaction_bloc.dart';
 import '../widgets/appBar.dart';
 import '../widgets/buttons/secondary_button.dart';
@@ -13,6 +14,7 @@ import '../widgets/dialogs/error_dialog.dart';
 import '../widgets/dialogs/loading_dialog.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/verify_password_dialog.dart';
+import '../helpers/i18n.dart';
 
 class TransactionPreviewScreen extends StatefulWidget {
   static const routeName = '/transaction-preview';
@@ -24,11 +26,11 @@ class TransactionPreviewScreen extends StatefulWidget {
 
 class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
   TransactionBloc _bloc;
-  UserBloc _userBloc;
+  VerifyPasswordBloc _verifyPasswordBloc;
   Currency _currency;
   Transaction _transaction;
   String _feeToFiat;
-  String _pwd;
+  UserRepository _userRepo;
   final t = I18n.t;
 
   @override
@@ -39,7 +41,8 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
     _feeToFiat = arg["feeToFiat"];
 
     _bloc = BlocProvider.of<TransactionBloc>(context);
-    _userBloc = BlocProvider.of<UserBloc>(context);
+    _userRepo = Provider.of<UserRepository>(context, listen: false);
+    _verifyPasswordBloc = VerifyPasswordBloc(_userRepo);
     super.didChangeDependencies();
   }
 
@@ -145,8 +148,8 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
                 ),
               ),
               Spacer(),
-              BlocListener<UserBloc, UserState>(
-                cubit: _userBloc,
+              BlocListener<VerifyPasswordBloc, VerifyPasswordState>(
+                cubit: _verifyPasswordBloc,
                 listener: (context, state) {
                   if (state is PasswordVerified) {
                     _bloc.add(PublishTransaction(state.password));
@@ -165,7 +168,7 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
                       DialogController.showUnDissmissible(
                         context,
                         VerifyPasswordDialog((String password) {
-                          _userBloc.add(VerifyPassword(password));
+                          _verifyPasswordBloc.add(VerifyPassword(password));
                           DialogController.dismiss(context);
                         }, (String password) {
                           DialogController.dismiss(context);

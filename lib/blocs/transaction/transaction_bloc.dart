@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:rxdart/rxdart.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:decimal/decimal.dart';
@@ -35,6 +35,20 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         }
       }
     });
+  }
+
+  @override
+  Stream<Transition<TransactionEvent, TransactionState>> transformEvents(
+      Stream<TransactionEvent> events, transitionFn) {
+    final nonDebounceStream = events
+        .where((event) => event is! ValidAddress || event is! VerifyAmount);
+
+    final debounceStream = events
+        .where((event) => event is ValidAddress || event is VerifyAmount)
+        .debounceTime(Duration(milliseconds: 1000));
+
+    return super.transformEvents(
+        MergeStream([nonDebounceStream, debounceStream]), transitionFn);
   }
 
   @override

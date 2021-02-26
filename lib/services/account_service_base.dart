@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:decimal/decimal.dart';
 
 import '../constants/endpoint.dart';
@@ -15,6 +16,8 @@ import '../models/api_response.mode.dart';
 import '../models/utxo.model.dart';
 import '../models/transaction.model.dart';
 import 'account_service.dart';
+
+import '../helpers/logger.dart';
 
 class AccountServiceBase extends AccountService {
   Timer _timer;
@@ -68,10 +71,12 @@ class AccountServiceBase extends AccountService {
 
   @override
   Future start() async {
-    await this._getSupportedToken();
     AccountCurrencyEntity select = await DBOperator()
         .accountCurrencyDao
         .findOneByAccountyId(this._accountId);
+
+    await this._pushResult();
+    await this._getSupportedToken();
 
     if (select != null) {
       this._lastSyncTimestamp = select.lastSyncTime;
@@ -135,17 +140,7 @@ class AccountServiceBase extends AccountService {
     if (now - this._lastSyncTimestamp > this._syncInterval) {
       List currs = await this.getData();
       final v = currs
-          .map(
-            (c) => AccountCurrencyEntity(
-                accountcurrencyId: c['account_id'] ??
-                    c['account_token_id'], // TODO: Change name
-                accountId: this._accountId,
-                numberOfUsedExternalKey: c['number_of_external_key'],
-                numberOfUsedInternalKey: c['number_of_internal_key'],
-                balance: c['balance'],
-                currencyId: c['currency_id'] ?? c['token_id'],
-                lastSyncTime: now),
-          )
+          .map((c) => AccountCurrencyEntity.fromJson(c, this._accountId, now))
           .toList();
 
       await DBOperator().accountCurrencyDao.insertCurrencies(v);
@@ -160,23 +155,11 @@ class AccountServiceBase extends AccountService {
         .accountCurrencyDao
         .findJoinedByAccountyId(this._accountId);
 
+    if (jcs.isEmpty) return;
+
     List<Currency> cs = jcs
         .map(
-          (c) => Currency(
-              accountIndex: c.accountIndex,
-              accountType: this._base,
-              cointype: c.coinType,
-              amount: c.balance,
-              imgPath: c.image,
-              symbol: c.symbol,
-              blockchainId: c.blockchainId,
-              chainId: c.chainId,
-              publish: c.publish,
-              id: c.accountcurrencyId,
-              currencyId: c.currencyId,
-              contract: c.contract,
-              decimals: c.decimals,
-              type: c.type),
+          (c) => Currency.fromJoinCurrency(c, this._base),
         )
         .toList();
 
@@ -231,26 +214,26 @@ class AccountServiceBase extends AccountService {
 
       txs = txs
           .map((tx) => TransactionEntity(
-              transactionId: tx['txid'],
-              amount: tx['amount'].toString(),
-              accountcurrencyId: currency.id,
-              txId: tx['txid'],
-              confirmation: tx['confirmations'],
-              sourceAddress: tx['source_addresses'],
-              destinctionAddress: tx['destination_addresses'],
-              gasPrice: tx['gas_price'],
-              gasUsed: tx['gas_limit'],
-              fee: tx['fee'].toString(),
-              direction: tx['direction'],
-              status: tx['status'],
-              timestamp: tx['timestamp']))
+                transactionId: tx['txid'],
+                amount: tx['amount'].toString(),
+                accountcurrencyId: currency.id,
+                txId: tx['txid'],
+                confirmation: tx['confirmations'],
+                sourceAddress: tx['source_addresses'],
+                destinctionAddress: tx['destination_addresses'],
+                gasPrice: tx['gas_price'].toString(),
+                gasUsed: tx['gas_limit'],
+                fee: tx['fee'].toString(),
+                direction: tx['direction'],
+                status: tx['status'],
+                timestamp: tx['timestamp'],
+                note: tx['note'],
+              ))
           .toList();
 
       await DBOperator().transactionDao.insertTransactions(txs);
-      return txs;
-    } else {
-      return this._loadTransactions(currency.currencyId);
     }
+    return this._loadTransactions(currency.id);
   }
 
   Future<List<TransactionEntity>> _loadTransactions(String currencyId) async {

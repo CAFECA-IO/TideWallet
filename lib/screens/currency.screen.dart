@@ -13,6 +13,7 @@ import '../widgets/appBar.dart';
 import '../widgets/account_item.dart';
 import '../helpers/i18n.dart';
 import '../helpers/formatter.dart';
+import '../constants/account_config.dart';
 
 final t = I18n.t;
 
@@ -26,13 +27,17 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
   CurrencyBloc _bloc;
   AccountRepository _repo;
   TraderRepository _traderRepo;
+  Currency _parent;
+
   @override
   void didChangeDependencies() {
     Map<String, Currency> arg = ModalRoute.of(context).settings.arguments;
     _repo = Provider.of<AccountRepository>(context);
     _traderRepo = Provider.of<TraderRepository>(context);
+
+    this._parent = arg['account'];
     _bloc = CurrencyBloc(_repo, _traderRepo)
-      ..add(GetCurrencyList(arg['account'].accountType));
+      ..add(GetCurrencyList(this._parent.accountType));
     super.didChangeDependencies();
   }
 
@@ -104,21 +109,24 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
                                 .copyWith(color: Colors.white)),
                       ),
                     ),
-                    Positioned(
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.of(context)
-                                .pushNamed(AddCurrencyScreen.routeName);
-                          },
-                          child: Container(
-                            child: Text(
-                              '+ ${t('add_currency')}',
-                              style: TextStyle(color: Colors.white),
+                    this._parent.accountType == ACCOUNT.ETH
+                        ? Positioned(
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.of(context)
+                                    .pushNamed(AddCurrencyScreen.routeName, arguments: {"account": this._parent});
+                              },
+                              child: Container(
+                                child: Text(
+                                  '+ ${t('add_currency')}',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                        bottom: 12.0,
-                        right: 12.0)
+                            bottom: 12.0,
+                            right: 12.0,
+                          )
+                        : SizedBox()
                   ],
                 ),
                 Expanded(

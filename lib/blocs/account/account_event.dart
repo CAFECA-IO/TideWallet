@@ -18,3 +18,8 @@ class UpdateAccount extends AccountEvent {
   List<Object> get props => [];
 
 }
+
+class CleanAccount extends AccountEvent {
+  @override
+  List<Object> get props => [];
+}

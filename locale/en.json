@@ -76,8 +76,8 @@
   "confirmation": "confirmation",
   "my_wallet": "My Wallet",
   "remit": "請轉入",
-  "copy_wallet_address":"複製錢包地址",
-  "btc_receving_address_hint":"每轉入一次， 地址將會改變，避免被追蹤交易紀錄，保有隱私性",
+  "copy_wallet_address": "複製錢包地址",
+  "btc_receving_address_hint": "每轉入一次， 地址將會改變，避免被追蹤交易紀錄，保有隱私性",
   "setting": "設定",
   "setting_backup": "備份錢包",
   "setting_security": "安全中心",
@@ -106,7 +106,7 @@
   "service_of_terms_5": "TideWallet用戶與其他用戶間，因數位貨幣而產生的任何法律關係，由用戶自行負責。\n",
   "service_of_terms_6": "TideWallet中的數位貨幣並非由本公司創造，我們也無權限控制區塊鏈上的任何幣種， 您需對數位貨幣的選擇與使用全權負責。\n",
   "service_of_terms_7": "本公司保留在任何時間增加、修改、刪除部分條款之權利。一但公布後即代替原來條款。如果您不接受修改後的條款，請即刻停止使用本服務。修改後的條款，一經在TideWallet上公布後，立即自動生效。\n",
-  "risk_and_responsibility":"風險與責任說明\n",
+  "risk_and_responsibility": "風險與責任說明\n",
   "risk_and_responsibility_1": "數位貨幣並非由任何國家貨幣當局所發行，不具法償效力，亦無發行準備及兌償保證，持有者須承擔可能無法兌償或流通之風險。\n",
   "risk_and_responsibility_2": "數位貨幣屬於「數位虛擬商品」，是一個全新、未經確認、可能不會成長、價格隨時都可能有大幅波動之市場，本公司無法保證有任何人會接受以數位貨幣換取相關商品、服務、或任何對價關係，因此持有數位貨幣之風險可能會高於持有其他資產。\n",
   "risk_and_responsibility_3": "您所在的國家法律、法規、或任何規範性文件的制定或修改，可能造成數位貨幣的交易或買賣被暫停、或禁止，因此造成的經濟損失需由用戶自行承擔。\n",
@@ -149,5 +149,8 @@
   "not_found": "Not Found",
   "error_restore": "還原錢包失敗",
   "error_update_password": "更新密碼失敗",
-  "success_update_password": "成功更新密碼"
+  "success_update_password": "成功更新密碼",
+  "setting_reset": "重設錢包",
+  "error_reset": "重設錢包錯誤",
+  "success_reset": "成功重設錢包"
 }

@@ -39,4 +39,6 @@ class UserRepository {
   Future<bool> backupWallet() => _user.backupWallet();
 
   Future<String> getPaperWallet() => user.getKeystore();
+
+  Future<bool> deleteUser() => user.deleteUser();
 }

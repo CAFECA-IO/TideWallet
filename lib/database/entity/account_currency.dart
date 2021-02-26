@@ -3,23 +3,31 @@ import 'package:floor/floor.dart';
 import 'account.dart';
 import 'currency.dart';
 
-@Entity(tableName: 'AccountCurrency')
+@Entity(
+  tableName: 'AccountCurrency',
+  foreignKeys: [
+    ForeignKey(
+      childColumns: ['account_id'],
+      parentColumns: ['account_id'],
+      entity: AccountEntity,
+      onDelete: ForeignKeyAction.cascade,
+    ),
+    ForeignKey(
+      childColumns: ['currency_id'],
+      parentColumns: ['currency_id'],
+      entity: CurrencyEntity,
+      onDelete: ForeignKeyAction.cascade,
+    ),
+  ],
+)
 class AccountCurrencyEntity {
   @primaryKey
   @ColumnInfo(name: 'accountcurrency_id', nullable: false)
   final String accountcurrencyId;
 
-  @ForeignKey(
-      childColumns: ['account_id'],
-      parentColumns: ['account_id'],
-      entity: AccountEntity)
   @ColumnInfo(name: 'account_id')
   final String accountId;
 
-  @ForeignKey(
-      childColumns: ['currency_id'],
-      parentColumns: ['currency_id'],
-      entity: CurrencyEntity)
   @ColumnInfo(name: 'currency_id')
   final String currencyId;
 
@@ -60,6 +68,16 @@ class AccountCurrencyEntity {
       balance.hashCode ^
       numberOfUsedExternalKey.hashCode ^
       numberOfUsedInternalKey.hashCode;
+
+  AccountCurrencyEntity.fromJson(Map json, String accountId, int timestamp)
+      : accountcurrencyId = json['account_id'] ??
+            json['account_token_id'], // TODO = Change name
+        accountId = accountId,
+        numberOfUsedExternalKey = json['number_of_external_key'],
+        numberOfUsedInternalKey = json['number_of_internal_key'],
+        balance = json['balance'],
+        currencyId = json['currency_id'] ?? json['token_id'],
+        lastSyncTime = timestamp;
 }
 
 @DatabaseView(
@@ -91,6 +109,8 @@ class JoinCurrency {
   @ColumnInfo(name: 'network_id')
   final String blockchainId;
 
+  final String network;
+
   @ColumnInfo(name: 'chain_id')
   final int chainId;
 
@@ -102,19 +122,25 @@ class JoinCurrency {
 
   final String type;
 
-  JoinCurrency(
-      {this.accountcurrencyId,
-      this.currencyId,
-      this.symbol,
-      this.name,
-      this.balance,
-      this.accountIndex,
-      this.coinType,
-      this.image,
-      this.blockchainId,
-      this.chainId,
-      this.publish,
-      this.contract,
-      this.decimals,
-      this.type});
+  @ColumnInfo(name: 'account_id')
+  final String accountId;
+
+  JoinCurrency({
+    this.accountcurrencyId,
+    this.currencyId,
+    this.symbol,
+    this.name,
+    this.balance,
+    this.accountIndex,
+    this.coinType,
+    this.image,
+    this.blockchainId,
+    this.network,
+    this.chainId,
+    this.publish,
+    this.contract,
+    this.decimals,
+    this.type,
+    this.accountId,
+  });
 }

@@ -80,6 +80,7 @@ class MyApp extends StatelessWidget {
             BlocProvider<UserBloc>(
               create: (BuildContext context) => UserBloc(
                 Provider.of<UserRepository>(context, listen: false),
+                Provider.of<AccountRepository>(context, listen: false),
               ),
             ),
             BlocProvider<TransactionBloc>(

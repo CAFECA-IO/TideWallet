@@ -96,7 +96,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `User` (`user_id` TEXT, `keystore` TEXT, `password_hash` TEXT, `password_salt` TEXT, `backup_status` INTEGER NOT NULL, PRIMARY KEY (`user_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Account` (`account_id` TEXT, `user_id` TEXT, `network_id` TEXT, `account_index` INTEGER, PRIMARY KEY (`account_id`))');
+            'CREATE TABLE IF NOT EXISTS `Account` (`account_id` TEXT, `user_id` TEXT, `network_id` TEXT, `account_index` INTEGER, FOREIGN KEY (`user_id`) REFERENCES `User` (`user_id`) ON UPDATE NO ACTION ON DELETE CASCADE, PRIMARY KEY (`account_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Currency` (`currency_id` TEXT, `name` TEXT, `description` TEXT, `symbol` TEXT, `decimals` INTEGER, `address` TEXT, `type` TEXT, `total_supply` TEXT, `contract` TEXT, `image` TEXT, PRIMARY KEY (`currency_id`))');
         await database.execute(
@@ -104,9 +104,9 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Network` (`network_id` TEXT, `network` TEXT NOT NULL, `coin_type` INTEGER, `publish` INTEGER, `chain_id` INTEGER, PRIMARY KEY (`network_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `AccountCurrency` (`accountcurrency_id` TEXT NOT NULL, `account_id` TEXT, `currency_id` TEXT, `balance` TEXT, `number_of_used_external_key` INTEGER, `number_of_used_internal_key` INTEGER, `last_sync_time` INTEGER, PRIMARY KEY (`accountcurrency_id`))');
+            'CREATE TABLE IF NOT EXISTS `AccountCurrency` (`accountcurrency_id` TEXT NOT NULL, `account_id` TEXT, `currency_id` TEXT, `balance` TEXT, `number_of_used_external_key` INTEGER, `number_of_used_internal_key` INTEGER, `last_sync_time` INTEGER, FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`) ON UPDATE NO ACTION ON DELETE CASCADE, FOREIGN KEY (`currency_id`) REFERENCES `Currency` (`currency_id`) ON UPDATE NO ACTION ON DELETE CASCADE, PRIMARY KEY (`accountcurrency_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Utxo` (`utxo_id` TEXT, `accountcurrency_id` TEXT, `tx_id` TEXT, `vout` INTEGER, `type` TEXT, `amount` TEXT, `chain_index` INTEGER, `key_index` INTEGER, `script` TEXT, `timestamp` INTEGER, `locked` INTEGER, `sequence` INTEGER, `address` TEXT, PRIMARY KEY (`utxo_id`))');
+            'CREATE TABLE IF NOT EXISTS `Utxo` (`utxo_id` TEXT NOT NULL, `accountcurrency_id` TEXT, `tx_id` TEXT, `vout` INTEGER, `type` TEXT, `amount` TEXT, `chain_index` INTEGER, `key_index` INTEGER, `script` TEXT, `timestamp` INTEGER, `locked` INTEGER, `sequence` INTEGER, `address` TEXT, FOREIGN KEY (`accountcurrency_id`) REFERENCES `AccountCurrency` (`accountcurrency_id`) ON UPDATE NO ACTION ON DELETE CASCADE, PRIMARY KEY (`utxo_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `ExchangeRate` (`exchange_rate_id` TEXT, `rate` TEXT, `lastSyncTime` INTEGER, `type` TEXT, PRIMARY KEY (`exchange_rate_id`))');
 
@@ -188,6 +188,17 @@ class _$UserDao extends UserDao {
                   'password_hash': item.passwordHash,
                   'password_salt': item.passwordSalt,
                   'backup_status': item.backupStatus ? 1 : 0
+                }),
+        _userEntityDeletionAdapter = DeletionAdapter(
+            database,
+            'User',
+            ['user_id'],
+            (UserEntity item) => <String, dynamic>{
+                  'user_id': item.userId,
+                  'keystore': item.keystore,
+                  'password_hash': item.passwordHash,
+                  'password_salt': item.passwordSalt,
+                  'backup_status': item.backupStatus ? 1 : 0
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -199,6 +210,8 @@ class _$UserDao extends UserDao {
   final InsertionAdapter<UserEntity> _userEntityInsertionAdapter;
 
   final UpdateAdapter<UserEntity> _userEntityUpdateAdapter;
+
+  final DeletionAdapter<UserEntity> _userEntityDeletionAdapter;
 
   @override
   Future<UserEntity> findUser() async {
@@ -219,6 +232,11 @@ class _$UserDao extends UserDao {
   @override
   Future<void> updateUser(UserEntity user) async {
     await _userEntityUpdateAdapter.update(user, OnConflictStrategy.abort);
+  }
+
+  @override
+  Future<int> deleteUser(UserEntity user) {
+    return _userEntityDeletionAdapter.deleteAndReturnChangedRows(user);
   }
 }
 
@@ -324,7 +342,7 @@ class _$CurrencyDao extends CurrencyDao {
   @override
   Future<void> insertCurrency(CurrencyEntity currency) async {
     await _currencyEntityInsertionAdapter.insert(
-        currency, OnConflictStrategy.abort);
+        currency, OnConflictStrategy.replace);
   }
 
   @override
@@ -612,12 +630,14 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
             coinType: row['coin_type'] as int,
             image: row['image'] as String,
             blockchainId: row['network_id'] as String,
+            network: row['network'] as String,
             chainId: row['chain_id'] as int,
             publish:
                 row['publish'] == null ? null : (row['publish'] as int) != 0,
             contract: row['contract'] as String,
             decimals: row['decimals'] as int,
-            type: row['type'] as String));
+            type: row['type'] as String,
+            accountId: row['account_id'] as String));
   }
 
   @override
@@ -691,7 +711,27 @@ class _$UtxoDao extends UtxoDao {
         'SELECT * FROM JoinUtxo WHERE JoinUtxo.accountcurrency_id = ?',
         arguments: <dynamic>[accountcurrencyId],
         mapper: (Map<String, dynamic> row) => JoinUtxo(
-            row['utxoId'] as String,
+            row['utxo_id'] as String,
+            row['accountcurrency_id'] as String,
+            row['tx_id'] as String,
+            row['vout'] as int,
+            row['type'] as String,
+            row['amount'] as String,
+            row['chain_index'] as int,
+            row['key_index'] as int,
+            row['script'] as String,
+            row['timestamp'] as int,
+            row['locked'] == null ? null : (row['locked'] as int) != 0,
+            row['sequence'] as int,
+            row['address'] as String,
+            row['decimals'] as int));
+  }
+
+  @override
+  Future<List<JoinUtxo>> findAllJoinedUtxos() async {
+    return _queryAdapter.queryList('SELECT * FROM JoinUtxo',
+        mapper: (Map<String, dynamic> row) => JoinUtxo(
+            row['utxo_id'] as String,
             row['accountcurrency_id'] as String,
             row['tx_id'] as String,
             row['vout'] as int,
@@ -753,7 +793,7 @@ class _$UtxoDao extends UtxoDao {
         'SELECT * FROM JoinUtxo WHERE JoinUtxo.utxo_id = ? limit 1',
         arguments: <dynamic>[id],
         mapper: (Map<String, dynamic> row) => JoinUtxo(
-            row['utxoId'] as String,
+            row['utxo_id'] as String,
             row['accountcurrency_id'] as String,
             row['tx_id'] as String,
             row['vout'] as int,

@@ -15,6 +15,7 @@ import '../database/entity/currency.dart';
 import '../helpers/http_agent.dart';
 
 class AccountCore {
+  // ignore: close_sinks
   PublishSubject<AccountMessage> messenger;
   bool _isInit = false;
   List<AccountService> _services = [];
@@ -35,6 +36,11 @@ class AccountCore {
 
   setMessenger() {
     messenger = PublishSubject<AccountMessage>();
+  }
+
+  // TODO TEST
+  setBitcoinAccountService() {
+    this._services.add(BitcoinService(AccountServiceBase()));
   }
 
   init() async {
@@ -81,10 +87,24 @@ class AccountCore {
         }
       }
     }
+
+    Future.wait(
+      [
+        _addAccount(accounts),
+        _addSupportedCurrencies(),
+      ],
+    );
   }
 
   close() {
-    messenger.close();
+    this._isInit = false;
+
+    this._services.forEach((service) {
+      service.stop();
+    });
+    this._services = [];
+    this.accounts = [];
+    this.currencies = {};
   }
 
   Future<bool> checkAccountExist() async {
@@ -124,6 +144,15 @@ class AccountCore {
   Future<List<AccountEntity>> getAccounts() async {
     List<AccountEntity> result =
         await DBOperator().accountDao.findAllAccounts();
+    if (result.isEmpty) {
+      result = await this._addAccount(result);
+      return result;
+    } else {
+      return result;
+    }
+  }
+
+  Future<List<AccountEntity>> _addAccount(List<AccountEntity> local) async {
     APIResponse res =
         await HTTPAgent().get(Endpoint.SUSANOO + '/wallet/accounts');
 
@@ -132,20 +161,27 @@ class AccountCore {
 
     for (var d in l) {
       final String id = d['account_id'];
-      bool exist = result.indexWhere((el) => el.accountId == id) > -1;
+      bool exist = local.indexWhere((el) => el.accountId == id) > -1;
 
       if (!exist) {
         AccountEntity acc = AccountEntity(
             accountId: id, userId: user.userId, networkId: d['blockchain_id']);
         await createAccount(acc);
-        result.add(acc);
+        local.add(acc);
       }
     }
-
-    return result;
+    return local;
   }
 
   Future getSupportedCurrencies() async {
+    final local = await DBOperator().currencyDao.findAllCurrencies();
+
+    if (local.isEmpty) {
+      await _addSupportedCurrencies();
+    }
+  }
+
+  Future _addSupportedCurrencies() async {
     APIResponse res = await HTTPAgent().get(Endpoint.SUSANOO + '/currency');
 
     if (res.data != null) {

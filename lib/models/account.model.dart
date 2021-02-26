@@ -3,9 +3,15 @@ import 'package:flutter/material.dart';
 // import 'package:tidewallet3/database/entity/currency.dart';
 
 import '../database/entity/exchage_rate.dart';
+import '../database/entity/account_currency.dart';
 import '../constants/account_config.dart';
 
-enum ACCOUNT_EVT { OnUpdateAccount, OnUpdateCurrency, OnUpdateTransactions }
+enum ACCOUNT_EVT {
+  OnUpdateAccount,
+  OnUpdateCurrency,
+  OnUpdateTransactions,
+  ClearAll
+}
 
 class Currency {
   final String id; // AccountCurrencyEntity id for Backend
@@ -19,6 +25,7 @@ class Currency {
   final String name;
   final ACCOUNT accountType;
   final String blockchainId;
+  final String network;
   final int chainId;
   final int decimals;
   final bool publish;
@@ -39,6 +46,7 @@ class Currency {
       this.accountType,
       this.chainId,
       this.blockchainId,
+      this.network,
       this.decimals,
       this.publish,
       this.currencyId,
@@ -56,6 +64,7 @@ class Currency {
       String name,
       ACCOUNT accountType,
       String blockchainId,
+      String network,
       int chainId,
       int decimals,
       bool publish,
@@ -72,6 +81,7 @@ class Currency {
         name: name ?? this.name,
         accountType: accountType ?? this.accountType,
         blockchainId: blockchainId ?? this.blockchainId,
+        network: network ?? this.network,
         chainId: chainId ?? this.chainId,
         decimals: decimals ?? this.decimals,
         publish: publish ?? this.publish,
@@ -92,12 +102,33 @@ class Currency {
         inUSD = map['inUSD'] ?? '0',
         accountType = map['accountType'],
         blockchainId = map['blockchain_id'],
+        network = map['network'],
         chainId = map['chain_id'],
         decimals = map['decimals'],
         publish = map['publish'],
         currencyId = map['currency_id'],
         contract = map['contract'],
         type = map['type'];
+
+  Currency.fromJoinCurrency(JoinCurrency entity, ACCOUNT type)
+      : id = entity.accountcurrencyId,
+        cointype = entity.coinType,
+        purpose = null, // Dreprecated
+        accountIndex = entity.accountIndex,
+        symbol = entity.symbol,
+        name = entity.name,
+        imgPath = entity.image,
+        inUSD = '0',
+        accountType = type,
+        amount = entity.balance,
+        blockchainId = entity.blockchainId,
+        network = entity.network,
+        chainId = entity.chainId,
+        publish = entity.publish,
+        currencyId = entity.currencyId,
+        contract = entity.contract,
+        decimals = entity.decimals,
+        type = entity.type;
 }
 
 class AccountMessage {
@@ -112,18 +143,19 @@ class Token {
   final String name;
   final int decimal;
   final String imgUrl;
-  final int totalSupply;
+  final String totalSupply;
   final String contract;
   final String description;
 
-  Token(
-      {this.symbol,
-      this.name,
-      this.decimal,
-      this.imgUrl,
-      this.totalSupply,
-      this.contract,
-      this.description});
+  Token({
+    this.symbol,
+    this.name,
+    this.decimal,
+    this.imgUrl,
+    this.totalSupply,
+    this.contract,
+    this.description,
+  });
 }
 
 class Fiat {

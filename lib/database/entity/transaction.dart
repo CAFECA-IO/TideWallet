@@ -49,22 +49,21 @@ class TransactionEntity {
 
   final String amount;
 
-  TransactionEntity({
-    this.transactionId,
-    this.accountcurrencyId,
-    this.txId,
-    this.confirmation,
-    this.sourceAddress,
-    this.destinctionAddress,
-    this.gasPrice,
-    this.gasUsed,
-    this.note,
-    this.block,
-    // this.locktime,
-    this.fee,
-    this.status,
-    this.timestamp,
-    this.direction,
-    this.amount,
-  });
+  TransactionEntity(
+      {this.transactionId,
+      this.accountcurrencyId,
+      this.txId,
+      this.confirmation,
+      this.sourceAddress,
+      this.destinctionAddress,
+      this.gasPrice,
+      this.gasUsed,
+      this.note,
+      this.block,
+      // this.locktime,
+      this.fee,
+      this.status,
+      this.timestamp,
+      this.direction,
+      this.amount});
 }

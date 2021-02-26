@@ -11,4 +11,8 @@ abstract class UserDao {
 
   @update
   Future<void> updateUser(UserEntity user);
+
+  @delete
+  Future<int> deleteUser(UserEntity user);
+ 
 }

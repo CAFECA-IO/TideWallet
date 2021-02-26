@@ -1,3 +1,4 @@
+import 'package:floor/floor.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -206,7 +207,6 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                     child: Row(
                       children: [
                         Container(
-                          // child: Image.asset('assets/images/ic_btc_web.png'),
                           child: Image.network(_currency.imgPath),
                           width: 24,
                         ),
@@ -214,7 +214,8 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                           width: 8,
                         ),
                         GestureDetector(
-                          onTap: _launchURL,
+                          onTap: () => _launchURL(
+                              'https://blockexplorer.one/${_currency.symbol.toLowerCase()}/${_currency.network.toLowerCase()}/tx/${_transaction.txId}'),
                           child: Text(
                             Formatter.formatAdddress(_transaction.txId),
                             style: Theme.of(context)
@@ -236,9 +237,9 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
   }
 }
 
-_launchURL() async {
-  const url = 'https://flutter.dev';
+_launchURL(String url) async {
   if (await canLaunch(url)) {
+    print(url);
     await launch(url);
   } else {
     throw 'Could not launch $url';
