@@ -22,7 +22,9 @@ class EthereumService extends AccountServiceDecorator {
   EthereumService(AccountService service) : super(service) {
     this.base = ACCOUNT.ETH;
     this.syncInterval = 7500;
-    this.path = "m/44'/60'/0'";
+    // this.syncInterval = 1 * 60 * 1000;
+
+    // this.path = "m/44'/60'/0'";
   }
   String _address;
   String _contract; // ?
@@ -192,10 +194,28 @@ class EthereumService extends AccountServiceDecorator {
           '${Endpoint.SUSANOO}/wallet/account/address/$currencyId/receive');
       Map data = response.data;
       String address = data['address'];
+      Log.debug('address: $address');
       this._address = address;
-      Log.debug(this._address);
+// TEST
+      // // IMPORTANT: seed cannot reach
+      // String seed =
+      //     '74a0b10d85dea97d53ff42a89f34a8447bbd041dcb573333358a03d5d1cfff0e';
+      // '59f45d6afb9bc00380fed2fcfdd5b36819acab89054980ad6e5ff90ba19c5347'; // 上一個有eth的 seed
+      // Uint8List publicKey =
+      //     await PaperWallet.getPubKey(hex.decode(seed), 0, 0, compressed: false);
+      // Uint8List privKey = await PaperWallet.getPrivKey(hex.decode(seed), 0, 0);
+      // Log.debug('privKey: ${hex.encode(privKey)}');
+      // String caculatedAddress = '0x' +
+      //     hex
+      //         .encode(Cryptor.keccak256round(
+      //             publicKey.length % 2 != 0 ? publicKey.sublist(1) : publicKey,
+      //             round: 1))
+      //         .substring(24, 64);
+
+      // Log.debug('caculatedAddress: $caculatedAddress');
+// TEST(end)
     }
-    return [this._address];
+    return [this._address, null];
   }
 
   @override
@@ -213,18 +233,21 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   @override
-  Future<void> publishTransaction(
+  Future<List> publishTransaction(
       String blockchainId, Transaction transaction) async {
     //TODO TEST
     Log.debug("publishTransaction");
-
-    Log.debug(transaction.serializeTransaction);
     Log.debug(hex.encode(transaction.serializeTransaction));
 
-    await HTTPAgent().post(
+    APIResponse response = await HTTPAgent().post(
         '${Endpoint.SUSANOO}/blockchain/$blockchainId/push-tx',
         {"hex": '0x' + hex.encode(transaction.serializeTransaction)});
-    return;
+    bool success = response.success;
+    transaction.id = response.data['txid'];
+    transaction.txId = response.data['txid'];
+    transaction.timestamp = DateTime.now().millisecondsSinceEpoch;
+    transaction.confirmations = 0;
+    return [success, transaction];
   }
 
   @override

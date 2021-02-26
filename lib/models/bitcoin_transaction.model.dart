@@ -4,7 +4,7 @@ import 'package:decimal/decimal.dart';
 
 import '../helpers/bitcoin_based_utils.dart';
 import '../helpers/logger.dart';
-import '../helpers/converter.dart';
+
 import '../helpers/cryptor.dart';
 
 import 'transaction.model.dart';
@@ -133,8 +133,9 @@ class Input {
   Uint8List get sequenceInBuffer => Uint8List(4)
     ..buffer.asByteData().setUint32(0, this.utxo.sequence, Endian.little);
   Uint8List get amountInBuffer => Uint8List(8)
-    ..buffer.asByteData().setUint64(0,
-        Converter.toBtcSmallestUnit(this.utxo.amount).toInt(), Endian.little);
+    ..buffer
+        .asByteData()
+        .setUint64(0, this.utxo.amountInSmallestUint.toInt(), Endian.little);
 
   Uint8List get hashTypeInBuffer => Uint8List(4)
     ..buffer.asByteData().setUint32(0, hashType.value, Endian.little);
@@ -203,7 +204,7 @@ class Input {
 
 class Output {
   /* value in bitcoins of the output (inSatoshi)*/
-  final Decimal amount; // inBtc
+  final Decimal amount; // inSatoshi
   /* the address or public key of the recipient */
   final String address;
   final Uint8List script;
@@ -211,8 +212,7 @@ class Output {
   Output(this.amount, this.address, this.script);
 
   Uint8List get amountInBuffer => Uint8List(8)
-    ..buffer.asByteData().setUint64(
-        0, Converter.toBtcSmallestUnit(this.amount).toInt(), Endian.little);
+    ..buffer.asByteData().setUint64(0, this.amount.toInt(), Endian.little);
 }
 
 class BitcoinTransaction extends Transaction {
@@ -228,8 +228,8 @@ class BitcoinTransaction extends Transaction {
   int confirmations;
   TransactionDirection direction;
   TransactionStatus status;
-  String sourceAddresses;
-  String destinationAddresses;
+  String sourceAddresses = '';
+  String destinationAddresses = '';
   Decimal amount;
   Decimal fee;
   Uint8List note;
@@ -285,15 +285,18 @@ class BitcoinTransaction extends Transaction {
 
   void addChangeUtxo(UnspentTxOut changeUtxo) {
     this._changeUtxo = changeUtxo;
+    Log.verbose('addChangeUtxo: $changeUtxo');
   }
 
   void addInput(UnspentTxOut utxo, HashType hashType) {
     Input input = Input(utxo, utxo.publickey, hashType);
     _inputs.add(input);
+    this.sourceAddresses += this.sourceAddresses + utxo.address;
+    Log.warning('addInput: $sourceAddresses');
   }
 
   void addOutput(
-    Decimal amount,
+    Decimal amount, // in smallest uint
     String address,
     List<int> script,
   ) {
@@ -313,6 +316,8 @@ class BitcoinTransaction extends Transaction {
     Output output =
         Output(amount, address, Uint8List.fromList(scriptLength + script));
     _outputs.add(output);
+    this.destinationAddresses = this.destinationAddresses += address;
+    Log.warning('addOutput: $destinationAddresses');
   }
 
   void addData(List<int> data) {

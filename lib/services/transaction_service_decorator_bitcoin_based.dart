@@ -49,6 +49,8 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
   }
 
   Transaction _signTransaction(BitcoinTransaction transaction) {
+    Log.debug('_signTransaction: ${transaction.serializeTransaction}');
+
     int index = 0;
     while (index < transaction.inputs.length) {
       Uint8List rawData = transaction.getRawDataToSign(index);
@@ -74,7 +76,9 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
       transaction.inputs[index].addSignature(signature);
       index++;
     }
-    // Uint8List signedTransaction = transaction.serializeTransaction;
+    Uint8List signedTransaction = transaction.serializeTransaction;
+    Log.debug('_signTransaction: $signedTransaction');
+
     return transaction;
   }
 
@@ -89,7 +93,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     Decimal gasLimit,
     int nonce,
     int chainId,
-    String currencyId,
+    String accountcurrencyId,
     Decimal fee,
     List<UnspentTxOut> unspentTxOuts,
     int changeIndex,
@@ -97,7 +101,11 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
   }) {
     BitcoinTransaction transaction =
         BitcoinTransaction.prepareTransaction(publish, this.segwitType);
-    // amount,to
+    Log.debug('BitcoinTransaction.prepareTransaction amount: $amount');
+    Log.debug('BitcoinTransaction.prepareTransaction fee: $fee');
+    Log.warning(
+        'BitcoinTransaction.prepareTransaction unspentTxOuts [${unspentTxOuts.length}]: $unspentTxOuts');
+    // to
     if (to.contains(':')) {
       to = to.split(':')[1];
     }
@@ -135,8 +143,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
 
       transaction.addInput(utxo, HashType.SIGHASH_ALL);
 
-      utxoAmount += utxo.amount;
-      if (utxoAmount >= (amount + fee)) break;
+      utxoAmount += utxo.amountInSmallestUint;
     }
     if (transaction.inputs.isEmpty || utxoAmount < (amount + fee)) {
       Log.warning('Insufficient utxo amount: $utxoAmount : ${amount + fee}');
@@ -144,6 +151,8 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     }
     // change, changeAddress
     Decimal change = utxoAmount - amount - fee;
+    Log.debug('prepareTransaction change: $change');
+
     if (change > Decimal.zero) {
       List<int> script;
       if (isP2pkhAddress(
@@ -185,9 +194,9 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
 
     // Add ChangeUtxo
     if (change > Decimal.zero) {
-      UnspentTxOut changeUtxo = UnspentTxOut(
+      UnspentTxOut changeUtxo = UnspentTxOut.fromSmallestUint(
           id: signedTransaction.txId.substring(0, 6),
-          currencyId: currencyId,
+          accountcurrencyId: accountcurrencyId,
           txId: signedTransaction.txId,
           vout: 1,
           type: this.segwitType == SegwitType.nonSegWit

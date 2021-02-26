@@ -6,10 +6,6 @@ import 'package:convert/convert.dart';
 
 import '../helpers/logger.dart';
 import '../theme.dart';
-import './utxo.model.dart';
-import './bitcoin_transaction.model.dart';
-import './ethereum_transaction.model.dart';
-import './ethereum_token_transaction.model.dart';
 import '../database/entity/transaction.dart';
 
 class Transaction {
@@ -17,29 +13,33 @@ class Transaction {
   TransactionDirection direction;
   Decimal amount; // in eth
   TransactionStatus status;
-  int timestamp; // in second
+  int timestamp; // in second //TODO uncheck
   int confirmations;
   String _address;
   Decimal fee; // in eth
   String txId;
-  Uint8List note;
+  Uint8List message;
+  String sourceAddresses;
+  String destinationAddresses;
+  Decimal gasPrice; // in Wei
+  Decimal gasUsed;
 
   DateTime get dateTime =>
-      DateTime.fromMillisecondsSinceEpoch(timestamp, isUtc: false);
+      DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: false);
   String get address => _address;
 
-  String get noteInString {
-    String _note = hex.encode(this.note);
+  String get messageInString {
+    String _message = hex.encode(this.message);
     try {
       // try to read as utf8
-      _note = utf8.decode(this.note);
-      Log.debug('utf8 note: $note');
+      _message = utf8.decode(this.message);
+      Log.debug('utf8 message: $message');
     } catch (e) {
       // try to read as ascii
-      _note = String.fromCharCodes(this.note);
-      Log.debug('ascii note: $note');
+      _message = String.fromCharCodes(this.message);
+      Log.debug('ascii message: $message');
     }
-    return _note;
+    return _message;
   }
 
   dynamic get inputs {
@@ -69,60 +69,30 @@ class Transaction {
     String address,
     this.fee,
     this.txId,
-    this.note,
+    this.message,
   }) : _address = address;
 
-  Transaction.fromBitcoinTransaction(BitcoinTransaction transaction) {
-    txId = transaction.txId;
-    amount = transaction.amount;
-    timestamp = transaction.timestamp;
-    confirmations = transaction.confirmations;
-
-    fee = transaction.fee;
-    direction = transaction.direction;
-    _address = (direction == TransactionDirection.sent)
-        ? transaction.destinationAddresses
-        : transaction.sourceAddresses;
-  }
-
-  Transaction.fromEthereumTransaction(EthereumTransaction transaction) {
-    txId = transaction.txHash;
-    amount = transaction.amount;
-    timestamp = transaction.timestamp;
-    confirmations = transaction.confirmations;
-
-    // var gasPrice = BigInt.parse(transaction.gasPrice.toString());
-    // var gasUsed = BigInt.from(transaction.gasUsed.toInt());
-    // var feeWei = gasPrice * gasUsed;
-    // // _fee = _account.toCoinUnit(feeWei).toString();
-  }
-
-  Transaction.fromEthereumTokenTransaction(
-      EthereumTokenTransaction transaction) {
-    txId = transaction.txHash;
-    amount = transaction.amount;
-    timestamp = transaction.timestamp;
-    confirmations = 1; // useless to token
-    fee = Decimal.zero; // useless to token
-    direction = TransactionDirection.sent;
-    _address = (direction == TransactionDirection.sent)
-        ? transaction.to
-        : transaction.from;
-  }
-
   Transaction.fromTransactionEntity(TransactionEntity entity) {
-    txId = entity.txId;
     id = entity.transactionId;
-    direction = entity.direction == 'moved' ?  TransactionDirection.moved : entity.direction == 'send' ? TransactionDirection.sent : TransactionDirection.received;
+    txId = entity.txId;
     amount = Decimal.parse(entity.amount);
-    status = entity.status == 'pending' ? TransactionStatus.pending : entity.status == 'success' ? TransactionStatus.success : TransactionStatus.fail;
-    timestamp = entity.timestamp;
-    confirmations = entity.confirmation;
+    fee = Decimal.parse(entity.fee);
+    direction = entity.direction == 'move'
+        ? TransactionDirection.moved
+        : entity.direction == 'send'
+            ? TransactionDirection.sent
+            : TransactionDirection.received;
     _address = (direction == TransactionDirection.sent)
         ? entity.destinctionAddress
         : entity.sourceAddress;
-    fee = Decimal.parse(entity.fee);
-    note = hex.decode(entity.note);
+    confirmations = entity.confirmation;
+    timestamp = entity.timestamp;
+    message = entity.note.length == 2 ? Uint8List(0) : hex.decode(entity.note);
+    status = entity.status == 'pending'
+        ? TransactionStatus.pending
+        : entity.status == 'success'
+            ? TransactionStatus.success
+            : TransactionStatus.fail;
   }
 }
 

@@ -4,11 +4,20 @@ import '../entity/utxo.dart';
 
 @dao
 abstract class UtxoDao {
-  @Query('SELECT * FROM Utxo WHERE currency_id = :id')
-  Future<List<UtxoEntity>> findAllUtxosByCurrencyId(String id);
+  @Query('SELECT * FROM JoinUtxo WHERE JoinUtxo.accountcurrency_id = :id')
+  Future<List<JoinUtxo>> findAllJoinedUtxosById(String accountcurrencyId);
 
-  @Query('SELECT * FROM Utxo WHERE utxo_id = :id limit 1')
-  Future<UtxoEntity> findUtxoById(String id);
+  @Query('SELECT * FROM JoinUtxo')
+  Future<List<JoinUtxo>> findAllJoinedUtxos();
+
+  @Query('SELECT * FROM Utxo')
+  Future<List<UtxoEntity>> findAllUtxos();
+
+  @Query('SELECT * FROM Utxo WHERE Utxo.accountcurrency_id = :i')
+  Future<List<UtxoEntity>> findAllUtxosById(String accountcurrencyId);
+
+  @Query('SELECT * FROM JoinUtxo WHERE JoinUtxo.utxo_id = :id limit 1')
+  Future<JoinUtxo> findJoinedUtxoById(String id);
 
   @Insert(onConflict: OnConflictStrategy.replace)
   Future<void> insertUtxo(UtxoEntity utxo);

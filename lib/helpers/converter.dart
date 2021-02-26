@@ -27,8 +27,11 @@ class Converter {
     return eth * _ethInWei;
   }
 
-  static BigInt toTokenSmallestUnit(Decimal value, int decimals) {
-    return BigInt.parse(
-        (value * Decimal.fromInt(pow(10, decimals))).toString());
+  static Decimal toCurrencySmallestUnit(Decimal value, int decimals) {
+    return value * Decimal.fromInt(pow(10, decimals));
+  }
+
+  static Decimal toCurrencyUnit(Decimal value, int decimals) {
+    return value / Decimal.fromInt(pow(10, decimals));
   }
 }

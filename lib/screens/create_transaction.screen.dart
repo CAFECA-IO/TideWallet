@@ -1,3 +1,4 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -169,7 +170,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                       Container(
                         child: Align(
                           child: Text(
-                            '${t('balance')}: ${state.spandable != null ? (Formatter.formatDecimal(state.spandable.toString()) + " " + _repo.currency.symbol) : "loading..."}',
+                            '${t('balance')}: ${state.spandable != null ? (Formatter.formatDecimal(_repo.currency.amount.toString()) + " " + _repo.currency.symbol) : "loading..."}',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                           alignment: Alignment.centerRight,
@@ -334,9 +335,10 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                                   arguments: {
                                     "currency": _currency,
                                     "transaction": Transaction(
-                                      address: state.address,
+                                      address: _addressController.text,
                                       direction: TransactionDirection.sent,
-                                      amount: state.amount,
+                                      amount:
+                                          Decimal.parse(_amountController.text),
                                       fee: state.fee,
                                     ),
                                     "feeToFiat":

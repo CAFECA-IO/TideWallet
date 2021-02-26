@@ -109,6 +109,8 @@ class JoinCurrency {
   @ColumnInfo(name: 'network_id')
   final String blockchainId;
 
+  final String network;
+
   @ColumnInfo(name: 'chain_id')
   final int chainId;
 
@@ -133,6 +135,7 @@ class JoinCurrency {
     this.coinType,
     this.image,
     this.blockchainId,
+    this.network,
     this.chainId,
     this.publish,
     this.contract,

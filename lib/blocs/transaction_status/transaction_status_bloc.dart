@@ -22,17 +22,30 @@ class TransactionStatusBloc
       : super(TransactionStatusInitial(null, [], null)) {
     _subscription?.cancel();
     this._repo.listener.listen((msg) {
-      if (msg.evt == ACCOUNT_EVT.OnUpdateAccount) {
-        Log.debug("msg.value ${(msg.value as Currency).name}");
-        Currency currency = msg.value;
+      if (msg.evt == ACCOUNT_EVT.OnUpdateCurrency) {
+        // int index = msg.value.indexWhere((Currency currency) =>
+        //     currency.accountType == this._repo.currency.accountType);
+        Log.warning("msg.evt ${msg.evt}");
+        int index = msg.value.indexWhere((Currency currency) {
+          Log.debug("currency accountType ${currency.accountType}");
+          Log.debug("currency amount ${currency.amount}");
+          return currency.accountType == this._repo.currency.accountType;
+        });
+        if (index < 0) return;
+        Currency currency = msg.value[index];
+        Log.warning("currency $currency");
+        Log.debug("currency ${currency.id}");
+        Log.debug("currency ${currency.amount}");
 
         this.add(UpdateCurrency(_addUSD(currency)));
       }
       if (msg.evt == ACCOUNT_EVT.OnUpdateTransactions) {
         Currency currency = msg.value['currency'];
+        List<Transaction> transactions = msg.value['transactions'];
+        Log.warning("currency ${currency.id}");
+        Log.debug("transactions $transactions");
 
-        this.add(UpdateTransactionList(
-            _addUSD(currency), msg.value['transactions']));
+        this.add(UpdateTransactionList(_addUSD(currency), transactions));
       }
     });
   }
@@ -47,10 +60,12 @@ class TransactionStatusBloc
   ) async* {
     if (event is UpdateCurrency) {
       if (state.currency == null) {
-        print('event.currency: ${event.currency}');
+        Log.debug('event.currency: ${event.currency}');
         _repo.setCurrency(event.currency);
-        final List<Transaction> transactions =
-            []; //_repo.getTransactions() ?? [];
+
+        final List<Transaction> transactions = await _repo.getTransactions();
+        Log.debug('transactions: $transactions');
+
         yield TransactionStatusLoaded(event.currency, transactions, null);
       } else if (state.currency.symbol == event.currency.symbol) {
         yield TransactionStatusLoaded(
