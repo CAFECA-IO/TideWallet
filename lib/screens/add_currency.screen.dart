@@ -10,6 +10,7 @@ import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/error_dialog.dart';
 import '../widgets/dialogs/loading_dialog.dart';
 import '../widgets/inputs/input.dart';
+import '../models/account.model.dart';
 import '../helpers/i18n.dart';
 
 final t = I18n.t;
@@ -27,8 +28,10 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
 
   @override
   void didChangeDependencies() {
+    Map<String, Currency> arg = ModalRoute.of(context).settings.arguments;
+
     _repo = Provider.of<AccountRepository>(context);
-    _bloc = AddCurrencyBloc(_repo);
+    _bloc = AddCurrencyBloc(_repo, arg['account']);
     super.didChangeDependencies();
   }
 

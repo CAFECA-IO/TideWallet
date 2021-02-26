@@ -104,7 +104,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Network` (`network_id` TEXT, `network` TEXT NOT NULL, `coin_type` INTEGER, `publish` INTEGER, `chain_id` INTEGER, PRIMARY KEY (`network_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `AccountCurrency` (`accountcurrency_id` TEXT NOT NULL, `account_id` TEXT, `currency_id` TEXT, `balance` TEXT, `number_of_used_external_key` INTEGER, `number_of_used_internal_key` INTEGER, `last_sync_time` INTEGER, FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`) ON UPDATE NO ACTION ON DELETE CASCADE, PRIMARY KEY (`accountcurrency_id`))');
+            'CREATE TABLE IF NOT EXISTS `AccountCurrency` (`accountcurrency_id` TEXT NOT NULL, `account_id` TEXT, `currency_id` TEXT, `balance` TEXT, `number_of_used_external_key` INTEGER, `number_of_used_internal_key` INTEGER, `last_sync_time` INTEGER, FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`) ON UPDATE NO ACTION ON DELETE CASCADE, FOREIGN KEY (`currency_id`) REFERENCES `Currency` (`currency_id`) ON UPDATE NO ACTION ON DELETE CASCADE, PRIMARY KEY (`accountcurrency_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Utxo` (`utxo_id` TEXT, `accountcurrency_id` TEXT, `tx_id` TEXT, `vout` INTEGER, `type` TEXT, `amount` TEXT, `chain_index` INTEGER, `key_index` INTEGER, `script` TEXT, `timestamp` INTEGER, `locked` INTEGER, `sequence` INTEGER, `address` TEXT, PRIMARY KEY (`utxo_id`))');
         await database.execute(
@@ -342,7 +342,7 @@ class _$CurrencyDao extends CurrencyDao {
   @override
   Future<void> insertCurrency(CurrencyEntity currency) async {
     await _currencyEntityInsertionAdapter.insert(
-        currency, OnConflictStrategy.abort);
+        currency, OnConflictStrategy.replace);
   }
 
   @override
@@ -635,7 +635,8 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
                 row['publish'] == null ? null : (row['publish'] as int) != 0,
             contract: row['contract'] as String,
             decimals: row['decimals'] as int,
-            type: row['type'] as String));
+            type: row['type'] as String,
+            accountId: row['account_id'] as String));
   }
 
   @override

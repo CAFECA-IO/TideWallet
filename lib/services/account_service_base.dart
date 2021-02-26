@@ -137,17 +137,7 @@ class AccountServiceBase extends AccountService {
     if (now - this._lastSyncTimestamp > this._syncInterval) {
       List currs = await this.getData();
       final v = currs
-          .map(
-            (c) => AccountCurrencyEntity(
-                accountcurrencyId: c['account_id'] ??
-                    c['account_token_id'], // TODO: Change name
-                accountId: this._accountId,
-                numberOfUsedExternalKey: c['number_of_external_key'],
-                numberOfUsedInternalKey: c['number_of_internal_key'],
-                balance: c['balance'],
-                currencyId: c['currency_id'] ?? c['token_id'],
-                lastSyncTime: now),
-          )
+          .map((c) => AccountCurrencyEntity.fromJson(c, this._accountId, now))
           .toList();
 
       await DBOperator().accountCurrencyDao.insertCurrencies(v);
@@ -166,21 +156,7 @@ class AccountServiceBase extends AccountService {
 
     List<Currency> cs = jcs
         .map(
-          (c) => Currency(
-              accountIndex: c.accountIndex,
-              accountType: this._base,
-              cointype: c.coinType,
-              amount: c.balance,
-              imgPath: c.image,
-              symbol: c.symbol,
-              blockchainId: c.blockchainId,
-              chainId: c.chainId,
-              publish: c.publish,
-              id: c.accountcurrencyId,
-              currencyId: c.currencyId,
-              contract: c.contract,
-              decimals: c.decimals,
-              type: c.type),
+          (c) => Currency.fromJoinCurrency(c, this._base),
         )
         .toList();
 

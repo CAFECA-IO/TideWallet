@@ -89,18 +89,9 @@ void main() {
           "tokens": []
         }
       ];
+      int now = DateTime.now().millisecondsSinceEpoch;
       List<AccountCurrencyEntity> _accountsDetails = accountsDetails
-          .map(
-            (c) => AccountCurrencyEntity(
-                accountcurrencyId: c['account_id'] ??
-                    c['account_token_id'], // TODO: Change name
-                accountId: c['account_id'],
-                numberOfUsedExternalKey: c['number_of_external_key'],
-                numberOfUsedInternalKey: c['number_of_internal_key'],
-                balance: c['balance'],
-                currencyId: c['currency_id'] ?? c['token_id'],
-                lastSyncTime: DateTime.now().millisecondsSinceEpoch),
-          )
+          .map((c) => AccountCurrencyEntity.fromJson(c, c['accountId'], now))
           .toList();
 
       await DBOperator().accountCurrencyDao.insertCurrencies(_accountsDetails);

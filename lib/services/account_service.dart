@@ -28,7 +28,7 @@ abstract class AccountService {
       String blockchainId, String from, String to, String amount, String data);
   Future<int> getNonce(String blockchainId, String address);
   Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId);
-
+  
   getTransactions();
 
   // TODO: Keep or remove

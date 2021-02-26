@@ -34,4 +34,9 @@ class TraderRepository {
     return _trader.calculateFeeToUSD(_curr, _amount) /
         _selectedFiat.exchangeRate;
   }
+
+  Future changeSelectedFiat(Fiat fiat) async {
+    this._selectedFiat = fiat;
+    await this._trader.setSelectedFiat(fiat);
+  }
 }
