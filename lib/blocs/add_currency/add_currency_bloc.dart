@@ -11,7 +11,8 @@ part 'add_currency_state.dart';
 
 class AddCurrencyBloc extends Bloc<AddCurrencyEvent, AddCurrencyState> {
   AccountRepository _repo;
-  AddCurrencyBloc(this._repo)
+  Currency _parentAccount;
+  AddCurrencyBloc(this._repo, this._parentAccount)
       : super(
             BeforeAdd(valid: false, address: ''));
 
@@ -47,7 +48,7 @@ class AddCurrencyBloc extends Bloc<AddCurrencyEvent, AddCurrencyState> {
 
       yield Loading();
 
-      Token _tk = await _repo.getTokenInfo(event.address);
+      Token _tk = await _repo.getTokenInfo(this._parentAccount.blockchainId, event.address);
       if (_tk != null) {
         yield GetToken(_tk);
       } else {
@@ -59,7 +60,7 @@ class AddCurrencyBloc extends Bloc<AddCurrencyEvent, AddCurrencyState> {
       GetToken _state = state;
       yield Loading();
 
-      bool result = await _repo.addToken(_state.result);
+      bool result = await _repo.addToken(_parentAccount.blockchainId, _state.result);
 
       if (result) {
         yield AddSuccess();

@@ -1,4 +1,5 @@
 import 'package:decimal/decimal.dart';
+import 'package:tidewallet3/helpers/prefer_manager.dart';
 
 import '../database/entity/exchage_rate.dart';
 import '../database/db_operator.dart';
@@ -10,6 +11,7 @@ class Trader {
   static const syncInterval = 24 * 60 * 60 * 1000;
   List<Fiat> _fiats = [];
   List<Fiat> _cryptos = [];
+  PrefManager _prefManager = PrefManager();
 
   Future<List<Fiat>> getFiatList() async {
     final local = await DBOperator().exchangeRateDao.findAllExchageRates();
@@ -55,10 +57,17 @@ class Trader {
     return this._fiats;
   }
 
-  Future<Fiat> getSelectedFiat() async {
-    await Future.delayed(Duration(milliseconds: 300));
+  Future setSelectedFiat(Fiat fiat) =>
+      this._prefManager.setSelectedFiat(fiat.name);
 
-    return null;
+  Future<Fiat> getSelectedFiat() async {
+    String symbol = await this._prefManager.getSeletedFiat();
+    
+    if (symbol == null) return this._fiats[0];
+
+    int index = this._fiats.indexWhere((f) => f.name == symbol);
+
+    return this._fiats[index];
   }
 
   Decimal calculateToUSD(Currency _currency) {

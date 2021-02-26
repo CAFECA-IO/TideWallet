@@ -3,10 +3,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tidewallet3/models/auth.model.dart';
 import 'package:uuid/uuid.dart';
 
-
 class PrefManager {
   static const String INSTALL_ID_KEY = "installation_id";
   static const String AUTH_ITEM_KEY = 'auth_item';
+  static const String SELECTED_FIAT_KEY = 'selected_fiat';
 
   Future<void> clearAll() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -24,7 +24,7 @@ class PrefManager {
     final SharedPreferences pref = await SharedPreferences.getInstance();
     String installationId;
     installationId = pref.getString(INSTALL_ID_KEY) ?? null;
-    
+
     if (installationId == null) {
       installationId = Uuid().v4();
       setInstallationId(installationId);
@@ -53,7 +53,18 @@ class PrefManager {
     return tokenItem;
   }
 
+  Future<void> setSelectedFiat(String symbol) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString(SELECTED_FIAT_KEY, symbol);
+  }
+
+   Future<String> getSeletedFiat() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String selected = prefs.getString(SELECTED_FIAT_KEY) ?? null;
+
+    return selected;
+  }
+
   // Set Notification
   // Set language
-
 }

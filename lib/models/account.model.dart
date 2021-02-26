@@ -3,9 +3,15 @@ import 'package:flutter/material.dart';
 // import 'package:tidewallet3/database/entity/currency.dart';
 
 import '../database/entity/exchage_rate.dart';
+import '../database/entity/account_currency.dart';
 import '../constants/account_config.dart';
 
-enum ACCOUNT_EVT { OnUpdateAccount, OnUpdateCurrency, OnUpdateTransactions, ClearAll }
+enum ACCOUNT_EVT {
+  OnUpdateAccount,
+  OnUpdateCurrency,
+  OnUpdateTransactions,
+  ClearAll
+}
 
 class Currency {
   final String id; // AccountCurrencyEntity id for Backend
@@ -98,6 +104,25 @@ class Currency {
         currencyId = map['currency_id'],
         contract = map['contract'],
         type = map['type'];
+
+  Currency.fromJoinCurrency(JoinCurrency entity, ACCOUNT type)
+      : id = entity.accountcurrencyId,
+        cointype = entity.coinType,
+        purpose = null, // Dreprecated
+        accountIndex = entity.accountIndex,
+        symbol = entity.symbol,
+        name = entity.name,
+        imgPath = entity.image,
+        inUSD = '0',
+        accountType = type,
+        amount = entity.balance,
+        blockchainId = entity.blockchainId,
+        chainId = entity.chainId,
+        publish = entity.publish,
+        currencyId = entity.currencyId,
+        contract = entity.contract,
+        decimals = entity.decimals,
+        type = entity.type;
 }
 
 class AccountMessage {
@@ -112,18 +137,19 @@ class Token {
   final String name;
   final int decimal;
   final String imgUrl;
-  final int totalSupply;
+  final String totalSupply;
   final String contract;
   final String description;
 
-  Token(
-      {this.symbol,
-      this.name,
-      this.decimal,
-      this.imgUrl,
-      this.totalSupply,
-      this.contract,
-      this.description});
+  Token({
+    this.symbol,
+    this.name,
+    this.decimal,
+    this.imgUrl,
+    this.totalSupply,
+    this.contract,
+    this.description,
+  });
 }
 
 class Fiat {
