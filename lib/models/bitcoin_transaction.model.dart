@@ -285,12 +285,14 @@ class BitcoinTransaction extends Transaction {
 
   void addChangeUtxo(UnspentTxOut changeUtxo) {
     this._changeUtxo = changeUtxo;
+    Log.verbose('addChangeUtxo: $changeUtxo');
   }
 
   void addInput(UnspentTxOut utxo, HashType hashType) {
     Input input = Input(utxo, utxo.publickey, hashType);
     _inputs.add(input);
     this.sourceAddresses += this.sourceAddresses + utxo.address;
+    Log.warning('addInput: $sourceAddresses');
   }
 
   void addOutput(
@@ -315,6 +317,7 @@ class BitcoinTransaction extends Transaction {
         Output(amount, address, Uint8List.fromList(scriptLength + script));
     _outputs.add(output);
     this.destinationAddresses = this.destinationAddresses += address;
+    Log.warning('addOutput: $destinationAddresses');
   }
 
   void addData(List<int> data) {

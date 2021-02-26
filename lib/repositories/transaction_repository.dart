@@ -203,27 +203,40 @@ class TransactionRepository {
         int changeIndex;
         List<UnspentTxOut> unspentTxOuts =
             await _accountService.getUnspentTxOut(_currency.id);
-        //TODO TEST
-        unspentTxOuts.forEach((utxo) {
-          Log.warning('utxo accountcurrencyId: ${utxo.accountcurrencyId}');
-          Log.debug('utxo amount: ${utxo.amount}');
-          Log.debug('utxo amountInSmallestUint: ${utxo.amountInSmallestUint}');
-        });
-        //TODO TEST
-        Log.warning('prepareTransaction amount: $amount');
-        Log.warning('prepareTransaction fee: $fee');
+
         Decimal utxoAmount = Decimal.zero;
         for (UnspentTxOut utxo in unspentTxOuts) {
+          Log.debug(
+              'prepareTransaction UnspentTxOut utxo.locked: ${utxo.locked}');
+          Log.debug(
+              'prepareTransaction UnspentTxOut utxo.amount: ${utxo.amount}');
+          Log.debug('prepareTransaction UnspentTxOut utxo.type: ${utxo.type}');
+
           if (!utxo.locked ||
               !(utxo.amount > Decimal.zero) ||
               utxo.type == null) continue;
           utxoAmount += utxo.amount; // in smallest uint
+          Log.debug('prepareTransaction UnspentTxOut utxoAmount: $utxoAmount');
+
           utxo.privatekey =
               await getPrivKey(pwd, utxo.chainIndex, utxo.keyIndex);
+          Log.debug(
+              'prepareTransaction UnspentTxOut utxo.privatekey: ${utxo.privatekey}');
+
           utxo.publickey = await getPubKey(pwd, utxo.chainIndex, utxo.keyIndex);
+          Log.debug(
+              'prepareTransaction UnspentTxOut utxo.publickey: ${utxo.publickey}');
+
           if (utxoAmount > (amount + fee)) {
+            Log.debug(
+                'prepareTransaction UnspentTxOut utxoAmount: $utxoAmount');
+            Log.debug(
+                'prepareTransaction UnspentTxOut utxoAmount: ${amount + fee}');
+
             List result =
                 await _accountService.getChangingAddress(_currency.id);
+            Log.debug(
+                'prepareTransaction UnspentTxOut getChangingAddress: $result');
             changeAddress = result[0];
             changeIndex = result[1];
             break;
@@ -248,7 +261,7 @@ class TransactionRepository {
       case ACCOUNT.ETH:
         int nonce = await _accountService.getNonce(
             this._currency.blockchainId, this._address);
-        nonce = 0; // TODO TEST api nonce is not correct
+
         if (currency.symbol.toLowerCase() != 'eth') {
           // ERC20
           List<int> erc20Func = Cryptor.keccak256round(
@@ -289,8 +302,7 @@ class TransactionRepository {
             'transaction: ${hex.encode(transaction.serializeTransaction)}');
 
         Decimal balance =
-            // Decimal.parse(this._currency.amount) - gasPrice * gasLimit;
-            Decimal.parse('1') - gasPrice * gasLimit;
+            Decimal.parse(this._currency.amount) - gasPrice * gasLimit;
 
         Log.debug('balance: $balance');
         return [transaction, balance.toString()];

@@ -49,6 +49,8 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
   }
 
   Transaction _signTransaction(BitcoinTransaction transaction) {
+    Log.debug('_signTransaction: ${transaction.serializeTransaction}');
+
     int index = 0;
     while (index < transaction.inputs.length) {
       Uint8List rawData = transaction.getRawDataToSign(index);
@@ -74,7 +76,9 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
       transaction.inputs[index].addSignature(signature);
       index++;
     }
-    // Uint8List signedTransaction = transaction.serializeTransaction;
+    Uint8List signedTransaction = transaction.serializeTransaction;
+    Log.debug('_signTransaction: $signedTransaction');
+
     return transaction;
   }
 
@@ -97,6 +101,10 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
   }) {
     BitcoinTransaction transaction =
         BitcoinTransaction.prepareTransaction(publish, this.segwitType);
+    Log.debug('BitcoinTransaction.prepareTransaction amount: $amount');
+    Log.debug('BitcoinTransaction.prepareTransaction fee: $fee');
+    Log.warning(
+        'BitcoinTransaction.prepareTransaction unspentTxOuts [${unspentTxOuts.length}]: $unspentTxOuts');
     // to
     if (to.contains(':')) {
       to = to.split(':')[1];
@@ -125,8 +133,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
       Log.warning('unsupported Address');
     }
     transaction.addOutput(amount, to, script);
-    Log.warning('prepareTransaction amount: $amount');
-    Log.warning('prepareTransaction fee: $fee');
+
     // input
     if (unspentTxOuts == null || unspentTxOuts.isEmpty) return null;
     Decimal utxoAmount = Decimal.zero;
@@ -145,6 +152,8 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     }
     // change, changeAddress
     Decimal change = utxoAmount - amount - fee;
+    Log.debug('prepareTransaction change: $change');
+
     if (change > Decimal.zero) {
       List<int> script;
       if (isP2pkhAddress(

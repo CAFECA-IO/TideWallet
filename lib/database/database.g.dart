@@ -106,7 +106,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `AccountCurrency` (`accountcurrency_id` TEXT NOT NULL, `account_id` TEXT, `currency_id` TEXT, `balance` TEXT, `number_of_used_external_key` INTEGER, `number_of_used_internal_key` INTEGER, `last_sync_time` INTEGER, FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`) ON UPDATE NO ACTION ON DELETE CASCADE, FOREIGN KEY (`currency_id`) REFERENCES `Currency` (`currency_id`) ON UPDATE NO ACTION ON DELETE CASCADE, PRIMARY KEY (`accountcurrency_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Utxo` (`utxo_id` TEXT, `accountcurrency_id` TEXT, `tx_id` TEXT, `vout` INTEGER, `type` TEXT, `amount` TEXT, `chain_index` INTEGER, `key_index` INTEGER, `script` TEXT, `timestamp` INTEGER, `locked` INTEGER, `sequence` INTEGER, `address` TEXT, PRIMARY KEY (`utxo_id`))');
+            'CREATE TABLE IF NOT EXISTS `Utxo` (`utxo_id` TEXT NOT NULL, `accountcurrency_id` TEXT, `tx_id` TEXT, `vout` INTEGER, `type` TEXT, `amount` TEXT, `chain_index` INTEGER, `key_index` INTEGER, `script` TEXT, `timestamp` INTEGER, `locked` INTEGER, `sequence` INTEGER, `address` TEXT, FOREIGN KEY (`accountcurrency_id`) REFERENCES `AccountCurrency` (`accountcurrency_id`) ON UPDATE NO ACTION ON DELETE CASCADE, PRIMARY KEY (`utxo_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `ExchangeRate` (`exchange_rate_id` TEXT, `rate` TEXT, `lastSyncTime` INTEGER, `type` TEXT, PRIMARY KEY (`exchange_rate_id`))');
 
@@ -710,7 +710,27 @@ class _$UtxoDao extends UtxoDao {
         'SELECT * FROM JoinUtxo WHERE JoinUtxo.accountcurrency_id = ?',
         arguments: <dynamic>[accountcurrencyId],
         mapper: (Map<String, dynamic> row) => JoinUtxo(
-            row['utxoId'] as String,
+            row['utxo_id'] as String,
+            row['accountcurrency_id'] as String,
+            row['tx_id'] as String,
+            row['vout'] as int,
+            row['type'] as String,
+            row['amount'] as String,
+            row['chain_index'] as int,
+            row['key_index'] as int,
+            row['script'] as String,
+            row['timestamp'] as int,
+            row['locked'] == null ? null : (row['locked'] as int) != 0,
+            row['sequence'] as int,
+            row['address'] as String,
+            row['decimals'] as int));
+  }
+
+  @override
+  Future<List<JoinUtxo>> findAllJoinedUtxos() async {
+    return _queryAdapter.queryList('SELECT * FROM JoinUtxo',
+        mapper: (Map<String, dynamic> row) => JoinUtxo(
+            row['utxo_id'] as String,
             row['accountcurrency_id'] as String,
             row['tx_id'] as String,
             row['vout'] as int,
@@ -772,7 +792,7 @@ class _$UtxoDao extends UtxoDao {
         'SELECT * FROM JoinUtxo WHERE JoinUtxo.utxo_id = ? limit 1',
         arguments: <dynamic>[id],
         mapper: (Map<String, dynamic> row) => JoinUtxo(
-            row['utxoId'] as String,
+            row['utxo_id'] as String,
             row['accountcurrency_id'] as String,
             row['tx_id'] as String,
             row['vout'] as int,
