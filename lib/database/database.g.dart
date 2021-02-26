@@ -708,6 +708,49 @@ class _$UtxoDao extends UtxoDao {
   }
 
   @override
+<<<<<<< HEAD
+=======
+  Future<List<UtxoEntity>> findAllUtxos() async {
+    return _queryAdapter.queryList('SELECT * FROM Utxo',
+        mapper: (Map<String, dynamic> row) => UtxoEntity(
+            row['utxo_id'] as String,
+            row['accountcurrency_id'] as String,
+            row['tx_id'] as String,
+            row['vout'] as int,
+            row['type'] as String,
+            row['amount'] as String,
+            row['chain_index'] as int,
+            row['key_index'] as int,
+            row['script'] as String,
+            row['timestamp'] as int,
+            row['locked'] == null ? null : (row['locked'] as int) != 0,
+            row['address'] as String,
+            row['sequence'] as int));
+  }
+
+  @override
+  Future<List<UtxoEntity>> findAllUtxosById(String accountcurrencyId) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM Utxo WHERE Utxo.accountcurrency_id = ?',
+        arguments: <dynamic>[accountcurrencyId],
+        mapper: (Map<String, dynamic> row) => UtxoEntity(
+            row['utxo_id'] as String,
+            row['accountcurrency_id'] as String,
+            row['tx_id'] as String,
+            row['vout'] as int,
+            row['type'] as String,
+            row['amount'] as String,
+            row['chain_index'] as int,
+            row['key_index'] as int,
+            row['script'] as String,
+            row['timestamp'] as int,
+            row['locked'] == null ? null : (row['locked'] as int) != 0,
+            row['address'] as String,
+            row['sequence'] as int));
+  }
+
+  @override
+>>>>>>> 37d8d74... feat: switch to testnet
   Future<JoinUtxo> findJoinedUtxoById(String id) async {
     return _queryAdapter.query(
         'SELECT * FROM JoinUtxo WHERE JoinUtxo.utxo_id = ? limit 1',

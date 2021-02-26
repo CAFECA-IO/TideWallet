@@ -1,7 +1,7 @@
 import 'package:floor/floor.dart';
 import 'package:convert/convert.dart';
 
-import 'account.dart';
+import 'account_currency.dart';
 import '../../models/utxo.model.dart';
 
 @Entity(tableName: 'Utxo')
@@ -13,7 +13,7 @@ class UtxoEntity {
   @ForeignKey(
       childColumns: ['accountcurrency_id'],
       parentColumns: ['accountcurrency_id'],
-      entity: AccountEntity)
+      entity: AccountCurrencyEntity)
   @ColumnInfo(name: 'accountcurrency_id')
   final String accountcurrencyId;
 

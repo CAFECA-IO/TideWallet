@@ -1,6 +1,6 @@
 import 'package:floor/floor.dart';
 
-import 'account.dart';
+import 'account_currency.dart';
 
 @Entity(tableName: '_Transaction')
 class TransactionEntity {
@@ -11,7 +11,7 @@ class TransactionEntity {
   @ForeignKey(
       childColumns: ['accountcurrency_id'],
       parentColumns: ['accountcurrency_id'],
-      entity: AccountEntity)
+      entity: AccountCurrencyEntity)
   @ColumnInfo(name: 'accountcurrency_id')
   final String accountcurrencyId;
 
