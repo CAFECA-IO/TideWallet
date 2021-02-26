@@ -382,6 +382,8 @@ class TransactionRepository {
     List transactions = await DBOperator()
         .transactionDao
         .findAllTransactionsById(this._currency.id);
+    transactions.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+
     AccountMessage txMsg =
         AccountMessage(evt: ACCOUNT_EVT.OnUpdateTransactions, value: {
       "currency": this._currency,
