@@ -14,12 +14,3 @@ class UserLoading extends UserState {}
 class UserSuccess extends UserState {}
 
 class UserFail extends UserState {}
-
-class VerifyingPassword extends UserState {}
-
-class PasswordVerified extends UserState {
-  final String password;
-  PasswordVerified(this.password);
-}
-
-class PasswordInvalid extends UserState {}

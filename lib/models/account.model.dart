@@ -25,6 +25,7 @@ class Currency {
   final String name;
   final ACCOUNT accountType;
   final String blockchainId;
+  final String network;
   final int chainId;
   final int decimals;
   final bool publish;
@@ -45,6 +46,7 @@ class Currency {
       this.accountType,
       this.chainId,
       this.blockchainId,
+      this.network,
       this.decimals,
       this.publish,
       this.currencyId,
@@ -62,6 +64,7 @@ class Currency {
       String name,
       ACCOUNT accountType,
       String blockchainId,
+      String network,
       int chainId,
       int decimals,
       bool publish,
@@ -78,6 +81,7 @@ class Currency {
         name: name ?? this.name,
         accountType: accountType ?? this.accountType,
         blockchainId: blockchainId ?? this.blockchainId,
+        network: network ?? this.network,
         chainId: chainId ?? this.chainId,
         decimals: decimals ?? this.decimals,
         publish: publish ?? this.publish,
@@ -98,6 +102,7 @@ class Currency {
         inUSD = map['inUSD'] ?? '0',
         accountType = map['accountType'],
         blockchainId = map['blockchain_id'],
+        network = map['network'],
         chainId = map['chain_id'],
         decimals = map['decimals'],
         publish = map['publish'],
@@ -117,6 +122,7 @@ class Currency {
         accountType = type,
         amount = entity.balance,
         blockchainId = entity.blockchainId,
+        network = entity.network,
         chainId = entity.chainId,
         publish = entity.publish,
         currencyId = entity.currencyId,

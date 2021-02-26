@@ -630,6 +630,7 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
             coinType: row['coin_type'] as int,
             image: row['image'] as String,
             blockchainId: row['network_id'] as String,
+            network: row['network'] as String,
             chainId: row['chain_id'] as int,
             publish:
                 row['publish'] == null ? null : (row['publish'] as int) != 0,
