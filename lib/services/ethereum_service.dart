@@ -95,9 +95,9 @@ class EthereumService extends AccountServiceDecorator {
         {});
     if (res.success == false) return false;
 
-    String id = res.data['token_id'];
-
     try {
+      String id = res.data['token_id'];
+
       APIResponse updateRes = await HTTPAgent()
           .get(Endpoint.SUSANOO + '/wallet/account/${this.service.accountId}');
 
@@ -116,6 +116,7 @@ class EthereumService extends AccountServiceDecorator {
                 },
               ),
             );
+        Log.info(id);
         int now = DateTime.now().millisecondsSinceEpoch;
         final v = tks
             .map((c) =>

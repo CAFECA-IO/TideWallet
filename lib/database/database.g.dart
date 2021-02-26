@@ -340,7 +340,7 @@ class _$CurrencyDao extends CurrencyDao {
   @override
   Future<void> insertCurrency(CurrencyEntity currency) async {
     await _currencyEntityInsertionAdapter.insert(
-        currency, OnConflictStrategy.abort);
+        currency, OnConflictStrategy.replace);
   }
 
   @override
