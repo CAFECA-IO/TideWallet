@@ -301,7 +301,7 @@ class TransactionRepository {
             'transaction: ${hex.encode(transaction.serializeTransaction)}');
 
         Decimal balance =
-            Decimal.parse(this._currency.amount) - gasPrice * gasLimit;
+            Decimal.parse(this._currency.amount) - amount - gasPrice * gasLimit;
         Log.warning(
             'prepareTransaction this._currency.amount: ${this._currency.amount}');
         Log.debug(
