@@ -248,7 +248,7 @@ class TransactionRepository {
       case ACCOUNT.ETH:
         int nonce = await _accountService.getNonce(
             this._currency.blockchainId, this._address);
-        nonce = 0; // TODO TEST api nonce is not correct
+
         if (currency.symbol.toLowerCase() != 'eth') {
           // ERC20
           List<int> erc20Func = Cryptor.keccak256round(
@@ -269,7 +269,6 @@ class TransactionRepository {
           to = this._currency.contract;
           gasLimit = Decimal.fromInt(52212); // TODO TEST
         }
-        Log.debug('nonce: $nonce');
         Log.debug('gasPrice: $gasPrice');
         Log.debug('gasLimit: $gasLimit');
         Transaction transaction = _transactionService.prepareTransaction(
@@ -289,8 +288,7 @@ class TransactionRepository {
             'transaction: ${hex.encode(transaction.serializeTransaction)}');
 
         Decimal balance =
-            // Decimal.parse(this._currency.amount) - gasPrice * gasLimit;
-            Decimal.parse('1') - gasPrice * gasLimit;
+            Decimal.parse(this._currency.amount) - gasPrice * gasLimit;
 
         Log.debug('balance: $balance');
         return [transaction, balance.toString()];
@@ -330,6 +328,7 @@ class TransactionRepository {
         currencyId: account.currencyId,
         lastSyncTime: account.lastSyncTime,
         balance: balance);
+
     await DBOperator().accountCurrencyDao.insertAccount(updateAccount);
     Log.debug('PublishTransaction updateAccount: $updateAccount');
     Currency _curr = this._currency;

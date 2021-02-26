@@ -28,8 +28,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (msg.evt == ACCOUNT_EVT.OnUpdateCurrency) {
         int index = msg.value.indexWhere((Currency currency) =>
             currency.accountType == this._repo.currency.accountType);
-        if (index > 0)
-          this.add(UpdateTransactionCreateCurrency(msg.value[index]));
+        if (index > 0) {
+          Currency currency = msg.value[index];
+          Log.warning('currency amount: ${currency.amount}');
+          this.add(UpdateTransactionCreateCurrency(currency));
+        }
       }
     });
   }
