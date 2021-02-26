@@ -87,7 +87,7 @@ class Transaction {
         : entity.sourceAddress;
     confirmations = entity.confirmation;
     timestamp = entity.timestamp;
-    message = hex.decode(entity.note);
+    message = entity.note.length == 2 ? Uint8List(0) : hex.decode(entity.note);
     status = entity.status == 'pending'
         ? TransactionStatus.pending
         : entity.status == 'success'

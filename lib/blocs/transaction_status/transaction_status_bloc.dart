@@ -22,10 +22,20 @@ class TransactionStatusBloc
       : super(TransactionStatusInitial(null, [], null)) {
     _subscription?.cancel();
     this._repo.listener.listen((msg) {
-      if (msg.evt == ACCOUNT_EVT.OnUpdateAccount) {
-        Currency currency = msg.value;
+      if (msg.evt == ACCOUNT_EVT.OnUpdateCurrency) {
+        // int index = msg.value.indexWhere((Currency currency) =>
+        //     currency.accountType == this._repo.currency.accountType);
+        Log.warning("msg.evt ${msg.evt}");
+        int index = msg.value.indexWhere((Currency currency) {
+          Log.debug("currency accountType ${currency.accountType}");
+          Log.debug("currency amount ${currency.amount}");
+          return currency.accountType == this._repo.currency.accountType;
+        });
+        if (index < 0) return;
+        Currency currency = msg.value[index];
         Log.warning("currency $currency");
         Log.debug("currency ${currency.id}");
+        Log.debug("currency ${currency.amount}");
 
         this.add(UpdateCurrency(_addUSD(currency)));
       }

@@ -215,7 +215,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                         ),
                         GestureDetector(
                           onTap: () => _launchURL(
-                              'https://blockexplorer.one/${_currency.symbol}/${_currency.network}/${_transaction.txId}'),
+                              'https://blockexplorer.one/${_currency.symbol.toLowerCase()}/${_currency.network.toLowerCase()}/tx/${_transaction.txId}'),
                           child: Text(
                             Formatter.formatAdddress(_transaction.txId),
                             style: Theme.of(context)
@@ -239,6 +239,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
 
 _launchURL(String url) async {
   if (await canLaunch(url)) {
+    print(url);
     await launch(url);
   } else {
     throw 'Could not launch $url';
