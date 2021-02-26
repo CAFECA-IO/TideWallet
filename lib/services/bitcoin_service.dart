@@ -24,7 +24,7 @@ class BitcoinService extends AccountServiceDecorator {
   Timer _utxoTimer;
   BitcoinService(AccountService service) : super(service) {
     this.base = ACCOUNT.BTC;
-    this.syncInterval = 1 * 60 * 1000;
+    this.syncInterval = 10 * 60 * 1000;
     // this.path = "m/44'/0'/0'";
   }
   Timer _timer;

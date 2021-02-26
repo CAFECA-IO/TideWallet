@@ -22,7 +22,7 @@ class EthereumService extends AccountServiceDecorator {
   EthereumService(AccountService service) : super(service) {
     this.base = ACCOUNT.ETH;
     this.syncInterval = 7500;
-    // this.syncInterval = 2 * 60 * 1000;
+    this.syncInterval = 1 * 60 * 1000;
 
     // this.path = "m/44'/60'/0'";
   }

@@ -302,8 +302,11 @@ class TransactionRepository {
 
         Decimal balance =
             Decimal.parse(this._currency.amount) - gasPrice * gasLimit;
-
-        Log.debug('balance: $balance');
+        Log.warning(
+            'prepareTransaction this._currency.amount: ${this._currency.amount}');
+        Log.debug(
+            'prepareTransaction gasPrice * gasLimit: ${gasPrice * gasLimit}');
+        Log.debug('prepareTransaction balance: $balance');
         return [transaction, balance.toString()];
         break;
       case ACCOUNT.XRP:
