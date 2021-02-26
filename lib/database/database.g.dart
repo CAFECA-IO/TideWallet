@@ -708,8 +708,6 @@ class _$UtxoDao extends UtxoDao {
   }
 
   @override
-<<<<<<< HEAD
-=======
   Future<List<UtxoEntity>> findAllUtxos() async {
     return _queryAdapter.queryList('SELECT * FROM Utxo',
         mapper: (Map<String, dynamic> row) => UtxoEntity(
@@ -750,7 +748,6 @@ class _$UtxoDao extends UtxoDao {
   }
 
   @override
->>>>>>> 37d8d74... feat: switch to testnet
   Future<JoinUtxo> findJoinedUtxoById(String id) async {
     return _queryAdapter.query(
         'SELECT * FROM JoinUtxo WHERE JoinUtxo.utxo_id = ? limit 1',
