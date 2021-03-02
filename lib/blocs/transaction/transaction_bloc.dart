@@ -40,11 +40,18 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   @override
   Stream<Transition<TransactionEvent, TransactionState>> transformEvents(
       Stream<TransactionEvent> events, transitionFn) {
-    final nonDebounceStream = events
-        .where((event) => event is! ValidAddress || event is! VerifyAmount);
+    final nonDebounceStream = events.where((event) =>
+        event is! ValidAddress &&
+        event is! VerifyAmount &&
+        event is! InputGasPrice &&
+        event is! InputGasLimit);
 
     final debounceStream = events
-        .where((event) => event is ValidAddress || event is VerifyAmount)
+        .where((event) =>
+            event is ValidAddress ||
+            event is VerifyAmount ||
+            event is InputGasPrice ||
+            event is InputGasLimit)
         .debounceTime(Duration(milliseconds: 1000));
 
     return super.transformEvents(
