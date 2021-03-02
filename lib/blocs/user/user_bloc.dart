@@ -21,7 +21,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       bool existed = await _repo.checkUser();
 
       if (existed) {
-        await _accountRepo.coreInit();
+        _accountRepo.coreInit();
         yield UserSuccess();
       }
     }
@@ -30,7 +30,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       yield UserLoading();
       bool success = await _repo.createUser(event.password, event.walletName);
       if (success) {
-        await _accountRepo.coreInit();
+        _accountRepo.coreInit();
         yield UserSuccess();
       } else {
         yield UserFail();
@@ -39,7 +39,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
     if (event is UserRestore) {
       yield UserLoading();
-      await _accountRepo.coreInit();
+      _accountRepo.coreInit();
 
       yield UserSuccess();
     }

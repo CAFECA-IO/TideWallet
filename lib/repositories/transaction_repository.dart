@@ -94,7 +94,6 @@ class TransactionRepository {
 
   Future<List<dynamic>> getTransactionFee(
       {String address, Decimal amount, Uint8List message}) async {
-    Log.warning('getTransactionFee');
     if (_fee == null ||
         DateTime.now().millisecondsSinceEpoch - _timestamp >
             AVERAGE_FETCH_FEE_TIME) {
@@ -251,7 +250,7 @@ class TransactionRepository {
             unspentTxOuts: unspentTxOuts,
             changeIndex: changeIndex,
             changeAddress: changeAddress);
-        Decimal balance = Decimal.parse(this._currency.amount) - fee;
+        Decimal balance = Decimal.parse(this._currency.amount) - amount - fee;
         return [
           transaction,
           balance.toString()
@@ -302,11 +301,6 @@ class TransactionRepository {
 
         Decimal balance =
             Decimal.parse(this._currency.amount) - amount - gasPrice * gasLimit;
-        Log.warning(
-            'prepareTransaction this._currency.amount: ${this._currency.amount}');
-        Log.debug(
-            'prepareTransaction gasPrice * gasLimit: ${gasPrice * gasLimit}');
-        Log.debug('prepareTransaction balance: $balance');
         return [transaction, balance.toString()];
         break;
       case ACCOUNT.XRP:
@@ -382,6 +376,8 @@ class TransactionRepository {
     List transactions = await DBOperator()
         .transactionDao
         .findAllTransactionsById(this._currency.id);
+    transactions.sort((a, b) => a.timestamp.compareTo(b.timestamp));
+
     AccountMessage txMsg =
         AccountMessage(evt: ACCOUNT_EVT.OnUpdateTransactions, value: {
       "currency": this._currency,
