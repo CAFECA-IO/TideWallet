@@ -29,13 +29,10 @@ import '../database/entity/transaction.dart';
 import '../helpers/logger.dart';
 
 class TransactionRepository {
-  static const int AVERAGE_FETCH_FEE_TIME = 1 * 60 * 60 * 1000; // milliseconds
   Currency _currency;
   AccountService _accountService;
   TransactionService _transactionService;
   PublishSubject<AccountMessage> get listener => AccountCore().messenger;
-  Map<TransactionPriority, Decimal> _fee;
-  int _timestamp; // fetch transactionFee timestamp;
   String _address;
 
   TransactionRepository();
@@ -94,13 +91,9 @@ class TransactionRepository {
 
   Future<List<dynamic>> getTransactionFee(
       {String address, Decimal amount, Uint8List message}) async {
-    if (_fee == null ||
-        DateTime.now().millisecondsSinceEpoch - _timestamp >
-            AVERAGE_FETCH_FEE_TIME) {
-      _fee =
-          await _accountService.getTransactionFee(this._currency.blockchainId);
-      _timestamp = DateTime.now().millisecondsSinceEpoch;
-    }
+    Map<TransactionPriority, Decimal> _fee =
+        await _accountService.getTransactionFee(this._currency.blockchainId);
+
     // TODO if (message != null)
     Decimal _gasLimit;
     switch (this._currency.accountType) {

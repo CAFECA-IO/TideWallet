@@ -31,6 +31,8 @@ class BitcoinService extends AccountServiceDecorator {
   int _numberOfUsedExternalKey;
   int _numberOfUsedInternalKey;
   int _lastSyncTimestamp;
+  Map<TransactionPriority, Decimal> _fee;
+  int _timestamp; // fetch transactionFee timestamp;
 
   @override
   getTransactions() {
@@ -85,16 +87,23 @@ class BitcoinService extends AccountServiceDecorator {
   Future<Map<TransactionPriority, Decimal>> getTransactionFee(
       String blockchainId) async {
     // TODO getSyncFeeAutomatically
-    APIResponse response = await HTTPAgent()
-        .get('${Endpoint.SUSANOO}/blockchain/$blockchainId/fee');
-    Map<String, dynamic> data = response.data; // FEE will return String
+    if (_fee == null ||
+        DateTime.now().millisecondsSinceEpoch - _timestamp >
+            this.AVERAGE_FETCH_FEE_TIME) {
+      APIResponse response = await HTTPAgent()
+          .get('${Endpoint.SUSANOO}/blockchain/$blockchainId/fee');
+      Map<String, dynamic> data = response.data; // FEE will return String
 
-    Map<TransactionPriority, Decimal> transactionFee = {
-      TransactionPriority.slow: Decimal.parse(data['slow']),
-      TransactionPriority.standard: Decimal.parse(data['standard']),
-      TransactionPriority.fast: Decimal.parse(data['fast']),
-    };
-    return transactionFee;
+      _fee = {
+        TransactionPriority.slow: Decimal.parse(data['slow']),
+        TransactionPriority.standard: Decimal.parse(data['standard']),
+        TransactionPriority.fast: Decimal.parse(data['fast']),
+      };
+
+      _timestamp = DateTime.now().millisecondsSinceEpoch;
+    }
+
+    return _fee;
   }
 
   @override

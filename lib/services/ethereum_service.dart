@@ -23,12 +23,15 @@ class EthereumService extends AccountServiceDecorator {
     this.base = ACCOUNT.ETH;
     this.syncInterval = 7500;
     // this.syncInterval = 1 * 60 * 1000;
-
     // this.path = "m/44'/60'/0'";
   }
   String _address;
   String _contract; // ?
   String _tokenAddress; // ?
+  Map<TransactionPriority, Decimal> _fee;
+  int _gasLimit;
+  int _feeTimestamp; // fetch transactionFee timestamp;
+  // int _gasLimitTimestamp; // fetch estimatedGas timestamp;
 
   @override
   Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) async {
@@ -158,33 +161,44 @@ class EthereumService extends AccountServiceDecorator {
   @override
   Future<Decimal> estimateGasLimit(String blockchainId, String from, String to,
       String amount, String message) async {
-    Map<String, dynamic> payload = {
-      "fromAddress": from,
-      "toAddress": to,
-      "value": amount,
-      "data": message
-    };
-    APIResponse response = await HTTPAgent().post(
-        '${Endpoint.SUSANOO}/blockchain/$blockchainId/gas-limit', payload);
-    Log.debug(payload);
-    Map<String, dynamic> data = response.data;
-    int gasLimit = int.parse(data['gasLimit']);
-    return Decimal.fromInt(gasLimit);
+    if (message == '0x' && _gasLimit != null)
+      return Decimal.fromInt(_gasLimit);
+    else {
+      Map<String, dynamic> payload = {
+        "fromAddress": from,
+        "toAddress": to,
+        "value": amount,
+        "data": message
+      };
+      APIResponse response = await HTTPAgent().post(
+          '${Endpoint.SUSANOO}/blockchain/$blockchainId/gas-limit', payload);
+      Log.debug(payload);
+      Map<String, dynamic> data = response.data;
+      _gasLimit = int.parse(data['_gasLimit']);
+      return Decimal.fromInt(_gasLimit);
+    }
   }
 
   @override
   Future<Map<TransactionPriority, Decimal>> getTransactionFee(
       String blockchainId) async {
     // TODO getSyncFeeAutomatically
-    APIResponse response = await HTTPAgent()
-        .get('${Endpoint.SUSANOO}/blockchain/$blockchainId/fee');
-    Map<String, dynamic> data = response.data;
-    Map<TransactionPriority, Decimal> transactionFee = {
-      TransactionPriority.slow: Decimal.parse(data['slow'].toString()),
-      TransactionPriority.standard: Decimal.parse(data['standard'].toString()),
-      TransactionPriority.fast: Decimal.parse(data['fast'].toString()),
-    };
-    return transactionFee;
+    if (_fee == null ||
+        DateTime.now().millisecondsSinceEpoch - _feeTimestamp >
+            this.AVERAGE_FETCH_FEE_TIME) {
+      APIResponse response = await HTTPAgent()
+          .get('${Endpoint.SUSANOO}/blockchain/$blockchainId/fee');
+      Map<String, dynamic> data = response.data; // FEE will return String
+
+      _fee = {
+        TransactionPriority.slow: Decimal.parse(data['slow']),
+        TransactionPriority.standard: Decimal.parse(data['standard']),
+        TransactionPriority.fast: Decimal.parse(data['fast']),
+      };
+
+      _feeTimestamp = DateTime.now().millisecondsSinceEpoch;
+    }
+    return _fee;
   }
 
   @override
