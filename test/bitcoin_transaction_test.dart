@@ -136,20 +136,21 @@ void main() {
 
       if (utxos.isEmpty) {
         UtxoEntity _utxo = UtxoEntity.fromUnspentUtxo(UnspentTxOut(
-          id: '9715a35201ba82bd434840e0cc4b0fb8f0497fd7bb45e8b6c3fb4d457c43e179',
-          accountcurrencyId: "948c3b58-d1e4-45b2-afed-f3825256beda",
-          txId:
-              '9715a35201ba82bd434840e0cc4b0fb8f0497fd7bb45e8b6c3fb4d457c43e179',
-          vout: 0,
-          type: BitcoinTransactionType.WITNESS_V0_KEYHASH,
-          data: Uint8List(0),
-          amount: Decimal.parse('0.01033221'),
-          address: 'tb1qhwyerw5y44lsjlm5ukucg345t4eyvh6f25rkqa',
-          chainIndex: 0,
-          keyIndex: 0,
-          timestamp: DateTime.now().millisecondsSinceEpoch,
-          locked: false,
-        ));
+            id:
+                'a54799e85b8477a24a213dc8969bd7827a112a71569aab11b3023ee7626ddbae',
+            accountcurrencyId: "948c3b58-d1e4-45b2-afed-f3825256beda",
+            txId:
+                'a54799e85b8477a24a213dc8969bd7827a112a71569aab11b3023ee7626ddbae',
+            vout: 1,
+            type: BitcoinTransactionType.WITNESS_V0_KEYHASH,
+            data: Uint8List(0),
+            amount: Decimal.parse('0.01952035'),
+            address: 'tb1qmgs58vsyc4st6u2h577a8scpe9y2kk92pg4pjh',
+            chainIndex: 1,
+            keyIndex: 0,
+            timestamp: DateTime.now().millisecondsSinceEpoch,
+            locked: false,
+            decimals: 8));
         await opt.utxoDao.insertUtxo(_utxo);
       }
 
@@ -173,7 +174,7 @@ void main() {
           publish: false,
           amount: '0.01952035'));
       List result = await _repo.prepareTransaction('tideWallet3',
-          'tb1qsw7neemygtcpptpqljzelnt6zxrpwxyuqrfmw5', Decimal.parse('0.0002'),
+          'tb1q2cwlwck3ly9hlsx9r9qchhn6escc0jt8mn5eq5', Decimal.parse('0.0002'),
           fee: Decimal.parse('0.00016703'));
       BitcoinTransaction transaction = result[0];
       Log.debug('transaction: ${hex.encode(transaction.serializeTransaction)}');
