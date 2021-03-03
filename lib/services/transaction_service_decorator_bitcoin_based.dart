@@ -49,7 +49,9 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
   }
 
   Transaction _signTransaction(BitcoinTransaction transaction) {
-    Log.debug('_signTransaction: ${transaction.serializeTransaction}');
+    Log.debug('_unsignTransaction: ${transaction.serializeTransaction}');
+    Log.debug(
+        '_unsignTransaction hex: ${hex.encode(transaction.serializeTransaction)}');
 
     int index = 0;
     while (index < transaction.inputs.length) {
@@ -78,6 +80,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     }
     Uint8List signedTransaction = transaction.serializeTransaction;
     Log.debug('_signTransaction: $signedTransaction');
+    Log.debug('_signTransaction hex: ${hex.encode(signedTransaction)}');
 
     return transaction;
   }
@@ -116,13 +119,13 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
         publish
             ? this.p2pkhAddressPrefixMainnet
             : this.p2pkhAddressPrefixTestnet)) {
-      script = pubKeyHashToP2pkhScript(decodeAddress(to).sublist(1));
+      script = toP2pkhScript(decodeAddress(to).sublist(1));
     } else if (isP2shAddress(
         to,
         publish
             ? this.p2shAddressPrefixMainnet
             : this.p2shAddressPrefixTestnet)) {
-      script = pubKeyHashToP2shScript(decodeAddress(to).sublist(1));
+      script = toP2shScript(decodeAddress(to).sublist(1));
     } else if (isSegWitAddress(
         to,
         publish ? this.bech32HrpMainnet : this.bech32HrpTestnet,
@@ -137,9 +140,8 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     if (unspentTxOuts == null || unspentTxOuts.isEmpty) return null;
     Decimal utxoAmount = Decimal.zero;
     for (UnspentTxOut utxo in unspentTxOuts) {
-      if (utxo.locked == false ||
-          !(utxo.amount > Decimal.zero) ||
-          utxo.type == null) continue;
+      if (utxo.locked || !(utxo.amount > Decimal.zero) || utxo.type == null)
+        continue;
 
       transaction.addInput(utxo, HashType.SIGHASH_ALL);
 
@@ -160,27 +162,28 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
           publish
               ? this.p2pkhAddressPrefixMainnet
               : this.p2pkhAddressPrefixTestnet)) {
-        script = pubKeyHashToP2pkhScript(decodeAddress(to).sublist(1));
+        script = toP2pkhScript(decodeAddress(changeAddress).sublist(1));
       } else if (isP2shAddress(
           changeAddress,
           publish
               ? this.p2shAddressPrefixMainnet
               : this.p2shAddressPrefixTestnet)) {
-        script = pubKeyHashToP2shScript(decodeAddress(to).sublist(1));
+        script = toP2shScript(decodeAddress(changeAddress).sublist(1));
       } else if (isSegWitAddress(
           changeAddress,
           publish ? this.bech32HrpMainnet : this.bech32HrpTestnet,
           bech32Separator)) {
-        script = extractScriptPubkeyFromSegwitAddress(to);
+        script = extractScriptPubkeyFromSegwitAddress(changeAddress);
       } else {
         // TODO BitcoinCash Address condition
         Log.warning('unsupported Address');
       }
       transaction.addOutput(change, changeAddress, script);
+      Log.warning('unsupported Address');
     }
     // Message
     List<int> msgData = (message == null) ? [] : rlp.toBuffer(message);
-    Log.warning('msgData[$message]: $msgData');
+    Log.warning('msgData[${message.length}]: $msgData');
     // invalid msg data
     if (msgData.length > 250) {
       // TODO BitcoinCash Address condition >220
@@ -208,7 +211,8 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
           chainIndex: _Index_InternalChain,
           keyIndex: changeIndex,
           timestamp: DateTime.now().millisecondsSinceEpoch,
-          locked: false);
+          locked: false,
+          decimals: this.currencyDecimals);
       signedTransaction.addChangeUtxo(changeUtxo);
     }
 

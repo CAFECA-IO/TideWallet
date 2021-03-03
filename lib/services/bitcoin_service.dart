@@ -136,24 +136,21 @@ class BitcoinService extends AccountServiceDecorator {
     //TODO TEST
     UnspentTxOut _unspentTxOut = UnspentTxOut(
         id: '9715a35201ba82bd434840e0cc4b0fb8f0497fd7bb45e8b6c3fb4d457c43e179',
-        accountcurrencyId: "8e951597-e720-424b-83ec-be57c2451a99",
+        accountcurrencyId: "948c3b58-d1e4-45b2-afed-f3825256beda",
         txId:
             '9715a35201ba82bd434840e0cc4b0fb8f0497fd7bb45e8b6c3fb4d457c43e179',
         vout: 0,
         type: BitcoinTransactionType.WITNESS_V0_KEYHASH,
         data: Uint8List(0),
         amount: Decimal.parse('0.01033221'),
+        address: 'tb1qhwyerw5y44lsjlm5ukucg345t4eyvh6f25rkqa',
         chainIndex: 0,
         keyIndex: 0,
         timestamp: DateTime.now().millisecondsSinceEpoch,
         locked: false,
         decimals: 8);
-    Log.warning('getUnspentTxOut _unspentTxOut: ${_unspentTxOut.type}');
-    Log.debug('getUnspentTxOut _unspentTxOut: ${_unspentTxOut.type.value}');
 
     JoinUtxo _utxo = JoinUtxo.fromUnspentUtxo(_unspentTxOut);
-    Log.debug('getUnspentTxOut _utxo: ${_utxo.type}');
-
     return [_utxo].map((utxo) => UnspentTxOut.fromUtxoEntity(utxo)).toList();
     // TEST(END)
   }

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:decimal/decimal.dart';
 import 'package:convert/convert.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tidewallet3/helpers/http_agent.dart';
 
 import 'package:tidewallet3/repositories/transaction_repository.dart';
 import 'package:tidewallet3/constants/account_config.dart';
@@ -33,7 +34,7 @@ void main() {
   group('Bitcoin Transaction test', () {
     const accounts = [
       {
-        "account_id": "8e951597-e720-424b-83ec-be57c2451a99",
+        "account_id": "948c3b58-d1e4-45b2-afed-f3825256beda",
         "blockchain_id": "80000001",
         "network_id": 0,
         "currency_id": "8e1ea17f-38f5-42ab-a24b-82bf8abc851b",
@@ -59,7 +60,7 @@ void main() {
       {
         "blockchain_id": "80000001",
         "currency_id": "8e1ea17f-38f5-42ab-a24b-82bf8abc851b",
-        "account_id": "8e951597-e720-424b-83ec-be57c2451a99",
+        "account_id": "948c3b58-d1e4-45b2-afed-f3825256beda",
         "purpose": 44,
         "account_index": "0",
         "curve_type": 0,
@@ -130,19 +131,20 @@ void main() {
 
     test('insertUtxo test', () async {
       List<JoinUtxo> utxos = await opt.utxoDao
-          .findAllJoinedUtxosById('8e951597-e720-424b-83ec-be57c2451a99');
+          .findAllJoinedUtxosById('948c3b58-d1e4-45b2-afed-f3825256beda');
       Log.warning('hex.encode(Uint8List(0)): ${hex.encode(Uint8List(0))}');
 
       if (utxos.isEmpty) {
         UtxoEntity _utxo = UtxoEntity.fromUnspentUtxo(UnspentTxOut(
           id: '9715a35201ba82bd434840e0cc4b0fb8f0497fd7bb45e8b6c3fb4d457c43e179',
-          accountcurrencyId: "8e951597-e720-424b-83ec-be57c2451a99",
+          accountcurrencyId: "948c3b58-d1e4-45b2-afed-f3825256beda",
           txId:
               '9715a35201ba82bd434840e0cc4b0fb8f0497fd7bb45e8b6c3fb4d457c43e179',
           vout: 0,
           type: BitcoinTransactionType.WITNESS_V0_KEYHASH,
           data: Uint8List(0),
           amount: Decimal.parse('0.01033221'),
+          address: 'tb1qhwyerw5y44lsjlm5ukucg345t4eyvh6f25rkqa',
           chainIndex: 0,
           keyIndex: 0,
           timestamp: DateTime.now().millisecondsSinceEpoch,
@@ -152,7 +154,7 @@ void main() {
       }
 
       utxos = await opt.utxoDao
-          .findAllJoinedUtxosById("8e951597-e720-424b-83ec-be57c2451a99");
+          .findAllJoinedUtxosById("948c3b58-d1e4-45b2-afed-f3825256beda");
       Log.warning('utxos: $utxos');
       utxos = await opt.utxoDao.findAllJoinedUtxos();
       Log.debug('utxos2: $utxos');
@@ -161,10 +163,12 @@ void main() {
       expect(utxos.isNotEmpty, true);
     });
     test('Bitcoin prepareTransaction test', () async {
+      HTTPAgent().setToken(
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiI5NTUxNGNkYy1hMzVmLTQwNzEtOTZhYy0yNDc4MGI2NmI2MjAiLCJpYXQiOjE2MTQzMjU5MTEsImV4cCI6MTY0NTg2MTkxMX0.nPQFCs-89hnns5njXIPPBNZQGfueWZUr9M5DErq2i4k');
       TransactionRepository _repo = TransactionRepository();
       _repo.setCurrency(Currency(
           accountType: ACCOUNT.BTC,
-          id: '8e951597-e720-424b-83ec-be57c2451a99',
+          id: '948c3b58-d1e4-45b2-afed-f3825256beda',
           decimals: 8,
           publish: false,
           amount: '0.01033221'));

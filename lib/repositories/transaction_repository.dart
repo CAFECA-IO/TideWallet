@@ -169,10 +169,14 @@ class TransactionRepository {
   }
 
   Future<Uint8List> _getSeed(String pwd) async {
-    UserEntity user = await DBOperator().userDao.findUser();
-    web3dart.Wallet wallet = PaperWallet.jsonToWallet([user.keystore, pwd]);
-    List<int> seed = PaperWallet.magicSeed(wallet.privateKey.privateKey);
-    return Uint8List.fromList(seed);
+    // TODO TEST
+    return Uint8List.fromList(hex.decode(
+        '9618a6e9bd6e47fe3f3e4e977ed010e67e2ff6cfc7f19d68b73113a914ee6e85'));
+    // TEST (END)
+    // UserEntity user = await DBOperator().userDao.findUser();
+    // web3dart.Wallet wallet = PaperWallet.jsonToWallet([user.keystore, pwd]);
+    // List<int> seed = PaperWallet.magicSeed(wallet.privateKey.privateKey);
+    // return Uint8List.fromList(seed);
   }
 
   Future<Uint8List> getPubKey(String pwd, int changeIndex, int keyIndex) async {
@@ -190,6 +194,7 @@ class TransactionRepository {
     //         'd36777597b9c5cc58a64a4fb842a206bd86da50f276b783aae0cf87e5b058821')),
     //     changeIndex,
     //     keyIndex);
+    Log.warning("getPrivKey seed: ${hex.encode(seed)}");
     Log.warning("getPrivKey result: ${hex.encode(result)}");
     return result;
   }
@@ -210,9 +215,8 @@ class TransactionRepository {
               'prepareTransaction UnspentTxOut utxo.amount: ${utxo.amount}');
           Log.debug('prepareTransaction UnspentTxOut utxo.type: ${utxo.type}');
 
-          if (!utxo.locked ||
-              !(utxo.amount > Decimal.zero) ||
-              utxo.type == null) continue;
+          if (utxo.locked || !(utxo.amount > Decimal.zero) || utxo.type == null)
+            continue;
           utxoAmount += utxo.amount; // in smallest uint
           Log.debug('prepareTransaction UnspentTxOut utxoAmount: $utxoAmount');
 
