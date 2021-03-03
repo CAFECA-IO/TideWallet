@@ -516,8 +516,6 @@ class BitcoinTransaction extends Transaction {
 
     // Output
     for (Output output in this._outputs) {
-      Log.warning('same address!?: ${output.address}');
-      Log.debug('same script!?: ${output.script}');
       data.addAll(output.amountInBuffer + output.script);
     }
     // txId

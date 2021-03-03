@@ -171,9 +171,9 @@ void main() {
           id: '948c3b58-d1e4-45b2-afed-f3825256beda',
           decimals: 8,
           publish: false,
-          amount: '0.01033221'));
+          amount: '0.01952035'));
       List result = await _repo.prepareTransaction('tideWallet3',
-          'tb1qfye0jy9ux5qwt4d4mczknz6ydt662k869dw7qa', Decimal.parse('0.0002'),
+          'tb1qsw7neemygtcpptpqljzelnt6zxrpwxyuqrfmw5', Decimal.parse('0.0002'),
           fee: Decimal.parse('0.00016703'));
       BitcoinTransaction transaction = result[0];
       Log.debug('transaction: ${hex.encode(transaction.serializeTransaction)}');

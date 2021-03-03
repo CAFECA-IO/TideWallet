@@ -129,29 +129,29 @@ class BitcoinService extends AccountServiceDecorator {
 
   @override
   Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) async {
-    List<JoinUtxo> utxos =
-        await DBOperator().utxoDao.findAllJoinedUtxosById(currencyId);
-    return utxos.map((utxo) => UnspentTxOut.fromUtxoEntity(utxo)).toList();
+    // List<JoinUtxo> utxos =
+    //     await DBOperator().utxoDao.findAllJoinedUtxosById(currencyId);
+    // return utxos.map((utxo) => UnspentTxOut.fromUtxoEntity(utxo)).toList();
 
     //TODO TEST
-    // UnspentTxOut _unspentTxOut = UnspentTxOut(
-    //     id: '9715a35201ba82bd434840e0cc4b0fb8f0497fd7bb45e8b6c3fb4d457c43e179',
-    //     accountcurrencyId: "948c3b58-d1e4-45b2-afed-f3825256beda",
-    //     txId:
-    //         '9715a35201ba82bd434840e0cc4b0fb8f0497fd7bb45e8b6c3fb4d457c43e179',
-    //     vout: 0,
-    //     type: BitcoinTransactionType.WITNESS_V0_KEYHASH,
-    //     data: Uint8List(0),
-    //     amount: Decimal.parse('0.01033221'),
-    //     address: 'tb1qhwyerw5y44lsjlm5ukucg345t4eyvh6f25rkqa',
-    //     chainIndex: 0,
-    //     keyIndex: 0,
-    //     timestamp: DateTime.now().millisecondsSinceEpoch,
-    //     locked: false,
-    //     decimals: 8);
+    UnspentTxOut _unspentTxOut = UnspentTxOut(
+        id: '8f17297a923d88f381e7fb468d651a6655e2f3be6b1466e9e5f8d5601bb35eee',
+        accountcurrencyId: "948c3b58-d1e4-45b2-afed-f3825256beda",
+        txId:
+            '8f17297a923d88f381e7fb468d651a6655e2f3be6b1466e9e5f8d5601bb35eee',
+        vout: 1,
+        type: BitcoinTransactionType.WITNESS_V0_KEYHASH,
+        data: Uint8List(0),
+        amount: Decimal.parse('0.01952035'),
+        address: 'tb1qlp7wtha7hdl5az307s60r4jl0vkqa4tpmac62p',
+        chainIndex: 0,
+        keyIndex: 0,
+        timestamp: DateTime.now().millisecondsSinceEpoch,
+        locked: false,
+        decimals: 8);
 
-    // JoinUtxo _utxo = JoinUtxo.fromUnspentUtxo(_unspentTxOut);
-    // return [_utxo].map((utxo) => UnspentTxOut.fromUtxoEntity(utxo)).toList();
+    JoinUtxo _utxo = JoinUtxo.fromUnspentUtxo(_unspentTxOut);
+    return [_utxo].map((utxo) => UnspentTxOut.fromUtxoEntity(utxo)).toList();
     // TEST(END)
   }
 

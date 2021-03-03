@@ -179,7 +179,6 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
         Log.warning('unsupported Address');
       }
       transaction.addOutput(change, changeAddress, script);
-      Log.warning('unsupported Address');
     }
     // Message
     List<int> msgData = (message == null) ? [] : rlp.toBuffer(message);
