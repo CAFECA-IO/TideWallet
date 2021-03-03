@@ -298,7 +298,9 @@ class BitcoinTransaction extends Transaction {
   void addInput(UnspentTxOut utxo, HashType hashType) {
     Input input = Input(utxo, hashType);
     _inputs.add(input);
-    this.sourceAddresses += this.sourceAddresses + utxo.address;
+    this.sourceAddresses = this.sourceAddresses.isEmpty
+        ? this.sourceAddresses += utxo.address
+        : this.sourceAddresses += '${", " + utxo.address}';
     Log.warning('addInput: $sourceAddresses');
   }
 
@@ -326,8 +328,6 @@ class BitcoinTransaction extends Transaction {
     this.destinationAddresses = this.destinationAddresses.isEmpty
         ? this.destinationAddresses += address
         : this.destinationAddresses += '${", " + address}';
-    Log.warning('addOutput destinationAddresses: $destinationAddresses');
-    Log.debug('addOutput address: $address');
   }
 
   void addData(List<int> data) {
