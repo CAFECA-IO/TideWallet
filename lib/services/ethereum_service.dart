@@ -174,7 +174,7 @@ class EthereumService extends AccountServiceDecorator {
           '${Endpoint.SUSANOO}/blockchain/$blockchainId/gas-limit', payload);
       Log.debug(payload);
       Map<String, dynamic> data = response.data;
-      _gasLimit = int.parse(data['_gasLimit']);
+      _gasLimit = int.parse(data['gasLimit']);
       return Decimal.fromInt(_gasLimit);
     }
   }

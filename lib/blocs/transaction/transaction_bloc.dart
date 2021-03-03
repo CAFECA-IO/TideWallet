@@ -125,6 +125,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         if (result.length == 1) {
           _gasPrice = result[0];
           fee = _gasPrice[TransactionPriority.standard];
+          gasLimit = null;
+          gasPrice = null;
           rule2 = _repo.verifyAmount(Decimal.parse(event.amount), fee: fee);
         } else if (result.length == 2) {
           _gasPrice = result[0];
@@ -163,6 +165,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         Log.debug('getTransactionFee result: $result');
         if (result.length == 1) {
           _gasPrice = result[0];
+          gasLimit = null;
+          gasPrice = null;
           fee = _gasPrice[event.priority];
           rule2 = _repo.verifyAmount(_state.amount, fee: fee);
         } else if (result.length == 2) {

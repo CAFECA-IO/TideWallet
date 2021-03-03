@@ -12,7 +12,6 @@ import '../models/bitcoin_transaction.model.dart';
 import '../helpers/bitcoin_based_utils.dart';
 import '../helpers/logger.dart';
 import '../helpers/rlp.dart' as rlp;
-import '../helpers/cryptor.dart';
 
 class BitcoinBasedTransactionServiceDecorator extends TransactionService {
   static const int _Index_ExternalChain = 0;
@@ -267,6 +266,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
         if (unspentAmount >= (amount + fee)) break;
       }
     }
-    return Decimal.fromInt(vsize);
+    Decimal fee = Decimal.fromInt(vsize) * feePerByte;
+    return fee;
   }
 }
