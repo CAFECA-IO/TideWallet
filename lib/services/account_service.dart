@@ -5,6 +5,7 @@ import '../models/transaction.model.dart';
 import '../models/utxo.model.dart';
 
 abstract class AccountService {
+  int AVERAGE_FETCH_FEE_TIME = 1 * 60 * 60 * 1000; // milliseconds
   int syncInterval = 10 * 10 * 1000;
   ACCOUNT base;
   // String path = "m/84'/3324'/0'";
@@ -28,7 +29,7 @@ abstract class AccountService {
       String blockchainId, String from, String to, String amount, String data);
   Future<int> getNonce(String blockchainId, String address);
   Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId);
-  
+
   getTransactions();
 
   // TODO: Keep or remove

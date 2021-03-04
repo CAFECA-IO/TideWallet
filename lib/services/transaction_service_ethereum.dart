@@ -6,6 +6,7 @@ class EthereumTransactionService
     extends EthereumBasedTransactionServiceDecorator {
   EthereumTransactionService(TransactionService service) : super(service) {
     this.base = ACCOUNT.ETH;
+    this.currencyDecimals = 18;
   }
 
   // @override

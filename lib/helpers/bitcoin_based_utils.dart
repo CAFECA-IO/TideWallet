@@ -52,7 +52,7 @@ Uint8List toPubKeyHash(List<int> pubKey) {
   return pubKeyHash;
 }
 
-Uint8List pubKeyHashToP2pkhScript(List<int> pubKeyHash) {
+Uint8List toP2pkhScript(List<int> pubKeyHash) {
   // Pubkey Hash to P2PKH Script
   List<int> data = [];
   data.add(OP_DUP); //0x76;
@@ -64,17 +64,17 @@ Uint8List pubKeyHashToP2pkhScript(List<int> pubKeyHash) {
   return Uint8List.fromList(data);
 }
 
-Uint8List pubKeyHashToP2shScript(List<int> pubKeyHash) {
+Uint8List toP2shScript(List<int> sriptHash) {
   // Pubkey Hash to P2PKH Script
   List<int> data = [];
   data.add(OP_HASH160);
-  data.add(pubKeyHash.length);
-  data.addAll(pubKeyHash);
+  data.add(sriptHash.length);
+  data.addAll(sriptHash);
   data.add(OP_EQUAL);
   return Uint8List.fromList(data);
 }
 
-Uint8List pubkeyToP2PKScript(List<int> pubKey) {
+Uint8List toP2pkScript(List<int> pubKey) {
   List<int> publicKey = pubKey.length > 33 ? compressedPubKey(pubKey) : pubKey;
   List<int> data = [];
   data.add(publicKey.length);
@@ -85,7 +85,7 @@ Uint8List pubkeyToP2PKScript(List<int> pubKey) {
 
 Uint8List pubkeyToBIP49RedeemScript(List<int> pubKey) {
   List<int> pubKeyHash = toPubKeyHash(pubKey);
-  List<int> rs = [0x00, 0x14];
+  List<int> rs = [OP_0, pubKeyHash.length];
   rs.addAll(pubKeyHash);
   return Uint8List.fromList(rs);
 }
@@ -168,7 +168,7 @@ String pubKeyToP2wpkhAddress(List<int> pubKey, String bech32Hrp) {
 String pubKeyToP2wpkhNestedInP2shAddress(
     List<int> pubKey, int p2shAddressPrefix) {
   List<int> redeemScript = pubkeyToBIP49RedeemScript(pubKey);
-  List<int> fingerprint = toPubKeyHash(redeemScript);
+  List<int> fingerprint = Cryptor.hash160(redeemScript);
   // List<int> checksum = sha256(sha256(fingerprint)).sublist(0, 4);
   // bs58check library 會幫加checksum
   String address =
@@ -194,7 +194,7 @@ List<int> extractScriptPubkeyFromSegwitAddress(String address) {
   // Extract Script Pubkey from SegWit Address
   Segwit _address = segwit.decode(address);
   List<int> scriptPubKey = hex.decode(_address.scriptPubKey);
-  // PBLog.debug('scriptPubKey: $scriptPubKey');
+  // Log.debug('scriptPubKey: $scriptPubKey');
   return scriptPubKey;
 }
 

@@ -108,12 +108,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       );
     }
     if (event is VerifyAmount) {
-      bool _rule2 = false;
+      bool rule2 = false;
       List<dynamic> result;
-      List<bool> _rules = [_state.rules[0], _rule2];
-      Decimal _fee;
-      Decimal _gasPrice;
-      Decimal _gasLimit;
+      List<bool> rules = [_state.rules[0], rule2];
+      Decimal fee;
+      Decimal gasPrice;
+      Decimal gasLimit;
       if (_state.rules[0] && event.amount.isNotEmpty) {
         // TODO TEST
         Log.debug('event is VerifyAmount: ${event.amount}');
@@ -123,93 +123,102 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         // TODO TEST
         Log.debug('getTransactionFee result: $result');
         if (result.length == 1) {
-          _fee = result[0][TransactionPriority.standard];
-          _rule2 = _repo.verifyAmount(Decimal.parse(event.amount), fee: _fee);
+          _gasPrice = result[0];
+          fee = _gasPrice[TransactionPriority.standard];
+          gasLimit = null;
+          gasPrice = null;
+          rule2 = _repo.verifyAmount(Decimal.parse(event.amount), fee: fee);
         } else if (result.length == 2) {
-          _gasPrice = result[0][TransactionPriority.standard];
-          _gasLimit = result[1];
-          _fee = _gasPrice * _gasLimit;
-          _rule2 = _repo.verifyAmount(Decimal.parse(event.amount), fee: _fee);
+          _gasPrice = result[0];
+          gasPrice = result[0][TransactionPriority.standard];
+          gasLimit = result[1];
+          fee = gasPrice * gasLimit;
+          rule2 = _repo.verifyAmount(Decimal.parse(event.amount), fee: fee);
         }
-        _rules = [_state.rules[0], _rule2];
-        Log.debug(_rules);
-        String _feeToFiat =
-            _traderRepo.calculateFeeToFiat(_repo.currency, _fee).toString();
+        rules = [_state.rules[0], rule2];
+        Log.debug(rules);
+        String feeToFiat =
+            _traderRepo.calculateFeeToFiat(_repo.currency, fee).toString();
         yield _state.copyWith(
           amount: Decimal.parse(event.amount),
-          rules: _rules,
-          fee: _fee,
-          feeToFiat: _feeToFiat,
-          gasLimit: _gasLimit,
-          gasPrice: _gasPrice,
+          rules: rules,
+          fee: fee,
+          feeToFiat: feeToFiat,
+          gasLimit: gasLimit,
+          gasPrice: gasPrice,
         );
       } else {
         yield _state.copyWith(
-          rules: _rules,
+          rules: rules,
         );
       }
     }
     if (event is ChangePriority) {
       List<dynamic> result;
-      bool _rule2 = true;
-      Decimal _fee;
+      bool rule2 = true;
+      Decimal fee;
+      Decimal gasPrice;
+      Decimal gasLimit;
       if (_state.rules[0] && _state.rules[1]) {
         result = await _repo.getTransactionFee(
             amount: _state.amount, address: _state.address);
+        Log.debug('getTransactionFee result: $result');
         if (result.length == 1) {
-          _fee = result[0][event.priority];
-          _gasPrice = null;
-          _gasLimit = null;
-          _rule2 = _repo.verifyAmount(_state.amount, fee: _fee);
+          _gasPrice = result[0];
+          gasLimit = null;
+          gasPrice = null;
+          fee = _gasPrice[event.priority];
+          rule2 = _repo.verifyAmount(_state.amount, fee: fee);
         } else if (result.length == 2) {
           _gasPrice = result[0];
-          _gasLimit = result[1];
-          _fee = _gasPrice[event.priority] * _gasLimit;
-          _rule2 = _repo.verifyAmount(_state.amount, fee: _fee);
+          gasPrice = result[0][event.priority];
+          gasLimit = result[1];
+          fee = gasPrice * gasLimit;
+          rule2 = _repo.verifyAmount(_state.amount, fee: fee);
         }
-        String _feeToFiat =
-            _traderRepo.calculateFeeToFiat(_repo.currency, _fee).toString();
+        String feeToFiat =
+            _traderRepo.calculateFeeToFiat(_repo.currency, fee).toString();
         yield _state.copyWith(
             priority: event.priority,
-            fee: _fee,
-            feeToFiat: _feeToFiat,
-            gasLimit: _gasLimit,
-            gasPrice: _gasPrice[event.priority],
-            rules: [_state.rules[0], _rule2]);
+            fee: fee,
+            feeToFiat: feeToFiat,
+            gasLimit: gasLimit,
+            gasPrice: gasPrice,
+            rules: [_state.rules[0], rule2]);
       }
     }
     if (event is InputGasLimit) {
       if (_state.gasPrice == null)
         yield _state.copyWith(gasLimit: Decimal.parse(event.gasLimit));
-      bool _rule2 = true;
-      Decimal _fee = Decimal.zero;
+      bool rule2 = true;
+      Decimal fee = Decimal.zero;
       if (_state.rules[0] && _state.rules[1]) {
-        _fee = Decimal.parse(event.gasLimit) * _state.gasPrice;
-        _rule2 = _repo.verifyAmount(_state.amount, fee: _fee);
-        List<bool> _rules = [_state.rules[0], _rule2];
-        String _feeToFiat =
-            _traderRepo.calculateFeeToFiat(_repo.currency, _fee).toString();
+        fee = Decimal.parse(event.gasLimit) * _state.gasPrice;
+        rule2 = _repo.verifyAmount(_state.amount, fee: fee);
+        List<bool> rules = [_state.rules[0], rule2];
+        String feeToFiat =
+            _traderRepo.calculateFeeToFiat(_repo.currency, fee).toString();
         yield _state.copyWith(
             gasLimit: Decimal.parse(event.gasLimit),
-            rules: _rules,
-            feeToFiat: _feeToFiat);
+            rules: rules,
+            feeToFiat: feeToFiat);
       }
     }
     if (event is InputGasPrice) {
       if (_state.gasLimit == null)
         yield _state.copyWith(gasPrice: Decimal.parse(event.gasPrice));
-      bool _rule2 = true;
-      Decimal _fee = Decimal.zero;
+      bool rule2 = true;
+      Decimal fee = Decimal.zero;
       if (_state.rules[0] && _state.rules[1]) {
-        _fee = _state.gasLimit * Decimal.parse(event.gasPrice);
-        _rule2 = _repo.verifyAmount(_state.amount, fee: _fee);
-        List<bool> _rules = [_state.rules[0], _rule2];
-        String _feeToFiat =
-            _traderRepo.calculateFeeToFiat(_repo.currency, _fee).toString();
+        fee = _state.gasLimit * Decimal.parse(event.gasPrice);
+        rule2 = _repo.verifyAmount(_state.amount, fee: fee);
+        List<bool> rules = [_state.rules[0], rule2];
+        String feeToFiat =
+            _traderRepo.calculateFeeToFiat(_repo.currency, fee).toString();
         yield _state.copyWith(
             gasPrice: Decimal.parse(event.gasPrice),
-            rules: _rules,
-            feeToFiat: _feeToFiat);
+            rules: rules,
+            feeToFiat: feeToFiat);
       }
     }
 

@@ -817,7 +817,7 @@ class _$UtxoDao extends UtxoDao {
   @override
   Future<List<int>> insertUtxos(List<UtxoEntity> utxos) {
     return _utxoEntityInsertionAdapter.insertListAndReturnIds(
-        utxos, OnConflictStrategy.abort);
+        utxos, OnConflictStrategy.replace);
   }
 
   @override

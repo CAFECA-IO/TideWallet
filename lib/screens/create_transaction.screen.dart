@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
+import '../constants/account_config.dart';
 import './transaction_preview.screen.dart';
 import './scan_address.screen.dart';
 import '../blocs/fiat/fiat_bloc.dart';
@@ -299,28 +300,31 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                         ),
                       ),
                       Spacer(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(
-                            t('advanced_settings'),
-                            style: Theme.of(context).textTheme.caption,
-                          ),
-                          // SizedBox(width: 5),
-                          Switch(
-                            activeColor: Theme.of(context).primaryColor,
-                            value: _isSelected,
-                            onChanged: (bool newValue) {
-                              setState(() {
-                                _isSelected = newValue;
-                                _gasPriceController.text =
-                                    state.gasPrice.toString();
-                                _gasController.text = state.gasLimit.toString();
-                              });
-                            },
-                          ),
-                        ],
-                      ),
+                      _repo.currency.accountType == ACCOUNT.ETH
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Text(
+                                  t('advanced_settings'),
+                                  style: Theme.of(context).textTheme.caption,
+                                ),
+                                // SizedBox(width: 5),
+                                Switch(
+                                  activeColor: Theme.of(context).primaryColor,
+                                  value: _isSelected,
+                                  onChanged: (bool newValue) {
+                                    setState(() {
+                                      _isSelected = newValue;
+                                      _gasPriceController.text =
+                                          state.gasPrice.toString();
+                                      _gasController.text =
+                                          state.gasLimit.toString();
+                                    });
+                                  },
+                                ),
+                              ],
+                            )
+                          : SizedBox(),
                       SizedBox(height: 20.0),
                       Container(
                         padding: EdgeInsets.only(bottom: 48),

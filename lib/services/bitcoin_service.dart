@@ -31,6 +31,8 @@ class BitcoinService extends AccountServiceDecorator {
   int _numberOfUsedExternalKey;
   int _numberOfUsedInternalKey;
   int _lastSyncTimestamp;
+  Map<TransactionPriority, Decimal> _fee;
+  int _timestamp; // fetch transactionFee timestamp;
 
   @override
   getTransactions() {
@@ -85,16 +87,23 @@ class BitcoinService extends AccountServiceDecorator {
   Future<Map<TransactionPriority, Decimal>> getTransactionFee(
       String blockchainId) async {
     // TODO getSyncFeeAutomatically
-    APIResponse response = await HTTPAgent()
-        .get('${Endpoint.SUSANOO}/blockchain/$blockchainId/fee');
-    Map<String, dynamic> data = response.data; // FEE will return String
+    if (_fee == null ||
+        DateTime.now().millisecondsSinceEpoch - _timestamp >
+            this.AVERAGE_FETCH_FEE_TIME) {
+      APIResponse response = await HTTPAgent()
+          .get('${Endpoint.SUSANOO}/blockchain/$blockchainId/fee');
+      Map<String, dynamic> data = response.data; // FEE will return String
 
-    Map<TransactionPriority, Decimal> transactionFee = {
-      TransactionPriority.slow: Decimal.parse(data['slow']),
-      TransactionPriority.standard: Decimal.parse(data['standard']),
-      TransactionPriority.fast: Decimal.parse(data['fast']),
-    };
-    return transactionFee;
+      _fee = {
+        TransactionPriority.slow: Decimal.parse(data['slow']),
+        TransactionPriority.standard: Decimal.parse(data['standard']),
+        TransactionPriority.fast: Decimal.parse(data['fast']),
+      };
+
+      _timestamp = DateTime.now().millisecondsSinceEpoch;
+    }
+
+    return _fee;
   }
 
   @override
@@ -118,7 +127,7 @@ class BitcoinService extends AccountServiceDecorator {
     Log.debug('api address: $address');
     Log.debug('api keyIndex: $_numberOfUsedExternalKey');
     String seed =
-        '77a71bd38fe646a9602c73daedacd4a0ac2059b475c3ed6ac8b8ce04a68f920b';
+        'd130e96ae9f5ede60e33c5264d1e2beb03c54b5eb67d8d52773a408287178ccc';
 
     Uint8List publicKey = await PaperWallet.getPubKey(
         hex.decode(seed), 0, _numberOfUsedExternalKey);
@@ -129,32 +138,45 @@ class BitcoinService extends AccountServiceDecorator {
 
   @override
   Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) async {
-    // List<JoinUtxo> utxos =
-    //     await DBOperator().utxoDao.findAllJoinedUtxosById(currencyId);
-    // return utxos.map((utxo) => UnspentTxOut.fromUtxoEntity(utxo)).toList();
+    List<JoinUtxo> utxos =
+        await DBOperator().utxoDao.findAllJoinedUtxosById(currencyId);
+    return utxos.map((utxo) => UnspentTxOut.fromUtxoEntity(utxo)).toList();
 
-    //TODO TEST
-    UnspentTxOut _unspentTxOut = UnspentTxOut(
-        id: '9715a35201ba82bd434840e0cc4b0fb8f0497fd7bb45e8b6c3fb4d457c43e179',
-        accountcurrencyId: "8e951597-e720-424b-83ec-be57c2451a99",
-        txId:
-            '9715a35201ba82bd434840e0cc4b0fb8f0497fd7bb45e8b6c3fb4d457c43e179',
-        vout: 0,
-        type: BitcoinTransactionType.WITNESS_V0_KEYHASH,
-        data: Uint8List(0),
-        amount: Decimal.parse('0.01033221'),
-        chainIndex: 0,
-        keyIndex: 0,
-        timestamp: DateTime.now().millisecondsSinceEpoch,
-        locked: false,
-        decimals: 8);
-    Log.warning('getUnspentTxOut _unspentTxOut: ${_unspentTxOut.type}');
-    Log.debug('getUnspentTxOut _unspentTxOut: ${_unspentTxOut.type.value}');
-
-    JoinUtxo _utxo = JoinUtxo.fromUnspentUtxo(_unspentTxOut);
-    Log.debug('getUnspentTxOut _utxo: ${_utxo.type}');
-
-    return [_utxo].map((utxo) => UnspentTxOut.fromUtxoEntity(utxo)).toList();
+    // TODO TEST
+    // List<JoinUtxo> _utxos = [];
+    // JoinUtxo _utxo = JoinUtxo.fromUnspentUtxo(UnspentTxOut(
+    //     id: 'e4962c7cc3875d5bde9b1dd92fcd2238a09ea5c42bc81f93152909974d8164e7',
+    //     accountcurrencyId: "e6e93f49-ef32-42c4-a7a5-806b6d53778e",
+    //     txId:
+    //         'e4962c7cc3875d5bde9b1dd92fcd2238a09ea5c42bc81f93152909974d8164e7',
+    //     vout: 1,
+    //     type: BitcoinTransactionType.WITNESS_V0_KEYHASH,
+    //     data: Uint8List(0),
+    //     amount: Decimal.parse('0.01156275'),
+    //     address: 'tb1q8x0nw29tvc7zkgc24j2h28mt8mutewcq8zj59h',
+    //     chainIndex: 0,
+    //     keyIndex: 0,
+    //     timestamp: DateTime.now().millisecondsSinceEpoch,
+    //     locked: true,
+    //     decimals: 8));
+    // _utxos.add(_utxo);
+    // JoinUtxo _changeUtxo = JoinUtxo.fromUnspentUtxo(UnspentTxOut(
+    //     id: '0e5d8076addeac19a9fc0c003f1a4c5330892dfb9e7fe362eb50b7c75b470349',
+    //     accountcurrencyId: "e6e93f49-ef32-42c4-a7a5-806b6d53778e",
+    //     txId:
+    //         '0e5d8076addeac19a9fc0c003f1a4c5330892dfb9e7fe362eb50b7c75b470349',
+    //     vout: 1,
+    //     type: BitcoinTransactionType.WITNESS_V0_KEYHASH,
+    //     data: Uint8List(0),
+    //     amount: Decimal.parse('0.01119572'),
+    //     address: 'tb1qa8fuxpg0f8sp8c8yynw9wnuzh9kdcx0nyvu6z6',
+    //     chainIndex: 1,
+    //     keyIndex: 0,
+    //     timestamp: DateTime.now().millisecondsSinceEpoch,
+    //     locked: false,
+    //     decimals: 8));
+    // _utxos.add(_changeUtxo);
+    // return _utxos.map((utxo) => UnspentTxOut.fromUtxoEntity(utxo)).toList();
     // TEST(END)
   }
 
@@ -182,13 +204,10 @@ class BitcoinService extends AccountServiceDecorator {
             .utxoDao
             .insertUtxo(UtxoEntity.fromUnspentUtxo(transaction.changeUtxo));
       }
-      // TODO informBackend
-// await HTTPAgent().post(
-//         '${Endpoint.SUSANOO}/blockchain/$blockchainId/change-utxo',
-//         {"changeUtxo": transaction.changeUtxo});
+      // backend will parse transaction and insert changeUtxo to backend DB
     }
 
-    return [success]; // TODO return transaction
+    return [success, transaction]; // TODO return transaction
   }
 
   Future _syncUTXO() async {
@@ -196,28 +215,15 @@ class BitcoinService extends AccountServiceDecorator {
 
     if (now - this.service.lastSyncTimestamp > this.syncInterval) {
       Log.btc('_syncUTXO');
-      String currencyId = this.service.accountId; // TODO accountcurrencyId
+      String currencyId = this.service.accountId; // TODO is Id correct?
+      Log.btc('_syncUTXO currencyId: $currencyId');
 
-      // APIResponse response = await HTTPAgent()
-      //     .get('${Endpoint.SUSANOO}/wallet/account/txs/uxto/$currencyId');
-      // List<dynamic> datas = response.data;
-      // List<UtxoEntity> utxos = datas
-      //     .map((data) => UtxoEntity(
-      //           data['id'],
-      //           currencyId,
-      //           data['txid'],
-      //           data['vout'],
-      //           data['type'],
-      //           data['amount'],
-      //           data['chain_index'],
-      //           data['key_index'],
-      //           data['script'],
-      //           data['timestamp'],
-      //           false,
-      //           BitcoinTransaction.DEFAULT_SEQUENCE,
-      //         ))
-      //     .toList();
-      // DBOperator().utxoDao.insertUtxos(utxos);
+      APIResponse response = await HTTPAgent()
+          .get('${Endpoint.SUSANOO}/wallet/account/txs/uxto/$currencyId');
+      List<dynamic> datas = response.data;
+      List<UtxoEntity> utxos =
+          datas.map((data) => UtxoEntity.fromJson(currencyId, data)).toList();
+      DBOperator().utxoDao.insertUtxos(utxos);
     }
   }
 }

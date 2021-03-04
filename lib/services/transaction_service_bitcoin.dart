@@ -7,6 +7,7 @@ class BitcoinTransactionService
     extends BitcoinBasedTransactionServiceDecorator {
   BitcoinTransactionService(TransactionService service) : super(service) {
     this.base = ACCOUNT.BTC;
+    this.currencyDecimals = 8;
     this.p2pkhAddressPrefixTestnet = 0x6F;
     this.p2pkhAddressPrefixMainnet = 0;
     this.p2shAddressPrefixTestnet = 0xC4;
