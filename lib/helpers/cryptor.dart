@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:encrypt/encrypt.dart' as encrypt;
 
 import 'package:bs58check/bs58check.dart';
 import 'package:sha3/sha3.dart';
@@ -58,5 +59,40 @@ class Cryptor {
     Uint8List combine = Uint8List.fromList(
         [payload, hash.sublist(0, 4)].expand((i) => i).toList(growable: false));
     return base58.encode(combine);
+  }
+
+  static String aesEncrypt(String message, String secret, String iv) {
+    if (message == null) return null;
+    final key = encrypt.Key.fromBase16(secret);
+
+    final encrypter =
+        encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
+
+    final encrypted = encrypter.encrypt(message, iv: encrypt.IV.fromBase16(iv));
+
+    return encrypted.base16;
+  }
+
+  static String aesDecrypt(String message, String secret, String iv) {
+    if (message == null) return null;
+    String decrypted;
+    final key = encrypt.Key.fromBase16(secret);
+    final _iv = encrypt.IV.fromBase16(iv);
+    try {
+      final encrypter =
+          encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
+      decrypted =
+          encrypter.decrypt(encrypt.Encrypted.fromBase16(message), iv: _iv);
+    } catch (_) {
+      final encrypter = encrypt.Encrypter(
+          encrypt.AES(key, mode: encrypt.AESMode.cbc, padding: null));
+      decrypted =
+          encrypter.decrypt(encrypt.Encrypted.fromBase16(message), iv: _iv);
+    }
+
+    // final encrypter =
+    //     encrypt.Encrypter(encrypt.AES(decryptKey, mode: encrypt.AESMode.cbc));
+
+    return decrypted;
   }
 }
