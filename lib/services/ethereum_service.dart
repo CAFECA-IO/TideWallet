@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:convert/convert.dart';
 import 'package:decimal/decimal.dart';
 
@@ -11,9 +12,11 @@ import '../models/api_response.mode.dart';
 import '../constants/account_config.dart';
 import '../constants/endpoint.dart';
 import '../services/account_service.dart';
+import '../helpers/cryptor.dart';
 import '../helpers/logger.dart';
-import '../cores/account.dart';
 import '../helpers/http_agent.dart';
+import '../cores/account.dart';
+import '../cores/paper_wallet.dart';
 import '../database/db_operator.dart';
 import '../database/entity/account_currency.dart';
 import '../database/entity/currency.dart';
@@ -208,27 +211,25 @@ class EthereumService extends AccountServiceDecorator {
           '${Endpoint.SUSANOO}/wallet/account/address/$currencyId/receive');
       Map data = response.data;
       String address = data['address'];
-      Log.debug('address: $address');
       this._address = address;
-// TEST
-      // // IMPORTANT: seed cannot reach
-      // String seed =
-      //     '74a0b10d85dea97d53ff42a89f34a8447bbd041dcb573333358a03d5d1cfff0e';
-      // '59f45d6afb9bc00380fed2fcfdd5b36819acab89054980ad6e5ff90ba19c5347'; // 上一個有eth的 seed
-      // Uint8List publicKey =
-      //     await PaperWallet.getPubKey(hex.decode(seed), 0, 0, compressed: false);
-      // Uint8List privKey = await PaperWallet.getPrivKey(hex.decode(seed), 0, 0);
-      // Log.debug('privKey: ${hex.encode(privKey)}');
-      // String caculatedAddress = '0x' +
-      //     hex
-      //         .encode(Cryptor.keccak256round(
-      //             publicKey.length % 2 != 0 ? publicKey.sublist(1) : publicKey,
-      //             round: 1))
-      //         .substring(24, 64);
-
-      // Log.debug('caculatedAddress: $caculatedAddress');
-// TEST(end)
     }
+    Log.debug('_address: ${this._address}');
+// TEST
+    // // IMPORTANT: seed cannot reach
+    String seed =
+        'd130e96ae9f5ede60e33c5264d1e2beb03c54b5eb67d8d52773a408287178ccc';
+    // '74a0b10d85dea97d53ff42a89f34a8447bbd041dcb573333358a03d5d1cfff0e';
+    // '59f45d6afb9bc00380fed2fcfdd5b36819acab89054980ad6e5ff90ba19c5347'; // 上一個有eth的 seed
+    Uint8List publicKey =
+        await PaperWallet.getPubKey(hex.decode(seed), 0, 0, compressed: false);
+    String caculatedAddress = '0x' +
+        hex
+            .encode(Cryptor.keccak256round(
+                publicKey.length % 2 != 0 ? publicKey.sublist(1) : publicKey,
+                round: 1))
+            .substring(24, 64);
+    Log.debug('caculatedAddress: $caculatedAddress');
+// TEST(end)
     return [this._address, null];
   }
 

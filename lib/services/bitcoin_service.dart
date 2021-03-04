@@ -127,7 +127,7 @@ class BitcoinService extends AccountServiceDecorator {
     Log.debug('api address: $address');
     Log.debug('api keyIndex: $_numberOfUsedExternalKey');
     String seed =
-        '9618a6e9bd6e47fe3f3e4e977ed010e67e2ff6cfc7f19d68b73113a914ee6e85';
+        'd130e96ae9f5ede60e33c5264d1e2beb03c54b5eb67d8d52773a408287178ccc';
 
     Uint8List publicKey = await PaperWallet.getPubKey(
         hex.decode(seed), 0, _numberOfUsedExternalKey);
@@ -140,27 +140,32 @@ class BitcoinService extends AccountServiceDecorator {
   Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) async {
     List<JoinUtxo> utxos =
         await DBOperator().utxoDao.findAllJoinedUtxosById(currencyId);
+    // TODO TEST
+    // return utxos.map((utxo) => UnspentTxOut.fromUtxoEntity(utxo)).toList();
+    if (utxos.isEmpty) {
+      UtxoEntity _utxo = UtxoEntity.fromUnspentUtxo(UnspentTxOut(
+          id:
+              'e4962c7cc3875d5bde9b1dd92fcd2238a09ea5c42bc81f93152909974d8164e7',
+          accountcurrencyId: "e6e93f49-ef32-42c4-a7a5-806b6d53778e",
+          txId:
+              'e4962c7cc3875d5bde9b1dd92fcd2238a09ea5c42bc81f93152909974d8164e7',
+          vout: 1,
+          type: BitcoinTransactionType.WITNESS_V0_KEYHASH,
+          data: Uint8List(0),
+          amount: Decimal.parse('0.01156275'),
+          address: 'tb1q8x0nw29tvc7zkgc24j2h28mt8mutewcq8zj59h',
+          chainIndex: 0,
+          keyIndex: 0,
+          timestamp: DateTime.now().millisecondsSinceEpoch,
+          locked: false,
+          decimals: 8));
+      await DBOperator().utxoDao.insertUtxo(_utxo);
+    }
+
+    utxos = await DBOperator()
+        .utxoDao
+        .findAllJoinedUtxosById("e6e93f49-ef32-42c4-a7a5-806b6d53778e");
     return utxos.map((utxo) => UnspentTxOut.fromUtxoEntity(utxo)).toList();
-
-    //TODO TEST
-    // UnspentTxOut _unspentTxOut = UnspentTxOut(
-    //     id: 'a54799e85b8477a24a213dc8969bd7827a112a71569aab11b3023ee7626ddbae',
-    //     accountcurrencyId: "948c3b58-d1e4-45b2-afed-f3825256beda",
-    //     txId:
-    //         'a54799e85b8477a24a213dc8969bd7827a112a71569aab11b3023ee7626ddbae',
-    //     vout: 1,
-    //     type: BitcoinTransactionType.WITNESS_V0_KEYHASH,
-    //     data: Uint8List(0),
-    //     amount: Decimal.parse('0.01952035'),
-    //     address: 'tb1qmgs58vsyc4st6u2h577a8scpe9y2kk92pg4pjh',
-    //     chainIndex: 1,
-    //     keyIndex: 0,
-    //     timestamp: DateTime.now().millisecondsSinceEpoch,
-    //     locked: false,
-    //     decimals: 8);
-
-    // JoinUtxo _utxo = JoinUtxo.fromUnspentUtxo(_unspentTxOut);
-    // return [_utxo].map((utxo) => UnspentTxOut.fromUtxoEntity(utxo)).toList();
     // TEST(END)
   }
 
@@ -188,10 +193,7 @@ class BitcoinService extends AccountServiceDecorator {
             .utxoDao
             .insertUtxo(UtxoEntity.fromUnspentUtxo(transaction.changeUtxo));
       }
-      // TODO informBackend
-// await HTTPAgent().post(
-//         '${Endpoint.SUSANOO}/blockchain/$blockchainId/change-utxo',
-//         {"changeUtxo": transaction.changeUtxo});
+      // backend will parse transaction and insert changeUtxo to backend DB
     }
 
     return [success]; // TODO return transaction
@@ -202,28 +204,15 @@ class BitcoinService extends AccountServiceDecorator {
 
     if (now - this.service.lastSyncTimestamp > this.syncInterval) {
       Log.btc('_syncUTXO');
-      String currencyId = this.service.accountId; // TODO accountcurrencyId
+      String currencyId = this.service.accountId; // TODO is Id correct?
+      Log.btc('_syncUTXO currencyId: $currencyId');
 
-      // APIResponse response = await HTTPAgent()
-      //     .get('${Endpoint.SUSANOO}/wallet/account/txs/uxto/$currencyId');
-      // List<dynamic> datas = response.data;
-      // List<UtxoEntity> utxos = datas
-      //     .map((data) => UtxoEntity(
-      //           data['id'],
-      //           currencyId,
-      //           data['txid'],
-      //           data['vout'],
-      //           data['type'],
-      //           data['amount'],
-      //           data['chain_index'],
-      //           data['key_index'],
-      //           data['script'],
-      //           data['timestamp'],
-      //           false,
-      //           BitcoinTransaction.DEFAULT_SEQUENCE,
-      //         ))
-      //     .toList();
-      // DBOperator().utxoDao.insertUtxos(utxos);
+      APIResponse response = await HTTPAgent()
+          .get('${Endpoint.SUSANOO}/wallet/account/txs/uxto/$currencyId');
+      List<dynamic> datas = response.data;
+      List<UtxoEntity> utxos =
+          datas.map((data) => UtxoEntity.fromJson(currencyId, data)).toList();
+      DBOperator().utxoDao.insertUtxos(utxos);
     }
   }
 }
