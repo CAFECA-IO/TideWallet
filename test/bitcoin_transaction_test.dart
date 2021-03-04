@@ -166,6 +166,7 @@ void main() {
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiJlYTdkMGM0Yy02MDI0LTQxMjUtOTIwNy1mNDJjOWI1YjIwMDUiLCJpYXQiOjE2MTQ4MjAxNzksImV4cCI6MTY0NjM1NjE3OX0.13WjtK-HSwHsMMhKOK9bH5zf-VirRx8Q2dtrr8-5OP0');
       TransactionRepository _repo = TransactionRepository();
       _repo.setCurrency(Currency(
+          blockchainId: '80000001',
           accountType: ACCOUNT.BTC,
           id: 'e6e93f49-ef32-42c4-a7a5-806b6d53778e',
           decimals: 8,
@@ -176,8 +177,8 @@ void main() {
           fee: Decimal.parse('0.00016703'));
       BitcoinTransaction transaction = result[0];
       Log.debug('transaction: ${hex.encode(transaction.serializeTransaction)}');
-      bool success = await _repo.publishTransaction(transaction, result[1]);
-      Log.warning('PublishTransaction success: $success'); //--
+      // bool success = await _repo.publishTransaction(transaction, result[1]);
+      // Log.warning('PublishTransaction success: $success'); //--
     });
   });
 }

@@ -140,32 +140,43 @@ class BitcoinService extends AccountServiceDecorator {
   Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) async {
     List<JoinUtxo> utxos =
         await DBOperator().utxoDao.findAllJoinedUtxosById(currencyId);
-    // TODO TEST
-    // return utxos.map((utxo) => UnspentTxOut.fromUtxoEntity(utxo)).toList();
-    if (utxos.isEmpty) {
-      UtxoEntity _utxo = UtxoEntity.fromUnspentUtxo(UnspentTxOut(
-          id:
-              'e4962c7cc3875d5bde9b1dd92fcd2238a09ea5c42bc81f93152909974d8164e7',
-          accountcurrencyId: "e6e93f49-ef32-42c4-a7a5-806b6d53778e",
-          txId:
-              'e4962c7cc3875d5bde9b1dd92fcd2238a09ea5c42bc81f93152909974d8164e7',
-          vout: 1,
-          type: BitcoinTransactionType.WITNESS_V0_KEYHASH,
-          data: Uint8List(0),
-          amount: Decimal.parse('0.01156275'),
-          address: 'tb1q8x0nw29tvc7zkgc24j2h28mt8mutewcq8zj59h',
-          chainIndex: 0,
-          keyIndex: 0,
-          timestamp: DateTime.now().millisecondsSinceEpoch,
-          locked: false,
-          decimals: 8));
-      await DBOperator().utxoDao.insertUtxo(_utxo);
-    }
-
-    utxos = await DBOperator()
-        .utxoDao
-        .findAllJoinedUtxosById("e6e93f49-ef32-42c4-a7a5-806b6d53778e");
     return utxos.map((utxo) => UnspentTxOut.fromUtxoEntity(utxo)).toList();
+
+    // TODO TEST
+    // List<JoinUtxo> _utxos = [];
+    // JoinUtxo _utxo = JoinUtxo.fromUnspentUtxo(UnspentTxOut(
+    //     id: 'e4962c7cc3875d5bde9b1dd92fcd2238a09ea5c42bc81f93152909974d8164e7',
+    //     accountcurrencyId: "e6e93f49-ef32-42c4-a7a5-806b6d53778e",
+    //     txId:
+    //         'e4962c7cc3875d5bde9b1dd92fcd2238a09ea5c42bc81f93152909974d8164e7',
+    //     vout: 1,
+    //     type: BitcoinTransactionType.WITNESS_V0_KEYHASH,
+    //     data: Uint8List(0),
+    //     amount: Decimal.parse('0.01156275'),
+    //     address: 'tb1q8x0nw29tvc7zkgc24j2h28mt8mutewcq8zj59h',
+    //     chainIndex: 0,
+    //     keyIndex: 0,
+    //     timestamp: DateTime.now().millisecondsSinceEpoch,
+    //     locked: true,
+    //     decimals: 8));
+    // _utxos.add(_utxo);
+    // JoinUtxo _changeUtxo = JoinUtxo.fromUnspentUtxo(UnspentTxOut(
+    //     id: '0e5d8076addeac19a9fc0c003f1a4c5330892dfb9e7fe362eb50b7c75b470349',
+    //     accountcurrencyId: "e6e93f49-ef32-42c4-a7a5-806b6d53778e",
+    //     txId:
+    //         '0e5d8076addeac19a9fc0c003f1a4c5330892dfb9e7fe362eb50b7c75b470349',
+    //     vout: 1,
+    //     type: BitcoinTransactionType.WITNESS_V0_KEYHASH,
+    //     data: Uint8List(0),
+    //     amount: Decimal.parse('0.01119572'),
+    //     address: 'tb1qa8fuxpg0f8sp8c8yynw9wnuzh9kdcx0nyvu6z6',
+    //     chainIndex: 1,
+    //     keyIndex: 0,
+    //     timestamp: DateTime.now().millisecondsSinceEpoch,
+    //     locked: false,
+    //     decimals: 8));
+    // _utxos.add(_changeUtxo);
+    // return _utxos.map((utxo) => UnspentTxOut.fromUtxoEntity(utxo)).toList();
     // TEST(END)
   }
 
@@ -196,7 +207,7 @@ class BitcoinService extends AccountServiceDecorator {
       // backend will parse transaction and insert changeUtxo to backend DB
     }
 
-    return [success]; // TODO return transaction
+    return [success, transaction]; // TODO return transaction
   }
 
   Future _syncUTXO() async {

@@ -269,8 +269,10 @@ class BitcoinTransaction extends Transaction {
       this.note});
 
   BitcoinTransaction.prepareTransaction(bool publish, SegwitType segwitType,
+      this.amount, this.fee, Uint8List note,
       {int lockTime}) // in Satoshi
-      : _segwitType = segwitType {
+      : _segwitType = segwitType,
+        this.note = note ?? Uint8List(0) {
     _inputs = List<Input>();
     _outputs = List<Output>();
     _segwitType = segwitType ?? SegwitType.nonSegWit;

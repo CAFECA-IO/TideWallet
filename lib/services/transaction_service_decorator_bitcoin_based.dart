@@ -89,8 +89,8 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     int changeIndex,
     String changeAddress,
   }) {
-    BitcoinTransaction transaction =
-        BitcoinTransaction.prepareTransaction(publish, this.segwitType);
+    BitcoinTransaction transaction = BitcoinTransaction.prepareTransaction(
+        publish, this.segwitType, amount, fee, message);
     // to
     if (to.contains(':')) {
       to = to.split(':')[1];
