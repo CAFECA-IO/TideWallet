@@ -11,6 +11,7 @@ part 'user_state.dart';
 class UserBloc extends Bloc<UserEvent, UserState> {
   UserRepository _repo;
   AccountRepository _accountRepo;
+
   UserBloc(this._repo, this._accountRepo) : super(UserInitial());
 
   @override
@@ -21,8 +22,12 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       bool existed = await _repo.checkUser();
 
       if (existed) {
-        _accountRepo.coreInit();
+        await _accountRepo.coreInit();
+        await Future.delayed(Duration(milliseconds: 100));
+
         yield UserSuccess();
+      } else {
+        yield UserFail();
       }
     }
 
@@ -30,7 +35,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       yield UserLoading();
       bool success = await _repo.createUser(event.password, event.walletName);
       if (success) {
-        _accountRepo.coreInit();
+        await _accountRepo.coreInit();
         yield UserSuccess();
       } else {
         yield UserFail();
@@ -39,13 +44,13 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
     if (event is UserRestore) {
       yield UserLoading();
-      _accountRepo.coreInit();
+      await _accountRepo.coreInit();
 
       yield UserSuccess();
     }
 
     if (event is UserReset) {
-      yield UserInitial();
+      yield UserFail();
     }
   }
 }

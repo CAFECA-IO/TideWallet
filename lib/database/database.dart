@@ -35,7 +35,8 @@ part 'database.g.dart'; // the generated code will be there
   ExchangeRateEntity
 ], views: [
   JoinCurrency,
-  JoinUtxo
+  JoinUtxo,
+  CurrencyWithAccountId
 ])
 abstract class AppDatabase extends FloorDatabase {
   UserDao get userDao;

@@ -18,11 +18,11 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
 
   AccountBloc(this._repo, this._traderRepo) : super(AccountInitial()) {
     _subscription?.cancel();
+
     this._repo.listener.listen((msg) {
       if (msg.evt == ACCOUNT_EVT.OnUpdateAccount) {
         this.add(UpdateAccount(msg.value));
       }
-
 
       if (msg.evt == ACCOUNT_EVT.ClearAll) {
         this.add(CleanAccount());
@@ -74,7 +74,8 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
         });
       });
 
-      _accounts.sort((a, b) => a.accountType.index.compareTo(b.accountType.index));
+      _accounts
+          .sort((a, b) => a.accountType.index.compareTo(b.accountType.index));
 
       yield AccountLoaded(_accounts, total: _total);
     }

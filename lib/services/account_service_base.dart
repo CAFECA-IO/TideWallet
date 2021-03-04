@@ -176,6 +176,8 @@ class AccountServiceBase extends AccountService {
   }
 
   Future _getSupportedToken() async {
+    final tokens = await DBOperator().currencyDao.findAllCurrenciesByAccountId(this._accountId);
+    if (tokens.isNotEmpty) return;
     AccountEntity acc =
         await DBOperator().accountDao.findAccount(this._accountId);
 

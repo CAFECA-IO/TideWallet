@@ -37,19 +37,16 @@ import './blocs/receive/receive_bloc.dart';
 // import './blocs/update_password/update_password_bloc.dart';
 import './helpers/i18n.dart';
 import './repositories/trader_repository.dart';
-import './database/db_operator.dart';
 import 'theme.dart';
 
 void main() async {
-  Bloc.observer = ObserverDelegate();
 
   runApp(MyApp());
+  Bloc.observer = ObserverDelegate();
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
-
-  await DBOperator().init();
 }
 
 class MyApp extends StatelessWidget {

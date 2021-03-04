@@ -87,3 +87,23 @@ class CurrencyEntity {
 //     this.type,
 //   });
 // }
+
+@DatabaseView(
+    'SELECT * FROM Currency INNER JOIN AccountCurrency ON Currency.currency_id = AccountCurrency.currency_id',
+    viewName: 'CurrencyWithAccountId')
+class CurrencyWithAccountId {
+  @primaryKey
+  @ColumnInfo(name: 'currency_id')
+  final String currencyId;
+
+  @ColumnInfo(name: 'account_id')
+  final String accountId;
+
+  final String symbol;
+
+  CurrencyWithAccountId({
+    this.currencyId,
+    this.accountId,
+    this.symbol,
+  });
+}
