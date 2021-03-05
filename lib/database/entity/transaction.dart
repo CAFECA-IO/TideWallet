@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:floor/floor.dart';
 
 import 'account_currency.dart';
@@ -19,10 +21,10 @@ class TransactionEntity {
   final String txId;
 
   @ColumnInfo(name: 'source_address')
-  final String sourceAddress;
+  String sourceAddress;
 
   @ColumnInfo(name: 'destinction_address')
-  final String destinctionAddress;
+  String destinctionAddress;
 
   final int timestamp;
 
@@ -34,7 +36,7 @@ class TransactionEntity {
   @ColumnInfo(name: 'gas_used')
   final int gasUsed;
 
-  final int block;
+  // final int block;
 
   // final int locktime;
 
@@ -59,11 +61,41 @@ class TransactionEntity {
       this.gasPrice,
       this.gasUsed,
       this.note,
-      this.block,
+      // this.block,
       // this.locktime,
       this.fee,
       this.status,
       this.timestamp,
       this.direction,
       this.amount});
+
+  TransactionEntity.fromJson(
+      String accountcurrencyId, Map<String, dynamic> data)
+      : this.accountcurrencyId = accountcurrencyId,
+        this.transactionId = data['txid'],
+        this.amount = data['amount'].toString(),
+        this.txId = data['txid'],
+        this.confirmation = data['confirmations'],
+        this.gasPrice = data['gas_price'],
+        this.gasUsed = data['gas_limit'],
+        this.fee = data['fee'].toString(),
+        this.direction = data['direction'],
+        this.status = data['status'],
+        this.timestamp = data['timestamp'],
+        this.note = data['note'] {
+    List sourceAddress =
+        data['source_addresses']; // json.decode(data['source_addresses']);
+    List destinctionAddress = data[
+        'destination_addresses']; //json.decode(data['destination_addresses']);
+    for (var address in sourceAddress) {
+      this.sourceAddress = this.sourceAddress == null
+          ? this.sourceAddress = address
+          : this.sourceAddress += '${", " + address}';
+    }
+    for (var address in destinctionAddress) {
+      this.destinctionAddress = this.destinctionAddress == null
+          ? this.destinctionAddress = address
+          : this.destinctionAddress += '${", " + address}';
+    }
+  }
 }
