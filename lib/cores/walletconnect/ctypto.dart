@@ -1,4 +1,4 @@
-import '../../helpers/cryptor.dart';
+part of 'core.dart';
 
 class Crypto {
   static String encrypt(String message, String secret, String iv) {

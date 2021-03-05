@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tidewallet3/widgets/buttons/primary_button.dart';
 
 import '../blocs/walletconnect/walletconnect_bloc.dart';
 import '../widgets/appBar.dart';
@@ -35,7 +36,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
     return BlocBuilder<WalletConnectBloc, WalletConnectState>(
       cubit: _bloc,
       builder: (context, state) {
-        if (state is! WalletconnectLoaded) {
+        if (state is! WalletConnectLoaded) {
           return Scaffold(
             extendBodyBehindAppBar: true,
             appBar: GeneralAppbar(
@@ -56,7 +57,9 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
           appBar: GeneralAppbar(
             routeName: WalletConnectScreen.routeName,
           ),
-          body: Container(),
+          body: Container(child: PrimaryButton('Approve', () {
+            _bloc.add(ApproveWC());
+          }),),
         );
       },
     );

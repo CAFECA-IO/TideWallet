@@ -10,7 +10,7 @@ part 'walletconnect_event.dart';
 part 'walletconnect_state.dart';
 
 class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
-  WalletConnectBloc() : super(WalletconnectInitial());
+  WalletConnectBloc() : super(WalletConnectInitial());
   Connector _connector;
 
   @override
@@ -26,17 +26,21 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
     WalletConnectEvent event,
   ) async* {
     if (event is ScanWC) {
-      if (state is WalletconnectInitial || state is WalletconnectError) {
+      if (state is WalletConnectInitial || state is WalletConnectError) {
         final connection = Connector.parseUri(event.uri);
 
         if (connection == null) {
-          yield WalletconnectError(WC_ERROR.URI);
+          yield WalletConnectError(WC_ERROR.URI);
         } else {
           _connector = Connector(connection);
 
-          yield WalletconnectLoaded();
+          yield WalletConnectLoaded();
         }
       }
+    }
+
+    if (event is ApproveWC) {
+      _connector.approveSession();
     }
   }
 }

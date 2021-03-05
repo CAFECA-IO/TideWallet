@@ -1,3 +1,5 @@
+part of 'core.dart';
+
 enum ERROR_SESSION {
   CONNECTED
 }

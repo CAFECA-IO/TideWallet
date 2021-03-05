@@ -12,3 +12,5 @@ class ScanWC extends WalletConnectEvent {
 
   ScanWC(this.uri);
 }
+
+class ApproveWC extends WalletConnectEvent {}

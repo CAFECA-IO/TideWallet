@@ -1,7 +1,18 @@
-import 'transport.dart';
-import 'mode.dart';
-import 'event_manager.dart';
-import 'error.dart';
+import 'dart:convert';
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+// import 'package:socket_io_client/socket_io_client.dart';
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+
+import '../../helpers/cryptor.dart';
+
+part 'error.dart';
+part 'ctypto.dart';
+part 'transport.dart';
+part 'event_manager.dart';
+part 'mode.dart';
 
 class Connector {
   String protocol = 'wc';
@@ -9,13 +20,16 @@ class Connector {
   int version = 1;
   String _bridge = '';
   String _clientId;
-  ClientMeta _clientMeta;
+  PeerMeta _clientMeta;
   bool connected = false;
   Session session;
   EventManager _eventManager;
   Transport _transport;
   String _handshakeTopic;
   int _handshakeId;
+  String _peerId;
+  PeerMeta _peerMeta;
+
 
   set bridge(String value) {
     this._bridge = value;
@@ -29,10 +43,22 @@ class Connector {
     this._clientId = value;
   }
 
+   set handshakeId(int value) {
+    this._handshakeId = value;
+  }
+
+  set peerId(String value) {
+    this._peerId = value;
+  }
+
+  set peerMeta(PeerMeta value) {
+    this._peerMeta = value;
+  }
+
   String get bridge => this._bridge;
   String get key => this._key;
   String get clientId => this._clientId;
-  ClientMeta get clientMeta => this._clientMeta;
+  PeerMeta get clientMeta => this._clientMeta;
 
   Connector(ConnectionEl opt) {
     this._eventManager = EventManager();
@@ -42,8 +68,9 @@ class Connector {
     this._transport.subscribe(opt.topic);
 
     // this._handshakeTopic = opt.topic;
-    // this._key = opt.key;
+    this._key = opt.key;
 
+    this._subscribeToInternalEvents();
     this._initTransport();
   }
 
@@ -63,6 +90,10 @@ class Connector {
     }
   }
 
+  approveSession() {
+
+  }
+
   _initTransport() {
     this._transport.events.listen((event) {
       switch (event.evt) {
@@ -76,13 +107,29 @@ class Connector {
     });
   }
 
-  _handleIncomingMessages(v) {
-    print(v);
+  _handleIncomingMessages(Response v) {
+    final payload = WCPayload.fromJson(json.decode(v.payload));
+    final d = Crypto.decrypto(payload.data, this._key, payload.iv);
+
+    this._eventManager.trigger(WCRequest.fromJson(json.decode(d)));
   }
 
-  _formatRequest(Map req) {}
+  _subscribeToInternalEvents() {
+    this.onEvt('wc_sessionRequest', (WCRequest req) {
+      this.handshakeId = req.id;
+      this.peerId = req.params[0]['peerId'];
 
-  _formatResponse() {}
+      // TODO: 
+      this.peerMeta = null;
+
+      // TODO: 
+      // trigger "session_request" event
+    });
+  }
+
+  // _formatRequest(Map req) {}
+
+  // _formatResponse() {}
 
   verifyHMAC() {}
 

@@ -83,7 +83,6 @@ class AccountServiceBase extends AccountService {
     } else {
       this._lastSyncTimestamp = 0;
     }
-
     _sync();
 
     _timer = Timer.periodic(Duration(milliseconds: this._syncInterval), (_) {

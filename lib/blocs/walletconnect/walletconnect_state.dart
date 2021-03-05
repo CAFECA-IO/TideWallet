@@ -11,14 +11,16 @@ abstract class WalletConnectState extends Equatable {
   List<Object> get props => [];
 }
 
-class WalletconnectInitial extends WalletConnectState {}
+class WalletConnectInitial extends WalletConnectState {}
 
-class WalletconnectLoaded extends WalletConnectState {}
+class WalletConnectLoaded extends WalletConnectState {}
 
-class WalletconnectError extends WalletConnectState {
+class WalletConnectApproved extends WalletConnectState {}
+
+class WalletConnectError extends WalletConnectState {
   final WC_ERROR error;
 
-  WalletconnectError(this.error);
+  WalletConnectError(this.error);
 
   @override
   List<Object> get props => [error];

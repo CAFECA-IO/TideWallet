@@ -1,17 +1,13 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-// import 'package:socket_io_client/socket_io_client.dart';
-import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+part of 'core.dart';
 
 // import 'package:socket_io_client/socket_io_client.dart' as IO;
+
 
 enum T_EVT { MESSAGE, OPEN, CLOSE, ERROR }
 
 class TransportEvent {
   final T_EVT evt;
-  final String value;
+  final Response value;
 
   TransportEvent(this.evt, this.value);
 }
@@ -85,10 +81,11 @@ class Transport {
   _socketReceive(String message) {
     try {
       final result = json.decode(message);
-      this._controller.add(TransportEvent(T_EVT.MESSAGE, message));
+      final res = Response.fromJson(result);
+      this._controller.add(TransportEvent(T_EVT.MESSAGE, res));
 
       this._socketSend({
-        'topic': result['topic'],
+        'topic': res.topic,
         'type': "ack",
         'payload': "",
         'silent': true,

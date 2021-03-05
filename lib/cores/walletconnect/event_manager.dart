@@ -1,3 +1,5 @@
+part of 'core.dart';
+
 class Event {
   final String evt;
   final Function callback;
@@ -8,10 +10,10 @@ class Event {
 class EventManager {
   final List<Event> _events = [];
 
-  trigger(String evt) {
-    final evtIndex = this._events.indexWhere((event) => event.evt == evt);
+  trigger(WCRequest evt) {
+    final evtIndex = this._events.indexWhere((event) => event.evt == evt.method);
     if (evtIndex > -1) {
-      this._events[evtIndex].callback();
+      this._events[evtIndex].callback(evt);
     }
   }
 
