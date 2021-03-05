@@ -114,6 +114,8 @@ class _$AppDatabase extends AppDatabase {
             '''CREATE VIEW IF NOT EXISTS `JoinCurrency` AS SELECT * FROM AccountCurrency INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id INNER JOIN Account ON AccountCurrency.account_id = Account.account_id INNER JOIN Network ON Account.network_id = Network.network_id''');
         await database.execute(
             '''CREATE VIEW IF NOT EXISTS `JoinUtxo` AS SELECT * FROM Utxo INNER JOIN AccountCurrency ON Utxo.accountcurrency_id = AccountCurrency.accountcurrency_id INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id''');
+        await database.execute(
+            '''CREATE VIEW IF NOT EXISTS `CurrencyWithAccountId` AS SELECT * FROM Currency INNER JOIN AccountCurrency ON Currency.currency_id = AccountCurrency.currency_id''');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -337,6 +339,18 @@ class _$CurrencyDao extends CurrencyDao {
             totalSupply: row['total_supply'] as String,
             type: row['type'] as String,
             image: row['image'] as String));
+  }
+
+  @override
+  Future<List<CurrencyWithAccountId>> findAllCurrenciesByAccountId(
+      String id) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM CurrencyWithAccountId where account_id = ?',
+        arguments: <dynamic>[id],
+        mapper: (Map<String, dynamic> row) => CurrencyWithAccountId(
+            currencyId: row['currency_id'] as String,
+            accountId: row['account_id'] as String,
+            symbol: row['symbol'] as String));
   }
 
   @override
@@ -817,7 +831,7 @@ class _$UtxoDao extends UtxoDao {
   @override
   Future<List<int>> insertUtxos(List<UtxoEntity> utxos) {
     return _utxoEntityInsertionAdapter.insertListAndReturnIds(
-        utxos, OnConflictStrategy.abort);
+        utxos, OnConflictStrategy.replace);
   }
 
   @override

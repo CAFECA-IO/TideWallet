@@ -12,7 +12,6 @@ import '../models/bitcoin_transaction.model.dart';
 import '../helpers/bitcoin_based_utils.dart';
 import '../helpers/logger.dart';
 import '../helpers/rlp.dart' as rlp;
-import '../helpers/cryptor.dart';
 
 class BitcoinBasedTransactionServiceDecorator extends TransactionService {
   static const int _Index_ExternalChain = 0;
@@ -49,36 +48,27 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
   }
 
   Transaction _signTransaction(BitcoinTransaction transaction) {
-    Log.debug('_signTransaction: ${transaction.serializeTransaction}');
+    Log.btc('_unsignTransaction: ${transaction.serializeTransaction}');
+    Log.btc(
+        '_unsignTransaction hex: ${hex.encode(transaction.serializeTransaction)}');
 
     int index = 0;
     while (index < transaction.inputs.length) {
       Uint8List rawData = transaction.getRawDataToSign(index);
       Uint8List rawDataHash = Cryptor.sha256round(rawData);
-      Log.debug('rawData: ${hex.encode(rawData)}');
-      Log.debug('rawDataHash: ${hex.encode(rawDataHash)}');
       UnspentTxOut utxo = transaction.inputs[index].utxo;
-
       MsgSignature sig = Signer().sign(rawDataHash, utxo.privatekey);
-
       Uint8List buffer = new Uint8List(64);
-
       buffer.setRange(0, 32, encodeBigInt(sig.r));
       buffer.setRange(32, 64, encodeBigInt(sig.s));
-
       Uint8List signature = Signer()
           .encodeSignature(buffer, transaction.inputs[index].hashType.value);
-      Log.debug('signature: $signature');
-      Log.debug('signature hex: ${hex.encode(signature)}');
-      Log.debug(
-          'publicKey hex: ${hex.encode(transaction.inputs[index].publicKey)}');
-
       transaction.inputs[index].addSignature(signature);
       index++;
     }
     Uint8List signedTransaction = transaction.serializeTransaction;
-    Log.debug('_signTransaction: $signedTransaction');
-
+    Log.btc('_signTransaction: $signedTransaction');
+    Log.btc('_signTransaction hex: ${hex.encode(signedTransaction)}');
     return transaction;
   }
 
@@ -99,12 +89,8 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     int changeIndex,
     String changeAddress,
   }) {
-    BitcoinTransaction transaction =
-        BitcoinTransaction.prepareTransaction(publish, this.segwitType);
-    Log.debug('BitcoinTransaction.prepareTransaction amount: $amount');
-    Log.debug('BitcoinTransaction.prepareTransaction fee: $fee');
-    Log.warning(
-        'BitcoinTransaction.prepareTransaction unspentTxOuts [${unspentTxOuts.length}]: $unspentTxOuts');
+    BitcoinTransaction transaction = BitcoinTransaction.prepareTransaction(
+        publish, this.segwitType, amount, fee, message);
     // to
     if (to.contains(':')) {
       to = to.split(':')[1];
@@ -116,13 +102,13 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
         publish
             ? this.p2pkhAddressPrefixMainnet
             : this.p2pkhAddressPrefixTestnet)) {
-      script = pubKeyHashToP2pkhScript(decodeAddress(to).sublist(1));
+      script = toP2pkhScript(decodeAddress(to).sublist(1));
     } else if (isP2shAddress(
         to,
         publish
             ? this.p2shAddressPrefixMainnet
             : this.p2shAddressPrefixTestnet)) {
-      script = pubKeyHashToP2shScript(decodeAddress(to).sublist(1));
+      script = toP2shScript(decodeAddress(to).sublist(1));
     } else if (isSegWitAddress(
         to,
         publish ? this.bech32HrpMainnet : this.bech32HrpTestnet,
@@ -137,12 +123,9 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     if (unspentTxOuts == null || unspentTxOuts.isEmpty) return null;
     Decimal utxoAmount = Decimal.zero;
     for (UnspentTxOut utxo in unspentTxOuts) {
-      if (utxo.locked == false ||
-          !(utxo.amount > Decimal.zero) ||
-          utxo.type == null) continue;
-
+      if (utxo.locked || !(utxo.amount > Decimal.zero) || utxo.type == null)
+        continue;
       transaction.addInput(utxo, HashType.SIGHASH_ALL);
-
       utxoAmount += utxo.amountInSmallestUint;
     }
     if (transaction.inputs.isEmpty || utxoAmount < (amount + fee)) {
@@ -152,7 +135,6 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     // change, changeAddress
     Decimal change = utxoAmount - amount - fee;
     Log.debug('prepareTransaction change: $change');
-
     if (change > Decimal.zero) {
       List<int> script;
       if (isP2pkhAddress(
@@ -160,18 +142,18 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
           publish
               ? this.p2pkhAddressPrefixMainnet
               : this.p2pkhAddressPrefixTestnet)) {
-        script = pubKeyHashToP2pkhScript(decodeAddress(to).sublist(1));
+        script = toP2pkhScript(decodeAddress(changeAddress).sublist(1));
       } else if (isP2shAddress(
           changeAddress,
           publish
               ? this.p2shAddressPrefixMainnet
               : this.p2shAddressPrefixTestnet)) {
-        script = pubKeyHashToP2shScript(decodeAddress(to).sublist(1));
+        script = toP2shScript(decodeAddress(changeAddress).sublist(1));
       } else if (isSegWitAddress(
           changeAddress,
           publish ? this.bech32HrpMainnet : this.bech32HrpTestnet,
           bech32Separator)) {
-        script = extractScriptPubkeyFromSegwitAddress(to);
+        script = extractScriptPubkeyFromSegwitAddress(changeAddress);
       } else {
         // TODO BitcoinCash Address condition
         Log.warning('unsupported Address');
@@ -180,7 +162,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     }
     // Message
     List<int> msgData = (message == null) ? [] : rlp.toBuffer(message);
-    Log.warning('msgData[$message]: $msgData');
+    Log.warning('msgData[${message.length}]: $msgData');
     // invalid msg data
     if (msgData.length > 250) {
       // TODO BitcoinCash Address condition >220
@@ -208,7 +190,9 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
           chainIndex: _Index_InternalChain,
           keyIndex: changeIndex,
           timestamp: DateTime.now().millisecondsSinceEpoch,
-          locked: false);
+          locked: false,
+          data: Uint8List(0),
+          decimals: this.currencyDecimals);
       signedTransaction.addChangeUtxo(changeUtxo);
     }
 
@@ -264,6 +248,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
         if (unspentAmount >= (amount + fee)) break;
       }
     }
-    return Decimal.fromInt(vsize);
+    Decimal fee = Decimal.fromInt(vsize) * feePerByte;
+    return fee;
   }
 }

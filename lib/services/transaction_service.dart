@@ -7,6 +7,7 @@ import '../constants/account_config.dart';
 
 abstract class TransactionService {
   ACCOUNT base;
+  int currencyDecimals;
 
   bool verifyAddress(String address, bool publish);
   Decimal calculateTransactionVSize(

@@ -69,7 +69,7 @@ class UtxoEntity {
         this.accountcurrencyId = _utxo.accountcurrencyId,
         this.txId = _utxo.txId,
         this.vout = _utxo.vout,
-        this.type = _utxo.type.toString(),
+        this.type = _utxo.type.value,
         this.amount = _utxo.amount.toString(),
         this.chainIndex = _utxo.chainIndex,
         this.keyIndex = _utxo.keyIndex,
@@ -78,6 +78,21 @@ class UtxoEntity {
         this.locked = _utxo.locked,
         this.sequence = _utxo.sequence,
         this.address = _utxo.address;
+
+  UtxoEntity.fromJson(String currencyId, Map<String, dynamic> data)
+      : this.utxoId = data['UTXO_id'],
+        this.accountcurrencyId = currencyId,
+        this.txId = data['txid'],
+        this.vout = data['vout'],
+        this.type = data['type'],
+        this.amount = data['amount'],
+        this.chainIndex = data['chain_index'],
+        this.keyIndex = data['key_index'],
+        this.script = data['script'],
+        this.timestamp = data['timestamp'],
+        this.locked = false,
+        this.sequence = BitcoinTransaction.DEFAULT_SEQUENCE,
+        this.address = data['address'];
 
   @override
   bool operator ==(Object other) =>

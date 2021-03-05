@@ -13,7 +13,7 @@ class BeforeAdd extends AddCurrencyState {
   final String address;
   final bool valid;
 
-  BeforeAdd({ this.address, this.valid });
+  BeforeAdd({this.address, this.valid});
 
   copyWith({
     String address,
@@ -35,6 +35,9 @@ class GetToken extends AddCurrencyState {
   final Token result;
 
   GetToken(this.result);
+
+  @override
+  List<Object> get props => [result];
 }
 
 class AddSuccess extends AddCurrencyState {}

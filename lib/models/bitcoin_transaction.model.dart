@@ -121,9 +121,13 @@ class Input {
   Uint8List scriptSig;
   int sequence;
   final Uint8List publicKey;
+  final String address;
   final HashType hashType;
 
-  Input(this.utxo, this.publicKey, this.hashType);
+  Input(UnspentTxOut utxo, this.hashType)
+      : this.utxo = utxo,
+        this.publicKey = utxo.publickey,
+        this.address = utxo.address;
   bool segwit = false;
 
   Uint8List get reservedTxId =>
@@ -131,7 +135,10 @@ class Input {
   Uint8List get voutInBuffer => Uint8List(4)
     ..buffer.asByteData().setUint32(0, this.utxo.vout, Endian.little);
   Uint8List get sequenceInBuffer => Uint8List(4)
-    ..buffer.asByteData().setUint32(0, this.utxo.sequence, Endian.little);
+    ..buffer.asByteData().setUint32(
+        0,
+        this.utxo.sequence ?? BitcoinTransaction.DEFAULT_SEQUENCE,
+        Endian.little);
   Uint8List get amountInBuffer => Uint8List(8)
     ..buffer
         .asByteData()
@@ -262,8 +269,10 @@ class BitcoinTransaction extends Transaction {
       this.note});
 
   BitcoinTransaction.prepareTransaction(bool publish, SegwitType segwitType,
+      this.amount, this.fee, Uint8List note,
       {int lockTime}) // in Satoshi
-      : _segwitType = segwitType {
+      : _segwitType = segwitType,
+        this.note = note ?? Uint8List(0) {
     _inputs = List<Input>();
     _outputs = List<Output>();
     _segwitType = segwitType ?? SegwitType.nonSegWit;
@@ -289,9 +298,11 @@ class BitcoinTransaction extends Transaction {
   }
 
   void addInput(UnspentTxOut utxo, HashType hashType) {
-    Input input = Input(utxo, utxo.publickey, hashType);
+    Input input = Input(utxo, hashType);
     _inputs.add(input);
-    this.sourceAddresses += this.sourceAddresses + utxo.address;
+    this.sourceAddresses = this.sourceAddresses.isEmpty
+        ? this.sourceAddresses += utxo.address
+        : this.sourceAddresses += '${", " + utxo.address}';
     Log.warning('addInput: $sourceAddresses');
   }
 
@@ -316,8 +327,9 @@ class BitcoinTransaction extends Transaction {
     Output output =
         Output(amount, address, Uint8List.fromList(scriptLength + script));
     _outputs.add(output);
-    this.destinationAddresses = this.destinationAddresses += address;
-    Log.warning('addOutput: $destinationAddresses');
+    this.destinationAddresses = this.destinationAddresses.isEmpty
+        ? this.destinationAddresses += address
+        : this.destinationAddresses += '${", " + address}';
   }
 
   void addData(List<int> data) {
@@ -401,7 +413,7 @@ class BitcoinTransaction extends Transaction {
        */
       //  scriptCode:
       List<int> scriptCode =
-          pubKeyHashToP2pkhScript(toPubKeyHash(selectedInput.publicKey));
+          toP2pkhScript(toPubKeyHash(selectedInput.publicKey));
       Log.verbose(
           'prevOutScript: ${hex.encode([scriptCode.length, ...scriptCode])}');
       data.addAll([scriptCode.length, ...scriptCode]);
@@ -441,9 +453,9 @@ class BitcoinTransaction extends Transaction {
           //  txin:
           List<int> script;
           if (input.utxo.type == BitcoinTransactionType.PUBKEYHASH) {
-            script = pubKeyHashToP2pkhScript(toPubKeyHash(input.publicKey));
+            script = toP2pkhScript(toPubKeyHash(input.publicKey));
           } else if (input.utxo.type == BitcoinTransactionType.PUBKEY) {
-            script = pubkeyToP2PKScript(input.publicKey);
+            script = toP2pkScript(input.publicKey);
           } else if (input.utxo.type == BitcoinTransactionType.SCRIPTHASH) {
             script = pubkeyToBIP49RedeemScript(input.publicKey);
           } else if (input.utxo.type ==

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:convert/convert.dart';
 import 'package:decimal/decimal.dart';
 
@@ -11,9 +12,11 @@ import '../models/api_response.mode.dart';
 import '../constants/account_config.dart';
 import '../constants/endpoint.dart';
 import '../services/account_service.dart';
+import '../helpers/cryptor.dart';
 import '../helpers/logger.dart';
-import '../cores/account.dart';
 import '../helpers/http_agent.dart';
+import '../cores/account.dart';
+import '../cores/paper_wallet.dart';
 import '../database/db_operator.dart';
 import '../database/entity/account_currency.dart';
 import '../database/entity/currency.dart';
@@ -23,12 +26,15 @@ class EthereumService extends AccountServiceDecorator {
     this.base = ACCOUNT.ETH;
     this.syncInterval = 7500;
     // this.syncInterval = 1 * 60 * 1000;
-
     // this.path = "m/44'/60'/0'";
   }
   String _address;
   String _contract; // ?
   String _tokenAddress; // ?
+  Map<TransactionPriority, Decimal> _fee;
+  int _gasLimit;
+  int _feeTimestamp; // fetch transactionFee timestamp;
+  // int _gasLimitTimestamp; // fetch estimatedGas timestamp;
 
   @override
   Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) async {
@@ -158,33 +164,44 @@ class EthereumService extends AccountServiceDecorator {
   @override
   Future<Decimal> estimateGasLimit(String blockchainId, String from, String to,
       String amount, String message) async {
-    Map<String, dynamic> payload = {
-      "fromAddress": from,
-      "toAddress": to,
-      "value": amount,
-      "data": message
-    };
-    APIResponse response = await HTTPAgent().post(
-        '${Endpoint.SUSANOO}/blockchain/$blockchainId/gas-limit', payload);
-    Log.debug(payload);
-    Map<String, dynamic> data = response.data;
-    int gasLimit = int.parse(data['gasLimit']);
-    return Decimal.fromInt(gasLimit);
+    if (message == '0x' && _gasLimit != null)
+      return Decimal.fromInt(_gasLimit);
+    else {
+      Map<String, dynamic> payload = {
+        "fromAddress": from,
+        "toAddress": to,
+        "value": amount,
+        "data": message
+      };
+      APIResponse response = await HTTPAgent().post(
+          '${Endpoint.SUSANOO}/blockchain/$blockchainId/gas-limit', payload);
+      Log.debug(payload);
+      Map<String, dynamic> data = response.data;
+      _gasLimit = int.parse(data['gasLimit']);
+      return Decimal.fromInt(_gasLimit);
+    }
   }
 
   @override
   Future<Map<TransactionPriority, Decimal>> getTransactionFee(
       String blockchainId) async {
     // TODO getSyncFeeAutomatically
-    APIResponse response = await HTTPAgent()
-        .get('${Endpoint.SUSANOO}/blockchain/$blockchainId/fee');
-    Map<String, dynamic> data = response.data;
-    Map<TransactionPriority, Decimal> transactionFee = {
-      TransactionPriority.slow: Decimal.parse(data['slow'].toString()),
-      TransactionPriority.standard: Decimal.parse(data['standard'].toString()),
-      TransactionPriority.fast: Decimal.parse(data['fast'].toString()),
-    };
-    return transactionFee;
+    if (_fee == null ||
+        DateTime.now().millisecondsSinceEpoch - _feeTimestamp >
+            this.AVERAGE_FETCH_FEE_TIME) {
+      APIResponse response = await HTTPAgent()
+          .get('${Endpoint.SUSANOO}/blockchain/$blockchainId/fee');
+      Map<String, dynamic> data = response.data; // FEE will return String
+
+      _fee = {
+        TransactionPriority.slow: Decimal.parse(data['slow']),
+        TransactionPriority.standard: Decimal.parse(data['standard']),
+        TransactionPriority.fast: Decimal.parse(data['fast']),
+      };
+
+      _feeTimestamp = DateTime.now().millisecondsSinceEpoch;
+    }
+    return _fee;
   }
 
   @override
@@ -194,27 +211,25 @@ class EthereumService extends AccountServiceDecorator {
           '${Endpoint.SUSANOO}/wallet/account/address/$currencyId/receive');
       Map data = response.data;
       String address = data['address'];
-      Log.debug('address: $address');
       this._address = address;
-// TEST
-      // // IMPORTANT: seed cannot reach
-      // String seed =
-      //     '74a0b10d85dea97d53ff42a89f34a8447bbd041dcb573333358a03d5d1cfff0e';
-      // '59f45d6afb9bc00380fed2fcfdd5b36819acab89054980ad6e5ff90ba19c5347'; // 上一個有eth的 seed
-      // Uint8List publicKey =
-      //     await PaperWallet.getPubKey(hex.decode(seed), 0, 0, compressed: false);
-      // Uint8List privKey = await PaperWallet.getPrivKey(hex.decode(seed), 0, 0);
-      // Log.debug('privKey: ${hex.encode(privKey)}');
-      // String caculatedAddress = '0x' +
-      //     hex
-      //         .encode(Cryptor.keccak256round(
-      //             publicKey.length % 2 != 0 ? publicKey.sublist(1) : publicKey,
-      //             round: 1))
-      //         .substring(24, 64);
-
-      // Log.debug('caculatedAddress: $caculatedAddress');
-// TEST(end)
     }
+    Log.debug('_address: ${this._address}');
+// TEST
+    // // IMPORTANT: seed cannot reach
+    String seed =
+        'd130e96ae9f5ede60e33c5264d1e2beb03c54b5eb67d8d52773a408287178ccc';
+    // '74a0b10d85dea97d53ff42a89f34a8447bbd041dcb573333358a03d5d1cfff0e';
+    // '59f45d6afb9bc00380fed2fcfdd5b36819acab89054980ad6e5ff90ba19c5347'; // 上一個有eth的 seed
+    Uint8List publicKey =
+        await PaperWallet.getPubKey(hex.decode(seed), 0, 0, compressed: false);
+    String caculatedAddress = '0x' +
+        hex
+            .encode(Cryptor.keccak256round(
+                publicKey.length % 2 != 0 ? publicKey.sublist(1) : publicKey,
+                round: 1))
+            .substring(24, 64);
+    Log.debug('caculatedAddress: $caculatedAddress');
+// TEST(end)
     return [this._address, null];
   }
 

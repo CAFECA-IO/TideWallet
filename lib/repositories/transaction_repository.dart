@@ -29,13 +29,10 @@ import '../database/entity/transaction.dart';
 import '../helpers/logger.dart';
 
 class TransactionRepository {
-  static const int AVERAGE_FETCH_FEE_TIME = 1 * 60 * 60 * 1000; // milliseconds
   Currency _currency;
   AccountService _accountService;
   TransactionService _transactionService;
   PublishSubject<AccountMessage> get listener => AccountCore().messenger;
-  Map<TransactionPriority, Decimal> _fee;
-  int _timestamp; // fetch transactionFee timestamp;
   String _address;
 
   TransactionRepository();
@@ -94,13 +91,9 @@ class TransactionRepository {
 
   Future<List<dynamic>> getTransactionFee(
       {String address, Decimal amount, Uint8List message}) async {
-    if (_fee == null ||
-        DateTime.now().millisecondsSinceEpoch - _timestamp >
-            AVERAGE_FETCH_FEE_TIME) {
-      _fee =
-          await _accountService.getTransactionFee(this._currency.blockchainId);
-      _timestamp = DateTime.now().millisecondsSinceEpoch;
-    }
+    Map<TransactionPriority, Decimal> _fee =
+        await _accountService.getTransactionFee(this._currency.blockchainId);
+
     // TODO if (message != null)
     Decimal _gasLimit;
     switch (this._currency.accountType) {
@@ -169,6 +162,10 @@ class TransactionRepository {
   }
 
   Future<Uint8List> _getSeed(String pwd) async {
+    // TODO TEST
+    // return Uint8List.fromList(hex.decode(
+    //     'd130e96ae9f5ede60e33c5264d1e2beb03c54b5eb67d8d52773a408287178ccc'));
+    // TEST (END)
     UserEntity user = await DBOperator().userDao.findUser();
     web3dart.Wallet wallet = PaperWallet.jsonToWallet([user.keystore, pwd]);
     List<int> seed = PaperWallet.magicSeed(wallet.privateKey.privateKey);
@@ -190,6 +187,7 @@ class TransactionRepository {
     //         'd36777597b9c5cc58a64a4fb842a206bd86da50f276b783aae0cf87e5b058821')),
     //     changeIndex,
     //     keyIndex);
+    Log.warning("getPrivKey seed: ${hex.encode(seed)}");
     Log.warning("getPrivKey result: ${hex.encode(result)}");
     return result;
   }
@@ -203,38 +201,22 @@ class TransactionRepository {
         List<UnspentTxOut> unspentTxOuts =
             await _accountService.getUnspentTxOut(_currency.id);
         Decimal utxoAmount = Decimal.zero;
+        Log.btc('amount + fee: ${amount + fee}');
         for (UnspentTxOut utxo in unspentTxOuts) {
-          Log.debug(
-              'prepareTransaction UnspentTxOut utxo.locked: ${utxo.locked}');
-          Log.debug(
-              'prepareTransaction UnspentTxOut utxo.amount: ${utxo.amount}');
-          Log.debug('prepareTransaction UnspentTxOut utxo.type: ${utxo.type}');
+          Log.btc('utxo.locked: ${utxo.locked}');
 
-          if (!utxo.locked ||
-              !(utxo.amount > Decimal.zero) ||
-              utxo.type == null) continue;
-          utxoAmount += utxo.amount; // in smallest uint
-          Log.debug('prepareTransaction UnspentTxOut utxoAmount: $utxoAmount');
-
+          if (utxo.locked || !(utxo.amount > Decimal.zero) || utxo.type == null)
+            continue;
+          utxoAmount += utxo.amount; // in currency uint
+          Log.btc('utxoAmount: $utxoAmount');
+          Log.btc('utxo.amount: ${utxo.amount}');
           utxo.privatekey =
               await getPrivKey(pwd, utxo.chainIndex, utxo.keyIndex);
-          Log.debug(
-              'prepareTransaction UnspentTxOut utxo.privatekey: ${utxo.privatekey}');
-
           utxo.publickey = await getPubKey(pwd, utxo.chainIndex, utxo.keyIndex);
-          Log.debug(
-              'prepareTransaction UnspentTxOut utxo.publickey: ${utxo.publickey}');
-
           if (utxoAmount > (amount + fee)) {
-            Log.debug(
-                'prepareTransaction UnspentTxOut utxoAmount: $utxoAmount');
-            Log.debug(
-                'prepareTransaction UnspentTxOut utxoAmount: ${amount + fee}');
-
             List result =
                 await _accountService.getChangingAddress(_currency.id);
-            Log.debug(
-                'prepareTransaction UnspentTxOut getChangingAddress: $result');
+            Log.btc('prepareTransaction getChangingAddress: $result');
             changeAddress = result[0];
             changeIndex = result[1];
             break;
@@ -314,22 +296,27 @@ class TransactionRepository {
 
   Future<bool> publishTransaction(
       Transaction transaction, String balance) async {
-    Log.debug('PublishTransaction transaction: ${transaction.fee}');
-    Log.debug('PublishTransaction balance: $balance');
+    Log.btc('PublishTransaction fee: ${transaction.fee}');
+    Log.btc('PublishTransaction fee: ${transaction.amount}');
+    Log.btc(
+        'PublishTransaction this._currency.blockchainId: ${this._currency.blockchainId}');
+    Log.btc('PublishTransaction balance: $balance');
     List result = await _accountService.publishTransaction(
         this._currency.blockchainId, transaction);
-    Log.debug('PublishTransaction result: $result');
+    Log.btc('PublishTransaction result: $result');
     bool success = result[0];
     Transaction _transaction = result[1];
-    Log.debug('PublishTransaction _transaction: $_transaction');
+    Log.btc('PublishTransaction _transaction: $_transaction');
 
     if (!success) return success;
-    Log.debug('PublishTransaction result: ${result[0]}');
+    Log.btc('PublishTransaction result: ${result[0]}');
 
     // TODO updateCurrencyAmount ??
     AccountCurrencyEntity account = await DBOperator()
         .accountCurrencyDao
         .findOneByAccountyId(this._currency.id);
+    Log.btc('PublishTransaction account: $account');
+
     AccountCurrencyEntity updateAccount = AccountCurrencyEntity(
         accountcurrencyId: account.accountcurrencyId,
         accountId: account.accountId,
@@ -340,6 +327,7 @@ class TransactionRepository {
         balance: balance);
     await DBOperator().accountCurrencyDao.insertAccount(updateAccount);
     Log.debug('PublishTransaction updateAccount: $updateAccount');
+
     Currency _curr = this._currency;
     _curr.amount = balance;
     AccountMessage currMsg =
@@ -354,20 +342,24 @@ class TransactionRepository {
       txId: _transaction.txId,
       amount:
           Converter.toCurrencyUnit(_transaction.amount, this._currency.decimals)
-              .toString(), //TODO BTC?
+              .toString(),
       fee: Converter.toCurrencyUnit(_transaction.fee, this._currency.decimals)
           .toString(),
-      gasPrice: Converter.toCurrencyUnit(
-              _transaction.gasPrice, this._currency.decimals)
-          .toString(),
-      gasUsed: _transaction.gasUsed.toInt(),
-      direction: _transaction.direction.title,
+      gasPrice: _transaction.gasPrice == null
+          ? null
+          : Converter.toCurrencyUnit(
+                  _transaction.gasPrice, this._currency.decimals)
+              .toString(),
+      gasUsed: _transaction?.gasUsed?.toInt(),
+      direction:
+          _transaction?.direction?.title ?? TransactionDirection.sent.title,
       sourceAddress: _transaction.sourceAddresses,
       destinctionAddress: _transaction.destinationAddresses,
-      confirmation: _transaction.confirmations,
-      timestamp: _transaction.timestamp,
-      note: hex.encode(_transaction.message),
-      status: _transaction.status.title,
+      confirmation: _transaction?.confirmations ?? 0,
+      timestamp:
+          _transaction?.timestamp ?? DateTime.now().millisecondsSinceEpoch,
+      note: hex.encode(_transaction?.message ?? Uint8List(0)),
+      status: _transaction?.status?.title ?? TransactionStatus.pending.title,
     );
     Log.debug('PublishTransaction tx: $tx');
     await DBOperator().transactionDao.insertTransaction(tx);

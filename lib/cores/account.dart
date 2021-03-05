@@ -45,7 +45,7 @@ class AccountCore {
   }
 
   _initAccounts() async {
-    final chains = await this.getNetworks(publish: false);
+    final chains = await this.getNetworks(publish: USE_NETWORK == NETWORK.MAINNET);
     final accounts = await this.getAccounts();
     await this.getSupportedCurrencies();
 
@@ -78,7 +78,7 @@ class AccountCore {
           //     value: _currency));
           this._services.add(svc);
           svc.init(accounts[i].accountId, account);
-          svc.start();
+          await svc.start();
         }
       }
     }

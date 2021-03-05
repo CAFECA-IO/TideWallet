@@ -25,6 +25,6 @@ abstract class UtxoDao {
   @update
   Future<void> updateUtxo(UtxoEntity utxo);
 
-  @insert
+  @Insert(onConflict: OnConflictStrategy.replace)
   Future<List<int>> insertUtxos(List<UtxoEntity> utxos);
 }
