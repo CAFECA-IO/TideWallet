@@ -360,8 +360,8 @@ class TransactionRepository {
       sourceAddress: _transaction.sourceAddresses,
       destinctionAddress: _transaction.destinationAddresses,
       confirmation: _transaction?.confirmations ?? 0,
-      timestamp:
-          _transaction?.timestamp ?? DateTime.now().microsecondsSinceEpoch,
+      timestamp: _transaction?.timestamp ??
+          DateTime.now().millisecondsSinceEpoch ~/ 1000,
       note: hex.encode(_transaction?.message ?? Uint8List(0)),
       status: _transaction?.status?.title ?? TransactionStatus.pending.title,
     );

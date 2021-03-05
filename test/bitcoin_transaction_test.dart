@@ -148,7 +148,7 @@ void main() {
             address: 'tb1q8x0nw29tvc7zkgc24j2h28mt8mutewcq8zj59h',
             chainIndex: 0,
             keyIndex: 0,
-            timestamp: DateTime.now().microsecondsSinceEpoch,
+            timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
             locked: false,
             decimals: 8));
         await opt.utxoDao.insertUtxo(_utxo);

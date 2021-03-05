@@ -25,7 +25,7 @@ class Transaction {
   Decimal gasUsed;
 
   DateTime get dateTime =>
-      DateTime.fromMicrosecondsSinceEpoch(timestamp, isUtc: false);
+      DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: false);
   String get address => _address;
 
   String get messageInString {

@@ -285,7 +285,7 @@ class EthereumService extends AccountServiceDecorator {
     bool success = response.success;
     transaction.id = response.data['txid'];
     transaction.txId = response.data['txid'];
-    transaction.timestamp = DateTime.now().microsecondsSinceEpoch;
+    transaction.timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     transaction.confirmations = 0;
     return [success, transaction];
   }
