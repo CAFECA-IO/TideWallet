@@ -768,20 +768,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
-  socket_io_client:
-    dependency: "direct main"
-    description:
-      name: socket_io_client
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.9.12"
-  socket_io_common:
-    dependency: transitive
-    description:
-      name: socket_io_common
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.9.2"
   source_gen:
     dependency: transitive
     description:
@@ -979,7 +965,7 @@ packages:
     source: hosted
     version: "1.2.3"
   web_socket_channel:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: web_socket_channel
       url: "https://pub.dartlang.org"

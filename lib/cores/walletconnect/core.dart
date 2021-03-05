@@ -14,6 +14,8 @@ class Connector {
   Session session;
   EventManager _eventManager;
   Transport _transport;
+  String _handshakeTopic;
+  int _handshakeId;
 
   set bridge(String value) {
     this._bridge = value;
@@ -23,7 +25,7 @@ class Connector {
     this._key = value;
   }
 
-   set clientId(String value) {
+  set clientId(String value) {
     this._clientId = value;
   }
 
@@ -32,9 +34,15 @@ class Connector {
   String get clientId => this._clientId;
   ClientMeta get clientMeta => this._clientMeta;
 
-  Connector() {
+  Connector(ConnectionEl opt) {
     this._eventManager = EventManager();
-    this._transport = Transport();
+
+    this._bridge = opt.bridge;
+    this._transport = Transport(url: this._bridge);
+    this._transport.subscribe(opt.topic);
+
+    // this._handshakeTopic = opt.topic;
+    // this._key = opt.key;
 
     this._initTransport();
   }
@@ -46,10 +54,7 @@ class Connector {
   }
 
   connect() {
-    if (this.connected) {
-
-    }
-
+    if (this.connected) {}
   }
 
   createSession() {
@@ -75,18 +80,28 @@ class Connector {
     print(v);
   }
 
-  _formatRequest(Map req) {
-   
-  }
+  _formatRequest(Map req) {}
 
-  _formatResponse() {
-
-  }
-  
+  _formatResponse() {}
 
   verifyHMAC() {}
 
-  parseUri(String uri) {}
+  // TODO:
+  static ConnectionEl parseUri(String uri) {
+    try {
+      var tmp = uri.split('bridge=');
+      final b = tmp[0].replaceAll('wc:', '').split('@');
+      final topic = b[0];
+      final version = b[1];
+      final d = tmp[1];
+      tmp = d.split('&key=');
+      final url = tmp[0].replaceAll('https%3A%2F%2F', 'wss://');
+      final key = tmp[1];
 
-  
+      return ConnectionEl(
+          topic: topic, version: int.tryParse(version), bridge: url, key: key);
+    } catch (e) {
+      return null;
+    }
+  }
 }
