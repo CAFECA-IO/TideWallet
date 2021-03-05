@@ -1,11 +1,15 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:encrypt/encrypt.dart' as encrypt;
 
 import 'package:bs58check/bs58check.dart';
 import 'package:sha3/sha3.dart';
 import 'package:bird_cryptography/bird_cryptography.dart' as bird;
+// ignore: implementation_imports
 import 'package:crypto/src/sha256.dart' as SHA256;
 import 'package:convert/convert.dart';
+import 'package:crypto/crypto.dart' as crypto;
+
 
 // import 'logger.dart';
 
@@ -62,7 +66,7 @@ class Cryptor {
   }
 
   static String aesEncrypt(String message, String secret, String iv) {
-    if (message == null) return null;
+    assert(message != null);
     final key = encrypt.Key.fromBase16(secret);
 
     final encrypter =
@@ -74,7 +78,7 @@ class Cryptor {
   }
 
   static String aesDecrypt(String message, String secret, String iv) {
-    if (message == null) return null;
+    assert(message != null);
     String decrypted;
     final key = encrypt.Key.fromBase16(secret);
     final _iv = encrypt.IV.fromBase16(iv);
@@ -90,9 +94,17 @@ class Cryptor {
           encrypter.decrypt(encrypt.Encrypted.fromBase16(message), iv: _iv);
     }
 
-    // final encrypter =
-    //     encrypt.Encrypter(encrypt.AES(decryptKey, mode: encrypt.AESMode.cbc));
-
     return decrypted;
+  }
+
+  /// message, hmacKey must be Base16 string, looks like: 'b1fdef93054a228d93c3f54fa95b223c'
+  static String hmacEncrypt(String message, String hmacKey) {
+      var key = hex.decode(hmacKey);
+      var bytes = hex.decode(message);
+
+      var hmacSha256 = crypto.Hmac(crypto.sha256, key);
+      var digest = hmacSha256.convert(bytes);
+
+      return digest.toString();
   }
 }
