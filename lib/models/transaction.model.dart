@@ -25,7 +25,7 @@ class Transaction {
   Decimal gasUsed;
 
   DateTime get dateTime =>
-      DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: false);
+      DateTime.fromMicrosecondsSinceEpoch(timestamp, isUtc: false);
   String get address => _address;
 
   String get messageInString {
@@ -81,7 +81,9 @@ class Transaction {
         ? TransactionDirection.moved
         : entity.direction == 'send'
             ? TransactionDirection.sent
-            : TransactionDirection.received;
+            : entity.direction == 'receive'
+                ? TransactionDirection.received
+                : TransactionDirection.unknown;
     _address = (direction == TransactionDirection.sent)
         ? entity.destinctionAddress
         : entity.sourceAddress;
@@ -114,7 +116,8 @@ extension TransactionPriorityExt on TransactionPriority {
 enum TransactionDirection {
   sent,
   received,
-  moved // this should never happen
+  moved, // this should never happen
+  unknown
 }
 
 extension TransactionDirectionExt on TransactionDirection {
@@ -122,10 +125,16 @@ extension TransactionDirectionExt on TransactionDirection {
     switch (this) {
       case TransactionDirection.sent:
         return 0;
+        break;
       case TransactionDirection.received:
         return 1;
+        break;
       case TransactionDirection.moved:
         return 2;
+        break;
+      case TransactionDirection.unknown:
+        return 3;
+        break;
     }
   }
 
@@ -138,6 +147,9 @@ extension TransactionDirectionExt on TransactionDirection {
         return "assets/images/icons/ic_receive_black.png";
         break;
       case TransactionDirection.moved:
+        return "assets/images/icons/ic_transfer_in_black.png";
+        break;
+      case TransactionDirection.unknown:
         return "assets/images/icons/ic_transfer_in_black.png";
         break;
     }
@@ -154,17 +166,23 @@ extension TransactionDirectionExt on TransactionDirection {
       case TransactionDirection.moved:
         return "move";
         break;
+      case TransactionDirection.unknown:
+        return "unknown";
+        break;
     }
   }
 
   String get subtitle {
     switch (this) {
       case TransactionDirection.sent:
-        return "Transfer to";
+        return "transfer_to";
         break;
       case TransactionDirection.received:
       case TransactionDirection.moved:
-        return "Save to";
+        return "save_to";
+        break;
+      case TransactionDirection.unknown:
+        return "Unknown";
         break;
     }
   }
@@ -178,6 +196,9 @@ extension TransactionDirectionExt on TransactionDirection {
         return MyColors.primary_03;
         break;
       case TransactionDirection.moved:
+        return MyColors.primary_02;
+        break;
+      case TransactionDirection.unknown:
         return MyColors.primary_02;
         break;
     }

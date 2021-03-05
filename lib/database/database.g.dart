@@ -100,7 +100,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Currency` (`currency_id` TEXT, `name` TEXT, `description` TEXT, `symbol` TEXT, `decimals` INTEGER, `address` TEXT, `type` TEXT, `total_supply` TEXT, `contract` TEXT, `image` TEXT, PRIMARY KEY (`currency_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `_Transaction` (`transaction_id` TEXT, `accountcurrency_id` TEXT, `tx_id` TEXT, `source_address` TEXT, `destinction_address` TEXT, `timestamp` INTEGER, `confirmation` INTEGER, `gas_price` TEXT, `gas_used` INTEGER, `block` INTEGER, `fee` TEXT NOT NULL, `note` TEXT, `status` TEXT, `direction` TEXT, `amount` TEXT, PRIMARY KEY (`transaction_id`))');
+            'CREATE TABLE IF NOT EXISTS `_Transaction` (`transaction_id` TEXT, `accountcurrency_id` TEXT, `tx_id` TEXT, `source_address` TEXT, `destinction_address` TEXT, `timestamp` INTEGER, `confirmation` INTEGER, `gas_price` TEXT, `gas_used` INTEGER, `fee` TEXT NOT NULL, `note` TEXT, `status` TEXT, `direction` TEXT, `amount` TEXT, PRIMARY KEY (`transaction_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Network` (`network_id` TEXT, `network` TEXT NOT NULL, `coin_type` INTEGER, `publish` INTEGER, `chain_id` INTEGER, PRIMARY KEY (`network_id`))');
         await database.execute(
@@ -368,7 +368,6 @@ class _$TransactionDao extends TransactionDao {
                   'confirmation': item.confirmation,
                   'gas_price': item.gasPrice,
                   'gas_used': item.gasUsed,
-                  'block': item.block,
                   'fee': item.fee,
                   'note': item.note,
                   'status': item.status,
@@ -389,7 +388,6 @@ class _$TransactionDao extends TransactionDao {
                   'confirmation': item.confirmation,
                   'gas_price': item.gasPrice,
                   'gas_used': item.gasUsed,
-                  'block': item.block,
                   'fee': item.fee,
                   'note': item.note,
                   'status': item.status,
@@ -410,7 +408,6 @@ class _$TransactionDao extends TransactionDao {
                   'confirmation': item.confirmation,
                   'gas_price': item.gasPrice,
                   'gas_used': item.gasUsed,
-                  'block': item.block,
                   'fee': item.fee,
                   'note': item.note,
                   'status': item.status,
@@ -443,7 +440,6 @@ class _$TransactionDao extends TransactionDao {
             gasPrice: row['gas_price'] as String,
             gasUsed: row['gas_used'] as int,
             note: row['note'] as String,
-            block: row['block'] as int,
             fee: row['fee'] as String,
             status: row['status'] as String,
             timestamp: row['timestamp'] as int,
@@ -466,7 +462,6 @@ class _$TransactionDao extends TransactionDao {
             gasPrice: row['gas_price'] as String,
             gasUsed: row['gas_used'] as int,
             note: row['note'] as String,
-            block: row['block'] as int,
             fee: row['fee'] as String,
             status: row['status'] as String,
             timestamp: row['timestamp'] as int,
@@ -489,7 +484,6 @@ class _$TransactionDao extends TransactionDao {
             gasPrice: row['gas_price'] as String,
             gasUsed: row['gas_used'] as int,
             note: row['note'] as String,
-            block: row['block'] as int,
             fee: row['fee'] as String,
             status: row['status'] as String,
             timestamp: row['timestamp'] as int,

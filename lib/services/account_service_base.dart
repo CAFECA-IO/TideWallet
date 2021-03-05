@@ -211,25 +211,10 @@ class AccountServiceBase extends AccountService {
 
     if (res.success) {
       List txs = res.data;
+      Log.debug('txs: $txs');
 
-      txs = txs
-          .map((tx) => TransactionEntity(
-                transactionId: tx['txid'],
-                amount: tx['amount'].toString(),
-                accountcurrencyId: currency.id,
-                txId: tx['txid'],
-                confirmation: tx['confirmations'],
-                sourceAddress: tx['source_addresses'],
-                destinctionAddress: tx['destination_addresses'],
-                gasPrice: tx['gas_price'].toString(),
-                gasUsed: tx['gas_limit'],
-                fee: tx['fee'].toString(),
-                direction: tx['direction'],
-                status: tx['status'],
-                timestamp: tx['timestamp'],
-                note: tx['note'],
-              ))
-          .toList();
+      txs =
+          txs.map((tx) => TransactionEntity.fromJson(currency.id, tx)).toList();
 
       await DBOperator().transactionDao.insertTransactions(txs);
     }

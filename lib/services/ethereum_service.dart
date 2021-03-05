@@ -35,6 +35,7 @@ class EthereumService extends AccountServiceDecorator {
   int _gasLimit;
   int _feeTimestamp; // fetch transactionFee timestamp;
   // int _gasLimitTimestamp; // fetch estimatedGas timestamp;
+  int _nonce = 0;
 
   @override
   Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) async {
@@ -176,8 +177,13 @@ class EthereumService extends AccountServiceDecorator {
       APIResponse response = await HTTPAgent().post(
           '${Endpoint.SUSANOO}/blockchain/$blockchainId/gas-limit', payload);
       Log.debug(payload);
-      Map<String, dynamic> data = response.data;
-      _gasLimit = int.parse(data['gasLimit']);
+      if (response.success) {
+        Map<String, dynamic> data = response.data;
+        _gasLimit = int.parse(data['gasLimit']);
+      } else {
+        // TODO
+        _gasLimit = 21000;
+      }
       return Decimal.fromInt(_gasLimit);
     }
   }
@@ -191,15 +197,17 @@ class EthereumService extends AccountServiceDecorator {
             this.AVERAGE_FETCH_FEE_TIME) {
       APIResponse response = await HTTPAgent()
           .get('${Endpoint.SUSANOO}/blockchain/$blockchainId/fee');
-      Map<String, dynamic> data = response.data; // FEE will return String
-
-      _fee = {
-        TransactionPriority.slow: Decimal.parse(data['slow']),
-        TransactionPriority.standard: Decimal.parse(data['standard']),
-        TransactionPriority.fast: Decimal.parse(data['fast']),
-      };
-
-      _feeTimestamp = DateTime.now().millisecondsSinceEpoch;
+      if (response.success) {
+        Map<String, dynamic> data = response.data; // FEE will return String
+        _fee = {
+          TransactionPriority.slow: Decimal.parse(data['slow']),
+          TransactionPriority.standard: Decimal.parse(data['standard']),
+          TransactionPriority.fast: Decimal.parse(data['fast']),
+        };
+        _feeTimestamp = DateTime.now().millisecondsSinceEpoch;
+      } else {
+        // TODO fee = null 前面會出錯
+      }
     }
     return _fee;
   }
@@ -209,28 +217,33 @@ class EthereumService extends AccountServiceDecorator {
     if (this._address == null) {
       APIResponse response = await HTTPAgent().get(
           '${Endpoint.SUSANOO}/wallet/account/address/$currencyId/receive');
-      Map data = response.data;
-      String address = data['address'];
-      this._address = address;
-    }
-    Log.debug('_address: ${this._address}');
+      if (response.success) {
+        Map data = response.data;
+        String address = data['address'];
+        this._address = address;
+      }
+      Log.debug('_address: ${this._address}');
 // TEST
-    // // IMPORTANT: seed cannot reach
-    String seed =
-        'd130e96ae9f5ede60e33c5264d1e2beb03c54b5eb67d8d52773a408287178ccc';
-    // '74a0b10d85dea97d53ff42a89f34a8447bbd041dcb573333358a03d5d1cfff0e';
-    // '59f45d6afb9bc00380fed2fcfdd5b36819acab89054980ad6e5ff90ba19c5347'; // 上一個有eth的 seed
-    Uint8List publicKey =
-        await PaperWallet.getPubKey(hex.decode(seed), 0, 0, compressed: false);
-    String caculatedAddress = '0x' +
-        hex
-            .encode(Cryptor.keccak256round(
-                publicKey.length % 2 != 0 ? publicKey.sublist(1) : publicKey,
-                round: 1))
-            .substring(24, 64);
-    Log.debug('caculatedAddress: $caculatedAddress');
+      // // IMPORTANT: seed cannot reach
+      String seed =
+          'd130e96ae9f5ede60e33c5264d1e2beb03c54b5eb67d8d52773a408287178ccc';
+      // '74a0b10d85dea97d53ff42a89f34a8447bbd041dcb573333358a03d5d1cfff0e';
+      // '59f45d6afb9bc00380fed2fcfdd5b36819acab89054980ad6e5ff90ba19c5347'; // 上一個有eth的 seed
+      Uint8List publicKey = await PaperWallet.getPubKey(hex.decode(seed), 0, 0,
+          compressed: false);
+      String caculatedAddress = '0x' +
+          hex
+              .encode(Cryptor.keccak256round(
+                  publicKey.length % 2 != 0 ? publicKey.sublist(1) : publicKey,
+                  round: 1))
+              .substring(24, 64);
+      Log.debug('caculatedAddress: $caculatedAddress');
 // TEST(end)
-    return [this._address, null];
+      return [this._address, null];
+    } else {
+      //TODO
+      return ['error', 0];
+    }
   }
 
   @override
@@ -242,9 +255,15 @@ class EthereumService extends AccountServiceDecorator {
   Future<int> getNonce(String blockchainId, String address) async {
     APIResponse response = await HTTPAgent().get(
         '${Endpoint.SUSANOO}/blockchain/$blockchainId/address/$address/nonce');
-    Map data = response.data;
-    int nonce = int.parse(data['nonce']);
-    return nonce;
+    if (response.success) {
+      Map data = response.data;
+      int nonce = int.parse(data['nonce']);
+      _nonce = nonce;
+      return nonce;
+    } else {
+      //TODO
+      return ++_nonce;
+    }
   }
 
   @override
@@ -260,7 +279,7 @@ class EthereumService extends AccountServiceDecorator {
     bool success = response.success;
     transaction.id = response.data['txid'];
     transaction.txId = response.data['txid'];
-    transaction.timestamp = DateTime.now().millisecondsSinceEpoch;
+    transaction.timestamp = DateTime.now().microsecondsSinceEpoch;
     transaction.confirmations = 0;
     return [success, transaction];
   }

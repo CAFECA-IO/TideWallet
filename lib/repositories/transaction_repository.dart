@@ -70,11 +70,6 @@ class TransactionRepository {
     List<TransactionEntity> transactions = await DBOperator()
         .transactionDao
         .findAllTransactionsById(this._currency.id);
-    Log.debug('this._currency.id: ${this._currency.id}');
-
-    // TODO TEST
-    // await DBOperator().transactionDao.deleteTransactions(transactions);
-
     List<Transaction> txs = transactions
         .map((tx) => Transaction.fromTransactionEntity(tx))
         .toList();
@@ -357,7 +352,7 @@ class TransactionRepository {
       destinctionAddress: _transaction.destinationAddresses,
       confirmation: _transaction?.confirmations ?? 0,
       timestamp:
-          _transaction?.timestamp ?? DateTime.now().millisecondsSinceEpoch,
+          _transaction?.timestamp ?? DateTime.now().microsecondsSinceEpoch,
       note: hex.encode(_transaction?.message ?? Uint8List(0)),
       status: _transaction?.status?.title ?? TransactionStatus.pending.title,
     );

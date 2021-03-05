@@ -92,15 +92,19 @@ class BitcoinService extends AccountServiceDecorator {
             this.AVERAGE_FETCH_FEE_TIME) {
       APIResponse response = await HTTPAgent()
           .get('${Endpoint.SUSANOO}/blockchain/$blockchainId/fee');
-      Map<String, dynamic> data = response.data; // FEE will return String
+      if (response.success) {
+        Map<String, dynamic> data = response.data; // FEE will return String
 
-      _fee = {
-        TransactionPriority.slow: Decimal.parse(data['slow']),
-        TransactionPriority.standard: Decimal.parse(data['standard']),
-        TransactionPriority.fast: Decimal.parse(data['fast']),
-      };
+        _fee = {
+          TransactionPriority.slow: Decimal.parse(data['slow']),
+          TransactionPriority.standard: Decimal.parse(data['standard']),
+          TransactionPriority.fast: Decimal.parse(data['fast']),
+        };
 
-      _timestamp = DateTime.now().millisecondsSinceEpoch;
+        _timestamp = DateTime.now().millisecondsSinceEpoch;
+      } else {
+        // TODO fee = null 前面會出錯
+      }
     }
 
     return _fee;
@@ -110,30 +114,38 @@ class BitcoinService extends AccountServiceDecorator {
   Future<List> getChangingAddress(String currencyId) async {
     APIResponse response = await HTTPAgent()
         .get('${Endpoint.SUSANOO}/wallet/account/address/$currencyId/change');
-    Map data = response.data;
-    String _address = data['address'];
-    _numberOfUsedInternalKey = data['change_index'];
-    return [_address, _numberOfUsedInternalKey];
+    if (response.success) {
+      Map data = response.data;
+      String _address = data['address'];
+      _numberOfUsedInternalKey = data['change_index'];
+      return [_address, _numberOfUsedInternalKey];
+    } else {
+      //TODO
+      return ['error', 0];
+    }
   }
 
   @override
   Future<List> getReceivingAddress(String currencyId) async {
     APIResponse response = await HTTPAgent()
         .get('${Endpoint.SUSANOO}/wallet/account/address/$currencyId/receive');
-    Map data = response.data;
-    String address = data['address'];
-    _numberOfUsedExternalKey = data['key_index'];
-
-    Log.debug('api address: $address');
-    Log.debug('api keyIndex: $_numberOfUsedExternalKey');
-    String seed =
-        'd130e96ae9f5ede60e33c5264d1e2beb03c54b5eb67d8d52773a408287178ccc';
-
-    Uint8List publicKey = await PaperWallet.getPubKey(
-        hex.decode(seed), 0, _numberOfUsedExternalKey);
-    String calAddress = pubKeyToP2wpkhAddress(publicKey, 'tb');
-    Log.debug('calculated address: $calAddress');
-    return [address, _numberOfUsedExternalKey];
+    if (response.success) {
+      Map data = response.data;
+      String address = data['address'];
+      _numberOfUsedExternalKey = data['key_index'];
+      Log.debug('api address: $address');
+      Log.debug('api keyIndex: $_numberOfUsedExternalKey');
+      String seed =
+          'd130e96ae9f5ede60e33c5264d1e2beb03c54b5eb67d8d52773a408287178ccc';
+      Uint8List publicKey = await PaperWallet.getPubKey(
+          hex.decode(seed), 0, _numberOfUsedExternalKey);
+      String calAddress = pubKeyToP2wpkhAddress(publicKey, 'tb');
+      Log.debug('calculated address: $calAddress');
+      return [address, _numberOfUsedExternalKey];
+    } else {
+      //TODO
+      return ['error', 0];
+    }
   }
 
   @override
@@ -156,7 +168,7 @@ class BitcoinService extends AccountServiceDecorator {
     //     address: 'tb1q8x0nw29tvc7zkgc24j2h28mt8mutewcq8zj59h',
     //     chainIndex: 0,
     //     keyIndex: 0,
-    //     timestamp: DateTime.now().millisecondsSinceEpoch,
+    //     timestamp: DateTime.now().microsecondsSinceEpoch,
     //     locked: true,
     //     decimals: 8));
     // _utxos.add(_utxo);
@@ -172,7 +184,7 @@ class BitcoinService extends AccountServiceDecorator {
     //     address: 'tb1qa8fuxpg0f8sp8c8yynw9wnuzh9kdcx0nyvu6z6',
     //     chainIndex: 1,
     //     keyIndex: 0,
-    //     timestamp: DateTime.now().millisecondsSinceEpoch,
+    //     timestamp: DateTime.now().microsecondsSinceEpoch,
     //     locked: false,
     //     decimals: 8));
     // _utxos.add(_changeUtxo);
@@ -187,10 +199,14 @@ class BitcoinService extends AccountServiceDecorator {
         '${Endpoint.SUSANOO}/blockchain/$blockchainId/push-tx',
         {"hex": hex.encode(transaction.serializeTransaction)});
     bool success = response.success;
-
+    BitcoinTransaction _transaction;
     if (success) {
       // updateUsedUtxo
-      BitcoinTransaction _transaction = transaction;
+      _transaction = transaction;
+      _transaction.id = response.data['txid'];
+      _transaction.txId = response.data['txid'];
+      _transaction.timestamp = DateTime.now().microsecondsSinceEpoch;
+      _transaction.confirmations = 0;
       _transaction.inputs.forEach((Input input) async {
         UnspentTxOut _utxo = input.utxo;
         _utxo.locked = true;
@@ -207,7 +223,7 @@ class BitcoinService extends AccountServiceDecorator {
       // backend will parse transaction and insert changeUtxo to backend DB
     }
 
-    return [success, transaction]; // TODO return transaction
+    return [success, _transaction]; // TODO return transaction
   }
 
   Future _syncUTXO() async {
@@ -220,10 +236,14 @@ class BitcoinService extends AccountServiceDecorator {
 
       APIResponse response = await HTTPAgent()
           .get('${Endpoint.SUSANOO}/wallet/account/txs/uxto/$currencyId');
-      List<dynamic> datas = response.data;
-      List<UtxoEntity> utxos =
-          datas.map((data) => UtxoEntity.fromJson(currencyId, data)).toList();
-      DBOperator().utxoDao.insertUtxos(utxos);
+      if (response.success) {
+        List<dynamic> datas = response.data;
+        List<UtxoEntity> utxos =
+            datas.map((data) => UtxoEntity.fromJson(currencyId, data)).toList();
+        DBOperator().utxoDao.insertUtxos(utxos);
+      } else {
+        // TODO
+      }
     }
   }
 }
