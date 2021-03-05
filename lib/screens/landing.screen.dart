@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../database/db_operator.dart';
 import './welcome.screen.dart';
 import './home.screen.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/loading_dialog.dart';
+import '../blocs/account/account_bloc.dart';
 import '../blocs/fiat/fiat_bloc.dart';
 import '../blocs/user/user_bloc.dart';
 
@@ -17,10 +19,15 @@ class _LandingScreenState extends State<LandingScreen> {
   bool _isInit = true;
   UserBloc _bloc;
   FiatBloc _fiatBloc;
+  AccountBloc _accountBloc;
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     if (_isInit) {
+      await DBOperator().init();
+      // force AccountBloc call constructor
+      _accountBloc = BlocProvider.of<AccountBloc>(context);
+
       _bloc = BlocProvider.of<UserBloc>(context)..add(UserCheck());
       _fiatBloc = BlocProvider.of<FiatBloc>(context);
       _isInit = false;
@@ -33,11 +40,13 @@ class _LandingScreenState extends State<LandingScreen> {
   void dispose() {
     _bloc.close();
     _fiatBloc.close();
+    _accountBloc.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+
     return BlocListener<UserBloc, UserState>(
       listener: (context, state) {
         if (state is UserLoading) {
@@ -57,6 +66,20 @@ class _LandingScreenState extends State<LandingScreen> {
       },
       child: BlocBuilder<UserBloc, UserState>(
         builder: (context, state) {
+          if (state is UserInitial) {
+            return Scaffold(
+              body: Container(
+                height: double.infinity,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/welcome_bg.png'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            );
+          }
           if (state is UserSuccess) {
             return HomeScreen();
           }
