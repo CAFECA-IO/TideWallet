@@ -83,8 +83,10 @@ class TransactionEntity {
         this.status = data['status'],
         this.timestamp = data['timestamp'],
         this.note = data['note'] {
-    List sourceAddress = json.decode(data['source_addresses']);
-    List destinctionAddress = json.decode(data['destination_addresses']);
+    List sourceAddress =
+        data['source_addresses']; // json.decode(data['source_addresses']);
+    List destinctionAddress = data[
+        'destination_addresses']; //json.decode(data['destination_addresses']);
     for (var address in sourceAddress) {
       this.sourceAddress = this.sourceAddress == null
           ? this.sourceAddress = address

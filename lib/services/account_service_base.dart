@@ -211,8 +211,6 @@ class AccountServiceBase extends AccountService {
 
     if (res.success) {
       List txs = res.data;
-      Log.debug('txs: $txs');
-
       txs =
           txs.map((tx) => TransactionEntity.fromJson(currency.id, tx)).toList();
 

@@ -221,29 +221,35 @@ class EthereumService extends AccountServiceDecorator {
         Map data = response.data;
         String address = data['address'];
         this._address = address;
-      }
-      Log.debug('_address: ${this._address}');
+
 // TEST
-      // // IMPORTANT: seed cannot reach
-      String seed =
-          'd130e96ae9f5ede60e33c5264d1e2beb03c54b5eb67d8d52773a408287178ccc';
-      // '74a0b10d85dea97d53ff42a89f34a8447bbd041dcb573333358a03d5d1cfff0e';
-      // '59f45d6afb9bc00380fed2fcfdd5b36819acab89054980ad6e5ff90ba19c5347'; // 上一個有eth的 seed
-      Uint8List publicKey = await PaperWallet.getPubKey(hex.decode(seed), 0, 0,
-          compressed: false);
-      String caculatedAddress = '0x' +
-          hex
-              .encode(Cryptor.keccak256round(
-                  publicKey.length % 2 != 0 ? publicKey.sublist(1) : publicKey,
-                  round: 1))
-              .substring(24, 64);
-      Log.debug('caculatedAddress: $caculatedAddress');
+        // // IMPORTANT: seed cannot reach
+        String seed =
+            '4f796f9ed67db3885f1ec75407dd257391f05b91ce8454dbc8636930c5124912';
+        // '74a0b10d85dea97d53ff42a89f34a8447bbd041dcb573333358a03d5d1cfff0e';
+        // '59f45d6afb9bc00380fed2fcfdd5b36819acab89054980ad6e5ff90ba19c5347'; // 上一個有eth的 seed
+        Uint8List publicKey = await PaperWallet.getPubKey(
+            hex.decode(seed), 0, 0,
+            compressed: false);
+        String caculatedAddress = '0x' +
+            hex
+                .encode(Cryptor.keccak256round(
+                    publicKey.length % 2 != 0
+                        ? publicKey.sublist(1)
+                        : publicKey,
+                    round: 1))
+                .substring(24, 64);
+        Log.debug('caculatedAddress: $caculatedAddress');
 // TEST(end)
-      return [this._address, null];
-    } else {
-      //TODO
-      return ['error', 0];
+        Log.debug('_address: ${this._address}');
+        return [this._address, null];
+      } else {
+        //TODO
+        return ['error', 0];
+      }
     }
+    Log.debug('_address: ${this._address}');
+    return [this._address, null];
   }
 
   @override

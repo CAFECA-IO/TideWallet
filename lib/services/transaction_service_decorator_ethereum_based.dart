@@ -19,13 +19,12 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
 
   EthereumTransaction _signTransaction(
       EthereumTransaction transaction, Uint8List privKey) {
+    Log.debug('ETH from privKey: $privKey');
     Uint8List payload = encodeToRlp(transaction);
-
     Uint8List rawDataHash =
         Uint8List.fromList(Cryptor.keccak256round(payload, round: 1));
-    Log.debug('privKey: $privKey');
     MsgSignature signature = Signer().sign(rawDataHash, privKey);
-    Log.debug('signature: $signature');
+    Log.debug('ETH signature: $signature');
 
     final chainIdV = transaction.chainId != null
         ? (signature.v - 27 + (transaction.chainId * 2 + 35))
@@ -52,6 +51,15 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
     String changeAddress,
     int changeIndex,
   }) {
+    Log.debug('ETH from: $changeAddress');
+    Log.debug('ETH to: $to');
+    Log.debug('ETH nonce: $nonce');
+    Log.debug('ETH amount: $amount');
+    Log.debug('ETH gasPrice: $gasPrice');
+    Log.debug('ETH gasUsed: $gasLimit');
+    Log.debug('ETH message: $message');
+    Log.debug('ETH chainId: $chainId');
+    Log.debug('ETH fee: ${gasLimit * gasPrice}');
     EthereumTransaction transaction = EthereumTransaction.prepareTransaction(
       from: changeAddress,
       to: to,

@@ -183,7 +183,6 @@ class TransactionRepository {
     //     changeIndex,
     //     keyIndex);
     Log.warning("getPrivKey seed: ${hex.encode(seed)}");
-    Log.warning("getPrivKey result: ${hex.encode(result)}");
     return result;
   }
 
@@ -237,8 +236,10 @@ class TransactionRepository {
         int nonce = await _accountService.getNonce(
             this._currency.blockchainId, this._address);
 
+        Log.debug('ETH gasLimit: $gasLimit');
         if (currency.symbol.toLowerCase() != 'eth') {
           // ERC20
+          Log.debug('ETH this._currency.decimals: ${this._currency.decimals}');
           List<int> erc20Func = Cryptor.keccak256round(
               utf8.encode('transfer(address,uint256)'),
               round: 1);
@@ -248,18 +249,26 @@ class TransactionRepository {
                   hex.decode(hex
                       .encode(encodeBigInt(BigInt.parse(
                           Converter.toCurrencySmallestUnit(
-                                  amount, _currency.decimals ?? 18)
-                              .toString()))) // TODO TEST
+                                  amount, _currency.decimals)
+                              .toString())))
                       .padLeft(64, '0')) +
                   rlp.toBuffer(message ?? Uint8List(0)));
 
           amount = Decimal.zero;
           to = this._currency.contract;
-          gasLimit = Decimal.fromInt(52212); // TODO TEST
+          gasLimit = await _accountService.estimateGasLimit(
+              this._currency.blockchainId,
+              _address,
+              to,
+              amount.toString(),
+              message);
         }
-        Log.debug('nonce: $nonce');
-        Log.debug('gasPrice: $gasPrice');
-        Log.debug('gasLimit: $gasLimit');
+        Log.debug('ETH nonce: $nonce');
+        Log.debug('ETH gasPrice: $gasPrice');
+        Log.debug('ETH message: $message');
+        Log.debug('ETH gasLimit: $gasLimit');
+        Log.debug('ETH this._currency.contract: ${this._currency.contract}');
+
         Transaction transaction = _transactionService.prepareTransaction(
             this._currency.publish,
             to,
@@ -267,7 +276,7 @@ class TransactionRepository {
             message == null ? Uint8List(0) : rlp.toBuffer(message),
             nonce: nonce,
             gasPrice: Converter.toCurrencySmallestUnit(
-                gasPrice, this._currency.decimals),
+                gasPrice, _transactionService.currencyDecimals),
             gasLimit: gasLimit,
             chainId: _currency.chainId,
             privKey: await getPrivKey(pwd, 0, 0),

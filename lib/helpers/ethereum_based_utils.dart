@@ -97,6 +97,6 @@ Uint8List encodeToRlp(EthereumTransaction transaction) {
       ..add(transaction.signature.r)
       ..add(transaction.signature.s);
   }
-  Log.debug('list: $list');
+  Log.debug('ETH list: $list');
   return rlp.encode(list);
 }
