@@ -82,7 +82,8 @@ class TransactionItem extends StatelessWidget {
                       width: 28,
                     ),
                     Text(
-                      transaction.direction.subtitle,
+                      t(transaction.direction.subtitle) +
+                          ": ${Formatter.formatAdddress(transaction.address)}",
                       style: transaction.status == TransactionStatus.fail
                           ? Theme.of(context)
                               .textTheme

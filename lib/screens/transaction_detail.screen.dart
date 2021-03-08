@@ -161,7 +161,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                   SizedBox(height: 24),
                   Align(
                     child: Text(
-                      t('transfer_to'),
+                      t(_transaction.direction.subtitle),
                       style: Theme.of(context).textTheme.caption,
                     ),
                     alignment: Alignment.centerLeft,

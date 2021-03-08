@@ -114,12 +114,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       Decimal fee;
       Decimal gasPrice;
       Decimal gasLimit;
-      if (_state.rules[0] && event.amount.isNotEmpty) {
+      Decimal amount;
+      amount = Decimal.tryParse(event.amount);
+      if (_state.rules[0] && amount != null) {
         // TODO TEST
         Log.debug('event is VerifyAmount: ${event.amount}');
-
         result = await _repo.getTransactionFee(
-            amount: Decimal.parse(event.amount), address: _state.address);
+            amount: amount, address: _state.address);
         // TODO TEST
         Log.debug('getTransactionFee result: $result');
         if (result.length == 1) {
@@ -127,20 +128,20 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           fee = _gasPrice[TransactionPriority.standard];
           gasLimit = null;
           gasPrice = null;
-          rule2 = _repo.verifyAmount(Decimal.parse(event.amount), fee: fee);
+          rule2 = _repo.verifyAmount(amount, fee: fee);
         } else if (result.length == 2) {
           _gasPrice = result[0];
           gasPrice = result[0][TransactionPriority.standard];
           gasLimit = result[1];
           fee = gasPrice * gasLimit;
-          rule2 = _repo.verifyAmount(Decimal.parse(event.amount), fee: fee);
+          rule2 = _repo.verifyAmount(amount, fee: fee);
         }
         rules = [_state.rules[0], rule2];
         Log.debug(rules);
         String feeToFiat =
             _traderRepo.calculateFeeToFiat(_repo.currency, fee).toString();
         yield _state.copyWith(
-          amount: Decimal.parse(event.amount),
+          amount: amount,
           rules: rules,
           fee: fee,
           feeToFiat: feeToFiat,
