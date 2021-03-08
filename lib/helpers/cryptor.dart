@@ -10,7 +10,6 @@ import 'package:crypto/src/sha256.dart' as SHA256;
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart' as crypto;
 
-
 // import 'logger.dart';
 
 class Cryptor {
@@ -98,18 +97,18 @@ class Cryptor {
   }
 
   static String genIV({int bytes: 16}) {
-      final iv = encrypt.IV.fromLength(bytes);
-    return iv.base16;
+    final iv = encrypt.IV.fromSecureRandom(bytes);
+    return hex.encode(iv.bytes);
   }
 
   /// message, hmacKey must be Base16 string, looks like: 'b1fdef93054a228d93c3f54fa95b223c'
   static String hmacEncrypt(String message, String hmacKey) {
-      var key = hex.decode(hmacKey);
-      var bytes = hex.decode(message);
+    var key = hex.decode(hmacKey);
+    var bytes = hex.decode(message);
 
-      var hmacSha256 = crypto.Hmac(crypto.sha256, key);
-      var digest = hmacSha256.convert(bytes);
+    var hmacSha256 = crypto.Hmac(crypto.sha256, key);
+    var digest = hmacSha256.convert(bytes);
 
-      return digest.toString();
+    return digest.toString();
   }
 }

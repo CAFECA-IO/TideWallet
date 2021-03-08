@@ -7,7 +7,7 @@ enum T_EVT { MESSAGE, OPEN, CLOSE, ERROR }
 
 class TransportEvent {
   final T_EVT evt;
-  final Response value;
+  final WCMessage value;
 
   TransportEvent(this.evt, this.value);
 }
@@ -25,13 +25,15 @@ class Transport {
     this._createSocket();
   }
 
-  send(message, topic, silent) {
+  send(String message, String topic) {
     this._socketSend({
       'topic': topic,
       'type': "pub",
       'payload': message,
       'silent': true,
     });
+
+    Log.info('>>>> topic: $topic, payload: $message <<<<<');
   }
 
   subscribe(topic) {
@@ -81,7 +83,7 @@ class Transport {
   _socketReceive(String message) {
     try {
       final result = json.decode(message);
-      final res = Response.fromJson(result);
+      final res = WCMessage.fromJson(result);
       this._controller.add(TransportEvent(T_EVT.MESSAGE, res));
 
       this._socketSend({

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 // import 'package:socket_io_client/socket_io_client.dart';
+import 'package:tidewallet3/helpers/logger.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:uuid/uuid.dart';
@@ -51,7 +52,7 @@ class Connector {
     this._handshakeId = value;
   }
 
-   set handshakeTopic(String value) {
+  set handshakeTopic(String value) {
     this._handshakeTopic = value;
   }
 
@@ -95,35 +96,32 @@ class Connector {
   bool get connected => this._connected;
 
   String get bridge => this._bridge;
-  
+
   String get key => this._key;
-  
+
   String get clientId {
     if (this._clientId == null) this._clientId = Uuid().v4();
     return this._clientId;
   }
 
   PeerMeta get clientMeta => this._clientMeta;
-  
+
   int get chainId => this._chainId;
-  
+
   int get networkId => this._networkId;
-  
+
   List<String> get accounts => this._accounts;
 
-  Connector(ConnectionEl opt) {
+  Connector(ConnectorOpts opt) {
     this._eventManager = EventManager();
-
-    this._bridge = opt.bridge;
+    this.bridge = opt.session.bridge;
     this._transport = Transport(url: this._bridge);
-    this._transport.subscribe(opt.topic);
 
-    // this._handshakeTopic = opt.topic;
-    this._key = opt.key;
+    this.session = opt.session ?? this._getStorageSession();
 
+    this._transport.subscribe(opt.session.peerId);
     this._subscribeToInternalEvents();
     this._initTransport();
-    this.session = opt.session ?? this._getStorageSession();
   }
 
   onEvt(String evt, Function callback) {
@@ -143,10 +141,12 @@ class Connector {
   }
 
   approveSession(WCSession session) {
-    // WCRequest(id: this._handshakeId, );
     this.chainId = session.chainId;
     this.networkId = session.networkId;
     this.accounts = session.accounts;
+
+    print('approveSession');
+
     final req = {
       'id': this._handshakeId,
       'jsonrpc': '2.0',
@@ -154,32 +154,54 @@ class Connector {
         "approved": true,
         "chainId": this.chainId ?? 1,
         "networkId": this.networkId ?? 0,
-        "accounts": this.accounts,
+        "accounts": this.accounts ?? [],
         "rpcUrl": "",
         'peerId': this.clientId,
         'peerMeta': this.clientMeta
       }
     };
+
+    final iv = Crypto.genIV();
+    final encrypt = json.encode(req);
+        Log.debug(encrypt);
+        Log.debug('KK ${this._key}');
+        Log.debug('IV ${iv}');
+
+    final data = Crypto.encrypt(encrypt, this._key, iv);
+
+            Log.debug('data $data');
+
+    final hmac = Crypto.hmac(data + iv, this._key);
+                Log.debug('hmac $hmac');
+
+    final payload = {'data': data, 'iv': iv, 'hmac': hmac};
+    Log.debug(payload);
+
+    this._sendResponse(json.encode(payload), this._peerId);
   }
 
   _initTransport() {
     this._transport.events.listen((event) {
+      Log.info('T listen $event');
       switch (event.evt) {
         case T_EVT.MESSAGE:
           this._handleIncomingMessages(event.value);
           break;
         case T_EVT.OPEN:
-
+          break;
         default:
+          Log.error('UNKNOWN => ${event.evt}');
       }
     });
   }
 
-  _handleIncomingMessages(Response v) {
+  _handleIncomingMessages(WCMessage v) {
+    Log.warning('Handle the MTF ${this._key}');
     final payload = WCPayload.fromJson(json.decode(v.payload));
     final verified = this.verifyHMAC(payload.data, payload.iv, payload.hmac);
     assert(verified == true);
     final d = Crypto.decrypto(payload.data, this._key, payload.iv);
+    Log.debug(d);
 
     this._eventManager.trigger(WCRequest.fromJson(json.decode(d)));
   }
@@ -197,8 +219,12 @@ class Connector {
     });
   }
 
-  WCSession _getStorageSession() {
+  _sendResponse(String msg, String topic) {
+    this._transport.send(msg, topic);
+  }
 
+  WCSession _getStorageSession() {
+    // TODO:
   }
 
   // _formatRequest(Map req) {}

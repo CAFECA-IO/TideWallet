@@ -5,12 +5,21 @@ class ConnectionEl {
   final int version;
   final String bridge;
   final String key;
-  final WCSession session;
 
-  ConnectionEl({this.topic, this.version, this.bridge, this.key, this.session});
+  ConnectionEl({this.topic, this.version, this.bridge, this.key});
 }
 
 class PeerMeta {}
+
+class ConnectorOpts {
+    final WCSession session;
+    final PeerMeta clientMeta;
+
+    ConnectorOpts({
+      this.session,
+      this.clientMeta,
+    });
+}
 
 class WCSession {
   bool connected;
@@ -58,19 +67,21 @@ class WCRequest {
         this.params = json['params'];
 }
 
-class Response {
+class WCMessage {
   final String topic;
   final String type;
   final String payload;
   final bool silent;
 
-  Response({this.topic, this.type, this.payload, this.silent});
+  WCMessage({this.topic, this.type, this.payload, this.silent});
 
-  Response.fromJson(Map json)
+  WCMessage.fromJson(Map json)
       : this.topic = json['topic'],
         this.type = json['type'],
         this.payload = json['payload'],
         this.silent = json['silent'];
+
+  String toString() => '{topic: $topic, type: $type, payload: $payload, silent: $silent }';
 }
 
 class WCPayload {

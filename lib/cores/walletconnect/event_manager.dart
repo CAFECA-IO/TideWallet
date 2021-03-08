@@ -12,6 +12,7 @@ class EventManager {
 
   trigger(WCRequest evt) {
     final evtIndex = this._events.indexWhere((event) => event.evt == evt.method);
+    Log.info('EVT III $evtIndex');
     if (evtIndex > -1) {
       this._events[evtIndex].callback(evt);
     }

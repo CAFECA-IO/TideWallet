@@ -12,6 +12,7 @@ part 'walletconnect_state.dart';
 class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
   WalletConnectBloc() : super(WalletConnectInitial());
   Connector _connector;
+  WCSession _session;
 
   @override
   Stream<Transition<WalletConnectEvent, WalletConnectState>> transformEvents(
@@ -27,12 +28,15 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
   ) async* {
     if (event is ScanWC) {
       if (state is WalletConnectInitial || state is WalletConnectError) {
+        int id = USE_NETWORK == NETWORK.MAINNET ? 1 : 3; // Ropsten
+
         final connection = Connector.parseUri(event.uri);
+        _session = WCSession(chainId: id, networkId: id, key: connection.key, bridge: connection.bridge, peerId: connection.topic);
 
         if (connection == null) {
           yield WalletConnectError(WC_ERROR.URI);
         } else {
-          _connector = Connector(connection);
+          _connector = Connector(ConnectorOpts(session: _session));
 
           yield WalletConnectLoaded();
         }
@@ -40,8 +44,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
     }
 
     if (event is ApproveWC) {
-      int id = USE_NETWORK == NETWORK.MAINNET ? 1 : 3; // Ropsten
-      _connector.approveSession(WCSession(chainId: id, networkId: id));
+      _connector.approveSession(_session);
     }
   }
 }
