@@ -12,4 +12,6 @@ class Crypto {
   static String hmac(String message, String hmacKey) {
     return Cryptor.hmacEncrypt(message, hmacKey);
   }
+
+  static String genIV() => Cryptor.genIV();
 }

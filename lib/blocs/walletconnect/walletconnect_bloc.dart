@@ -5,7 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../cores/walletconnect/core.dart';
-
+import '../../constants/account_config.dart';
 part 'walletconnect_event.dart';
 part 'walletconnect_state.dart';
 
@@ -40,7 +40,8 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
     }
 
     if (event is ApproveWC) {
-      _connector.approveSession();
+      int id = USE_NETWORK == NETWORK.MAINNET ? 1 : 3; // Ropsten
+      _connector.approveSession(WCSession(chainId: id, networkId: id));
     }
   }
 }

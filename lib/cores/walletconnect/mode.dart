@@ -5,13 +5,14 @@ class ConnectionEl {
   final int version;
   final String bridge;
   final String key;
+  final WCSession session;
 
-  ConnectionEl({this.topic, this.version, this.bridge, this.key});
+  ConnectionEl({this.topic, this.version, this.bridge, this.key, this.session});
 }
 
 class PeerMeta {}
 
-class Session {
+class WCSession {
   bool connected;
   List<String> accounts;
   int chainId;
@@ -21,8 +22,24 @@ class Session {
   PeerMeta clientMeta;
   String peerId;
   PeerMeta peerMeta;
-  String handshakeId;
+  int handshakeId;
   String handshakeTopic;
+  int networkId;
+
+  WCSession({
+    this.connected,
+    this.accounts,
+    this.chainId,
+    this.bridge,
+    this.key,
+    this.clientId,
+    this.clientMeta,
+    this.peerId,
+    this.peerMeta,
+    this.handshakeId,
+    this.handshakeTopic,
+    this.networkId
+  });
 }
 
 class WCRequest {

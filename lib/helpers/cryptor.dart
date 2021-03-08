@@ -97,6 +97,11 @@ class Cryptor {
     return decrypted;
   }
 
+  static String genIV({int bytes: 16}) {
+      final iv = encrypt.IV.fromLength(bytes);
+    return iv.base16;
+  }
+
   /// message, hmacKey must be Base16 string, looks like: 'b1fdef93054a228d93c3f54fa95b223c'
   static String hmacEncrypt(String message, String hmacKey) {
       var key = hex.decode(hmacKey);

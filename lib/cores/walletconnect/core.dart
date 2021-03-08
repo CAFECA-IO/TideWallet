@@ -5,6 +5,7 @@ import 'dart:io';
 // import 'package:socket_io_client/socket_io_client.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../helpers/cryptor.dart';
 
@@ -21,15 +22,18 @@ class Connector {
   String _bridge = '';
   String _clientId;
   PeerMeta _clientMeta;
-  bool connected = false;
-  Session session;
+  bool _connected = false;
+  // WCSession session;
   EventManager _eventManager;
   Transport _transport;
   String _handshakeTopic;
   int _handshakeId;
   String _peerId;
   PeerMeta _peerMeta;
-
+  int _chainId = 0;
+  int _networkId = 0;
+  String _rpcUrl = '';
+  List<String> _accounts = [];
 
   set bridge(String value) {
     this._bridge = value;
@@ -43,8 +47,12 @@ class Connector {
     this._clientId = value;
   }
 
-   set handshakeId(int value) {
+  set handshakeId(int value) {
     this._handshakeId = value;
+  }
+
+   set handshakeTopic(String value) {
+    this._handshakeTopic = value;
   }
 
   set peerId(String value) {
@@ -55,10 +63,53 @@ class Connector {
     this._peerMeta = value;
   }
 
+  set chainId(int value) {
+    this._chainId = value;
+  }
+
+  set networkId(int value) {
+    this._networkId = value;
+  }
+
+  set accounts(List<String> value) {
+    this._accounts = value;
+  }
+
+  set clientMeta(PeerMeta value) {
+    this._clientMeta = value;
+  }
+
+  set session(WCSession value) {
+    this._connected = value.connected;
+    this.accounts = value.accounts;
+    this.chainId = value.chainId;
+    this.bridge = value.bridge;
+    this.key = value.key;
+    this.clientId = value.clientId;
+    this.clientMeta = value.clientMeta;
+    this.peerId = value.peerId;
+    this.handshakeId = value.handshakeId;
+    this.handshakeTopic = value.handshakeTopic;
+  }
+
+  bool get connected => this._connected;
+
   String get bridge => this._bridge;
+  
   String get key => this._key;
-  String get clientId => this._clientId;
+  
+  String get clientId {
+    if (this._clientId == null) this._clientId = Uuid().v4();
+    return this._clientId;
+  }
+
   PeerMeta get clientMeta => this._clientMeta;
+  
+  int get chainId => this._chainId;
+  
+  int get networkId => this._networkId;
+  
+  List<String> get accounts => this._accounts;
 
   Connector(ConnectionEl opt) {
     this._eventManager = EventManager();
@@ -72,6 +123,7 @@ class Connector {
 
     this._subscribeToInternalEvents();
     this._initTransport();
+    this.session = opt.session ?? this._getStorageSession();
   }
 
   onEvt(String evt, Function callback) {
@@ -90,8 +142,24 @@ class Connector {
     }
   }
 
-  approveSession() {
-
+  approveSession(WCSession session) {
+    // WCRequest(id: this._handshakeId, );
+    this.chainId = session.chainId;
+    this.networkId = session.networkId;
+    this.accounts = session.accounts;
+    final req = {
+      'id': this._handshakeId,
+      'jsonrpc': '2.0',
+      'result': {
+        "approved": true,
+        "chainId": this.chainId ?? 1,
+        "networkId": this.networkId ?? 0,
+        "accounts": this.accounts,
+        "rpcUrl": "",
+        'peerId': this.clientId,
+        'peerMeta': this.clientMeta
+      }
+    };
   }
 
   _initTransport() {
@@ -109,6 +177,8 @@ class Connector {
 
   _handleIncomingMessages(Response v) {
     final payload = WCPayload.fromJson(json.decode(v.payload));
+    final verified = this.verifyHMAC(payload.data, payload.iv, payload.hmac);
+    assert(verified == true);
     final d = Crypto.decrypto(payload.data, this._key, payload.iv);
 
     this._eventManager.trigger(WCRequest.fromJson(json.decode(d)));
@@ -119,19 +189,26 @@ class Connector {
       this.handshakeId = req.id;
       this.peerId = req.params[0]['peerId'];
 
-      // TODO: 
+      // TODO:
       this.peerMeta = null;
 
-      // TODO: 
+      // TODO:
       // trigger "session_request" event
     });
+  }
+
+  WCSession _getStorageSession() {
+
   }
 
   // _formatRequest(Map req) {}
 
   // _formatResponse() {}
 
-  verifyHMAC() {}
+  bool verifyHMAC(String message, String iv, String hmac) {
+    final resource = message + iv;
+    return Crypto.hmac(resource, this._key) == hmac;
+  }
 
   // TODO:
   static ConnectionEl parseUri(String uri) {
