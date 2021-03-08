@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../screens/account.screen.dart';
+import '../screens/account_currency.screen.dart';
 import '../screens/restore_wallet.screen.dart';
 import '../screens/scan_wallet.screen.dart';
 import '../screens/scan_address.screen.dart';
@@ -106,7 +107,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
       List<Widget> _actions = [];
 
       switch (routeName) {
-        case AccountScreen.routeName:
+        case AccountCurrencyScreen.routeName:
           _actions = [
             actionItem(
                 ImageIcon(
@@ -195,7 +196,8 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
       if (routeName == ScanWalletScreen.routeName) return false;
       if (routeName == ScanAddressScreen.routeName) return false;
       if (routeName == TransactionListScreen.routeName) return false;
-      if (routeName == AccountScreen.routeName) return false;
+      if (routeName == AccountCurrencyScreen.routeName) return false;
+      // if (routeName == AccountScreen.routeName) return false;
       if (routeName == CurrencyScreen.routeName) return false;
       if (routeName == SettingsScreen.routeName) return false;
       return true;

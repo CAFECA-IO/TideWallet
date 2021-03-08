@@ -26,7 +26,7 @@ import './screens/feedback.screen.dart';
 import './screens/terms.screen.dart';
 import './screens/update_password.screen.dart';
 import './blocs/fiat/fiat_bloc.dart';
-import './blocs/account/account_bloc.dart';
+import './blocs/account_currency/account_currency_bloc.dart';
 import './blocs/delegate.dart';
 import './blocs/user/user_bloc.dart';
 import './blocs/transaction/transaction_bloc.dart';
@@ -40,7 +40,6 @@ import './repositories/trader_repository.dart';
 import 'theme.dart';
 
 void main() async {
-
   runApp(MyApp());
   Bloc.observer = ObserverDelegate();
 
@@ -97,8 +96,8 @@ class MyApp extends StatelessWidget {
                 Provider.of<UserRepository>(context, listen: false),
               ),
             ),
-            BlocProvider<AccountBloc>(
-              create: (BuildContext context) => AccountBloc(
+            BlocProvider<AccountCurrencyBloc>(
+              create: (BuildContext context) => AccountCurrencyBloc(
                 Provider.of<AccountRepository>(context, listen: false),
                 Provider.of<TraderRepository>(context, listen: false),
               ),

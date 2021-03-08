@@ -15,6 +15,7 @@ enum ACCOUNT_EVT {
 
 class Currency {
   final String id; // AccountCurrencyEntity id for Backend
+  final String accountId;
   final int cointype;
   final int purpose;
   final int accountIndex;
@@ -35,6 +36,7 @@ class Currency {
 
   Currency(
       {this.id,
+      this.accountId,
       this.cointype,
       this.purpose,
       this.amount,
@@ -55,6 +57,7 @@ class Currency {
 
   Currency copyWith(
       {String id,
+      String accountId,
       int cointype,
       int purpose,
       String symbol,
@@ -72,6 +75,7 @@ class Currency {
       String type}) {
     return Currency(
         id: id ?? this.id,
+        accountId: accountId ?? this.accountId,
         cointype: cointype ?? this.cointype,
         purpose: purpose ?? this.purpose,
         amount: amount ?? this.amount,
@@ -92,6 +96,7 @@ class Currency {
   Currency.fromMap(
     Map map,
   )   : id = map['currency_id'],
+        accountId = map['account_id'],
         cointype = map['cointype'],
         purpose = map['purpose'],
         accountIndex = map['accountIndex'],
@@ -112,6 +117,7 @@ class Currency {
 
   Currency.fromJoinCurrency(JoinCurrency entity, ACCOUNT type)
       : id = entity.accountcurrencyId,
+        accountId = entity.accountId,
         cointype = entity.coinType,
         purpose = null, // Dreprecated
         accountIndex = entity.accountIndex,
