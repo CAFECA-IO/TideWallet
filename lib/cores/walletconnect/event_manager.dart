@@ -10,11 +10,10 @@ class Event {
 class EventManager {
   final List<Event> _events = [];
 
-  trigger(WCRequest evt) {
-    final evtIndex = this._events.indexWhere((event) => event.evt == evt.method);
-    Log.info('EVT III $evtIndex');
+  trigger(String evt, { dynamic value }) {
+    final evtIndex = this._events.indexWhere((event) => event.evt == evt);
     if (evtIndex > -1) {
-      this._events[evtIndex].callback(evt);
+      this._events[evtIndex].callback(value);
     }
   }
 

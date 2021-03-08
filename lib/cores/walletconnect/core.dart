@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
+import 'dart:math';
+
 // import 'package:socket_io_client/socket_io_client.dart';
 import 'package:tidewallet3/helpers/logger.dart';
 import 'package:web_socket_channel/io.dart';
@@ -15,6 +15,7 @@ part 'ctypto.dart';
 part 'transport.dart';
 part 'event_manager.dart';
 part 'mode.dart';
+part 'utils.dart';
 
 class Connector {
   String protocol = 'wc';
@@ -145,8 +146,6 @@ class Connector {
     this.networkId = session.networkId;
     this.accounts = session.accounts;
 
-    print('approveSession');
-
     final req = {
       'id': this._handshakeId,
       'jsonrpc': '2.0',
@@ -161,28 +160,21 @@ class Connector {
       }
     };
 
-    final iv = Crypto.genIV();
-    final encrypt = json.encode(req);
-        Log.debug(encrypt);
-        Log.debug('KK ${this._key}');
-        Log.debug('IV ${iv}');
+    this._sendResponse(json.encode(req), this._peerId);
+  }
 
-    final data = Crypto.encrypt(encrypt, this._key, iv);
+  killSession() {
+    final request =
+        _formatRequest(WCRequest(method: 'wc_sessionUpdate', params: [
+      {"approved": false, "chainId": null, "networkId": null, "accounts": null}
+    ]));
 
-            Log.debug('data $data');
-
-    final hmac = Crypto.hmac(data + iv, this._key);
-                Log.debug('hmac $hmac');
-
-    final payload = {'data': data, 'iv': iv, 'hmac': hmac};
-    Log.debug(payload);
-
-    this._sendResponse(json.encode(payload), this._peerId);
+    this._sendResponse(request, this._peerId);
+    this._handleSessionDisconnect('');
   }
 
   _initTransport() {
     this._transport.events.listen((event) {
-      Log.info('T listen $event');
       switch (event.evt) {
         case T_EVT.MESSAGE:
           this._handleIncomingMessages(event.value);
@@ -190,20 +182,19 @@ class Connector {
         case T_EVT.OPEN:
           break;
         default:
-          Log.error('UNKNOWN => ${event.evt}');
+          Log.error('UNKNOWN EVENT TYPE => ${event.evt}');
       }
     });
   }
 
   _handleIncomingMessages(WCMessage v) {
-    Log.warning('Handle the MTF ${this._key}');
     final payload = WCPayload.fromJson(json.decode(v.payload));
     final verified = this.verifyHMAC(payload.data, payload.iv, payload.hmac);
     assert(verified == true);
     final d = Crypto.decrypto(payload.data, this._key, payload.iv);
-    Log.debug(d);
+    final req = WCRequest.fromJson(json.decode(d));
 
-    this._eventManager.trigger(WCRequest.fromJson(json.decode(d)));
+    this._eventManager.trigger(req.method, value: req);
   }
 
   _subscribeToInternalEvents() {
@@ -220,16 +211,45 @@ class Connector {
   }
 
   _sendResponse(String msg, String topic) {
-    this._transport.send(msg, topic);
+    final iv = Crypto.genIV();
+    final data = Crypto.encrypt(msg, this._key, iv);
+    final hmac = Crypto.hmac(data + iv, this._key);
+    final payload = {'data': data, 'iv': iv, 'hmac': hmac};
+    this._transport.send(json.encode(payload), topic);
   }
 
   WCSession _getStorageSession() {
     // TODO:
   }
 
-  // _formatRequest(Map req) {}
+  String _formatRequest(WCRequest req) {
+    final formattedRequest = {
+      'id': req.id == null ? payloadId() : req.id,
+      'jsonrpc': "2.0",
+      'method': req.method,
+      'params': req.params == null ? [] : req.params,
+    };
+
+    return json.encode(formattedRequest);
+  }
 
   // _formatResponse() {}
+
+  _handleSessionDisconnect(String errorMsg) {
+    if (this._connected) {
+      this._connected = false;
+    }
+
+    this._handshakeId = null;
+    this._handshakeTopic = null;
+    this._eventManager.trigger('disconnect', value: errorMsg);
+
+    // this._removeStorageSession();
+    this._transport.close();
+  }
+
+  // TODO:
+  _removeStorageSession() {}
 
   bool verifyHMAC(String message, String iv, String hmac) {
     final resource = message + iv;

@@ -14,3 +14,9 @@ class ScanWC extends WalletConnectEvent {
 }
 
 class ApproveWC extends WalletConnectEvent {}
+
+class DisconnectWC extends WalletConnectEvent {
+  final String message;
+
+  DisconnectWC(this.message);
+}

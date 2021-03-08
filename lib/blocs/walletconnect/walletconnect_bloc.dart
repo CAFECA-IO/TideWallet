@@ -46,5 +46,10 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
     if (event is ApproveWC) {
       _connector.approveSession(_session);
     }
+
+    if (event is DisconnectWC) {
+      _connector.killSession();
+      yield WalletConnectInitial();
+    }
   }
 }

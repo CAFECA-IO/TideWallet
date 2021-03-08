@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tidewallet3/widgets/buttons/primary_button.dart';
+import 'package:tidewallet3/widgets/buttons/secondary_button.dart';
 
 import '../blocs/walletconnect/walletconnect_bloc.dart';
 import '../widgets/appBar.dart';
@@ -57,9 +58,16 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
           appBar: GeneralAppbar(
             routeName: WalletConnectScreen.routeName,
           ),
-          body: Container(child: PrimaryButton('Approve', () {
-            _bloc.add(ApproveWC());
-          }),),
+          body: Container(child: Column(
+            children: [
+              PrimaryButton('Approve', () {
+                _bloc.add(ApproveWC());
+              }),
+              SecondaryButton('Disconnect', () {
+                _bloc.add(DisconnectWC(''));
+              })
+            ],
+          ),),
         );
       },
     );
