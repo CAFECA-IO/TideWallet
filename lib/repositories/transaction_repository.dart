@@ -316,27 +316,27 @@ class TransactionRepository {
     Log.btc('PublishTransaction result: ${result[0]}');
 
     // TODO updateCurrencyAmount ??
-    AccountCurrencyEntity account = await DBOperator()
-        .accountCurrencyDao
-        .findOneByAccountyId(this._currency.id);
-    Log.btc('PublishTransaction account: $account');
+    // AccountCurrencyEntity account = await DBOperator()
+    //     .accountCurrencyDao
+    //     .findOneByAccountyId(this._currency.id);
+    // Log.btc('PublishTransaction account: $account');
 
-    AccountCurrencyEntity updateAccount = AccountCurrencyEntity(
-        accountcurrencyId: account.accountcurrencyId,
-        accountId: account.accountId,
-        numberOfUsedExternalKey: account.numberOfUsedExternalKey,
-        numberOfUsedInternalKey: account.numberOfUsedInternalKey,
-        currencyId: account.currencyId,
-        lastSyncTime: account.lastSyncTime,
-        balance: balance);
-    await DBOperator().accountCurrencyDao.insertAccount(updateAccount);
-    Log.debug('PublishTransaction updateAccount: $updateAccount');
+    // AccountCurrencyEntity updateAccount = AccountCurrencyEntity(
+    //     accountcurrencyId: account.accountcurrencyId,
+    //     accountId: account.accountId,
+    //     numberOfUsedExternalKey: account.numberOfUsedExternalKey,
+    //     numberOfUsedInternalKey: account.numberOfUsedInternalKey,
+    //     currencyId: account.currencyId,
+    //     lastSyncTime: account.lastSyncTime,
+    //     balance: balance);
+    // await DBOperator().accountCurrencyDao.insertAccount(updateAccount);
+    // Log.debug('PublishTransaction updateAccount: $updateAccount');
 
-    Currency _curr = this._currency;
-    _curr.amount = balance;
-    AccountMessage currMsg =
-        AccountMessage(evt: ACCOUNT_EVT.OnUpdateCurrency, value: [_curr]);
-    listener.add(currMsg);
+    // Currency _curr = this._currency;
+    // _curr.amount = balance;
+    // AccountMessage currMsg =
+    //     AccountMessage(evt: ACCOUNT_EVT.OnUpdateCurrency, value: [_curr]);
+    // listener.add(currMsg);
 
     // insertTransaction
 
