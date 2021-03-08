@@ -35,7 +35,9 @@ String padToEven(String value) {
 
 bool isHexPrefixed(String str) {
   // checkNotNull(str);
-  return str.substring(0, 2) == '0x' || str.substring(0, 2) == '0X';
+  return str.isEmpty
+      ? false
+      : str.substring(0, 2) == '0x' || str.substring(0, 2) == '0X';
 }
 
 String stripHexPrefix(String str) {

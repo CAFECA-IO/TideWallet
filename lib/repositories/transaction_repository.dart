@@ -85,7 +85,7 @@ class TransactionRepository {
   }
 
   Future<List<dynamic>> getTransactionFee(
-      {String address, Decimal amount, Uint8List message}) async {
+      {String address, Decimal amount, String message}) async {
     Map<TransactionPriority, Decimal> _fee =
         await _accountService.getTransactionFee(this._currency.blockchainId);
 
@@ -101,21 +101,21 @@ class TransactionRepository {
             unspentTxOuts: unspentTxOuts,
             amount: amount,
             feePerByte: _fee[TransactionPriority.slow],
-            message: message,
+            message: rlp.toBuffer(message ?? Uint8List(0)),
           ),
           TransactionPriority.standard:
               _transactionService.calculateTransactionVSize(
             unspentTxOuts: unspentTxOuts,
             amount: amount,
             feePerByte: _fee[TransactionPriority.standard],
-            message: message,
+            message: rlp.toBuffer(message ?? Uint8List(0)),
           ),
           TransactionPriority.fast:
               _transactionService.calculateTransactionVSize(
             unspentTxOuts: unspentTxOuts,
             amount: amount,
             feePerByte: _fee[TransactionPriority.fast],
-            message: message,
+            message: rlp.toBuffer(message ?? Uint8List(0)),
           ),
         };
         return [fee];
@@ -125,10 +125,33 @@ class TransactionRepository {
           _address =
               (await _accountService.getChangingAddress(_currency.id))[0];
         }
+        String to = address;
+        String from = _address;
+        if (currency.symbol.toLowerCase() != 'eth') {
+          // ERC20
+          Log.debug('ETH this._currency.decimals: ${this._currency.decimals}');
+          List<int> erc20Func = Cryptor.keccak256round(
+              utf8.encode('transfer(address,uint256)'),
+              round: 1);
+          message = '0x' +
+              hex.encode(erc20Func.take(4).toList() +
+                  hex.decode(to.substring(2).padLeft(64, '0')) +
+                  hex.decode(hex
+                      .encode(encodeBigInt(BigInt.parse(
+                          Converter.toCurrencySmallestUnit(
+                                  amount, _currency.decimals)
+                              .toString())))
+                      .padLeft(64, '0')) +
+                  rlp.toBuffer(message ?? Uint8List(0)));
+          Log.debug('ETH erc20Func: $erc20Func');
+
+          amount = Decimal.zero;
+          to = this._currency.contract;
+        }
         _gasLimit = await _accountService.estimateGasLimit(
             this._currency.blockchainId,
-            _address,
-            address,
+            from,
+            to,
             amount.toString(),
             '0x' +
                 hex.encode(
@@ -239,29 +262,8 @@ class TransactionRepository {
         Log.debug('ETH gasLimit: $gasLimit');
         if (currency.symbol.toLowerCase() != 'eth') {
           // ERC20
-          Log.debug('ETH this._currency.decimals: ${this._currency.decimals}');
-          List<int> erc20Func = Cryptor.keccak256round(
-              utf8.encode('transfer(address,uint256)'),
-              round: 1);
-          message = '0x' +
-              hex.encode(erc20Func.take(4).toList() +
-                  hex.decode(to.substring(2).padLeft(64, '0')) +
-                  hex.decode(hex
-                      .encode(encodeBigInt(BigInt.parse(
-                          Converter.toCurrencySmallestUnit(
-                                  amount, _currency.decimals)
-                              .toString())))
-                      .padLeft(64, '0')) +
-                  rlp.toBuffer(message ?? Uint8List(0)));
-
           amount = Decimal.zero;
           to = this._currency.contract;
-          gasLimit = await _accountService.estimateGasLimit(
-              this._currency.blockchainId,
-              _address,
-              to,
-              amount.toString(),
-              message);
         }
         Log.debug('ETH nonce: $nonce');
         Log.debug('ETH gasPrice: $gasPrice');
