@@ -8,6 +8,8 @@ import '../../repositories/account_repository.dart';
 import '../../repositories/trader_repository.dart';
 import '../../models/account.model.dart';
 
+import '../../helpers/logger.dart';
+
 part 'account_currency_event.dart';
 part 'account_currency_state.dart';
 
@@ -60,7 +62,17 @@ class AccountCurrencyBloc
     }
     if (event is UpdateAccountCurrencies) {
       // if (event.currenices[0].accountType == state.currencies[0].accountType) {
-      List<Currency> _list = event.currenices;
+
+      List<Currency> _list = state.currencies;
+      event.currencies.forEach((newCurr) {
+        int index = state.currencies
+            .indexWhere((oldCurr) => oldCurr.symbol == newCurr.symbol);
+        if (index < 0)
+          _list.add(newCurr);
+        else
+          _list[index] = newCurr;
+      });
+
       Decimal _total = Decimal.zero;
 
       _list = _list.map(
@@ -90,7 +102,7 @@ class AccountCurrencyBloc
       yield AccountCurrencyLoaded(_accounts, total: _total);
     }
 
-    if (event is CleanAccount) {
+    if (event is CleanAccountCurrencies) {
       List<Currency> empty = [];
       yield AccountCurrencyLoaded(empty, total: Decimal.zero);
     }

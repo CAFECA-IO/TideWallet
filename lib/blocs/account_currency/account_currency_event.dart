@@ -7,29 +7,15 @@ abstract class AccountCurrencyEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class UpdateAccount extends AccountCurrencyEvent {
-  final Currency account;
-
-  UpdateAccount(this.account);
-
-  @override
-  List<Object> get props => [];
-}
-
-class CleanAccount extends AccountCurrencyEvent {
-  @override
-  List<Object> get props => [];
-}
-
 class GetCurrencyList extends AccountCurrencyEvent {
   @override
   List<Object> get props => [];
 }
 
 class UpdateAccountCurrencies extends AccountCurrencyEvent {
-  final List<Currency> currenices;
+  final List<Currency> currencies;
 
-  UpdateAccountCurrencies(this.currenices);
+  UpdateAccountCurrencies(this.currencies);
 }
 
 class CleanAccountCurrencies extends AccountCurrencyEvent {
