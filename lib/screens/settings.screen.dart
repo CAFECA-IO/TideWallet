@@ -98,50 +98,52 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Header(),
-        ListView(
-          padding: const EdgeInsets.all(0),
-          shrinkWrap: true,
-          children: [
-            _section(t('setting_security'), [
-              _item(t('setting_reset_password'), () {
-                Navigator.of(context).pushNamed(UpdatePasswordScreen.routeName);
-              }),
-              BackupSetting(
-                _item(
-                  t('setting_backup'),
-                  () {
-                    DialogController.showUnDissmissible(
-                      context,
-                      VerifyPasswordDialog(
-                        (String pwd) {
-                          _backupBloc.add(VerifyBackupPassword(pwd));
-                        },
-                        (String pwd) {
-                          DialogController.dismiss(context);
-                        },
-                      ),
-                    );
-                  },
+    return SingleChildScrollView(
+          child: Column(
+        children: [
+          Header(),
+          ListView(
+            padding: const EdgeInsets.all(0),
+            shrinkWrap: true,
+            children: [
+              _section(t('setting_security'), [
+                _item(t('setting_reset_password'), () {
+                  Navigator.of(context).pushNamed(UpdatePasswordScreen.routeName);
+                }),
+                BackupSetting(
+                  _item(
+                    t('setting_backup'),
+                    () {
+                      DialogController.showUnDissmissible(
+                        context,
+                        VerifyPasswordDialog(
+                          (String pwd) {
+                            _backupBloc.add(VerifyBackupPassword(pwd));
+                          },
+                          (String pwd) {
+                            DialogController.dismiss(context);
+                          },
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
-              ResetSetting(_item(t('setting_reset'), null)),
-            ]),
-            _section(t('setting_normal'),
-                [FiatSetting(_item(t('setting_fiat'), null))]),
-            _section(t('setting_about'), [
-              _item(t('setting_feedback'), () {
-                Navigator.of(context).pushNamed(FeedbackScreen.routeName);
-              }),
-              _item(t('setting_term'), () {
-                Navigator.of(context).pushNamed(TermsScreen.routeName);
-              })
-            ])
-          ],
-        ),
-      ],
+                ResetSetting(_item(t('setting_reset'), null)),
+              ]),
+              _section(t('setting_normal'),
+                  [FiatSetting(_item(t('setting_fiat'), null))]),
+              _section(t('setting_about'), [
+                _item(t('setting_feedback'), () {
+                  Navigator.of(context).pushNamed(FeedbackScreen.routeName);
+                }),
+                _item(t('setting_term'), () {
+                  Navigator.of(context).pushNamed(TermsScreen.routeName);
+                })
+              ])
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

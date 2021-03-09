@@ -173,6 +173,6 @@ class Fiat {
   //       exchangeRate = Decimal.parse(entity.rate);
 
   Fiat.fromExchangeRateEntity(ExchangeRateEntity entity)
-      : name = entity.exchangeRateId,
+      : name = entity.name,
         exchangeRate = Decimal.parse(entity.rate);
 }
