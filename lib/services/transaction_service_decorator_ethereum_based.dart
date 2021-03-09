@@ -60,7 +60,7 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
     Log.debug('ETH fee: ${gasLimit * gasPrice}');
     EthereumTransaction transaction = EthereumTransaction.prepareTransaction(
       from: changeAddress,
-      to: to,
+      to: to.contains(':') ? to.split(':')[1] : to,
       nonce: nonce,
       amount: amount, // in wei
       gasPrice: gasPrice, // in wei
