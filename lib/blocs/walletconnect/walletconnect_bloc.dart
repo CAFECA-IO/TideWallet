@@ -92,14 +92,14 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
     }
 
     if (event is ConnectWC) {
-      yield WalletConnected();
+      yield WalletConnected(true);
     }
 
     if (event is DisconnectWC) {
       if (_connector.connected == true) {
         _connector.killSession();
       }
-      yield WalletConnectInitial();
+      yield WalletConnected(false);
     }
   }
 }

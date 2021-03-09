@@ -5,26 +5,37 @@ enum WC_ERROR {
 }
 
 abstract class WalletConnectState extends Equatable {
-  const WalletConnectState();
+  final bool connected;
+  WalletConnectState(this.connected);
   
   @override
-  List<Object> get props => [];
+  List<Object> get props => [connected];
 }
 
-class WalletConnectInitial extends WalletConnectState {}
+class WalletConnectInitial extends WalletConnectState {
+  WalletConnectInitial() : super(false);
+}
 
-class WalletConnectLoaded extends WalletConnectState {}
+class WalletConnectLoaded extends WalletConnectState {
+  WalletConnectLoaded() : super(false);
+}
 
-class WalletConnectConnecting extends WalletConnectState {}
+class WalletConnectConnecting extends WalletConnectState {
+  WalletConnectConnecting() : super(false);
+}
 
-class WalletConnectToBeVerified extends WalletConnectState {}
+class WalletConnectToBeVerified extends WalletConnectState {
+  WalletConnectToBeVerified() : super(false);
+}
 
-class WalletConnected extends WalletConnectState {}
+class WalletConnected extends WalletConnectState {
+  WalletConnected(bool connected) : super(connected);
+}
 
 class WalletConnectError extends WalletConnectState {
   final WC_ERROR error;
 
-  WalletConnectError(this.error);
+  WalletConnectError(this.error) : super(false);
 
   @override
   List<Object> get props => [error];

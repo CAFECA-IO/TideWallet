@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:tidewallet3/widgets/dialogs/dialog_controller.dart';
 
+import '../theme.dart';
 import './account.screen.dart';
 import './wallet_connect.screen.dart';
 import './settings.screen.dart';
@@ -117,6 +119,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         // backgroundColor: MyColors.ui_01,
         onPressed: () async {
           Navigator.of(context).pushNamed(WalletConnectScreen.routeName);
+          //  showModalBottomSheet(
+          //         isScrollControlled: true,
+          //         shape: bottomSheetShape,
+          //         context: context,
+          //         builder: (context) => Container(
+          //           padding:
+          //               EdgeInsets.symmetric(vertical: 22.0, horizontal: 16.0),
+          //           child: WalletConnectScreen(),
+          //         ),
+          //       );
         },
         child: Icon(
           Icons.center_focus_weak,
