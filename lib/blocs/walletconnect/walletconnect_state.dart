@@ -15,7 +15,11 @@ class WalletConnectInitial extends WalletConnectState {}
 
 class WalletConnectLoaded extends WalletConnectState {}
 
-class WalletConnectApproved extends WalletConnectState {}
+class WalletConnectConnecting extends WalletConnectState {}
+
+class WalletConnectToBeVerified extends WalletConnectState {}
+
+class WalletConnected extends WalletConnectState {}
 
 class WalletConnectError extends WalletConnectState {
   final WC_ERROR error;

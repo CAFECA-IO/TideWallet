@@ -11,10 +11,12 @@ class EventManager {
   final List<Event> _events = [];
 
   trigger(String evt, { dynamic value }) {
-    final evtIndex = this._events.indexWhere((event) => event.evt == evt);
-    if (evtIndex > -1) {
-      this._events[evtIndex].callback(value);
-    }
+    Log.debug('Trigger $evt');
+    final evts = this._events.where((event) => event.evt == evt);
+  
+    evts.toList().forEach((e) {
+      e.callback(value);
+    });
   }
 
   subscribe(Event event) {

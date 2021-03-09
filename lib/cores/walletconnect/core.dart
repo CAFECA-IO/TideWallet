@@ -82,7 +82,7 @@ class Connector {
   }
 
   set session(WCSession value) {
-    this._connected = value.connected;
+    this._connected = value.connected ?? this._connected;
     this.accounts = value.accounts;
     this.chainId = value.chainId;
     this.bridge = value.bridge;
@@ -113,6 +113,10 @@ class Connector {
 
   List<String> get accounts => this._accounts;
 
+  String get peerId => this._peerId;
+
+  PeerMeta get peerMeta => this._peerMeta;
+
   Connector(ConnectorOpts opt) {
     this._eventManager = EventManager();
     this.bridge = opt.session.bridge;
@@ -121,6 +125,7 @@ class Connector {
     this.session = opt.session ?? this._getStorageSession();
 
     this._transport.subscribe(opt.session.peerId);
+    this._transport.subscribe(this.clientId);
     this._subscribeToInternalEvents();
     this._initTransport();
   }
@@ -131,15 +136,18 @@ class Connector {
     this._eventManager.subscribe(event);
   }
 
-  connect() {
-    if (this.connected) {}
-  }
+  // connect() {
+  //   if (this.connected) {
 
-  createSession() {
-    if (this.connected) {
-      throw (ERROR_SESSION.CONNECTED);
-    }
-  }
+  //   } 
+  //   this.createSession();
+  // }
+
+  // createSession() {
+  //   if (this.connected) {
+  //     throw (ERROR_SESSION.CONNECTED);
+  //   }
+  // }
 
   approveSession(WCSession session) {
     this.chainId = session.chainId;
@@ -161,6 +169,12 @@ class Connector {
     };
 
     this._sendResponse(json.encode(req), this._peerId);
+    this._eventManager.trigger('connect', value: {
+      'peerId': this.peerId,
+      'peerMeta': this.peerMeta,
+      'chainId': this.chainId,
+      'accounts': this.accounts,
+    });
   }
 
   killSession() {
@@ -192,6 +206,7 @@ class Connector {
     final verified = this.verifyHMAC(payload.data, payload.iv, payload.hmac);
     assert(verified == true);
     final d = Crypto.decrypto(payload.data, this._key, payload.iv);
+    Log.warning('Receive: $d');
     final req = WCRequest.fromJson(json.decode(d));
 
     this._eventManager.trigger(req.method, value: req);
@@ -204,9 +219,13 @@ class Connector {
 
       // TODO:
       this.peerMeta = null;
+      this._eventManager.trigger('session_request', value: req.copyWith(method: 'session_request'));
+    });
 
-      // TODO:
-      // trigger "session_request" event
+    this.onEvt('wc_sessionUpdate', (WCRequest req) {
+      if (req.params[0]['approved'] == false) {
+        this._handleSessionDisconnect('');
+      }
     });
   }
 
@@ -236,14 +255,13 @@ class Connector {
   // _formatResponse() {}
 
   _handleSessionDisconnect(String errorMsg) {
-    if (this._connected) {
+    if (this._connected == true) {
       this._connected = false;
     }
 
     this._handshakeId = null;
     this._handshakeTopic = null;
     this._eventManager.trigger('disconnect', value: errorMsg);
-
     // this._removeStorageSession();
     this._transport.close();
   }

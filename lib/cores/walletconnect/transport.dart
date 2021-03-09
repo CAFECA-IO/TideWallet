@@ -2,7 +2,6 @@ part of 'core.dart';
 
 // import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-
 enum T_EVT { MESSAGE, OPEN, CLOSE, ERROR }
 
 class TransportEvent {
@@ -37,6 +36,7 @@ class Transport {
   }
 
   subscribe(topic) {
+    
     this._socketSend({
       'topic': topic,
       'type': "sub",
@@ -75,7 +75,6 @@ class Transport {
   _socketSend(Map socketMessage) {
     if (this._channel != null && this._channel.closeCode == null) {
       final msg = json.encode(socketMessage);
-      print('Send: $msg');
       this._channel.sink.add(msg);
     }
   }

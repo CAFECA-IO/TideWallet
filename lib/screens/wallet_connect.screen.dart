@@ -37,7 +37,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
     return BlocBuilder<WalletConnectBloc, WalletConnectState>(
       cubit: _bloc,
       builder: (context, state) {
-        if (state is! WalletConnectLoaded) {
+        if (state is WalletConnectInitial) {
           return Scaffold(
             extendBodyBehindAppBar: true,
             appBar: GeneralAppbar(
@@ -54,20 +54,27 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
           );
         }
 
+        if (state is WalletConnectConnecting) {
+          return Scaffold(
+              body: Container(child: Center(child: Text('Loading....'))));
+        }
+
         return Scaffold(
           appBar: GeneralAppbar(
             routeName: WalletConnectScreen.routeName,
           ),
-          body: Container(child: Column(
-            children: [
-              PrimaryButton('Approve', () {
-                _bloc.add(ApproveWC());
-              }),
-              SecondaryButton('Disconnect', () {
-                _bloc.add(DisconnectWC(''));
-              })
-            ],
-          ),),
+          body: Container(
+            child: Column(
+              children: [
+                PrimaryButton('Approve', () {
+                  _bloc.add(ApproveWC());
+                }),
+                SecondaryButton('Disconnect', () {
+                  _bloc.add(DisconnectWC(''));
+                })
+              ],
+            ),
+          ),
         );
       },
     );

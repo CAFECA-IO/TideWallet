@@ -54,7 +54,7 @@ void main() async {
   // HttpOverrides.global = new MyHttpOverrides();
 
   runApp(MyApp());
-  // Bloc.observer = ObserverDelegate();
+  Bloc.observer = ObserverDelegate();
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

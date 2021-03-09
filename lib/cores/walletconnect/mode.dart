@@ -12,13 +12,13 @@ class ConnectionEl {
 class PeerMeta {}
 
 class ConnectorOpts {
-    final WCSession session;
-    final PeerMeta clientMeta;
+  final WCSession session;
+  final PeerMeta clientMeta;
 
-    ConnectorOpts({
-      this.session,
-      this.clientMeta,
-    });
+  ConnectorOpts({
+    this.session,
+    this.clientMeta,
+  });
 }
 
 class WCSession {
@@ -47,7 +47,7 @@ class WCSession {
     this.peerMeta,
     this.handshakeId,
     this.handshakeTopic,
-    this.networkId
+    this.networkId,
   });
 }
 
@@ -65,6 +65,20 @@ class WCRequest {
         this.method = json['method'],
         this.jsonrpc = json['jsonrpc'],
         this.params = json['params'];
+
+  WCRequest copyWith({
+    int id,
+    String method,
+    String jsonrpc,
+    List<dynamic> params,
+  }) {
+    return WCRequest(
+      id: id ?? this.id,
+      method: method ?? this.method,
+      jsonrpc: jsonrpc ?? this.jsonrpc,
+      params: params ?? this.params,
+    );
+  }
 }
 
 class WCMessage {
@@ -81,7 +95,8 @@ class WCMessage {
         this.payload = json['payload'],
         this.silent = json['silent'];
 
-  String toString() => '{topic: $topic, type: $type, payload: $payload, silent: $silent }';
+  String toString() =>
+      '{topic: $topic, type: $type, payload: $payload, silent: $silent }';
 }
 
 class WCPayload {

@@ -13,7 +13,11 @@ class ScanWC extends WalletConnectEvent {
   ScanWC(this.uri);
 }
 
+class RequestWC extends WalletConnectEvent {}
+
 class ApproveWC extends WalletConnectEvent {}
+
+class ConnectWC extends WalletConnectEvent {}
 
 class DisconnectWC extends WalletConnectEvent {
   final String message;
