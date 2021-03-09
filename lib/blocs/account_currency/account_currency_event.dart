@@ -26,13 +26,13 @@ class GetCurrencyList extends AccountCurrencyEvent {
   List<Object> get props => [];
 }
 
-class UpdateCurrencies extends AccountCurrencyEvent {
+class UpdateAccountCurrencies extends AccountCurrencyEvent {
   final List<Currency> currenices;
 
-  UpdateCurrencies(this.currenices);
+  UpdateAccountCurrencies(this.currenices);
 }
 
-class CleanCurrencie extends AccountCurrencyEvent {
+class CleanAccountCurrencies extends AccountCurrencyEvent {
   @override
   List<Object> get props => [];
 }

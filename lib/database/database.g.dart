@@ -649,6 +649,29 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
   }
 
   @override
+  Future<List<JoinCurrency>> findAllJoinedCurrency() async {
+    return _queryAdapter.queryList('SELECT * FROM JoinCurrency',
+        mapper: (Map<String, dynamic> row) => JoinCurrency(
+            accountcurrencyId: row['accountcurrency_id'] as String,
+            currencyId: row['currency_id'] as String,
+            symbol: row['symbol'] as String,
+            name: row['name'] as String,
+            balance: row['balance'] as String,
+            accountIndex: row['account_index'] as int,
+            coinType: row['coin_type'] as int,
+            image: row['image'] as String,
+            blockchainId: row['network_id'] as String,
+            network: row['network'] as String,
+            chainId: row['chain_id'] as int,
+            publish:
+                row['publish'] == null ? null : (row['publish'] as int) != 0,
+            contract: row['contract'] as String,
+            decimals: row['decimals'] as int,
+            type: row['type'] as String,
+            accountId: row['account_id'] as String));
+  }
+
+  @override
   Future<void> insertAccount(AccountCurrencyEntity account) async {
     await _accountCurrencyEntityInsertionAdapter.insert(
         account, OnConflictStrategy.replace);

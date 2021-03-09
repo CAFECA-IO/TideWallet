@@ -17,16 +17,17 @@ class AccountCurrencyBloc
   TraderRepository _traderRepo;
   StreamSubscription _subscription;
 
-  AccountCurrencyBloc(this._repo, this._traderRepo) : super(AccountInitial()) {
+  AccountCurrencyBloc(this._repo, this._traderRepo)
+      : super(AccountCurrencyInitial([], total: Decimal.zero)) {
     _subscription?.cancel();
 
     this._repo.listener.listen((msg) {
-      if (msg.evt == ACCOUNT_EVT.OnUpdateAccount) {
-        this.add(UpdateAccount(msg.value));
+      if (msg.evt == ACCOUNT_EVT.OnUpdateCurrency) {
+        this.add(UpdateAccountCurrencies(msg.value));
       }
 
       if (msg.evt == ACCOUNT_EVT.ClearAll) {
-        this.add(CleanAccount());
+        this.add(CleanAccountCurrencies());
       }
     });
   }
@@ -43,9 +44,9 @@ class AccountCurrencyBloc
   ) async* {
     if (event is GetCurrencyList) {
       List<Currency> list = [];
-      for (Currency account in state.accounts) {
-        list = _repo.getCurrencies(account.accountType);
-      }
+
+      list = _repo.getAllCurrencies();
+
       Decimal _total = Decimal.zero;
 
       list = list.map((curr) {
@@ -55,34 +56,26 @@ class AccountCurrencyBloc
         return curr.copyWith(inUSD: v.toString());
       }).toList();
 
-      yield AccountLoaded(list, total: _total);
+      yield AccountCurrencyLoaded(list, total: _total);
     }
-    if (event is UpdateAccount) {
-      AccountCurrencyState _state = state;
-
-      int index = _state.accounts
-          .indexWhere((account) => account.symbol == event.account.symbol);
-
-      Currency acc = event.account;
-      List<Currency> list = _repo.getCurrencies(acc.accountType);
-
-      Decimal _usd = Decimal.zero;
-
-      list.forEach((curr) {
-        Decimal v = _traderRepo.calculateToUSD(curr);
-        _usd += v;
-      });
-
-      acc = acc.copyWith(inUSD: _usd.toString());
-
-      List<Currency> _accounts = [..._state.accounts];
-      if (index < 0) {
-        _accounts.add(acc);
-      } else {
-        _accounts[index] = acc;
-      }
-
+    if (event is UpdateAccountCurrencies) {
+      // if (event.currenices[0].accountType == state.currencies[0].accountType) {
+      List<Currency> _list = event.currenices;
       Decimal _total = Decimal.zero;
+
+      _list = _list.map(
+        (e) {
+          Decimal v = _traderRepo.calculateToUSD(e);
+          _total += v;
+
+          return e.copyWith(inUSD: v.toString());
+        },
+      ).toList();
+
+      yield AccountCurrencyLoaded(_list, total: _total);
+      // }
+
+      List<Currency> _accounts = [...state.currencies];
 
       _accounts.forEach((acc) {
         _repo.getCurrencies(acc.accountType).forEach((currency) {
@@ -94,12 +87,12 @@ class AccountCurrencyBloc
       _accounts
           .sort((a, b) => a.accountType.index.compareTo(b.accountType.index));
 
-      yield AccountLoaded(_accounts, total: _total);
+      yield AccountCurrencyLoaded(_accounts, total: _total);
     }
 
     if (event is CleanAccount) {
       List<Currency> empty = [];
-      yield AccountLoaded(empty, total: Decimal.zero);
+      yield AccountCurrencyLoaded(empty, total: Decimal.zero);
     }
   }
 }

@@ -45,7 +45,8 @@ class AccountCore {
   }
 
   _initAccounts() async {
-    final chains = await this.getNetworks(publish: USE_NETWORK == NETWORK.MAINNET);
+    final chains =
+        await this.getNetworks(publish: USE_NETWORK == NETWORK.MAINNET);
     final accounts = await this.getAccounts();
     await this.getSupportedCurrencies();
 
@@ -191,4 +192,7 @@ class AccountCore {
   // }
 
   List<Currency> getCurrencies(ACCOUNT type) => this.currencies[type];
+
+  List<Currency> getAllCurrencies() =>
+      this.currencies.values.reduce((currList, currs) => currList + currs);
 }

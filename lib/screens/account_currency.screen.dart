@@ -11,8 +11,12 @@ import '../widgets/account_item.dart';
 import '../models/account.model.dart';
 import '../repositories/trader_repository.dart';
 import '../repositories/account_repository.dart';
+import '../helpers/i18n.dart';
+import 'currency.screen.dart';
 import 'transaction_list.screen.dart';
 import 'add_currency.screen.dart';
+
+final t = I18n.t;
 
 class AccountCurrencyScreen extends StatefulWidget {
   final Function jumpTo;
@@ -43,7 +47,7 @@ class _AccountCurrencyScreenState extends State<AccountCurrencyScreen> {
     return Stack(
       children: [
         BlocBuilder<AccountCurrencyBloc, AccountCurrencyState>(
-          // cubit: _bloc,
+          cubit: _bloc,
           builder: (context, state) {
             return Container(
               decoration: BoxDecoration(color: Color(0xFFF7F8F9)),
@@ -64,7 +68,7 @@ class _AccountCurrencyScreenState extends State<AccountCurrencyScreen> {
                           crossAxisCount: 3,
                           childAspectRatio: 1.0,
                           crossAxisSpacing: 4.0),
-                      children: state.accounts
+                      children: state.currencies
                           .map(
                             (Currency acc) => AccountItem(
                               acc,
@@ -100,7 +104,22 @@ class _AccountCurrencyScreenState extends State<AccountCurrencyScreen> {
               return SizedBox();
             }
           },
-        )
+        ),
+        Positioned(
+          child: InkWell(
+            onTap: () {
+              Navigator.of(context).pushNamed(AddCurrencyScreen.routeName);
+            },
+            child: Container(
+              child: Text(
+                '+ ${t('add_currency')}',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+          top: 170.0,
+          right: 12.0,
+        ),
       ],
     );
   }
