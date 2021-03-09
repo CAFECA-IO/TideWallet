@@ -31,7 +31,7 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
     Map<String, Currency> arg = ModalRoute.of(context).settings.arguments;
 
     _repo = Provider.of<AccountRepository>(context);
-    _bloc = AddCurrencyBloc(_repo, arg['account']);
+    _bloc = AddCurrencyBloc(_repo, currency: arg['account']);
     super.didChangeDependencies();
   }
 
@@ -52,8 +52,7 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
         cubit: _bloc,
         builder: (context, state) {
           Widget result = SizedBox();
-          bool addable =
-              (state is GetToken && state.result != null);
+          bool addable = (state is GetToken && state.result != null);
 
           if (state is GetToken) {
             Widget item(String _title, String _value) {
@@ -105,7 +104,6 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
             cubit: _bloc,
             listenWhen: (prev, curr) => (prev != curr),
             listener: (context, state) {
-
               if (state is Loading) {
                 DialogController.showUnDissmissible(context, LoadingDialog());
               }

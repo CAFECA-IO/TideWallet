@@ -32,6 +32,7 @@ class _AccountCurrencyScreenState extends State<AccountCurrencyScreen> {
   AccountCurrencyBloc _bloc;
   AccountRepository _repo;
   TraderRepository _traderRepo;
+  List<Currency> _currencies;
 
   @override
   didChangeDependencies() {
@@ -49,6 +50,7 @@ class _AccountCurrencyScreenState extends State<AccountCurrencyScreen> {
         BlocBuilder<AccountCurrencyBloc, AccountCurrencyState>(
           cubit: _bloc,
           builder: (context, state) {
+            _currencies = state.currencies;
             return Container(
               decoration: BoxDecoration(color: Color(0xFFF7F8F9)),
               child: Column(children: [
@@ -108,7 +110,10 @@ class _AccountCurrencyScreenState extends State<AccountCurrencyScreen> {
         Positioned(
           child: InkWell(
             onTap: () {
-              Navigator.of(context).pushNamed(AddCurrencyScreen.routeName);
+              Currency currency = _currencies[_currencies
+                  .indexWhere((curr) => curr.symbol.toLowerCase() == 'eth')];
+              Navigator.of(context).pushNamed(AddCurrencyScreen.routeName,
+                  arguments: {"account": currency});
             },
             child: Container(
               child: Text(
