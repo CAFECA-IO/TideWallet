@@ -123,8 +123,32 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
               }
             },
             child: Container(
-              padding: const EdgeInsets.all(20.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16),
               child: Column(children: [
+                Container(
+                  // padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  width: MediaQuery.of(context).size.width - 20.0,
+                  // height: 40,
+                  child: Text(t('support_token_type'),
+                      style: Theme.of(context).textTheme.bodyText1
+                      // .copyWith(color: Colors.white),
+                      ),
+                  // decoration: BoxDecoration(
+                  //   borderRadius: BorderRadius.circular(16.0),
+                  //   gradient: LinearGradient(
+                  //     begin: Alignment.centerLeft,
+                  //     end: Alignment.centerRight,
+                  //     colors: <Color>[
+                  //       Theme.of(context).primaryColor,
+                  //       Theme.of(context).accentColor
+                  //     ],
+                  //   ),
+                  // ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
                 Input(
                   labelText: t('enter_address'),
                   controller: _controller,

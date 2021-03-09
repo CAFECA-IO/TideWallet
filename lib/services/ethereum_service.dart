@@ -180,6 +180,7 @@ class EthereumService extends AccountServiceDecorator {
       if (response.success) {
         Map<String, dynamic> data = response.data;
         _gasLimit = int.parse(data['gasLimit']);
+        Log.warning('_gasLimit: $_gasLimit');
       } else {
         // TODO
         _gasLimit = 21000;

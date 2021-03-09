@@ -61,8 +61,6 @@ class AccountCurrencyBloc
       yield AccountCurrencyLoaded(list, total: _total);
     }
     if (event is UpdateAccountCurrencies) {
-      // if (event.currenices[0].accountType == state.currencies[0].accountType) {
-
       List<Currency> _list = state.currencies;
       event.currencies.forEach((newCurr) {
         int index = state.currencies
@@ -85,7 +83,6 @@ class AccountCurrencyBloc
       ).toList();
 
       yield AccountCurrencyLoaded(_list, total: _total);
-      // }
 
       List<Currency> _accounts = [...state.currencies];
 

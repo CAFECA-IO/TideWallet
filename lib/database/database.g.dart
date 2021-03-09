@@ -611,7 +611,7 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
   @override
   Future<AccountCurrencyEntity> findOneByAccountyId(String id) async {
     return _queryAdapter.query(
-        'SELECT * FROM AccountCurrency WHERE AccountCurrency.account_id = ? LIMIT 1',
+        'SELECT * FROM AccountCurrency WHERE AccountCurrency.accountcurrency_id = ? LIMIT 1',
         arguments: <dynamic>[id],
         mapper: (Map<String, dynamic> row) => AccountCurrencyEntity(
             accountcurrencyId: row['accountcurrency_id'] as String,

@@ -125,8 +125,9 @@ class TransactionRepository {
           _address =
               (await _accountService.getChangingAddress(_currency.id))[0];
         }
-        String to = address;
-        String from = _address;
+        String to = address.contains(':') ? address.split(':')[1] : address;
+        String from =
+            _address.contains(':') ? _address.split(':')[1] : _address;
         if (currency.symbol.toLowerCase() != 'eth') {
           // ERC20
           Log.debug('ETH this._currency.decimals: ${this._currency.decimals}');
@@ -260,16 +261,14 @@ class TransactionRepository {
             this._currency.blockchainId, this._address);
 
         Log.debug('ETH gasLimit: $gasLimit');
+        Decimal balance =
+            Decimal.parse(this._currency.amount) - amount - gasPrice * gasLimit;
         if (currency.symbol.toLowerCase() != 'eth') {
           // ERC20
+          balance = amount;
           amount = Decimal.zero;
           to = this._currency.contract;
         }
-        Log.debug('ETH nonce: $nonce');
-        Log.debug('ETH gasPrice: $gasPrice');
-        Log.debug('ETH message: $message');
-        Log.debug('ETH gasLimit: $gasLimit');
-        Log.debug('ETH this._currency.contract: ${this._currency.contract}');
 
         Transaction transaction = _transactionService.prepareTransaction(
             this._currency.publish,
@@ -287,8 +286,6 @@ class TransactionRepository {
         Log.debug(
             'transaction: ${hex.encode(transaction.serializeTransaction)}');
 
-        Decimal balance =
-            Decimal.parse(this._currency.amount) - amount - gasPrice * gasLimit;
         return [transaction, balance.toString()];
         break;
       case ACCOUNT.XRP:
@@ -302,72 +299,98 @@ class TransactionRepository {
 
   Future<bool> publishTransaction(
       Transaction transaction, String balance) async {
-    Log.btc('PublishTransaction fee: ${transaction.fee}');
-    Log.btc('PublishTransaction fee: ${transaction.amount}');
-    Log.btc(
+    Log.debug('PublishTransaction fee: ${transaction.fee}');
+    Log.debug('PublishTransaction amount: ${transaction.amount}');
+    Log.debug(
         'PublishTransaction this._currency.blockchainId: ${this._currency.blockchainId}');
-    Log.btc('PublishTransaction balance: $balance');
+    Log.debug('PublishTransaction balance: $balance');
     List result = await _accountService.publishTransaction(
         this._currency.blockchainId, transaction);
-    Log.btc('PublishTransaction result: $result');
+    Log.debug('PublishTransaction result: $result');
     bool success = result[0];
     Transaction _transaction = result[1];
-    Log.btc('PublishTransaction _transaction: $_transaction');
+    Log.debug('PublishTransaction _transaction: $_transaction');
 
     if (!success) return success;
-    Log.btc('PublishTransaction result: ${result[0]}');
+    Log.debug('PublishTransaction result: ${result[0]}');
+    _pushResult(_transaction, Decimal.parse(balance));
 
-    // TODO updateCurrencyAmount ??
-    // AccountCurrencyEntity account = await DBOperator()
-    //     .accountCurrencyDao
-    //     .findOneByAccountyId(this._currency.id);
-    // Log.btc('PublishTransaction account: $account');
+    return result[0];
+  }
 
-    // AccountCurrencyEntity updateAccount = AccountCurrencyEntity(
-    //     accountcurrencyId: account.accountcurrencyId,
-    //     accountId: account.accountId,
-    //     numberOfUsedExternalKey: account.numberOfUsedExternalKey,
-    //     numberOfUsedInternalKey: account.numberOfUsedInternalKey,
-    //     currencyId: account.currencyId,
-    //     lastSyncTime: account.lastSyncTime,
-    //     balance: balance);
-    // await DBOperator().accountCurrencyDao.insertAccount(updateAccount);
-    // Log.debug('PublishTransaction updateAccount: $updateAccount');
+  _pushResult(Transaction transaction, Decimal balance) async {
+    // TODO updateCurrencyAmount
+    Decimal _amount;
+    Decimal _fee;
+    Decimal _gasPrice;
+    Currency _curr = this._currency;
+    Log.debug('newCurr _curr.amount: ${_curr.amount}');
+    _curr.amount = balance.toString();
+    switch (this._currency.accountType) {
+      case ACCOUNT.BTC:
+        _amount = Converter.toCurrencyUnit(
+            transaction.amount, this._currency.decimals);
+        _fee =
+            Converter.toCurrencyUnit(transaction.fee, this._currency.decimals);
+        _updateAccountCurrencyEntity(this._currency.id, balance.toString());
+        break;
+      case ACCOUNT.ETH:
+        Log.warning('newCurr this._currency.symbol: ${this._currency.symbol}');
+        Log.debug(
+            'newCurr this._currency.accountId: ${this._currency.accountId}');
+        Log.debug(
+            'newCurr this._currency.currencyId: ${this._currency.currencyId}');
+        Log.debug('newCurr this._currency.id: ${this._currency.id}');
+        Log.debug(
+            'newCurr this._currency.decimals: ${this._currency.decimals}');
+        if (this._currency.symbol.toLowerCase() == 'eth') {
+          _amount = Converter.toCurrencyUnit(
+              transaction.amount, this._currency.decimals);
+          _fee = Converter.toEthCoinUnit(transaction.fee);
+          _gasPrice = Converter.toEthCoinUnit(transaction.gasPrice);
+          _updateAccountCurrencyEntity(this._currency.id, balance.toString());
+        } else {
+          _curr.amount =
+              (Decimal.parse(this._currency.amount) - balance).toString();
+          _amount = Converter.toCurrencyUnit(balance, this._currency.decimals);
+          _fee = Converter.toEthCoinUnit(transaction.fee);
+          _gasPrice = Converter.toEthCoinUnit(transaction.gasPrice);
+          _updateAccountCurrencyEntity(this._currency.id, balance.toString());
+          _updateAccountCurrencyEntity(this._currency.accountId,
+              (transaction.gasPrice * transaction.gasUsed).toString());
+        }
+        break;
+      case ACCOUNT.XRP:
+        // TODO: Handle this case.
+        break;
+    }
 
-    // Currency _curr = this._currency;
-    // _curr.amount = balance;
-    // AccountMessage currMsg =
-    //     AccountMessage(evt: ACCOUNT_EVT.OnUpdateCurrency, value: [_curr]);
-    // listener.add(currMsg);
+    Log.debug('newCurr _curr.amount: ${_curr.amount}');
+    Log.debug('newCurr balance: $balance');
+    AccountMessage currMsg =
+        AccountMessage(evt: ACCOUNT_EVT.OnUpdateCurrency, value: [_curr]);
+    listener.add(currMsg);
 
     // insertTransaction
-
     TransactionEntity tx = TransactionEntity(
-      transactionId: _transaction.id,
+      transactionId: transaction.id,
       accountcurrencyId: this._currency.id,
-      txId: _transaction.txId,
-      amount:
-          Converter.toCurrencyUnit(_transaction.amount, this._currency.decimals)
-              .toString(),
-      fee: Converter.toCurrencyUnit(_transaction.fee, this._currency.decimals)
-          .toString(),
-      gasPrice: _transaction.gasPrice == null
-          ? null
-          : Converter.toCurrencyUnit(
-                  _transaction.gasPrice, this._currency.decimals)
-              .toString(),
-      gasUsed: _transaction?.gasUsed?.toInt(),
+      txId: transaction.txId,
+      amount: _amount.toString(),
+      fee: _fee.toString(),
+      gasPrice: _gasPrice.toString(),
+      gasUsed: transaction?.gasUsed?.toInt(),
       direction:
-          _transaction?.direction?.title ?? TransactionDirection.sent.title,
-      sourceAddress: _transaction.sourceAddresses,
-      destinctionAddress: _transaction.destinationAddresses,
-      confirmation: _transaction?.confirmations ?? 0,
-      timestamp: _transaction?.timestamp ??
+          transaction?.direction?.title ?? TransactionDirection.sent.title,
+      sourceAddress: transaction.sourceAddresses,
+      destinctionAddress: transaction.destinationAddresses,
+      confirmation: transaction?.confirmations ?? 0,
+      timestamp: transaction?.timestamp ??
           DateTime.now().millisecondsSinceEpoch ~/ 1000,
-      note: hex.encode(_transaction?.message ?? Uint8List(0)),
-      status: _transaction?.status?.title ?? TransactionStatus.pending.title,
+      note: hex.encode(transaction?.message ?? Uint8List(0)),
+      status: transaction?.status?.title ?? TransactionStatus.pending.title,
     );
-    Log.debug('PublishTransaction tx: $tx');
+    Log.debug('PublishTransaction tx note: ${tx.note}');
     await DBOperator().transactionDao.insertTransaction(tx);
 
     // inform screen
@@ -386,6 +409,26 @@ class TransactionRepository {
     Log.debug('transactions: $transactions');
 
     listener.add(txMsg);
-    return result[0];
+  }
+
+  _updateAccountCurrencyEntity(String id, String balance) async {
+    AccountCurrencyEntity account =
+        await DBOperator().accountCurrencyDao.findOneByAccountyId(id);
+    Log.debug(
+        'newCurr account accountcurrencyId: ${account.accountcurrencyId}');
+    Log.debug('newCurr account currencyId: ${account.currencyId}');
+    Log.debug('newCurr account accountId: ${account.accountId}');
+    Log.debug('newCurr account balance: ${account.balance}');
+
+    AccountCurrencyEntity updateAccount = AccountCurrencyEntity(
+        accountcurrencyId: account.accountId,
+        accountId: account.accountId,
+        numberOfUsedExternalKey: account.numberOfUsedExternalKey,
+        numberOfUsedInternalKey: account.numberOfUsedInternalKey,
+        currencyId: account.currencyId,
+        lastSyncTime: account.lastSyncTime,
+        balance: balance);
+    await DBOperator().accountCurrencyDao.insertAccount(updateAccount);
+    Log.debug('PublishTransaction updateAccount: $updateAccount');
   }
 }
