@@ -9,7 +9,25 @@ class ConnectionEl {
   ConnectionEl({this.topic, this.version, this.bridge, this.key});
 }
 
-class PeerMeta {}
+class PeerMeta {
+  final String name;
+  final String description;
+  final List icons;
+  final String url;
+
+  PeerMeta({
+    this.name,
+    this.description,
+    this.icons,
+    this.url,
+  });
+
+  PeerMeta.fromJson(Map json):
+    this.name = json['name'] ?? '',
+    this.description = json['description'] ?? '',
+    this.icons = json['icons'] ?? [],
+    this.url = json['url'] ?? '';
+}
 
 class ConnectorOpts {
   final WCSession session;

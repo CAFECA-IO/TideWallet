@@ -216,9 +216,8 @@ class Connector {
     this.onEvt('wc_sessionRequest', (WCRequest req) {
       this.handshakeId = req.id;
       this.peerId = req.params[0]['peerId'];
+      this.peerMeta = PeerMeta.fromJson(req.params[0]['peerMeta']);
 
-      // TODO:
-      this.peerMeta = null;
       this._eventManager.trigger('session_request', value: req.copyWith(method: 'session_request'));
     });
 

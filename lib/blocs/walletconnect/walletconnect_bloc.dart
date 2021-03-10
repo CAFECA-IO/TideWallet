@@ -38,7 +38,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
     });
 
     _connector.onEvt('session_request', (WCRequest req) {
-      this.add(RequestWC());
+      this.add(RequestWC(req));
     });
 
     _connector.onEvt('eth_sendTransaction', (WCRequest req) {
@@ -78,13 +78,15 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
           _connector = Connector(ConnectorOpts(session: _session));
           this.subscribeToEvents();
 
-          yield WalletConnectConnecting();
+          yield WalletConnectLoaded(status: WC_STATUS.CONNECTING);
         }
       }
     }
 
+    WalletConnectLoaded _state = state;
+
     if (event is RequestWC) {
-      yield WalletConnectLoaded();
+      yield _state.copWith(status: WC_STATUS.WAITING, peer: _connector.peerMeta, accounts: _connector.accounts);
     }
 
     if (event is ApproveWC) {
@@ -92,14 +94,14 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
     }
 
     if (event is ConnectWC) {
-      yield WalletConnected(true);
+      yield _state.copWith(status: WC_STATUS.CONNECTED);
     }
 
     if (event is DisconnectWC) {
       if (_connector.connected == true) {
         _connector.killSession();
       }
-      yield WalletConnected(false);
+      yield _state.copWith(status: WC_STATUS.UNCONNECTED);
     }
   }
 }

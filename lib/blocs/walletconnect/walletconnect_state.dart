@@ -1,41 +1,54 @@
 part of 'walletconnect_bloc.dart';
 
-enum WC_ERROR {
-  URI
-}
+enum WC_ERROR { URI }
+
+enum WC_STATUS { CONNECTED, CONNECTING, WAITING, UNCONNECTED }
 
 abstract class WalletConnectState extends Equatable {
-  final bool connected;
-  WalletConnectState(this.connected);
-  
-  @override
-  List<Object> get props => [connected];
+  const WalletConnectState();
 }
 
 class WalletConnectInitial extends WalletConnectState {
-  WalletConnectInitial() : super(false);
+  WalletConnectInitial();
+
+  @override
+  List<Object> get props => [];
 }
 
 class WalletConnectLoaded extends WalletConnectState {
-  WalletConnectLoaded() : super(false);
-}
+  final WC_STATUS status;
+  final PeerMeta peer;
+  final List<String> accounts;
+  final currentEvent;
+  // TODO
+  final List<dynamic> records;
+  WalletConnectLoaded({this.status, this.peer, this.accounts, this.records, this.currentEvent});
 
-class WalletConnectConnecting extends WalletConnectState {
-  WalletConnectConnecting() : super(false);
-}
+  @override
+  List<Object> get props => [status, peer, accounts, records];
 
-class WalletConnectToBeVerified extends WalletConnectState {
-  WalletConnectToBeVerified() : super(false);
-}
-
-class WalletConnected extends WalletConnectState {
-  WalletConnected(bool connected) : super(connected);
+  WalletConnectLoaded copWith({
+    WC_STATUS status,
+    PeerMeta peer,
+    List<String> peers,
+    List<dynamic> records,
+    List<String> accounts,
+    currentEvent
+  }) {
+    return WalletConnectLoaded(
+      status: status ?? this.status,
+      peer: peer ?? this.peer,
+      accounts: accounts ?? this.accounts,
+      records: records ?? this.records,
+      currentEvent: currentEvent ?? this.currentEvent
+    );
+  }
 }
 
 class WalletConnectError extends WalletConnectState {
   final WC_ERROR error;
 
-  WalletConnectError(this.error) : super(false);
+  WalletConnectError(this.error) : super();
 
   @override
   List<Object> get props => [error];
