@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tidewallet3/helpers/formatter.dart';
-import 'package:tidewallet3/widgets/buttons/primary_button.dart';
-import 'package:tidewallet3/widgets/buttons/secondary_button.dart';
 
 import '../blocs/walletconnect/walletconnect_bloc.dart';
+import '../helpers/formatter.dart';
 import '../theme.dart';
+import '../widgets/buttons/secondary_button.dart';
+import '../widgets/buttons/primary_button.dart';
+import '../widgets/walletconnect/sign_transaction.dart';
 import '../widgets/appBar.dart';
 import '../widgets/qrcode_view.dart';
 
@@ -50,7 +51,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                   height: 140,
                   child: Column(
                     children: [
-                      PrimaryButton('連結', () {
+                      PrimaryButton('連接', () {
                         _bloc.add(ApproveWC());
                         Navigator.of(context).pop();
                       }),
@@ -69,6 +70,30 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                 ),
               ),
             );
+          }
+
+          if (state.currentEvent != null) {
+            Widget content;
+            bool isScrollControlled = false;
+
+            switch (state.currentEvent.method) {
+              case 'eth_sendTransaction':
+                content = SignTransaction(
+                    context, state.peer.url, state.currentEvent.params[0]);
+                isScrollControlled = true;
+                break;
+
+              default:
+            }
+
+            if (content == null) return;
+
+            showModalBottomSheet(
+                isDismissible: false,
+                context: context,
+                isScrollControlled: isScrollControlled,
+                shape: bottomSheetShape,
+                builder: (context) => content);
           }
         }
       },
@@ -165,7 +190,8 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                       StatusItem(
                         '地址',
                         Text(
-                          Formatter.formatAdddress(state.accounts[0], showLength: 14),
+                          Formatter.formatAdddress(state.accounts[0],
+                              showLength: 14),
                           style: style,
                           textAlign: TextAlign.right,
                           maxLines: 1,
@@ -174,10 +200,12 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                         ),
                       ),
                       StatusItem(
-                          '已簽署交易',
-                          InkWell(
-                              child: Image.asset(
-                                  'assets/images/icons/ic_arrow_right_normal.png')))
+                        '已簽署交易',
+                        InkWell(
+                          child: Image.asset(
+                              'assets/images/icons/ic_arrow_right_normal.png'),
+                        ),
+                      )
                     ],
                   ),
                 ),

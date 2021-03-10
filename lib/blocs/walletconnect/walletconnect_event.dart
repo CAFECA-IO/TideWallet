@@ -28,3 +28,9 @@ class DisconnectWC extends WalletConnectEvent {
 
   DisconnectWC(this.message);
 }
+
+class ReceiveWCEvent extends WalletConnectEvent {
+  final WCRequest request;
+
+  ReceiveWCEvent(this.request);
+}

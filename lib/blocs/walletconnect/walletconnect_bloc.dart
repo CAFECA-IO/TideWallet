@@ -21,9 +21,14 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
   @override
   Stream<Transition<WalletConnectEvent, WalletConnectState>> transformEvents(
       Stream<WalletConnectEvent> events, transitionFn) {
-    return events
-        .throttleTime(const Duration(milliseconds: 500))
-        .switchMap((transitionFn));
+    final nonThrottleStream = events.where((event) => event is! ScanWC);
+
+    final throttleStream = events
+        .where((event) => event is ScanWC)
+        .throttleTime(const Duration(milliseconds: 500));
+
+    return super.transformEvents(
+        MergeStream([nonThrottleStream, throttleStream]), transitionFn);
   }
 
   @override
@@ -42,7 +47,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
     });
 
     _connector.onEvt('eth_sendTransaction', (WCRequest req) {
-      Log.debug('Get eth_sendTransaction on BLOC');
+      this.add(ReceiveWCEvent(req));
     });
     _connector.onEvt('personal_sign', (WCRequest req) {
       Log.debug('Get personal_sign on BLOC');
@@ -82,11 +87,14 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
         }
       }
     }
-
     WalletConnectLoaded _state = state;
 
     if (event is RequestWC) {
-      yield _state.copWith(status: WC_STATUS.WAITING, peer: _connector.peerMeta, accounts: _connector.accounts);
+      yield _state.copWith(
+        status: WC_STATUS.WAITING,
+        peer: _connector.peerMeta,
+        accounts: _connector.accounts,
+      );
     }
 
     if (event is ApproveWC) {
@@ -95,6 +103,10 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
 
     if (event is ConnectWC) {
       yield _state.copWith(status: WC_STATUS.CONNECTED);
+    }
+
+    if (event is ReceiveWCEvent) {
+      yield _state.copWith(currentEvent: event.request);
     }
 
     if (event is DisconnectWC) {
