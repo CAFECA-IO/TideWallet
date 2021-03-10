@@ -76,24 +76,27 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
             }
 
             if (state.result != null) {
-              result = Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    alignment: Alignment.center,
-                    child: Image.network(
-                      state.result.imgUrl,
-                      width: 80.0,
-                      height: 80.0,
+              result = SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      child: Image.network(
+                        state.result.imgUrl,
+                        width: 80.0,
+                        height: 80.0,
+                      ),
                     ),
-                  ),
-                  item(t('symbol'), state.result.symbol),
-                  item(t('name'), state.result.name),
-                  item(t('contract'), state.result.contract),
-                  item(t('decimal'), state.result.decimal.toString()),
-                  item(t('total_supply'), state.result.totalSupply.toString()),
-                  item(t('description'), state.result.description),
-                ],
+                    item(t('symbol'), state.result.symbol),
+                    item(t('name'), state.result.name),
+                    item(t('contract'), state.result.contract),
+                    item(t('decimal'), state.result.decimal.toString()),
+                    item(
+                        t('total_supply'), state.result.totalSupply.toString()),
+                    item(t('description'), state.result.description),
+                  ],
+                ),
               );
             } else {
               result = Container(child: Text(t('not_found')));

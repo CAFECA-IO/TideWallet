@@ -98,7 +98,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       );
     }
     if (event is ValidAddress) {
-      Log.debug("ValidAddress address: ${event.address}");
       bool verifiedAddress = await _repo.verifyAddress(event.address, false);
       List<bool> _rules = [verifiedAddress, _state.rules[1]];
       Log.debug(_rules);

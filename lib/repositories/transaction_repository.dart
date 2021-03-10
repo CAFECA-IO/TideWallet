@@ -386,14 +386,14 @@ class TransactionRepository {
   Future<Currency> _updateCurrency(String id, String balance) async {
     AccountCurrencyEntity account =
         await DBOperator().accountCurrencyDao.findOneByAccountyId(id);
+    Log.debug('PublishTransaction _updateCurrency id: $id');
     Log.debug(
-        'PublishTransaction _pushResult account accountcurrencyId: ${account.accountcurrencyId}');
+        'PublishTransaction _updateCurrency accountcurrencyId: ${account.accountcurrencyId}');
     Log.debug(
-        'PublishTransaction _pushResult account currencyId: ${account.currencyId}');
+        'PublishTransaction _updateCurrency currencyId: ${account.currencyId}');
     Log.debug(
-        'PublishTransaction _pushResult account accountId: ${account.accountId}');
-    Log.debug(
-        'PublishTransaction _pushResult account balance: ${account.balance}');
+        'PublishTransaction _updateCurrency accountId: ${account.accountId}');
+    Log.debug('PublishTransaction _updateCurrency balance: ${account.balance}');
 
     AccountCurrencyEntity updateAccount = AccountCurrencyEntity(
         accountcurrencyId: account.accountId,
@@ -404,7 +404,7 @@ class TransactionRepository {
         lastSyncTime: account.lastSyncTime,
         balance: balance);
     Log.debug(
-        'PublishTransaction _pushResult account balance: ${updateAccount.balance}');
+        'PublishTransaction _updateCurrency account balance: ${updateAccount.balance}');
 
     await DBOperator().accountCurrencyDao.insertAccount(updateAccount);
 
@@ -414,12 +414,12 @@ class TransactionRepository {
     JoinCurrency entity =
         entities.firstWhere((v) => v.symbol == this._currency.symbol);
     Log.debug(
-        'PublishTransaction _pushResult this._currency.type: ${this._currency.type}');
+        'PublishTransaction _updateCurrency this._currency.type: ${this._currency.type}');
 
     Currency newCurrency = Currency.fromJoinCurrency(
         entity, entities[0], this._currency.accountType);
     Log.debug(
-        'PublishTransaction _pushResult newCurrency.amount: ${newCurrency.amount}');
+        'PublishTransaction _updateCurrency newCurrency.amount: ${newCurrency.amount}');
 
     AccountMessage currMsg =
         AccountMessage(evt: ACCOUNT_EVT.OnUpdateCurrency, value: [newCurrency]);
@@ -430,6 +430,7 @@ class TransactionRepository {
   _updateTransaction(String id, Currency currency, Transaction transaction,
       String amount, String fee,
       {String gasPrice, String destinationAddresses}) async {
+    Log.debug('PublishTransaction _updateTransaction id: $id');
     Log.debug('PublishTransaction _updateTransaction amount: $amount');
     Log.debug('PublishTransaction _updateTransaction fee: $fee');
     Log.debug('PublishTransaction _updateTransaction gasPrice: $gasPrice');
