@@ -386,7 +386,7 @@ class TransactionRepository {
   Future<Currency> _updateCurrency(String id, String balance) async {
     AccountCurrencyEntity account =
         await DBOperator().accountCurrencyDao.findOneByAccountyId(id);
-    Log.debug('PublishTransaction _updateCurrency id: $id');
+    Log.warning('PublishTransaction _updateCurrency id: $id');
     Log.debug(
         'PublishTransaction _updateCurrency accountcurrencyId: ${account.accountcurrencyId}');
     Log.debug(
@@ -411,8 +411,7 @@ class TransactionRepository {
     List<JoinCurrency> entities = await DBOperator()
         .accountCurrencyDao
         .findJoinedByAccountId(account.accountId);
-    JoinCurrency entity =
-        entities.firstWhere((v) => v.symbol == this._currency.symbol);
+    JoinCurrency entity = entities.firstWhere((v) => v.accountcurrencyId == id);
     Log.debug(
         'PublishTransaction _updateCurrency this._currency.type: ${this._currency.type}');
 
