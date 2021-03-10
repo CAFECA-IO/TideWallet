@@ -18,7 +18,7 @@ abstract class AccountCurrencyDao {
   Future<AccountCurrencyEntity> findOneByAccountyId(String id);
 
   @Query('SELECT * FROM JoinCurrency WHERE JoinCurrency.account_id = :id')
-  Future<List<JoinCurrency>> findJoinedByAccountyId(String id);
+  Future<List<JoinCurrency>> findJoinedByAccountId(String id);
 
   @Query('SELECT * FROM JoinCurrency')
   Future<List<JoinCurrency>> findAllJoinedCurrency();

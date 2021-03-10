@@ -8,8 +8,6 @@ import '../../repositories/account_repository.dart';
 import '../../repositories/trader_repository.dart';
 import '../../models/account.model.dart';
 
-import '../../helpers/logger.dart';
-
 part 'account_currency_event.dart';
 part 'account_currency_state.dart';
 

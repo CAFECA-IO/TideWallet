@@ -55,7 +55,7 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
     Log.debug('ETH amount: $amount');
     Log.debug('ETH gasPrice: $gasPrice');
     Log.debug('ETH gasUsed: $gasLimit');
-    Log.debug('ETH message: $message');
+    Log.warning('ETH message: $message');
     Log.debug('ETH chainId: $chainId');
     Log.debug('ETH fee: ${gasLimit * gasPrice}');
     EthereumTransaction transaction = EthereumTransaction.prepareTransaction(

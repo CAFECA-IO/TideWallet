@@ -136,7 +136,7 @@ class EthereumService extends AccountServiceDecorator {
 
         List<JoinCurrency> jcs = await DBOperator()
             .accountCurrencyDao
-            .findJoinedByAccountyId(this.service.accountId);
+            .findJoinedByAccountId(this.service.accountId);
 
         List<Currency> cs = jcs
             .map((c) => Currency.fromJoinCurrency(c, jcs[0], this.base))
@@ -185,7 +185,7 @@ class EthereumService extends AccountServiceDecorator {
       } else {
         // TODO
         // _gasLimit = 21000;
-        throw Error();
+        throw Exception(response.message);
       }
       return Decimal.fromInt(_gasLimit);
     }
@@ -286,7 +286,7 @@ class EthereumService extends AccountServiceDecorator {
         '${Endpoint.SUSANOO}/blockchain/$blockchainId/push-tx',
         {"hex": '0x' + hex.encode(transaction.serializeTransaction)});
     bool success = response.success;
-    transaction.id = response.data['txid'];
+    // transaction.id = response.data['txid'];
     transaction.txId = response.data['txid'];
     transaction.timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     transaction.confirmations = 0;

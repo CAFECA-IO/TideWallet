@@ -1,6 +1,5 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
-// import 'package:tidewallet3/database/entity/currency.dart';
 
 import '../database/entity/exchage_rate.dart';
 import '../database/entity/account_currency.dart';

@@ -115,6 +115,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       Decimal gasPrice;
       Decimal gasLimit;
       Decimal amount;
+      String feeToFiat;
+      String message;
 
       amount = Decimal.tryParse(event.amount);
       if (_state.rules[0] && amount != null) {
@@ -130,17 +132,25 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           gasLimit = null;
           gasPrice = null;
           rule2 = _repo.verifyAmount(amount, fee: fee);
-        } else if (result.length == 2) {
+        } else {
           _gasPrice = result[0];
           gasPrice = result[0][TransactionPriority.standard];
           gasLimit = result[1];
-          fee = gasPrice * gasLimit;
-          rule2 = _repo.verifyAmount(amount, fee: fee);
+          try {
+            message = result[2];
+          } catch (e) {}
+          if (gasLimit != null) {
+            fee = gasPrice * gasLimit;
+            rule2 = _repo.verifyAmount(amount, fee: fee);
+          } else {
+            rule2 = false;
+          }
         }
         rules = [_state.rules[0], rule2];
         Log.debug(rules);
-        String feeToFiat =
-            _traderRepo.calculateFeeToFiat(_repo.currency, fee).toString();
+        if (gasLimit != null)
+          feeToFiat =
+              _traderRepo.calculateFeeToFiat(_repo.currency, fee).toString();
         yield _state.copyWith(
           amount: amount,
           rules: rules,
@@ -148,6 +158,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           feeToFiat: feeToFiat,
           gasLimit: gasLimit,
           gasPrice: gasPrice,
+          message: message,
         );
       } else {
         yield _state.copyWith(
@@ -172,7 +183,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           gasPrice = null;
           fee = _gasPrice[event.priority];
           rule2 = _repo.verifyAmount(_state.amount, fee: fee);
-        } else if (result.length >= 2) {
+        } else {
           _gasPrice = result[0];
           gasPrice = result[0][event.priority];
           gasLimit = result[1];
@@ -180,6 +191,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           rule2 = _repo.verifyAmount(_state.amount, fee: fee);
           try {
             message = result[2];
+            Log.debug('getTransactionFee message: $message');
           } catch (e) {}
         }
         String feeToFiat =
