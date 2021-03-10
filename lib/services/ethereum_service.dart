@@ -138,8 +138,9 @@ class EthereumService extends AccountServiceDecorator {
             .accountCurrencyDao
             .findJoinedByAccountyId(this.service.accountId);
 
-        List<Currency> cs =
-            jcs.map((c) => Currency.fromJoinCurrency(c, this.base)).toList();
+        List<Currency> cs = jcs
+            .map((c) => Currency.fromJoinCurrency(c, jcs[0], this.base))
+            .toList();
 
         AccountMessage msg =
             AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: cs[0]);
@@ -183,7 +184,8 @@ class EthereumService extends AccountServiceDecorator {
         Log.warning('_gasLimit: $_gasLimit');
       } else {
         // TODO
-        _gasLimit = 21000;
+        // _gasLimit = 21000;
+        throw Error();
       }
       return Decimal.fromInt(_gasLimit);
     }

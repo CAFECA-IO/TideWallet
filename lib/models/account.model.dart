@@ -33,27 +33,34 @@ class Currency {
   final String currencyId; // CurrencyEntity currency_id for APP
   final String contract;
   final String type;
+  final String accountSymbol;
+  final int accountDecimals;
+  final String accountAmount;
 
-  Currency(
-      {this.id,
-      this.accountId,
-      this.cointype,
-      this.purpose,
-      this.amount,
-      this.inUSD,
-      this.imgPath,
-      this.symbol,
-      this.name,
-      this.accountIndex,
-      this.accountType,
-      this.chainId,
-      this.blockchainId,
-      this.network,
-      this.decimals,
-      this.publish,
-      this.currencyId,
-      this.contract,
-      this.type});
+  Currency({
+    this.id,
+    this.accountId,
+    this.cointype,
+    this.purpose,
+    this.amount,
+    this.inUSD,
+    this.imgPath,
+    this.symbol,
+    this.name,
+    this.accountIndex,
+    this.accountType,
+    this.chainId,
+    this.blockchainId,
+    this.network,
+    this.decimals,
+    this.publish,
+    this.currencyId,
+    this.contract,
+    this.type,
+    this.accountSymbol,
+    this.accountDecimals,
+    this.accountAmount,
+  });
 
   Currency copyWith(
       {String id,
@@ -72,50 +79,58 @@ class Currency {
       int decimals,
       bool publish,
       String contract,
-      String type}) {
+      String type,
+      String accountSymbol,
+      int accountDecimals,
+      String accountAmount}) {
     return Currency(
-        id: id ?? this.id,
-        accountId: accountId ?? this.accountId,
-        cointype: cointype ?? this.cointype,
-        purpose: purpose ?? this.purpose,
-        amount: amount ?? this.amount,
-        inUSD: inUSD ?? this.inUSD,
-        symbol: symbol ?? this.symbol,
-        imgPath: imgPath ?? this.imgPath,
-        name: name ?? this.name,
-        accountType: accountType ?? this.accountType,
-        blockchainId: blockchainId ?? this.blockchainId,
-        network: network ?? this.network,
-        chainId: chainId ?? this.chainId,
-        decimals: decimals ?? this.decimals,
-        publish: publish ?? this.publish,
-        contract: contract ?? this.contract,
-        type: type ?? this.type);
+      id: id ?? this.id,
+      accountId: accountId ?? this.accountId,
+      cointype: cointype ?? this.cointype,
+      purpose: purpose ?? this.purpose,
+      amount: amount ?? this.amount,
+      inUSD: inUSD ?? this.inUSD,
+      symbol: symbol ?? this.symbol,
+      imgPath: imgPath ?? this.imgPath,
+      name: name ?? this.name,
+      accountType: accountType ?? this.accountType,
+      blockchainId: blockchainId ?? this.blockchainId,
+      network: network ?? this.network,
+      chainId: chainId ?? this.chainId,
+      decimals: decimals ?? this.decimals,
+      publish: publish ?? this.publish,
+      contract: contract ?? this.contract,
+      type: type ?? this.type,
+      accountSymbol: accountSymbol ?? this.accountSymbol,
+      accountDecimals: accountDecimals ?? this.accountDecimals,
+      accountAmount: accountAmount ?? this.accountAmount,
+    );
   }
 
-  Currency.fromMap(
-    Map map,
-  )   : id = map['currency_id'],
-        accountId = map['account_id'],
-        cointype = map['cointype'],
-        purpose = map['purpose'],
-        accountIndex = map['accountIndex'],
-        symbol = map['symbol'],
-        name = map['name'],
-        imgPath = map['imgPath'],
-        amount = map['balance'] ?? '0',
-        inUSD = map['inUSD'] ?? '0',
-        accountType = map['accountType'],
-        blockchainId = map['blockchain_id'],
-        network = map['network'],
-        chainId = map['chain_id'],
-        decimals = map['decimals'],
-        publish = map['publish'],
-        currencyId = map['currency_id'],
-        contract = map['contract'],
-        type = map['type'];
+  // Currency.fromMap(
+  //   Map map,
+  // )   : id = map['currency_id'],
+  //       accountId = map['account_id'],
+  //       cointype = map['cointype'],
+  //       purpose = map['purpose'],
+  //       accountIndex = map['accountIndex'],
+  //       symbol = map['symbol'],
+  //       name = map['name'],
+  //       imgPath = map['imgPath'],
+  //       amount = map['balance'] ?? '0',
+  //       inUSD = map['inUSD'] ?? '0',
+  //       accountType = map['accountType'],
+  //       blockchainId = map['blockchain_id'],
+  //       network = map['network'],
+  //       chainId = map['chain_id'],
+  //       decimals = map['decimals'],
+  //       publish = map['publish'],
+  //       currencyId = map['currency_id'],
+  //       contract = map['contract'],
+  //       type = map['type'];
 
-  Currency.fromJoinCurrency(JoinCurrency entity, ACCOUNT type)
+  Currency.fromJoinCurrency(
+      JoinCurrency entity, JoinCurrency parentEntity, ACCOUNT type)
       : id = entity.accountcurrencyId,
         accountId = entity.accountId,
         cointype = entity.coinType,
@@ -134,7 +149,10 @@ class Currency {
         currencyId = entity.currencyId,
         contract = entity.contract,
         decimals = entity.decimals,
-        type = entity.type;
+        type = entity.type,
+        accountDecimals = parentEntity.decimals,
+        accountSymbol = parentEntity.symbol,
+        accountAmount = parentEntity.balance;
 }
 
 class AccountMessage {
