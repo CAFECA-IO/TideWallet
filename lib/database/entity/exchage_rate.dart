@@ -15,6 +15,8 @@ class ExchangeRateEntity {
   // @ColumnInfo(name: 'currency_id')
   // final String currencyId;
 
+  final String name;
+
   final String rate;
 
   final int lastSyncTime;
@@ -23,13 +25,15 @@ class ExchangeRateEntity {
 
   ExchangeRateEntity({
     this.exchangeRateId,
+    this.name,
     this.rate,
     this.lastSyncTime,
     this.type,
   });
 
   ExchangeRateEntity.fromJson(Map json):
-    this.exchangeRateId = json['name'],
+    this.exchangeRateId = json['currency_id'],
+    this.name = json['name'],
     this.rate = json['rate'],
     this.lastSyncTime = json['timestamp'],
     this.type = json['type'];

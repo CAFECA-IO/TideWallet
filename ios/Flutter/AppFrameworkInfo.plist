@@ -21,6 +21,20 @@
   <key>CFBundleVersion</key>
   <string>1.0</string>
   <key>MinimumOSVersion</key>
-  <string>8.0</string>
+  <string>13.0</string>
+  <key>NSContactsUsageDescription</key>
+  <string>Some Reason</string>
+  <key>NSCalendarsUsageDescription</key>
+  <string>Some Reason</string>
+  <key>NSPhotoLibraryUsageDescription</key>
+  <string>Some Reason</string>
+  <key>NSAppleMusicUsageDescription</key>
+  <string>Some Reason</string>
+  <key>NSMotionUsageDescription</key>
+  <string>Some Reason</string>
+  <key>NSSpeechRecognitionUsageDescription</key>
+  <string>Some Reason</string>
+  <key>NSLocationWhenInUseUsageDescription</key>
+  <string>Some Reason</string>
 </dict>
 </plist>
