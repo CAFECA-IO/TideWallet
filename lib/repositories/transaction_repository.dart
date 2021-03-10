@@ -274,8 +274,6 @@ class TransactionRepository {
         int nonce = await _accountService.getNonce(
             this._currency.blockchainId, this._address);
 
-        Log.debug('ETH gasLimit: $gasLimit');
-        Log.debug('ETH gasPrice: $gasPrice');
         Decimal fee = gasPrice * gasLimit;
         Decimal balance = Decimal.parse(this._currency.amount) - amount - fee;
         if (this._currency.type.toLowerCase() == 'token') {
@@ -339,9 +337,6 @@ class TransactionRepository {
     String _gasPrice;
 
     Currency _curr = this._currency;
-    Log.debug('PublishTransaction _pushResult _curr.amount: ${_curr.amount}');
-    Log.debug(
-        'PublishTransaction _pushResult _curr.decimals: ${_curr.decimals}');
     _curr.amount = balance.toString();
     switch (this._currency.accountType) {
       case ACCOUNT.BTC:
@@ -374,7 +369,6 @@ class TransactionRepository {
               this._currency.accountId, _currParent, transaction, '0', _fee,
               gasPrice: _gasPrice,
               destinationAddresses: _tokenTransactionAddress);
-          Log.debug('PublishTransaction _pushResult _gasPrice: $_gasPrice');
         }
         break;
       case ACCOUNT.XRP:
@@ -387,13 +381,6 @@ class TransactionRepository {
     AccountCurrencyEntity account =
         await DBOperator().accountCurrencyDao.findOneByAccountyId(id);
     Log.warning('PublishTransaction _updateCurrency id: $id');
-    Log.debug(
-        'PublishTransaction _updateCurrency accountcurrencyId: ${account.accountcurrencyId}');
-    Log.debug(
-        'PublishTransaction _updateCurrency currencyId: ${account.currencyId}');
-    Log.debug(
-        'PublishTransaction _updateCurrency accountId: ${account.accountId}');
-    Log.debug('PublishTransaction _updateCurrency balance: ${account.balance}');
 
     AccountCurrencyEntity updateAccount = AccountCurrencyEntity(
         accountcurrencyId: account.accountId,
@@ -403,8 +390,6 @@ class TransactionRepository {
         currencyId: account.currencyId,
         lastSyncTime: account.lastSyncTime,
         balance: balance);
-    Log.debug(
-        'PublishTransaction _updateCurrency account balance: ${updateAccount.balance}');
 
     await DBOperator().accountCurrencyDao.insertAccount(updateAccount);
 
@@ -412,13 +397,9 @@ class TransactionRepository {
         .accountCurrencyDao
         .findJoinedByAccountId(account.accountId);
     JoinCurrency entity = entities.firstWhere((v) => v.accountcurrencyId == id);
-    Log.debug(
-        'PublishTransaction _updateCurrency this._currency.type: ${this._currency.type}');
 
     Currency newCurrency = Currency.fromJoinCurrency(
         entity, entities[0], this._currency.accountType);
-    Log.debug(
-        'PublishTransaction _updateCurrency newCurrency.amount: ${newCurrency.amount}');
 
     AccountMessage currMsg =
         AccountMessage(evt: ACCOUNT_EVT.OnUpdateCurrency, value: [newCurrency]);
@@ -429,23 +410,10 @@ class TransactionRepository {
   _updateTransaction(String id, Currency currency, Transaction transaction,
       String amount, String fee,
       {String gasPrice, String destinationAddresses}) async {
-    Log.debug('PublishTransaction _updateTransaction id: $id');
-    Log.debug('PublishTransaction _updateTransaction amount: $amount');
-    Log.debug('PublishTransaction _updateTransaction fee: $fee');
-    Log.debug('PublishTransaction _updateTransaction gasPrice: $gasPrice');
-    Log.debug(
-        'PublishTransaction _updateTransaction destinationAddresses: $destinationAddresses');
-
     // insertTransaction
     TransactionEntity tx = TransactionEntity.fromTransaction(
         currency, transaction, amount, fee, gasPrice, destinationAddresses);
     await DBOperator().transactionDao.insertTransaction(tx);
-
-    Log.debug('PublishTransaction _pushResult tx amount: ${tx.amount}');
-    Log.debug('PublishTransaction _pushResult tx id: ${tx.txId}');
-    Log.debug(
-        'PublishTransaction _pushResult tx transactionId: ${tx.transactionId}');
-
     // inform screen
     List transactions =
         await DBOperator().transactionDao.findAllTransactionsById(id)
@@ -458,7 +426,6 @@ class TransactionRepository {
           .map((tx) => Transaction.fromTransactionEntity(tx))
           .toList()
     });
-    Log.debug('PublishTransaction _pushResult transactions: $transactions');
 
     listener.add(txMsg);
   }

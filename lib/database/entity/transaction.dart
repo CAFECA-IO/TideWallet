@@ -104,15 +104,7 @@ class TransactionEntity {
         this.direction = transaction.direction.title,
         this.status = transaction.status.title,
         this.timestamp = transaction.timestamp,
-        this.note = hex.encode(transaction.message) {
-    Log.warning(
-        'PublishTransaction fromTransaction this.accountcurrencyId: ${this.accountcurrencyId}');
-    Log.warning(
-        'PublishTransaction fromTransaction: this.transactionId ${this.transactionId}');
-    Log.warning('PublishTransaction fromTransaction: this.txId ${this.txId}');
-    Log.warning(
-        'PublishTransaction fromTransaction: this.amount ${this.amount}');
-  }
+        this.note = hex.encode(transaction.message);
   //     {
   // List sourceAddress =
   //     data['source_addresses']; // json.decode(data['source_addresses']);
