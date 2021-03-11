@@ -183,9 +183,18 @@ class Connector {
       {"approved": false, "chainId": null, "networkId": null, "accounts": null}
     ]));
 
-    this._sendResponse(request, this._peerId);
+    this._sendResponse(request, this.peerId);
     this._handleSessionDisconnect('');
   }
+
+  approveRequest(WCApprove approve) {
+    this._sendResponse(approve.toString(), this.peerId);
+  }
+
+   rejectRequest(WCReject reject) {
+
+      this._sendResponse(reject.toString(), this.peerId);
+    }
 
   _initTransport() {
     this._transport.events.listen((event) {
@@ -228,7 +237,8 @@ class Connector {
     });
   }
 
-  _sendResponse(String msg, String topic) {
+    _sendResponse(String msg, String topic) {
+      Log.warning('Send ===> $msg');
     final iv = Crypto.genIV();
     final data = Crypto.encrypt(msg, this._key, iv);
     final hmac = Crypto.hmac(data + iv, this._key);
@@ -243,7 +253,7 @@ class Connector {
   String _formatRequest(WCRequest req) {
     final formattedRequest = {
       'id': req.id == null ? payloadId() : req.id,
-      'jsonrpc': "2.0",
+      'jsonrpc': req.jsonrpc ?? "2.0",
       'method': req.method,
       'params': req.params == null ? [] : req.params,
     };

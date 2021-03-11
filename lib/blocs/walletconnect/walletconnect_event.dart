@@ -34,3 +34,14 @@ class ReceiveWCEvent extends WalletConnectEvent {
 
   ReceiveWCEvent(this.request);
 }
+
+class CancelRequest extends WalletConnectEvent {
+  final WCRequest request;
+  CancelRequest(this.request);
+}
+
+class ApproveRequest extends WalletConnectEvent {
+  final WCRequest request;
+  final String result;
+  ApproveRequest(this.request, this.result);
+}

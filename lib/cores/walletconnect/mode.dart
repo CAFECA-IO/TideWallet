@@ -22,11 +22,11 @@ class PeerMeta {
     this.url,
   });
 
-  PeerMeta.fromJson(Map json):
-    this.name = json['name'] ?? '',
-    this.description = json['description'] ?? '',
-    this.icons = json['icons'] ?? [],
-    this.url = json['url'] ?? '';
+  PeerMeta.fromJson(Map json)
+      : this.name = json['name'] ?? '',
+        this.description = json['description'] ?? '',
+        this.icons = json['icons'] ?? [],
+        this.url = json['url'] ?? '';
 }
 
 class ConnectorOpts {
@@ -97,6 +97,42 @@ class WCRequest {
       params: params ?? this.params,
     );
   }
+}
+
+class WCApprove {
+  final String result;
+  final String jsonrpc;
+  final int id;
+
+  WCApprove({
+    this.id,
+    this.jsonrpc,
+    this.result,
+  });
+
+  WCApprove.fromRequest(WCRequest req, {String result})
+      : this.id = req.id,
+        this.jsonrpc = req.jsonrpc,
+        this.result = result;
+
+  toString() =>
+      '{"id":${this.id},"jsonrpc":"${this.jsonrpc}","result":"${this.result}"}';
+}
+
+class WCReject {
+  final int id;
+  final String jsonrpc;
+  final String message;
+  final int code;
+
+  WCReject.fromRequest(WCRequest req, {String message})
+      : this.id = req.id,
+        this.jsonrpc = req.jsonrpc,
+        this.code = -32000,
+        this.message = message ?? 'User Cancel';
+
+  toString() =>
+      '{"error":{"code":${this.code},"message":"${this.message}"},"id":${this.id},"jsonrpc":"${this.jsonrpc}"}';
 }
 
 class WCMessage {

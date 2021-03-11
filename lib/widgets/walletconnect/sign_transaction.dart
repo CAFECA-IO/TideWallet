@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tidewallet3/blocs/walletconnect/walletconnect_bloc.dart';
 
 import '../../helpers/formatter.dart';
 import '../../widgets/buttons/primary_button.dart';
@@ -7,7 +8,9 @@ class SignTransaction extends StatelessWidget {
   final BuildContext _context;
   final String _dapp;
   final Map _param;
-  SignTransaction(this._context, this._dapp, this._param);
+  final Function _cancel;
+  final Function _submit;
+  SignTransaction(this._context, this._dapp, this._param, this._submit, this._cancel);
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +37,9 @@ class SignTransaction extends StatelessWidget {
                           .textTheme
                           .headline4
                           .copyWith(fontSize: 18.0)),
-                  onTap: () {},
+                  onTap: () {
+                    this._cancel();
+                  },
                 )
               ],
             ),
@@ -122,7 +127,9 @@ class SignTransaction extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 50.0),
-            child: PrimaryButton('發送', () {}),
+            child: PrimaryButton('發送', () {
+              this._submit();
+            }),
           )
         ],
       ),

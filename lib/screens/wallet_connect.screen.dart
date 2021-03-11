@@ -75,11 +75,25 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
           if (state.currentEvent != null) {
             Widget content;
             bool isScrollControlled = false;
+            bool approved = false;
 
             switch (state.currentEvent.method) {
               case 'eth_sendTransaction':
                 content = SignTransaction(
-                    context, state.peer.url, state.currentEvent.params[0]);
+                  context,
+                  state.peer.url,
+                  state.currentEvent.params[0],
+                  () {
+                    this
+                        ._bloc
+                        .add(ApproveRequest(state.currentEvent, '0x12345'),);
+                    approved = true;
+                    Navigator.of(context).pop();
+                  },
+                  () {
+                    Navigator.of(context).pop();
+                  },
+                );
                 isScrollControlled = true;
                 break;
 
@@ -89,11 +103,18 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
             if (content == null) return;
 
             showModalBottomSheet(
-                isDismissible: false,
-                context: context,
-                isScrollControlled: isScrollControlled,
-                shape: bottomSheetShape,
-                builder: (context) => content);
+              isDismissible: false,
+              context: context,
+              isScrollControlled: isScrollControlled,
+              shape: bottomSheetShape,
+              builder: (context) => content,
+            ).then(
+              (_) {
+                if (state.currentEvent != null && approved == false) {
+                  this._bloc.add(CancelRequest(state.currentEvent));
+                }
+              },
+            );
           }
         }
       },

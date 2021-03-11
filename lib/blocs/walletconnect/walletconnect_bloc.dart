@@ -51,9 +51,11 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
     });
     _connector.onEvt('personal_sign', (WCRequest req) {
       Log.debug('Get personal_sign on BLOC');
+      this.add(ReceiveWCEvent(req));
     });
     _connector.onEvt('eth_signTypedData', (WCRequest req) {
       Log.debug('Get eth_signTypedData on BLOC');
+      this.add(ReceiveWCEvent(req));
     });
     _connector.onEvt('disconnect', (String req) {
       this.add(DisconnectWC('Receive Disconnet'));
@@ -106,7 +108,18 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
     }
 
     if (event is ReceiveWCEvent) {
-      yield _state.copWith(currentEvent: event.request);
+      if (_state.currentEvent == null) {
+        yield _state.copWith(currentEvent: event.request);
+      }
+    }
+
+    if (event is CancelRequest) {
+      _connector.rejectRequest(WCReject.fromRequest(event.request));
+      yield _state.copWith(currentEvent: null);
+    }
+
+    if (event is ApproveRequest) {
+      _connector.approveRequest(WCApprove.fromRequest(event.request, result: event.result));
     }
 
     if (event is DisconnectWC) {
@@ -115,5 +128,6 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
       }
       yield _state.copWith(status: WC_STATUS.UNCONNECTED);
     }
+
   }
 }

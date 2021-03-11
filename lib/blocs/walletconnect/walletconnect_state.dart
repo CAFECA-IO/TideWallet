@@ -40,7 +40,7 @@ class WalletConnectLoaded extends WalletConnectState {
       peer: peer ?? this.peer,
       accounts: accounts ?? this.accounts,
       records: records ?? this.records,
-      currentEvent: currentEvent 
+      currentEvent: currentEvent // 
     );
   }
 }

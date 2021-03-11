@@ -7,4 +7,5 @@ enum ERROR_SESSION {
 enum ERROR_MISSING {
   METHOD,
   ID,
+  ERROR,
 }
