@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
 import '../models/investment.model.dart';
+import '../helpers/i18n.dart';
+
+final t = I18n.t;
 
 class InvestAccountTile extends StatelessWidget {
-  final String name;
-  final InvestAccount account;
+  final Investment investment;
   final Function onClick;
 
-  InvestAccountTile(this.name, this.account, this.onClick);
+  InvestAccountTile(this.investment, this.onClick);
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -16,7 +18,20 @@ class InvestAccountTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(8.0),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
+            Column(
+              children: <Widget>[
+                Text(t(investment.investStrategy.value) +
+                    " (" +
+                    t(investment.investAmplitude.value) +
+                    ")"),
+                SizedBox(height: 6.0),
+                Text(investment.investAmount.toString(),
+                    style: Theme.of(context).textTheme.subtitle2),
+              ],
+              crossAxisAlignment: CrossAxisAlignment.start,
+            ),
             Container(
               padding: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
@@ -27,7 +42,7 @@ class InvestAccountTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
                   Text(
-                    account.rate.toString() + '%',
+                    investment.iRR.toString() + '%',
                     style: Theme.of(context).textTheme.headline3.copyWith(
                           color: Theme.of(context).primaryColor,
                         ),
@@ -36,15 +51,6 @@ class InvestAccountTile extends StatelessWidget {
                       style: Theme.of(context).textTheme.subtitle2)
                 ],
               ),
-            ),
-            SizedBox(width: 10.0),
-            Column(
-              children: <Widget>[
-                Text(account.name),
-                SizedBox(height: 6.0),
-                Text(name, style: Theme.of(context).textTheme.subtitle2),
-              ],
-              crossAxisAlignment: CrossAxisAlignment.start,
             )
           ],
         ),

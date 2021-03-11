@@ -2,57 +2,61 @@ import 'package:decimal/decimal.dart';
 
 import 'account.model.dart';
 
-class Investment {
-  final String id;
-  // TODO
-  final List<InvestAccount> accounts;
-  final String name;
-  final String iconUrl;
+enum InvestStrategy { Climb, Decline, Fluctuating }
+enum InvestAmplitude { Low, Normal, High }
 
-  Investment({this.id, this.accounts, this.name, this.iconUrl});
+extension InvestStrategyExft on InvestStrategy {
+  String get value {
+    switch (this) {
+      case InvestStrategy.Climb:
+        return 'climb';
+        break;
+      case InvestStrategy.Decline:
+        return 'decline';
+        break;
+      case InvestStrategy.Fluctuating:
+        return 'fluctuating';
+        break;
+      default:
+        return 'unknown';
+        break;
+    }
+  }
+}
 
-  // TODO fromMap
+extension InvestAmplitudeExt on InvestAmplitude {
+  String get value {
+    switch (this) {
+      case InvestAmplitude.Low:
+        return 'low';
+        break;
+      case InvestAmplitude.Normal:
+        return 'normal';
+        break;
+      case InvestAmplitude.High:
+        return 'high';
+        break;
+      default:
+        return 'unknown';
+        break;
+    }
+  }
 }
 
 class InvestAccount {
-  final Decimal deposited;
-  final Decimal totalYield;
-  final Decimal yesterdayYield;
-  final Decimal rate;
-  final String address;
-  final Currency account;
-  final String name;
+  final Currency currency;
+  final List<Investment> investments;
 
-  InvestAccount({
-    this.deposited,
-    this.totalYield,
-    this.yesterdayYield,
-    this.rate,
-    this.address,
-    this.account,
-    this.name,
-  });
+  InvestAccount(this.currency, this.investments);
+}
 
-  InvestAccount copyWith({
-    Decimal deposited,
-    Decimal totalYield,
-    Decimal yesterdayYield,
-    Decimal rate,
-    String address,
-    Currency account,
-    String name,
-  }) {
-    return InvestAccount(
-      deposited: deposited ?? this.deposited,
-      totalYield: totalYield ?? this.totalYield,
-      yesterdayYield: yesterdayYield ?? this.yesterdayYield,
-      rate: rate ?? this.rate,
-      address: address ?? this.address,
-      account: account ?? this.account,
-      name: name ?? this.name,
-    );
-  }
+class Investment {
+  final String id;
+  final InvestStrategy investStrategy;
+  final InvestAmplitude investAmplitude;
+  final Decimal investAmount;
+  final Decimal iRR; //Internal Rate of Return
 
-  // TODO fromMap
-
+  Investment(this.id, this.investStrategy, this.investAmplitude,
+      this.investAmount, this.iRR);
 }

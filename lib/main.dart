@@ -9,6 +9,8 @@ import 'package:provider/provider.dart';
 import './repositories/account_repository.dart';
 import './repositories/transaction_repository.dart';
 import './repositories/user_repository.dart';
+import './repositories/trader_repository.dart';
+import './repositories/invest_repository.dart';
 import './screens/currency.screen.dart';
 import './screens/landing.screen.dart';
 import './screens/restore_wallet.screen.dart';
@@ -37,7 +39,6 @@ import './blocs/receive/receive_bloc.dart';
 // import './blocs/update_password/update_password_bloc.dart';
 import './blocs/invest/invest_bloc.dart';
 import './helpers/i18n.dart';
-import './repositories/trader_repository.dart';
 import 'theme.dart';
 
 void main() async {
@@ -70,6 +71,9 @@ class MyApp extends StatelessWidget {
           ),
           Provider<TraderRepository>(
             create: (_) => TraderRepository(),
+          ),
+          Provider<InvestRepository>(
+            create: (_) => InvestRepository(),
           )
         ],
         child: MultiBlocProvider(
@@ -87,7 +91,9 @@ class MyApp extends StatelessWidget {
               ),
             ),
             BlocProvider<InvestBloc>(
-              create: (BuildContext context) => InvestBloc(),
+              create: (BuildContext context) => InvestBloc(
+                  Provider.of<InvestRepository>(context, listen: false),
+                  Provider.of<UserRepository>(context, listen: false)),
             ),
             BlocProvider<RestoreWalletBloc>(
               create: (BuildContext context) => RestoreWalletBloc(

@@ -82,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       }), AccountCurrencyScreen.routeName, t('total_asset'),
           iconData: Icons.account_balance_wallet, bottomText: ''),
       HomeScreenContent(
-          InvestmentScreen(), InvestmentScreen.routeName, t('invest'),
+          InvestmentScreen(), InvestmentScreen.routeName, t('total_value'),
           iconData: Icons.assessment_outlined, bottomText: ''),
       HomeScreenContent(
           CreditCardScreen(), CreditCardScreen.routeName, t('credit_card'),

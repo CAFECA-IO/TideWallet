@@ -7,16 +7,6 @@ abstract class InvestEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class GetInvest extends InvestEvent {
-  final int type; // TODO
-
-  GetInvest({this.type});
+class GetInvestments extends InvestEvent {
+  GetInvestments();
 }
-
-class ChangeShowType extends InvestEvent {
-  final int type;
-
-  ChangeShowType({this.type});
-}
-
-class UpdateTotalRate extends InvestEvent {}

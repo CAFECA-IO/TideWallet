@@ -9,28 +9,20 @@ abstract class InvestState extends Equatable {
 
 class InvestInitial extends InvestState {}
 
-class InvestListSucccess extends InvestState {
-  final int selectedType; // For filter investment product type,
-  final List<Investment> investments;
-  final int showType;
-  final Decimal totalRate;
+class ListInvestments extends InvestState {
+  final List<InvestAccount> investAccounts;
 
-  InvestListSucccess(
-      {this.selectedType, this.investments, this.showType: 0, this.totalRate});
+  ListInvestments({this.investAccounts});
 
-  InvestListSucccess copyWith(
+  ListInvestments copyWith(
       {int selectedType,
       List<Investment> investments,
       int showType,
       Decimal totalRate}) {
-    return InvestListSucccess(
-      investments: investments ?? this.investments,
-      selectedType: selectedType ?? this.selectedType,
-      showType: showType ?? this.showType,
-      totalRate: totalRate ?? this.totalRate,
-    );
+    return ListInvestments(
+        investAccounts: investAccounts ?? this.investAccounts);
   }
 
   @override
-  List<Object> get props => [totalRate, investments, selectedType];
+  List<Object> get props => [investAccounts];
 }
