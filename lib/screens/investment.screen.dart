@@ -40,22 +40,24 @@ class _InvestmentScreenState extends State<InvestmentScreen>
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<InvestBloc, InvestState>(
-      cubit: _ivtBloc,
-      builder: (_, state) {
-        if (state is InvestInitial) {
-          return Center(
-            child: Text('Loading...'),
-          );
-        }
-        if (state is ListInvestments) {
-          return Stack(
-            children: [
-              Container(
-                child: Column(
-                  children: <Widget>[
-                    Header(),
-                    Expanded(
+    return Stack(
+      children: [
+        Container(
+          child: Column(
+            children: <Widget>[
+              Header(), // TODO do anotherHeader for investment
+              BlocBuilder<InvestBloc, InvestState>(
+                cubit: _ivtBloc,
+                builder: (_, state) {
+                  if (state is InvestInitial) {
+                    return Expanded(
+                      child: Center(
+                        child: Text('Loading...'),
+                      ),
+                    );
+                  }
+                  if (state is ListInvestments) {
+                    return Expanded(
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0),
                         child: ListView.builder(
@@ -137,39 +139,39 @@ class _InvestmentScreenState extends State<InvestmentScreen>
                           },
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              Positioned(
-                child: InkWell(
-                  onTap: () {
-                    showModalBottomSheet(
-                      isScrollControlled: true,
-                      shape: bottomSheetShape,
-                      context: context,
-                      builder: (context) => Container(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 22.0, horizontal: 16.0),
-                        child: CreateInvestPlanForm(),
-                      ),
                     );
-                  },
-                  child: Container(
-                    child: Text(
-                      '+ ${t('add_invest_plan')}',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-                top: 170.0,
-                right: 12.0,
+                  }
+                  return SizedBox();
+                },
               ),
             ],
-          );
-        }
-        return SizedBox();
-      },
+          ),
+        ),
+        Positioned(
+          child: InkWell(
+            onTap: () {
+              showModalBottomSheet(
+                isScrollControlled: true,
+                shape: bottomSheetShape,
+                context: context,
+                builder: (context) => Container(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 22.0, horizontal: 16.0),
+                  child: CreateInvestPlanForm(),
+                ),
+              );
+            },
+            child: Container(
+              child: Text(
+                '+ ${t('add_invest_plan')}',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+          top: 170.0,
+          right: 12.0,
+        ),
+      ],
     );
   }
 }
