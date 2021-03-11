@@ -22,7 +22,8 @@ class WalletConnectLoaded extends WalletConnectState {
   final WCRequest currentEvent;
   // TODO
   final List<dynamic> records;
-  WalletConnectLoaded({this.status, this.peer, this.accounts, this.records, this.currentEvent});
+  final bool loading;
+  WalletConnectLoaded({this.status, this.peer, this.accounts, this.records, this.currentEvent, this.loading,});
 
   @override
   List<Object> get props => [status, peer, accounts, records, currentEvent];
@@ -33,14 +34,16 @@ class WalletConnectLoaded extends WalletConnectState {
     List<String> peers,
     List<dynamic> records,
     List<String> accounts,
-    WCRequest currentEvent
+    WCRequest currentEvent,
+    bool loading,
   }) {
     return WalletConnectLoaded(
       status: status ?? this.status,
       peer: peer ?? this.peer,
       accounts: accounts ?? this.accounts,
       records: records ?? this.records,
-      currentEvent: currentEvent // 
+      currentEvent: currentEvent, //
+      loading: loading ?? false
     );
   }
 }

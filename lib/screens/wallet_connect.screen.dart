@@ -1,9 +1,22 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:provider/provider.dart';
+import 'package:tidewallet3/widgets/walletconnect/personal_sign.dart';
+import 'package:convert/convert.dart';
+import '../repositories/account_repository.dart';
+import '../repositories/transaction_repository.dart';
+import '../repositories/user_repository.dart';
+import '../blocs/verify_password/verify_password_bloc.dart';
 import '../blocs/walletconnect/walletconnect_bloc.dart';
+import '../helpers/i18n.dart';
 import '../helpers/formatter.dart';
 import '../theme.dart';
+import '../widgets/dialogs/dialog_controller.dart';
+import '../widgets/dialogs/error_dialog.dart';
+import '../widgets/dialogs/verify_password_dialog.dart';
 import '../widgets/buttons/secondary_button.dart';
 import '../widgets/buttons/primary_button.dart';
 import '../widgets/walletconnect/sign_transaction.dart';
@@ -18,7 +31,12 @@ class WalletConnectScreen extends StatefulWidget {
 }
 
 class _WalletConnectScreenState extends State<WalletConnectScreen> {
-  WalletConnectBloc _bloc = WalletConnectBloc();
+  WalletConnectBloc _bloc;
+  AccountRepository _accountRepo;
+  TransactionRepository _txRepo;
+  UserRepository _userRepo;
+  VerifyPasswordBloc _verifyPasswordBloc;
+  final t = I18n.t;
 
   _scanResult(String v) {
     _bloc.add(ScanWC(v));
@@ -26,6 +44,13 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
 
   @override
   void didChangeDependencies() {
+    _accountRepo = Provider.of<AccountRepository>(context);
+    _txRepo = Provider.of<TransactionRepository>(context);
+    _userRepo = Provider.of<UserRepository>(context);
+
+    _bloc = WalletConnectBloc(_accountRepo, _txRepo);
+    _verifyPasswordBloc = VerifyPasswordBloc(_userRepo);
+
     super.didChangeDependencies();
   }
 
@@ -77,37 +102,96 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
             bool isScrollControlled = false;
             bool approved = false;
 
+            submit() {
+              DialogController.showUnDissmissible(
+                context,
+                VerifyPasswordDialog((String password) {
+                  _verifyPasswordBloc.add(VerifyPassword(password));
+                  DialogController.dismiss(context);
+                }, (String password) {
+                  DialogController.dismiss(context);
+                }),
+              );
+            }
+
+            cancel() {
+              Navigator.of(context).pop();
+            }
+
             switch (state.currentEvent.method) {
               case 'eth_sendTransaction':
                 content = SignTransaction(
-                  context,
-                  state.peer.url,
-                  state.currentEvent.params[0],
-                  () {
-                    this
-                        ._bloc
-                        .add(ApproveRequest(state.currentEvent, '0x12345'),);
-                    approved = true;
-                    Navigator.of(context).pop();
-                  },
-                  () {
-                    Navigator.of(context).pop();
-                  },
-                );
+                    context: context,
+                    dapp: state.peer.url,
+                    param: state.currentEvent.params[0],
+                    currency: _bloc.currency,
+                    submit: submit,
+                    cancel: cancel);
                 isScrollControlled = true;
                 break;
+              case 'personal_sign':
+                final lst = hex
+                    .decode(state.currentEvent.params[0].replaceAll('0x', ''));
+                isScrollControlled = true;
 
+                String msg;
+                try {
+                  msg = utf8.decode(lst, allowMalformed: true);
+                } catch (e) {
+                  String.fromCharCodes(lst);
+                }
+
+                content = PersonalSign(
+                  submit: submit,
+                  cancel: cancel,
+                  message: msg,
+                );
+                break;
+
+              case 'eth_signTypedData':
+                isScrollControlled = true;
+
+                content = PersonalSign(
+                  submit: submit,
+                  cancel: cancel,
+                  message: state.currentEvent.params[1],
+                );
+                break;
               default:
             }
 
             if (content == null) return;
 
             showModalBottomSheet(
-              isDismissible: false,
+              // isDismissible: false,
               context: context,
               isScrollControlled: isScrollControlled,
               shape: bottomSheetShape,
-              builder: (context) => content,
+              builder: (context) =>
+                  BlocListener<VerifyPasswordBloc, VerifyPasswordState>(
+                listener: (context, verifyState) {
+                  if (verifyState is PasswordVerified) {
+                    approved = true;
+                    this._bloc.add(
+                          ApproveRequest(
+                            state.currentEvent,
+                            verifyState.password,
+                          ),
+                        );
+                    Navigator.of(context).pop();
+                  }
+                  if (verifyState is PasswordInvalid) {
+                    DialogController.show(
+                      context,
+                      ErrorDialog(
+                        t('error_password'),
+                      ),
+                    );
+                  }
+                },
+                cubit: _verifyPasswordBloc,
+                child: content,
+              ),
             ).then(
               (_) {
                 if (state.currentEvent != null && approved == false) {

@@ -3,20 +3,35 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:tidewallet3/helpers/logger.dart';
 
+import '../../helpers/logger.dart';
+import '../../models/account.model.dart';
+import '../../repositories/account_repository.dart';
+import '../../repositories/transaction_repository.dart';
 import '../../cores/walletconnect/core.dart';
 import '../../constants/account_config.dart';
 part 'walletconnect_event.dart';
 part 'walletconnect_state.dart';
 
 class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
-  WalletConnectBloc() : super(WalletConnectInitial());
   Connector _connector;
   WCSession _session;
+  TransactionRepository _txRepo;
+  AccountRepository _accountRepo;
+  ACCOUNT _accountType = ACCOUNT.ETH;
+  Currency _selected;
 
-  // TODO
-  getReceivingAddress() => '0x9c93C3Be6Abdc1DBf0f35F1e57a2CCfEA92A8e84';
+  WalletConnectBloc(this._accountRepo, this._txRepo)
+      : super(WalletConnectInitial()) {
+    final currencies = this._accountRepo.getCurrencies(_accountType);
+    _selected = currencies[0];
+
+    this._txRepo.setCurrency(_selected);
+  }
+
+  getReceivingAddress() => _txRepo.getReceivingAddress();
+
+  get currency => this._selected;
 
   @override
   Stream<Transition<WalletConnectEvent, WalletConnectState>> transformEvents(
@@ -50,7 +65,6 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
       this.add(ReceiveWCEvent(req));
     });
     _connector.onEvt('personal_sign', (WCRequest req) {
-      Log.debug('Get personal_sign on BLOC');
       this.add(ReceiveWCEvent(req));
     });
     _connector.onEvt('eth_signTypedData', (WCRequest req) {
@@ -68,7 +82,8 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
   ) async* {
     if (event is ScanWC) {
       if (state is WalletConnectInitial || state is WalletConnectError) {
-        int id = USE_NETWORK == NETWORK.MAINNET ? 1 : 3; // Ropsten
+        int id = _selected.chainId;
+        String address = await getReceivingAddress();
 
         final connection = Connector.parseUri(event.uri);
         _session = WCSession(
@@ -77,7 +92,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
             key: connection.key,
             bridge: connection.bridge,
             peerId: connection.topic,
-            accounts: [getReceivingAddress()]);
+            accounts: [address]);
 
         if (connection == null) {
           yield WalletConnectError(WC_ERROR.URI);
@@ -117,9 +132,34 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
       _connector.rejectRequest(WCReject.fromRequest(event.request));
       yield _state.copWith(currentEvent: null);
     }
-
     if (event is ApproveRequest) {
-      _connector.approveRequest(WCApprove.fromRequest(event.request, result: event.result));
+      String reuslt;
+              print(event.request.method);
+
+      switch (event.request.method) {
+        case 'eth_sendTransaction':
+          // TODO:
+          await Future.delayed(Duration(seconds: 1));
+          reuslt = '0x99999';
+
+          break;
+        case 'personal_sign':
+          // TODO:
+          await Future.delayed(Duration(seconds: 1));
+          reuslt = '0x1e6bf8af9b345731be3d89f46f344bac0819d4c40cf419546ffc62f59bc86d251821db81350c5f5a5e0773969840c5b097e0d6cd0eeb7c6ae68d3ebaac1290531c';
+          break;
+        case 'eth_signTypedData':
+          // TODO:
+          await Future.delayed(Duration(seconds: 1));
+          reuslt = '0x88daf041984dfbc4e2da1cf4e4f1b3e205c6409052c749a7890ecf248855a4bd7fd4e908db3cd3593515bebf971c5b448bf3142b34999cb3963e6e33e0a0d50d1c';
+          break;
+        default:
+          throw (ERROR_MISSING.METHOD);
+      }
+
+      _connector
+          .approveRequest(WCApprove.fromRequest(event.request, result: reuslt));
+      yield _state.copWith(currentEvent: null);
     }
 
     if (event is DisconnectWC) {
@@ -128,6 +168,5 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
       }
       yield _state.copWith(status: WC_STATUS.UNCONNECTED);
     }
-
   }
 }
