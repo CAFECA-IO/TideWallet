@@ -287,7 +287,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                             style: Theme.of(context).textTheme.headline6,
                           ),
                           Text(
-                            '${state.fee == null || state.fee.toString().isEmpty ? "loading..." : (Formatter.formatDecimal(state.fee.toString()) + " " + _repo.currency.symbol)}',
+                            '${state.fee == null || state.fee.toString().isEmpty ? "loading..." : (Formatter.formatDecimal(state.fee.toString()) + " " + _repo.currency.accountSymbol)}',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                         ],

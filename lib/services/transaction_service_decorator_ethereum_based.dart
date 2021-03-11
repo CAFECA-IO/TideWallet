@@ -7,8 +7,6 @@ import '../models/utxo.model.dart';
 import '../models/ethereum_transaction.model.dart';
 import '../helpers/ethereum_based_utils.dart';
 import '../helpers/cryptor.dart';
-import '../helpers/converter.dart';
-
 import '../helpers/logger.dart';
 
 class EthereumBasedTransactionServiceDecorator extends TransactionService {
@@ -57,12 +55,12 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
     Log.debug('ETH amount: $amount');
     Log.debug('ETH gasPrice: $gasPrice');
     Log.debug('ETH gasUsed: $gasLimit');
-    Log.debug('ETH message: $message');
+    Log.warning('ETH message: $message');
     Log.debug('ETH chainId: $chainId');
     Log.debug('ETH fee: ${gasLimit * gasPrice}');
     EthereumTransaction transaction = EthereumTransaction.prepareTransaction(
       from: changeAddress,
-      to: to,
+      to: to.contains(':') ? to.split(':')[1] : to,
       nonce: nonce,
       amount: amount, // in wei
       gasPrice: gasPrice, // in wei

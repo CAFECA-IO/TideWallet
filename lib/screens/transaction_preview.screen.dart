@@ -133,7 +133,8 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
                     ),
                     SizedBox(height: 7),
                     Align(
-                      child: Text("${_transaction.fee} ${_currency.symbol}"),
+                      child: Text(
+                          "${_transaction.fee} ${_currency.accountSymbol}"),
                       alignment: Alignment.centerLeft,
                     ),
                     SizedBox(height: 4),

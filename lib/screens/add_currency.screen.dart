@@ -31,7 +31,7 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
     Map<String, Currency> arg = ModalRoute.of(context).settings.arguments;
 
     _repo = Provider.of<AccountRepository>(context);
-    _bloc = AddCurrencyBloc(_repo, arg['account']);
+    _bloc = AddCurrencyBloc(_repo, currency: arg['account']);
     super.didChangeDependencies();
   }
 
@@ -52,8 +52,7 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
         cubit: _bloc,
         builder: (context, state) {
           Widget result = SizedBox();
-          bool addable =
-              (state is GetToken && state.result != null);
+          bool addable = (state is GetToken && state.result != null);
 
           if (state is GetToken) {
             Widget item(String _title, String _value) {
@@ -77,24 +76,27 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
             }
 
             if (state.result != null) {
-              result = Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    alignment: Alignment.center,
-                    child: Image.network(
-                      state.result.imgUrl,
-                      width: 80.0,
-                      height: 80.0,
+              result = SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      child: Image.network(
+                        state.result.imgUrl,
+                        width: 80.0,
+                        height: 80.0,
+                      ),
                     ),
-                  ),
-                  item(t('symbol'), state.result.symbol),
-                  item(t('name'), state.result.name),
-                  item(t('contract'), state.result.contract),
-                  item(t('decimal'), state.result.decimal.toString()),
-                  item(t('total_supply'), state.result.totalSupply.toString()),
-                  item(t('description'), state.result.description),
-                ],
+                    item(t('symbol'), state.result.symbol),
+                    item(t('name'), state.result.name),
+                    item(t('contract'), state.result.contract),
+                    item(t('decimal'), state.result.decimal.toString()),
+                    item(
+                        t('total_supply'), state.result.totalSupply.toString()),
+                    item(t('description'), state.result.description),
+                  ],
+                ),
               );
             } else {
               result = Container(child: Text(t('not_found')));
@@ -105,7 +107,6 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
             cubit: _bloc,
             listenWhen: (prev, curr) => (prev != curr),
             listener: (context, state) {
-
               if (state is Loading) {
                 DialogController.showUnDissmissible(context, LoadingDialog());
               }
@@ -125,8 +126,32 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
               }
             },
             child: Container(
-              padding: const EdgeInsets.all(20.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16),
               child: Column(children: [
+                Container(
+                  // padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  width: MediaQuery.of(context).size.width - 20.0,
+                  // height: 40,
+                  child: Text(t('support_token_type'),
+                      style: Theme.of(context).textTheme.bodyText1
+                      // .copyWith(color: Colors.white),
+                      ),
+                  // decoration: BoxDecoration(
+                  //   borderRadius: BorderRadius.circular(16.0),
+                  //   gradient: LinearGradient(
+                  //     begin: Alignment.centerLeft,
+                  //     end: Alignment.centerRight,
+                  //     colors: <Color>[
+                  //       Theme.of(context).primaryColor,
+                  //       Theme.of(context).accentColor
+                  //     ],
+                  //   ),
+                  // ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
                 Input(
                   labelText: t('enter_address'),
                   controller: _controller,

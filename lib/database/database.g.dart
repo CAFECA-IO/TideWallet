@@ -611,7 +611,7 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
   @override
   Future<AccountCurrencyEntity> findOneByAccountyId(String id) async {
     return _queryAdapter.query(
-        'SELECT * FROM AccountCurrency WHERE AccountCurrency.account_id = ? LIMIT 1',
+        'SELECT * FROM AccountCurrency WHERE AccountCurrency.accountcurrency_id = ? LIMIT 1',
         arguments: <dynamic>[id],
         mapper: (Map<String, dynamic> row) => AccountCurrencyEntity(
             accountcurrencyId: row['accountcurrency_id'] as String,
@@ -624,10 +624,33 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
   }
 
   @override
-  Future<List<JoinCurrency>> findJoinedByAccountyId(String id) async {
+  Future<List<JoinCurrency>> findJoinedByAccountId(String id) async {
     return _queryAdapter.queryList(
         'SELECT * FROM JoinCurrency WHERE JoinCurrency.account_id = ?',
         arguments: <dynamic>[id],
+        mapper: (Map<String, dynamic> row) => JoinCurrency(
+            accountcurrencyId: row['accountcurrency_id'] as String,
+            currencyId: row['currency_id'] as String,
+            symbol: row['symbol'] as String,
+            name: row['name'] as String,
+            balance: row['balance'] as String,
+            accountIndex: row['account_index'] as int,
+            coinType: row['coin_type'] as int,
+            image: row['image'] as String,
+            blockchainId: row['network_id'] as String,
+            network: row['network'] as String,
+            chainId: row['chain_id'] as int,
+            publish:
+                row['publish'] == null ? null : (row['publish'] as int) != 0,
+            contract: row['contract'] as String,
+            decimals: row['decimals'] as int,
+            type: row['type'] as String,
+            accountId: row['account_id'] as String));
+  }
+
+  @override
+  Future<List<JoinCurrency>> findAllJoinedCurrency() async {
+    return _queryAdapter.queryList('SELECT * FROM JoinCurrency',
         mapper: (Map<String, dynamic> row) => JoinCurrency(
             accountcurrencyId: row['accountcurrency_id'] as String,
             currencyId: row['currency_id'] as String,

@@ -152,6 +152,7 @@ String _intToHex(int a) {
 }
 
 Uint8List toBuffer(dynamic data) {
+  if (data == null) return Uint8List(0);
   if (data is Uint8List) return data;
 
   if (data is String) {

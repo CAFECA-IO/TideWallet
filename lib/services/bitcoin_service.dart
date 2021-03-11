@@ -168,7 +168,7 @@ class BitcoinService extends AccountServiceDecorator {
     //     address: 'tb1q8x0nw29tvc7zkgc24j2h28mt8mutewcq8zj59h',
     //     chainIndex: 0,
     //     keyIndex: 0,
-    //     timestamp: DateTime.now().microsecondsSinceEpoch,
+    //     timestamp: DateTime.now().millisecondsSinceEpoch ~/1000,
     //     locked: true,
     //     decimals: 8));
     // _utxos.add(_utxo);
@@ -184,7 +184,7 @@ class BitcoinService extends AccountServiceDecorator {
     //     address: 'tb1qa8fuxpg0f8sp8c8yynw9wnuzh9kdcx0nyvu6z6',
     //     chainIndex: 1,
     //     keyIndex: 0,
-    //     timestamp: DateTime.now().microsecondsSinceEpoch,
+    //     timestamp: DateTime.now().millisecondsSinceEpoch ~/1000,
     //     locked: false,
     //     decimals: 8));
     // _utxos.add(_changeUtxo);
@@ -205,7 +205,7 @@ class BitcoinService extends AccountServiceDecorator {
       _transaction = transaction;
       _transaction.id = response.data['txid'];
       _transaction.txId = response.data['txid'];
-      _transaction.timestamp = DateTime.now().microsecondsSinceEpoch;
+      _transaction.timestamp = DateTime.now().millisecondsSinceEpoch;
       _transaction.confirmations = 0;
       _transaction.inputs.forEach((Input input) async {
         UnspentTxOut _utxo = input.utxo;

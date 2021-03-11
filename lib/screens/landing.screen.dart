@@ -6,7 +6,7 @@ import './welcome.screen.dart';
 import './home.screen.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/loading_dialog.dart';
-import '../blocs/account/account_bloc.dart';
+import '../blocs/account_currency/account_currency_bloc.dart';
 import '../blocs/fiat/fiat_bloc.dart';
 import '../blocs/user/user_bloc.dart';
 
@@ -19,14 +19,14 @@ class _LandingScreenState extends State<LandingScreen> {
   bool _isInit = true;
   UserBloc _bloc;
   FiatBloc _fiatBloc;
-  AccountBloc _accountBloc;
+  AccountCurrencyBloc _accountBloc;
 
   @override
   void didChangeDependencies() async {
     if (_isInit) {
       await DBOperator().init();
-      // force AccountBloc call constructor
-      _accountBloc = BlocProvider.of<AccountBloc>(context);
+      // force AccountCurrencyBloc call constructor
+      _accountBloc = BlocProvider.of<AccountCurrencyBloc>(context);
 
       _bloc = BlocProvider.of<UserBloc>(context)..add(UserCheck());
       _fiatBloc = BlocProvider.of<FiatBloc>(context);
@@ -46,7 +46,6 @@ class _LandingScreenState extends State<LandingScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return BlocListener<UserBloc, UserState>(
       listener: (context, state) {
         if (state is UserLoading) {

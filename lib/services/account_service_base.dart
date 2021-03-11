@@ -153,13 +153,13 @@ class AccountServiceBase extends AccountService {
   Future _pushResult() async {
     List<JoinCurrency> jcs = await DBOperator()
         .accountCurrencyDao
-        .findJoinedByAccountyId(this._accountId);
+        .findJoinedByAccountId(this._accountId);
 
     if (jcs.isEmpty) return;
 
     List<Currency> cs = jcs
         .map(
-          (c) => Currency.fromJoinCurrency(c, this._base),
+          (c) => Currency.fromJoinCurrency(c, jcs[0], this._base),
         )
         .toList();
 
@@ -176,7 +176,9 @@ class AccountServiceBase extends AccountService {
   }
 
   Future _getSupportedToken() async {
-    final tokens = await DBOperator().currencyDao.findAllCurrenciesByAccountId(this._accountId);
+    final tokens = await DBOperator()
+        .currencyDao
+        .findAllCurrenciesByAccountId(this._accountId);
     if (tokens.isNotEmpty) return;
     AccountEntity acc =
         await DBOperator().accountDao.findAccount(this._accountId);
@@ -222,7 +224,8 @@ class AccountServiceBase extends AccountService {
   }
 
   Future<List<TransactionEntity>> _loadTransactions(String currencyId) async {
-    return DBOperator().transactionDao.findAllTransactionsById(currencyId);
+    return await DBOperator().transactionDao.findAllTransactionsById(currencyId)
+      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
   }
 
   @override

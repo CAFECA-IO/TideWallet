@@ -12,9 +12,9 @@ part 'add_currency_state.dart';
 class AddCurrencyBloc extends Bloc<AddCurrencyEvent, AddCurrencyState> {
   AccountRepository _repo;
   Currency _parentAccount;
-  AddCurrencyBloc(this._repo, this._parentAccount)
-      : super(
-            BeforeAdd(valid: false, address: ''));
+  AddCurrencyBloc(this._repo, {Currency currency})
+      : this._parentAccount = currency,
+        super(BeforeAdd(valid: false, address: ''));
 
   @override
   Stream<Transition<AddCurrencyEvent, AddCurrencyState>> transformEvents(
@@ -34,7 +34,6 @@ class AddCurrencyBloc extends Bloc<AddCurrencyEvent, AddCurrencyState> {
     AddCurrencyEvent event,
   ) async* {
     if (event is EnterAddress) {
-
       bool valid = _repo.validateETHAddress(event.address);
       yield BeforeAdd(address: event.address, valid: valid);
 
@@ -48,7 +47,8 @@ class AddCurrencyBloc extends Bloc<AddCurrencyEvent, AddCurrencyState> {
 
       yield Loading();
 
-      Token _tk = await _repo.getTokenInfo(this._parentAccount.blockchainId, event.address);
+      Token _tk = await _repo.getTokenInfo(
+          this._parentAccount.blockchainId, event.address);
       if (_tk != null) {
         yield GetToken(_tk);
       } else {
@@ -60,7 +60,8 @@ class AddCurrencyBloc extends Bloc<AddCurrencyEvent, AddCurrencyState> {
       GetToken _state = state;
       yield Loading();
 
-      bool result = await _repo.addToken(_parentAccount.blockchainId, _state.result);
+      bool result =
+          await _repo.addToken(_parentAccount.blockchainId, _state.result);
 
       if (result) {
         yield AddSuccess();

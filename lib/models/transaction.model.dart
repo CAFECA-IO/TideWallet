@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:decimal/decimal.dart';
 import 'package:convert/convert.dart';
 
+import '../helpers/utils.dart';
 import '../helpers/logger.dart';
 import '../theme.dart';
 import '../database/entity/transaction.dart';
@@ -25,7 +26,7 @@ class Transaction {
   Decimal gasUsed;
 
   DateTime get dateTime =>
-      DateTime.fromMicrosecondsSinceEpoch(timestamp, isUtc: false);
+      DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: false);
   String get address => _address;
 
   String get messageInString {
@@ -89,7 +90,7 @@ class Transaction {
         : entity.sourceAddress;
     confirmations = entity.confirmation;
     timestamp = entity.timestamp;
-    message = entity.note.length == 2 ? Uint8List(0) : hex.decode(entity.note);
+    message = hex.decode(stripHexPrefix(entity.note));
     status = entity.status == 'pending'
         ? TransactionStatus.pending
         : entity.status == 'success'

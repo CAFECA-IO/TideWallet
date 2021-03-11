@@ -41,10 +41,10 @@ class EthereumTransaction extends Transaction {
     this.gasPrice,
     this.gasUsed,
     this.fee,
-    Uint8List message,
+    this.message,
     this.chainId,
     this.signature,
-  }) : message = message ?? Uint8List(0);
+  });
 
   EthereumTransaction.prepareTransaction(
       {this.from,

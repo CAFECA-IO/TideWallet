@@ -189,7 +189,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
           amount: change,
           chainIndex: _Index_InternalChain,
           keyIndex: changeIndex,
-          timestamp: DateTime.now().microsecondsSinceEpoch,
+          timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
           locked: false,
           data: Uint8List(0),
           decimals: this.currencyDecimals);

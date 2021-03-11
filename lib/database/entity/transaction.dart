@@ -1,8 +1,10 @@
-import 'dart:convert';
-
+import 'package:convert/convert.dart';
 import 'package:floor/floor.dart';
+import 'package:tidewallet3/helpers/logger.dart';
 
 import 'account_currency.dart';
+import '../../models/transaction.model.dart';
+import '../../models/account.model.dart';
 
 @Entity(tableName: '_Transaction')
 class TransactionEntity {
@@ -72,9 +74,11 @@ class TransactionEntity {
   TransactionEntity.fromJson(
       String accountcurrencyId, Map<String, dynamic> data)
       : this.accountcurrencyId = accountcurrencyId,
-        this.transactionId = data['txid'],
+        this.transactionId = accountcurrencyId + data['txid'],
         this.amount = data['amount'].toString(),
         this.txId = data['txid'],
+        this.sourceAddress = data['source_addresses'],
+        this.destinctionAddress = data['destination_addresses'],
         this.confirmation = data['confirmations'],
         this.gasPrice = data['gas_price'],
         this.gasUsed = data['gas_limit'],
@@ -82,20 +86,39 @@ class TransactionEntity {
         this.direction = data['direction'],
         this.status = data['status'],
         this.timestamp = data['timestamp'],
-        this.note = data['note'] {
-    List sourceAddress =
-        data['source_addresses']; // json.decode(data['source_addresses']);
-    List destinctionAddress = data[
-        'destination_addresses']; //json.decode(data['destination_addresses']);
-    for (var address in sourceAddress) {
-      this.sourceAddress = this.sourceAddress == null
-          ? this.sourceAddress = address
-          : this.sourceAddress += '${", " + address}';
-    }
-    for (var address in destinctionAddress) {
-      this.destinctionAddress = this.destinctionAddress == null
-          ? this.destinctionAddress = address
-          : this.destinctionAddress += '${", " + address}';
-    }
-  }
+        this.note = data['note'];
+
+  TransactionEntity.fromTransaction(Currency currency, Transaction transaction,
+      String amount, String fee, String gasPrice, String destinationAddresses)
+      : this.accountcurrencyId = currency.id,
+        this.transactionId = currency.id + transaction.txId,
+        this.amount = amount, // in smallest coin unit
+        this.txId = transaction.txId,
+        this.sourceAddress = transaction.sourceAddresses,
+        this.destinctionAddress =
+            destinationAddresses ?? transaction.destinationAddresses,
+        this.confirmation = transaction.confirmations,
+        this.gasPrice = gasPrice, // in smallest parentCoin unit
+        this.gasUsed = transaction.gasUsed.toInt(),
+        this.fee = fee, // in smallest parentCoin unit
+        this.direction = transaction.direction.title,
+        this.status = transaction.status.title,
+        this.timestamp = transaction.timestamp,
+        this.note = hex.encode(transaction.message);
+  //     {
+  // List sourceAddress =
+  //     data['source_addresses']; // json.decode(data['source_addresses']);
+  // List destinctionAddress = data[
+  //     'destination_addresses']; //json.decode(data['destination_addresses']);
+  // for (var address in sourceAddress) {
+  //   this.sourceAddress = this.sourceAddress == null
+  //       ? this.sourceAddress = address
+  //       : this.sourceAddress += '${", " + address}';
+  // }
+  // for (var address in destinctionAddress) {
+  //   this.destinctionAddress = this.destinctionAddress == null
+  //       ? this.destinctionAddress = address
+  //       : this.destinctionAddress += '${", " + address}';
+  // }
+  // }
 }
