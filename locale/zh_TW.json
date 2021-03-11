@@ -127,5 +127,7 @@
   "setting_reset": "重設錢包",
   "error_reset": "重設錢包錯誤",
   "success_reset": "成功重設錢包",
-  "support_token_type": "支援Erc20 Token"
+  "support_token_type": "支援Erc20 Token",
+  "credit_card": "信用卡",
+  "invest": "投資"
 }

@@ -7,8 +7,8 @@ import 'utils.dart';
 import 'cryptor.dart';
 import 'rlp.dart' as rlp;
 import 'logger.dart';
+import '../cores/signer.dart';
 import '../models/ethereum_transaction.model.dart';
-import 'cryptor.dart';
 
 bool isValidFormat(String address) {
   String addr;
@@ -72,6 +72,28 @@ bool verifyEthereumAddress(String address) {
   }
 
   return address == checksumAddress.substring(2);
+}
+
+Uint8List encodeToRlpFromJson(Map json, MsgSignature signature) {
+  final List<dynamic> list = [
+    json['nonce'],
+    json['gasPrice'],
+    json['gas'],
+  ];
+
+  if (json['to'] != null) {
+    list.add(getEthereumAddressBytes(json['to']));
+  } else {
+    list.add('');
+  }
+
+  list..add(json['value'])..add(json['data']);
+
+  if (signature != null) {
+    list..add(signature.v)..add(signature.r)..add(signature.s);
+  }
+  Log.debug('ETH list: $list');
+  return rlp.encode(list);
 }
 
 Uint8List encodeToRlp(EthereumTransaction transaction) {

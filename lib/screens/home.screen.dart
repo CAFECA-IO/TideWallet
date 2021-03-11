@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import './account_currency.screen.dart';
+import './investment.screen.dart';
 import './wallet_connect.screen.dart';
+import './credit_card.screen.dart';
 import './settings.screen.dart';
 import '../widgets/appBar.dart';
 import '../widgets/bottom_nav_bar.dart';
@@ -79,6 +81,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         );
       }), AccountCurrencyScreen.routeName, t('total_asset'),
           iconData: Icons.account_balance_wallet, bottomText: ''),
+      HomeScreenContent(
+          InvestmentScreen(), InvestmentScreen.routeName, t('invest'),
+          iconData: Icons.assessment_outlined, bottomText: ''),
+      HomeScreenContent(
+          CreditCardScreen(), CreditCardScreen.routeName, t('credit_card'),
+          iconData: Icons.credit_card, bottomText: ''),
       HomeScreenContent(
           SettingsScreen(), SettingsScreen.routeName, t('setting'),
           iconData: Icons.settings, bottomText: ''),
