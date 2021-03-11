@@ -98,7 +98,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       );
     }
     if (event is ValidAddress) {
-      Log.debug("ValidAddress address: ${event.address}");
       bool verifiedAddress = await _repo.verifyAddress(event.address, false);
       List<bool> _rules = [verifiedAddress, _state.rules[1]];
       Log.debug(_rules);
@@ -115,6 +114,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       Decimal gasPrice;
       Decimal gasLimit;
       Decimal amount;
+      String feeToFiat;
+      String message;
+
       amount = Decimal.tryParse(event.amount);
       if (_state.rules[0] && amount != null) {
         // TODO TEST
@@ -129,17 +131,25 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           gasLimit = null;
           gasPrice = null;
           rule2 = _repo.verifyAmount(amount, fee: fee);
-        } else if (result.length == 2) {
+        } else {
           _gasPrice = result[0];
           gasPrice = result[0][TransactionPriority.standard];
           gasLimit = result[1];
-          fee = gasPrice * gasLimit;
-          rule2 = _repo.verifyAmount(amount, fee: fee);
+          try {
+            message = result[2];
+          } catch (e) {}
+          if (gasLimit != null) {
+            fee = gasPrice * gasLimit;
+            rule2 = _repo.verifyAmount(amount, fee: fee);
+          } else {
+            rule2 = false;
+          }
         }
         rules = [_state.rules[0], rule2];
         Log.debug(rules);
-        String feeToFiat =
-            _traderRepo.calculateFeeToFiat(_repo.currency, fee).toString();
+        if (gasLimit != null)
+          feeToFiat =
+              _traderRepo.calculateFeeToFiat(_repo.currency, fee).toString();
         yield _state.copyWith(
           amount: amount,
           rules: rules,
@@ -147,6 +157,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           feeToFiat: feeToFiat,
           gasLimit: gasLimit,
           gasPrice: gasPrice,
+          message: message,
         );
       } else {
         yield _state.copyWith(
@@ -160,6 +171,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       Decimal fee;
       Decimal gasPrice;
       Decimal gasLimit;
+      String message;
       if (_state.rules[0] && _state.rules[1]) {
         result = await _repo.getTransactionFee(
             amount: _state.amount, address: _state.address);
@@ -170,12 +182,16 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           gasPrice = null;
           fee = _gasPrice[event.priority];
           rule2 = _repo.verifyAmount(_state.amount, fee: fee);
-        } else if (result.length == 2) {
+        } else {
           _gasPrice = result[0];
           gasPrice = result[0][event.priority];
           gasLimit = result[1];
           fee = gasPrice * gasLimit;
           rule2 = _repo.verifyAmount(_state.amount, fee: fee);
+          try {
+            message = result[2];
+            Log.debug('getTransactionFee message: $message');
+          } catch (e) {}
         }
         String feeToFiat =
             _traderRepo.calculateFeeToFiat(_repo.currency, fee).toString();
@@ -185,6 +201,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             feeToFiat: feeToFiat,
             gasLimit: gasLimit,
             gasPrice: gasPrice,
+            message: message,
             rules: [_state.rules[0], rule2]);
       }
     }
@@ -232,7 +249,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             event.password, _state.address, _state.amount,
             fee: _state.fee,
             gasPrice: _state.gasPrice,
-            gasLimit: _state.gasLimit);
+            gasLimit: _state.gasLimit,
+            message: _state.message);
         Log.debug('PublishTransaction result: $result'); //--
 
         bool success = await _repo.publishTransaction(result[0], result[1]);

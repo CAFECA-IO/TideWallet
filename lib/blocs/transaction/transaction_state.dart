@@ -24,6 +24,7 @@ class TransactionInitial extends TransactionState {
   final String estimatedTime;
   final List<bool> rules;
   final TransactionFormError error;
+  final String message;
 
   static const defaultValid = [false, false];
 
@@ -38,7 +39,8 @@ class TransactionInitial extends TransactionState {
       this.feeToFiat = "",
       this.estimatedTime = "10~30",
       this.rules = defaultValid,
-      this.error});
+      this.error,
+      this.message});
 
   TransactionState copyWith({
     String address,
@@ -52,20 +54,21 @@ class TransactionInitial extends TransactionState {
     String estimatedTime,
     List<bool> rules,
     TransactionFormError error,
+    String message,
   }) {
     return TransactionInitial(
-      address: address ?? this.address,
-      amount: amount ?? this.amount,
-      spandable: spandable ?? this.spandable,
-      priority: priority ?? this.priority,
-      gasLimit: gasLimit ?? this.gasLimit,
-      gasPrice: gasPrice ?? this.gasPrice,
-      fee: fee ?? this.fee,
-      feeToFiat: feeToFiat ?? this.feeToFiat,
-      estimatedTime: estimatedTime ?? this.estimatedTime,
-      rules: rules ?? this.rules,
-      error: error,
-    );
+        address: address ?? this.address,
+        amount: amount ?? this.amount,
+        spandable: spandable ?? this.spandable,
+        priority: priority ?? this.priority,
+        gasLimit: gasLimit ?? this.gasLimit,
+        gasPrice: gasPrice ?? this.gasPrice,
+        fee: fee ?? this.fee,
+        feeToFiat: feeToFiat ?? this.feeToFiat,
+        estimatedTime: estimatedTime ?? this.estimatedTime,
+        rules: rules ?? this.rules,
+        error: error,
+        message: message);
   }
 
   @override
@@ -80,7 +83,8 @@ class TransactionInitial extends TransactionState {
         feeToFiat,
         estimatedTime,
         rules,
-        error
+        error,
+        message
       ];
 }
 

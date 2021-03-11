@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../blocs/account/account_bloc.dart';
+import '../blocs/account_currency/account_currency_bloc.dart';
 import '../blocs/fiat/fiat_bloc.dart';
 import '../helpers/formatter.dart';
 
 class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AccountBloc, AccountState>(builder: (ctx, state) {
+    return BlocBuilder<AccountCurrencyBloc, AccountCurrencyState>(
+        builder: (ctx, state) {
       return BlocBuilder<FiatBloc, FiatState>(builder: (context, fiatState) {
         FiatLoaded _state;
         bool fiatReady = false;

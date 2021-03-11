@@ -28,7 +28,7 @@ class AccountItem extends StatelessWidget {
             ),
             SizedBox(height: 4.0),
             Text(_account.symbol),
-            Text(_account.amount),
+            Text(Formatter.formatDecimal(_account.amount)),
             Text(
                 fiat != null
                     ? '≈ ${Formatter.formatDecimal((Decimal.tryParse(_account.inUSD) / fiat.exchangeRate).toString(), decimalLength: 2)} ${fiat.name}'

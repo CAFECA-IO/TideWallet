@@ -113,8 +113,9 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
                         ? Positioned(
                             child: InkWell(
                               onTap: () {
-                                Navigator.of(context)
-                                    .pushNamed(AddCurrencyScreen.routeName, arguments: {"account": this._parent});
+                                Navigator.of(context).pushNamed(
+                                    AddCurrencyScreen.routeName,
+                                    arguments: {"account": this._parent});
                               },
                               child: Container(
                                 child: Text(

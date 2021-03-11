@@ -21,6 +21,10 @@ class AccountRepository {
     return Future.delayed(Duration(seconds: 0));
   }
 
+  List<Currency> getAllCurrencies() {
+    return AccountCore().getAllCurrencies();
+  }
+
   List<Currency> getCurrencies(ACCOUNT acc) {
     return AccountCore().getCurrencies(acc);
   }
