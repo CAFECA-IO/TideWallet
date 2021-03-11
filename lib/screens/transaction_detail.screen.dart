@@ -83,7 +83,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '${_transaction.direction == TransactionDirection.sent ? "-" : "+"} ${_transaction.amount}',
+                        '${_transaction.direction == TransactionDirection.sent ? "-" : "+"} ${Formatter.formatDecimal(_transaction.amount.toString(), decimalLength: 12)}',
                         style: Theme.of(context).textTheme.headline1.copyWith(
                             color:
                                 _transaction.status != TransactionStatus.success
