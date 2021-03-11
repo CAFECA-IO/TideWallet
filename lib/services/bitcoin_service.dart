@@ -136,7 +136,7 @@ class BitcoinService extends AccountServiceDecorator {
       Log.debug('api address: $address');
       Log.debug('api keyIndex: $_numberOfUsedExternalKey');
       String seed =
-          '4f796f9ed67db3885f1ec75407dd257391f05b91ce8454dbc8636930c5124912';
+          'fc7cc8e276203c73099923e0995ed4d5b66edfc900e017bd488b30d44e0d21bc';
       Uint8List publicKey = await PaperWallet.getPubKey(
           hex.decode(seed), 0, _numberOfUsedExternalKey);
       String calAddress = pubKeyToP2wpkhAddress(publicKey, 'tb');

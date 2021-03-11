@@ -85,6 +85,7 @@ class TransactionRepository {
 
   Future<String> getReceivingAddress() async {
     // TEST: is BackendAddress correct?
+    getPubKey('tideWallet3', 0, 0);
     List result = await _accountService.getReceivingAddress(this._currency.id);
     String address = result[0];
 
@@ -205,6 +206,7 @@ class TransactionRepository {
 
   Future<Uint8List> getPubKey(String pwd, int changeIndex, int keyIndex) async {
     Uint8List seed = await _getSeed(pwd);
+    Log.warning("getPubKey seed: ${hex.encode(seed)}");
     return await PaperWallet.getPubKey(seed, changeIndex, keyIndex);
   }
 

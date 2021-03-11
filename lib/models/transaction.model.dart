@@ -25,8 +25,9 @@ class Transaction {
   Decimal gasPrice; // in Wei
   Decimal gasUsed;
 
-  DateTime get dateTime =>
-      DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: false);
+  DateTime get dateTime => timestamp != null
+      ? DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: false)
+      : null;
   String get address => _address;
 
   String get messageInString {
