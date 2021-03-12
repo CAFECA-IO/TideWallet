@@ -129,12 +129,12 @@ class AccountCore {
       networks = l.map((chain) => NetworkEntity.fromJson(chain)).toList();
 
       await DBOperator().networkDao.insertNetworks(networks);
-
-      if (publish)
-        networks.removeWhere((NetworkEntity n) => !n.publish);
-      else
-        networks.removeWhere((NetworkEntity n) => n.publish);
     }
+
+    if (publish)
+      networks.removeWhere((NetworkEntity n) => !n.publish);
+    else
+      networks.removeWhere((NetworkEntity n) => n.publish);
 
     return networks;
   }
