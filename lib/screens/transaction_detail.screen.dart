@@ -1,4 +1,3 @@
-import 'package:floor/floor.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,6 +12,7 @@ import '../models/account.model.dart';
 import '../models/transaction.model.dart';
 import '../widgets/appBar.dart';
 import '../widgets/dash_line_divider.dart';
+import '../widgets/copy_tool_tip.dart';
 import '../repositories/transaction_repository.dart';
 import '../repositories/trader_repository.dart';
 
@@ -166,15 +166,18 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                     ),
                     alignment: Alignment.centerLeft,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Align(
-                      child: Text(
-                        _transaction.address,
-                        style: Theme.of(context).textTheme.bodyText1,
+                  CopyToolTip(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Align(
+                        child: Text(
+                          _transaction.address,
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+                        alignment: Alignment.centerLeft,
                       ),
-                      alignment: Alignment.centerLeft,
                     ),
+                    text: _transaction.address,
                   ),
                   SizedBox(height: 24),
                   Align(

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../blocs/backup/backup_bloc.dart';
+
+import '../screens/landing.screen.dart';
 import '../screens/update_password.screen.dart';
 import '../screens/feedback.screen.dart';
 import '../screens/terms.screen.dart';
@@ -98,17 +100,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-          child: Column(
-        children: [
-          Header(),
-          ListView(
+    return Column(
+      children: [
+        Header(),
+        Expanded(
+          child: ListView(
             padding: const EdgeInsets.all(0),
             shrinkWrap: true,
             children: [
               _section(t('setting_security'), [
                 _item(t('setting_reset_password'), () {
-                  Navigator.of(context).pushNamed(UpdatePasswordScreen.routeName);
+                  Navigator.of(context)
+                      .pushNamed(UpdatePasswordScreen.routeName);
                 }),
                 BackupSetting(
                   _item(
@@ -138,12 +141,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 }),
                 _item(t('setting_term'), () {
                   Navigator.of(context).pushNamed(TermsScreen.routeName);
+                }),
+              ]),
+              _section(t('developer_option'), [
+                _item(t('debug_mode'), () {
+                  Navigator.of(context).pushNamed(LandingScreen.routeName,
+                      arguments: {"debugMode": true});
                 })
-              ])
+              ]),
             ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

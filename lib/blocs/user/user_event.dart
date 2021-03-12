@@ -7,7 +7,11 @@ abstract class UserEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class UserCheck extends UserEvent {}
+class UserCheck extends UserEvent {
+  final bool debugMode;
+
+  UserCheck({this.debugMode});
+}
 
 class UserCreate extends UserEvent {
   final String password;

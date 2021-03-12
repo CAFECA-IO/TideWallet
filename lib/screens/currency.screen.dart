@@ -37,7 +37,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
 
     this._parent = arg['account'];
     _bloc = CurrencyBloc(_repo, _traderRepo)
-      ..add(GetCurrencyList(this._parent.accountType));
+      ..add(GetCurrencyList(this._parent.accountId));
     super.didChangeDependencies();
   }
 

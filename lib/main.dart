@@ -148,6 +148,7 @@ MaterialApp _material = MaterialApp(
   theme: myThemeData,
   routes: {
     '/': (context) => LandingScreen(),
+    LandingScreen.routeName: (context) => LandingScreen(),
     CreateTransactionScreen.routeName: (context) => CreateTransactionScreen(),
     TransactionPreviewScreen.routeName: (context) => TransactionPreviewScreen(),
     RestoreWalletScreen.routeName: (context) => RestoreWalletScreen(),

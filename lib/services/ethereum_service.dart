@@ -144,11 +144,11 @@ class EthereumService extends AccountServiceDecorator {
 
         AccountMessage msg =
             AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: cs[0]);
-        AccountCore().currencies[this.base] = cs;
+        AccountCore().currencies[this.service.accountId] = cs;
 
         AccountMessage currMsg = AccountMessage(
             evt: ACCOUNT_EVT.OnUpdateCurrency,
-            value: AccountCore().currencies[this.base]);
+            value: AccountCore().currencies[this.service.accountId]);
 
         AccountCore().messenger.add(msg);
         AccountCore().messenger.add(currMsg);
