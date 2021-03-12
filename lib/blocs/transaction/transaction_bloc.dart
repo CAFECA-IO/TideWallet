@@ -253,7 +253,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             message: _state.message);
         Log.debug('PublishTransaction result: $result'); //--
 
-        bool success = await _repo.publishTransaction(result[0], result[1]);
+        final publishResult = await _repo.publishTransaction(result[0], result[1]);
+        bool success = publishResult[0];
         Log.warning('PublishTransaction success: $success'); //--
         if (success)
           yield TransactionSent();
