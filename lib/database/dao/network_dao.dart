@@ -7,6 +7,6 @@ abstract class NetworkDao {
   @Query('SELECT * FROM Network')
   Future<List<NetworkEntity>> findAllNetworks();
 
-  @insert
+  @Insert(onConflict: OnConflictStrategy.replace)
   Future<List<int>> insertNetworks(List<NetworkEntity> networks);
 }

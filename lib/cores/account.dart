@@ -68,6 +68,10 @@ class AccountCore {
             svc = EthereumService(AccountServiceBase());
             account = ACCOUNT.ETH;
             break;
+          case 3324:
+            svc = EthereumService(AccountServiceBase());
+            account = ACCOUNT.CFC;
+            break;
           default:
         }
 
@@ -124,15 +128,16 @@ class AccountCore {
     if (networks.isEmpty) {
       APIResponse res = await HTTPAgent().get(Endpoint.SUSANOO + '/blockchain');
       List l = res.data;
-      networks = l.map((chain) => NetworkEntity.fromJson(chain)).toList();
 
-      if (publish)
-        networks.removeWhere((NetworkEntity n) => !n.publish);
-      else
-        networks.removeWhere((NetworkEntity n) => n.publish);
+      networks = l.map((chain) => NetworkEntity.fromJson(chain)).toList();
 
       await DBOperator().networkDao.insertNetworks(networks);
     }
+
+    if (publish)
+      networks.removeWhere((NetworkEntity n) => !n.publish);
+    else
+      networks.removeWhere((NetworkEntity n) => n.publish);
 
     return networks;
   }
