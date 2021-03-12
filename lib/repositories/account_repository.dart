@@ -13,9 +13,9 @@ class AccountRepository {
     AccountCore().setMessenger();
   }
 
-  Future coreInit() {
-    if (!AccountCore().isInit) {
-      return AccountCore().init();
+  Future coreInit({bool debugMode = false}) {
+    if (!AccountCore().isInit || debugMode) {
+      return AccountCore().init(debugMode: debugMode);
     }
 
     return Future.delayed(Duration(seconds: 0));

@@ -22,6 +22,7 @@ class AccountCore {
   List<AccountService> _services = [];
   List<Currency> accounts = [];
   Map<String, List<Currency>> _currencies = {};
+  bool debugMode = false;
 
   Map<String, List<Currency>> get currencies {
     Log.warning('AccountCore currencies $_currencies');
@@ -44,22 +45,27 @@ class AccountCore {
     messenger = PublishSubject<AccountMessage>();
   }
 
-  init() async {
+  init({bool debugMode}) async {
     //
+    debugMode = debugMode;
     _isInit = true;
-    await _initAccounts();
+    await _initAccounts(debugMode: debugMode);
   }
 
-  _initAccounts() async {
-    final chains =
-        await this.getNetworks(publish: USE_NETWORK == NETWORK.MAINNET);
+  _initAccounts({bool debugMode}) async {
+    final chains = await this.getNetworks(
+        publish: USE_NETWORK == NETWORK.MAINNET, debugMode: debugMode);
+    Log.debug('AccountCore _initAccounts chains[${chains.length}]: $chains');
     final accounts = await this.getAccounts();
+    Log.debug(
+        'AccountCore _initAccounts accounts[${accounts.length}]: $accounts');
+
     await this.getSupportedCurrencies();
 
     for (var i = 0; i < accounts.length; i++) {
       int blockIndex = chains
           .indexWhere((chain) => chain.networkId == accounts[i].networkId);
-
+      Log.debug('AccountCore _initAccounts accounts[${i}]: $blockIndex');
       if (blockIndex > -1) {
         AccountService svc;
         ACCOUNT account;
@@ -89,6 +95,8 @@ class AccountCore {
           await svc.start();
         }
       }
+      Log.debug(
+          'AccountCore _initAccounts this._currencies[${this._currencies.length}]: ${this._services.length}');
     }
 
     Future.wait(
@@ -124,7 +132,8 @@ class AccountCore {
     return _services.firstWhere((svc) => (svc.base == type));
   }
 
-  Future<List<NetworkEntity>> getNetworks({publish = true}) async {
+  Future<List<NetworkEntity>> getNetworks(
+      {bool publish = true, bool debugMode}) async {
     List<NetworkEntity> networks =
         await DBOperator().networkDao.findAllNetworks();
 
@@ -137,10 +146,11 @@ class AccountCore {
       await DBOperator().networkDao.insertNetworks(networks);
     }
 
+    if (debugMode) return networks;
+
     if (publish)
       networks.removeWhere((NetworkEntity n) => !n.publish);
-    else
-      networks.removeWhere((NetworkEntity n) => n.publish);
+    else if (!publish) networks.removeWhere((NetworkEntity n) => n.publish);
 
     return networks;
   }

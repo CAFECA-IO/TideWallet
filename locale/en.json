@@ -154,5 +154,7 @@
   "error_reset": "重設錢包錯誤",
   "success_reset": "成功重設錢包",
   "support_token_type": "Support Erc20 Token",
-  "copy": "copy"
+  "copy": "copy",
+  "debug_mode": "Debug mode",
+  "developer_option": "Developer option"
 }
