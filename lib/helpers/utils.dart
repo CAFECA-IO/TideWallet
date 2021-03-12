@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:convert/convert.dart';
+import 'package:decimal/decimal.dart';
 
 String randomHex(int length) {
   const array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f'];
@@ -134,3 +135,7 @@ bool isHash160bit(Uint8List value) {
 bool isHash256bit(Uint8List value) {
   return value.length == 32;
 }
+
+
+Decimal hexStringToDecimal(String str) =>
+      Decimal.fromInt(int.tryParse(str.replaceAll('0x', ''), radix: 16));

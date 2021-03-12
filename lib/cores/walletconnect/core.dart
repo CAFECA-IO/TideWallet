@@ -139,7 +139,7 @@ class Connector {
   // connect() {
   //   if (this.connected) {
 
-  //   } 
+  //   }
   //   this.createSession();
   // }
 
@@ -191,10 +191,9 @@ class Connector {
     this._sendResponse(approve.toString(), this.peerId);
   }
 
-   rejectRequest(WCReject reject) {
-
-      this._sendResponse(reject.toString(), this.peerId);
-    }
+  rejectRequest(WCReject reject) {
+    this._sendResponse(reject.toString(), this.peerId);
+  }
 
   _initTransport() {
     this._transport.events.listen((event) {
@@ -227,7 +226,8 @@ class Connector {
       this.peerId = req.params[0]['peerId'];
       this.peerMeta = PeerMeta.fromJson(req.params[0]['peerMeta']);
 
-      this._eventManager.trigger('session_request', value: req.copyWith(method: 'session_request'));
+      this._eventManager.trigger('session_request',
+          value: req.copyWith(method: 'session_request'));
     });
 
     this.onEvt('wc_sessionUpdate', (WCRequest req) {
@@ -237,8 +237,8 @@ class Connector {
     });
   }
 
-    _sendResponse(String msg, String topic) {
-      Log.warning('Send ===> $msg');
+  _sendResponse(String msg, String topic) {
+    Log.warning('Send ===> $msg');
     final iv = Crypto.genIV();
     final data = Crypto.encrypt(msg, this._key, iv);
     final hmac = Crypto.hmac(data + iv, this._key);

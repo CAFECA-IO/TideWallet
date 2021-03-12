@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:tidewallet3/widgets/buttons/primary_button.dart';
-import 'package:tidewallet3/widgets/buttons/secondary_button.dart';
+
+import '../buttons/primary_button.dart';
+import '../buttons/secondary_button.dart';
 
 class PersonalSign extends StatelessWidget {
   final Function submit;

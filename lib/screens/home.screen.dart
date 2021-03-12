@@ -118,16 +118,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         // backgroundColor: MyColors.ui_01,
         onPressed: () async {
           Navigator.of(context).pushNamed(WalletConnectScreen.routeName);
-          //  showModalBottomSheet(
-          //         isScrollControlled: true,
-          //         shape: bottomSheetShape,
-          //         context: context,
-          //         builder: (context) => Container(
-          //           padding:
-          //               EdgeInsets.symmetric(vertical: 22.0, horizontal: 16.0),
-          //           child: WalletConnectScreen(),
-          //         ),
-          //       );
         },
         child: Icon(
           Icons.center_focus_weak,

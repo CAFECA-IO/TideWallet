@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../../models/account.model.dart';
 import '../../repositories/trader_repository.dart';
+import '../../helpers/utils.dart';
 import '../../blocs/fiat/fiat_bloc.dart';
 import '../../helpers/formatter.dart';
 import '../../widgets/buttons/primary_button.dart';
@@ -36,8 +37,7 @@ class _SignTransactionState extends State<SignTransaction> {
   FiatBloc _fiatBloc;
   TraderRepository _traderRepo;
 
-  Decimal parseNum(String str) =>
-      Decimal.fromInt(int.tryParse(str.replaceAll('0x', ''), radix: 16));
+  
   @override
   void didChangeDependencies() {
     _fiatBloc = BlocProvider.of<FiatBloc>(context);
@@ -48,14 +48,14 @@ class _SignTransactionState extends State<SignTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    Decimal amount = parseNum(widget.param['value']);
-    Decimal fee = parseNum(widget.param['gasPrice']) *
-        parseNum(widget.param['gas']) /
+    Decimal amount = hexStringToDecimal(widget.param['value']);
+    Decimal fee = hexStringToDecimal(widget.param['gasPrice']) *
+        hexStringToDecimal(widget.param['gas']) /
         Decimal.fromInt(pow(10, 18));
     Decimal amountInFiat =
         _traderRepo.calculateFeeToFiat(widget.currency, amount);
     Decimal feeInFiat = _traderRepo.calculateFeeToFiat(widget.currency, fee);
-    bool able = (Decimal.tryParse(widget.currency.amount) - amount - fee) >
+    bool able = (Decimal.tryParse(widget.currency.amount) - amount - fee) <
         Decimal.zero;
 
     return BlocBuilder<FiatBloc, FiatState>(
@@ -133,7 +133,7 @@ class _SignTransactionState extends State<SignTransaction> {
                       ),
                       Spacer(),
                       Text(' $fee ETH'),
-                      Text('(\$ $feeInFiat $fiat)')
+                      Text('(\$ ${Formatter.formatDecimal(feeInFiat.toString())} $fiat)')
                     ],
                   ),
                 ),

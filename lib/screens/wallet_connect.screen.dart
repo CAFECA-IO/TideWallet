@@ -1,11 +1,9 @@
 import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:tidewallet3/widgets/walletconnect/personal_sign.dart';
 import 'package:convert/convert.dart';
+
 import '../repositories/account_repository.dart';
 import '../repositories/transaction_repository.dart';
 import '../repositories/user_repository.dart';
@@ -14,6 +12,7 @@ import '../blocs/walletconnect/walletconnect_bloc.dart';
 import '../helpers/i18n.dart';
 import '../helpers/formatter.dart';
 import '../theme.dart';
+import '../widgets/walletconnect/personal_sign.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/error_dialog.dart';
 import '../widgets/dialogs/verify_password_dialog.dart';
