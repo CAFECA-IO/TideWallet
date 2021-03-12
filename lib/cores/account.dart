@@ -26,13 +26,14 @@ class AccountCore {
 
   Map<String, List<Currency>> get currencies {
     Log.debug('AccountCore currencies [${_currencies.length}]');
+    Log.debug('AccountCore _services [${_services.length}]');
     this
         ._currencies
         .values
         .reduce((value, element) => value + element)
         .forEach((currency) {
-      Log.debug('AccountCore currency network ${currency.network}');
-      Log.debug('AccountCore currency publish ${currency.publish}');
+      Log.debug(
+          'AccountCore currency network[${currency.publish}] ${currency.network}');
     });
     return _currencies;
   }
@@ -93,7 +94,7 @@ class AccountCore {
           default:
         }
 
-        if (svc != null) {
+        if (svc != null && this._currencies[accounts[i].accountId] == null) {
           this._currencies[accounts[i].accountId] = [];
 
           this._services.add(svc);
