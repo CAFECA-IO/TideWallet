@@ -41,13 +41,14 @@ class TransactionRepository {
 
   void setCurrency(Currency currency) {
     this._currency = currency;
-    _accountService = AccountCore().getService(this._currency.accountType);
+    _accountService = AccountCore().getService(this._currency.accountId);
     switch (this._currency.accountType) {
       case ACCOUNT.BTC:
         _transactionService =
             BitcoinTransactionService(TransactionServiceBased());
         break;
       case ACCOUNT.ETH:
+      case ACCOUNT.CFC:
         _transactionService =
             EthereumTransactionService(TransactionServiceBased());
         break;
@@ -129,6 +130,7 @@ class TransactionRepository {
         return [fee];
         break;
       case ACCOUNT.ETH:
+      case ACCOUNT.CFC:
         if (this._address == null) {
           _address =
               (await _accountService.getChangingAddress(_currency.id))[0];
@@ -272,6 +274,7 @@ class TransactionRepository {
         ]; // [Transaction, String(balance)]
         break;
       case ACCOUNT.ETH:
+      case ACCOUNT.CFC:
         int nonce = await _accountService.getNonce(
             this._currency.blockchainId, this._address);
 
@@ -346,10 +349,11 @@ class TransactionRepository {
             this._currency.id, _curr, transaction, _amount, _fee);
         break;
       case ACCOUNT.ETH:
+      case ACCOUNT.CFC:
         _gasPrice = Converter.toCurrencyUnit(
                 transaction.gasPrice, this._currency.accountDecimals)
             .toString();
-        if (this._currency.symbol.toLowerCase() == 'eth') {
+        if (this._currency.type.toLowerCase() != 'token') {
           _updateCurrency(this._currency.id, balance.toString());
           _updateTransaction(
               this._currency.id, _curr, transaction, _amount, _fee,

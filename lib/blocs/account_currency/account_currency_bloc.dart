@@ -62,7 +62,7 @@ class AccountCurrencyBloc
       List<Currency> _list = state.currencies;
       event.currencies.forEach((newCurr) {
         int index = state.currencies
-            .indexWhere((oldCurr) => oldCurr.symbol == newCurr.symbol);
+            .indexWhere((oldCurr) => oldCurr.accountId == newCurr.accountId);
         if (index < 0)
           _list.add(newCurr);
         else
@@ -85,7 +85,7 @@ class AccountCurrencyBloc
       List<Currency> _accounts = [...state.currencies];
 
       _accounts.forEach((acc) {
-        _repo.getCurrencies(acc.accountType).forEach((currency) {
+        _repo.getCurrencies(acc.accountId).forEach((currency) {
           Decimal v = _traderRepo.calculateToUSD(currency);
           _total += v;
         });

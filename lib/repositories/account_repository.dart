@@ -13,9 +13,9 @@ class AccountRepository {
     AccountCore().setMessenger();
   }
 
-  Future coreInit() {
-    if (!AccountCore().isInit) {
-      return AccountCore().init();
+  Future coreInit({bool debugMode = false}) {
+    if (!AccountCore().isInit || debugMode) {
+      return AccountCore().init(debugMode: debugMode);
     }
 
     return Future.delayed(Duration(seconds: 0));
@@ -25,8 +25,8 @@ class AccountRepository {
     return AccountCore().getAllCurrencies();
   }
 
-  List<Currency> getCurrencies(ACCOUNT acc) {
-    return AccountCore().getCurrencies(acc);
+  List<Currency> getCurrencies(String accountId) {
+    return AccountCore().getCurrencies(accountId);
   }
 
   bool validateETHAddress(String address) {
@@ -38,9 +38,10 @@ class AccountRepository {
   }
 
   Future<bool> addToken(String bkid, Token token) async {
-    EthereumService _ethService = AccountCore().getService(ACCOUNT.ETH);
+    //TODO
+    // EthereumService _ethService = AccountCore().getService(ACCOUNT.ETH);
 
-    return _ethService.addToken(bkid, token);
+    // return _ethService.addToken(bkid, token);
   }
 
   close() {

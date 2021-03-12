@@ -22,7 +22,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       bool existed = await _repo.checkUser();
 
       if (existed) {
-        await _accountRepo.coreInit();
+        if (event.debugMode ?? false) yield UserInitial();
+        await _accountRepo.coreInit(debugMode: event.debugMode ?? false);
         await Future.delayed(Duration(milliseconds: 100));
 
         yield UserSuccess();
