@@ -38,9 +38,10 @@ class AccountRepository {
   }
 
   Future<bool> addToken(String bkid, Token token) async {
-    EthereumService _ethService = AccountCore().getService(ACCOUNT.ETH);
+    //TODO
+    // EthereumService _ethService = AccountCore().getService(ACCOUNT.ETH);
 
-    return _ethService.addToken(bkid, token);
+    // return _ethService.addToken(bkid, token);
   }
 
   close() {

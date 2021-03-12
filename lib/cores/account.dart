@@ -133,8 +133,8 @@ class AccountCore {
     await DBOperator().accountDao.insertAccount(account);
   }
 
-  AccountService getService(ACCOUNT type) {
-    return _services.firstWhere((svc) => (svc.base == type));
+  AccountService getService(String accountId) {
+    return _services.firstWhere((svc) => (svc.accountId == accountId));
   }
 
   Future<List<NetworkEntity>> getNetworks(

@@ -41,7 +41,7 @@ class TransactionRepository {
 
   void setCurrency(Currency currency) {
     this._currency = currency;
-    _accountService = AccountCore().getService(this._currency.accountType);
+    _accountService = AccountCore().getService(this._currency.accountId);
     switch (this._currency.accountType) {
       case ACCOUNT.BTC:
         _transactionService =
