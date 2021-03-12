@@ -65,9 +65,12 @@ class AccountCore {
             break;
           case 60:
           case 603:
-          case 3324:
             svc = EthereumService(AccountServiceBase());
             account = ACCOUNT.ETH;
+            break;
+          case 3324:
+            svc = EthereumService(AccountServiceBase());
+            account = ACCOUNT.CFC;
             break;
           default:
         }
