@@ -55,7 +55,7 @@ class _SignTransactionState extends State<SignTransaction> {
     Decimal amountInFiat =
         _traderRepo.calculateFeeToFiat(widget.currency, amount);
     Decimal feeInFiat = _traderRepo.calculateFeeToFiat(widget.currency, fee);
-    bool able = (Decimal.tryParse(widget.currency.amount) - amount - fee) <
+    bool able = (Decimal.tryParse(widget.currency.amount) - amount - fee) >
         Decimal.zero;
 
     return BlocBuilder<FiatBloc, FiatState>(

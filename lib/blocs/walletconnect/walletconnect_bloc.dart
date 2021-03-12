@@ -108,11 +108,10 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
     }
 
     if (state is WalletConnectLoaded) {
-
       WalletConnectLoaded _state = state;
 
       if (event is RequestWC) {
-        yield _state.copWith(
+        yield _state.copyWith(
           status: WC_STATUS.WAITING,
           peer: _connector.peerMeta,
           accounts: _connector.accounts,
@@ -124,29 +123,27 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
       }
 
       if (event is ConnectWC) {
-        yield _state.copWith(status: WC_STATUS.CONNECTED);
+        yield _state.copyWith(status: WC_STATUS.CONNECTED);
       }
 
       if (event is ReceiveWCEvent) {
         if (_state.currentEvent == null) {
-          yield _state.copWith(currentEvent: event.request);
+          yield _state.copyWith(currentEvent: event.request);
         }
       }
 
       if (event is CancelRequest) {
         _connector.rejectRequest(WCReject.fromRequest(event.request));
-        yield _state.copWith(currentEvent: null);
+        yield _state.copyWith(currentEvent: null);
       }
       if (event is ApproveRequest) {
         String reuslt;
+        yield _state.copyWith(loading: true);
 
         switch (event.request.method) {
           case 'eth_sendTransaction':
-            // TODO:
-            // final key = await _txRepo.getPrivKey(event.password, 0, 0);
             final param = event.request.params[0];
-            print(_txRepo);
-            print('000000000 ${param}');
+
             Decimal amount = hexStringToDecimal(param['value']);
             Decimal gasPrice = hexStringToDecimal(param['gasPrice']);
             Decimal gasLimit = hexStringToDecimal(param['gas']);
@@ -156,10 +153,16 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
               param['to'],
               amount,
               fee: gasPrice * gasLimit,
+              gasPrice: gasPrice,
+              gasLimit: gasLimit,
               message: param['data'],
             );
 
-            reuslt = txRes[0].txid;
+            List publishRes =
+                await _txRepo.publishTransaction(txRes[0], txRes[1]);
+            if (publishRes[0] == true) {
+              reuslt = publishRes[1].txId;
+            }
 
             break;
           case 'personal_sign':
@@ -168,7 +171,6 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
             reuslt =
                 '0x1e6bf8af9b345731be3d89f46f344bac0819d4c40cf419546ffc62f59bc86d251821db81350c5f5a5e0773969840c5b097e0d6cd0eeb7c6ae68d3ebaac1290531c';
             break;
-
 
           case 'eth_signTypedData':
             // TODO:
@@ -180,16 +182,22 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
             throw (ERROR_MISSING.METHOD);
         }
 
-        _connector
-            .approveRequest(WCApprove.fromRequest(event.request, result: reuslt));
-        yield _state.copWith(currentEvent: null);
+        if (reuslt == null) {
+          _connector.rejectRequest(WCReject.fromRequest(event.request));
+
+          yield _state.copyWith(currentEvent: null, error: WC_ERROR.SEND_TX);
+        } else {
+          _connector.approveRequest(
+              WCApprove.fromRequest(event.request, result: reuslt));
+          yield _state.copyWith(currentEvent: null);
+        }
       }
 
       if (event is DisconnectWC) {
         if (_connector.connected == true) {
           _connector.killSession();
         }
-        yield _state.copWith(status: WC_STATUS.UNCONNECTED);
+        yield _state.copyWith(status: WC_STATUS.UNCONNECTED);
       }
     }
   }

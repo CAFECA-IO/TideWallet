@@ -199,6 +199,11 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
               },
             );
           }
+
+          if (state.error == WC_ERROR.SEND_TX) {
+            print('!!!! ${state.error}');
+            DialogController.show(context, ErrorDialog('交易失敗'));
+          }
         }
       },
       cubit: _bloc,
@@ -251,6 +256,10 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                   'Loading...',
                   style: style,
                 ));
+              }
+
+              if (state.peer == null) {
+                return SizedBox();
               }
 
               return SingleChildScrollView(

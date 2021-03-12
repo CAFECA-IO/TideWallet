@@ -1,6 +1,6 @@
 part of 'walletconnect_bloc.dart';
 
-enum WC_ERROR { URI }
+enum WC_ERROR { URI, SEND_TX }
 
 enum WC_STATUS { CONNECTED, CONNECTING, WAITING, UNCONNECTED }
 
@@ -23,12 +23,22 @@ class WalletConnectLoaded extends WalletConnectState {
   // TODO
   final List<dynamic> records;
   final bool loading;
-  WalletConnectLoaded({this.status, this.peer, this.accounts, this.records, this.currentEvent, this.loading,});
+  final WC_ERROR error;
+
+  WalletConnectLoaded({
+    this.status,
+    this.peer,
+    this.accounts,
+    this.records,
+    this.currentEvent,
+    this.loading,
+    this.error,
+  });
 
   @override
-  List<Object> get props => [status, peer, accounts, records, currentEvent];
+  List<Object> get props => [status, peer, accounts, records, currentEvent, error];
 
-  WalletConnectLoaded copWith({
+  WalletConnectLoaded copyWith({
     WC_STATUS status,
     PeerMeta peer,
     List<String> peers,
@@ -36,15 +46,17 @@ class WalletConnectLoaded extends WalletConnectState {
     List<String> accounts,
     WCRequest currentEvent,
     bool loading,
+    WC_ERROR error,
   }) {
     return WalletConnectLoaded(
-      status: status ?? this.status,
-      peer: peer ?? this.peer,
-      accounts: accounts ?? this.accounts,
-      records: records ?? this.records,
-      currentEvent: currentEvent, //
-      loading: loading ?? false
-    );
+        status: status ?? this.status,
+        peer: peer ?? this.peer,
+        accounts: accounts ?? this.accounts,
+        records: records ?? this.records,
+        currentEvent: currentEvent, //
+        loading: loading ?? false,
+        error: error //
+        );
   }
 }
 
