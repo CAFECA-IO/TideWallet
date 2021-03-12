@@ -98,7 +98,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
 
           if (state.currentEvent != null) {
             Widget content;
-            bool isScrollControlled = false;
+            bool isScrollControlled = true;
             bool approved = false;
 
             submit() {
@@ -126,12 +126,10 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                     currency: _bloc.currency,
                     submit: submit,
                     cancel: cancel);
-                isScrollControlled = true;
                 break;
               case 'personal_sign':
                 final lst = hex
                     .decode(state.currentEvent.params[0].replaceAll('0x', ''));
-                isScrollControlled = true;
 
                 String msg;
                 try {
@@ -148,8 +146,6 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                 break;
 
               case 'eth_signTypedData':
-                isScrollControlled = true;
-
                 content = PersonalSign(
                   submit: submit,
                   cancel: cancel,
@@ -201,7 +197,6 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
           }
 
           if (state.error == WC_ERROR.SEND_TX) {
-            print('!!!! ${state.error}');
             DialogController.show(context, ErrorDialog('交易失敗'));
           }
         }

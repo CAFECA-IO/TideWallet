@@ -1,9 +1,12 @@
 import 'dart:async';
-
+import 'dart:typed_data';
+import 'package:convert/convert.dart';
 import 'package:bloc/bloc.dart';
 import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:tidewallet3/cores/signer.dart';
+import 'package:tidewallet3/helpers/cryptor.dart';
 import 'package:tidewallet3/helpers/utils.dart';
 
 import '../../helpers/logger.dart';
@@ -166,10 +169,17 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
 
             break;
           case 'personal_sign':
-            // TODO:
-            await Future.delayed(Duration(seconds: 1));
-            reuslt =
-                '0x1e6bf8af9b345731be3d89f46f344bac0819d4c40cf419546ffc62f59bc86d251821db81350c5f5a5e0773969840c5b097e0d6cd0eeb7c6ae68d3ebaac1290531c';
+            // TODO: Not Sure
+            final key = await _txRepo.getPrivKey(event.password, 0, 0);
+
+            // TODO: 
+            // final addressRequested = event.request.params[1];
+            final lst =
+                hex.decode(event.request.params[0].replaceAll('0x', ''));
+            final data =
+                Uint8List.fromList(Cryptor.keccak256round(lst, round: 1));
+            final signature = Signer().sign(data, key);
+            reuslt = '0x' + signature.r.toRadixString(16) + signature.s.toRadixString(16) + signature.v.toRadixString(16);
             break;
 
           case 'eth_signTypedData':
