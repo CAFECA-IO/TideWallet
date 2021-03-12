@@ -48,6 +48,7 @@ class TransactionRepository {
             BitcoinTransactionService(TransactionServiceBased());
         break;
       case ACCOUNT.ETH:
+      case ACCOUNT.CFC:
         _transactionService =
             EthereumTransactionService(TransactionServiceBased());
         break;
@@ -129,6 +130,7 @@ class TransactionRepository {
         return [fee];
         break;
       case ACCOUNT.ETH:
+      case ACCOUNT.CFC:
         if (this._address == null) {
           _address =
               (await _accountService.getChangingAddress(_currency.id))[0];
@@ -272,6 +274,7 @@ class TransactionRepository {
         ]; // [Transaction, String(balance)]
         break;
       case ACCOUNT.ETH:
+      case ACCOUNT.CFC:
         int nonce = await _accountService.getNonce(
             this._currency.blockchainId, this._address);
 
@@ -346,6 +349,7 @@ class TransactionRepository {
             this._currency.id, _curr, transaction, _amount, _fee);
         break;
       case ACCOUNT.ETH:
+      case ACCOUNT.CFC:
         _gasPrice = Converter.toCurrencyUnit(
                 transaction.gasPrice, this._currency.accountDecimals)
             .toString();
