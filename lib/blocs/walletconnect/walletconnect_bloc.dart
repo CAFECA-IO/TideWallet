@@ -28,8 +28,9 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
 
   WalletConnectBloc(this._accountRepo, this._txRepo)
       : super(WalletConnectInitial()) {
-    final currencies = this._accountRepo.getCurrencies(_accountType);
-    _selected = currencies[0];
+    final currencies = this._accountRepo.getAllCurrencies();
+    _selected = currencies
+        .firstWhere((currency) => currency.blockchainId == '8000003C');
 
     this._txRepo.setCurrency(_selected);
   }
@@ -172,14 +173,17 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
             // TODO: Not Sure
             final key = await _txRepo.getPrivKey(event.password, 0, 0);
 
-            // TODO: 
+            // TODO:
             // final addressRequested = event.request.params[1];
             final lst =
                 hex.decode(event.request.params[0].replaceAll('0x', ''));
             final data =
                 Uint8List.fromList(Cryptor.keccak256round(lst, round: 1));
             final signature = Signer().sign(data, key);
-            reuslt = '0x' + signature.r.toRadixString(16) + signature.s.toRadixString(16) + signature.v.toRadixString(16);
+            reuslt = '0x' +
+                signature.r.toRadixString(16) +
+                signature.s.toRadixString(16) +
+                signature.v.toRadixString(16);
             break;
 
           case 'eth_signTypedData':
