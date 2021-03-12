@@ -3,12 +3,18 @@ import 'package:flutter/material.dart';
 
 import '../models/account.model.dart';
 import '../helpers/formatter.dart';
+import '../cores/account.dart';
 
 class AccountItem extends StatelessWidget {
   final Currency _account;
   final Function _onClick;
   final Fiat fiat;
-  AccountItem(this._account, this._onClick, {this.fiat});
+  Color _testnetColor;
+  AccountItem(this._account, this._onClick, {this.fiat}) {
+    if (AccountCore().debugMode) {
+      _testnetColor = Colors.black26;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,13 +33,26 @@ class AccountItem extends StatelessWidget {
               height: 26.0,
             ),
             SizedBox(height: 4.0),
-            Text(_account.symbol),
-            Text(Formatter.formatDecimal(_account.amount)),
+            Text(
+              _account.symbol,
+              style: TextStyle(
+                  color: !_account.publish
+                      ? _testnetColor ?? Colors.black
+                      : Colors.black),
+            ),
+            Text(Formatter.formatDecimal(_account.amount),
+                style: TextStyle(
+                    color: !_account.publish
+                        ? _testnetColor ?? Colors.black
+                        : Colors.black)),
             Text(
                 fiat != null
                     ? '≈ ${Formatter.formatDecimal((Decimal.tryParse(_account.inUSD) / fiat.exchangeRate).toString(), decimalLength: 2)} ${fiat.name}'
                     : '',
-                style: Theme.of(context).textTheme.subtitle2)
+                style: Theme.of(context).textTheme.subtitle2.copyWith(
+                    color: !_account.publish
+                        ? _testnetColor ?? Colors.black
+                        : Colors.black))
           ],
         ),
       ),

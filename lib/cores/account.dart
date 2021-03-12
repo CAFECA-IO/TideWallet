@@ -25,7 +25,15 @@ class AccountCore {
   bool debugMode = false;
 
   Map<String, List<Currency>> get currencies {
-    Log.warning('AccountCore currencies $_currencies');
+    Log.debug('AccountCore currencies [${_currencies.length}]');
+    this
+        ._currencies
+        .values
+        .reduce((value, element) => value + element)
+        .forEach((currency) {
+      Log.debug('AccountCore currency network ${currency.network}');
+      Log.debug('AccountCore currency publish ${currency.publish}');
+    });
     return _currencies;
   }
 
@@ -47,7 +55,7 @@ class AccountCore {
 
   init({bool debugMode}) async {
     //
-    debugMode = debugMode;
+    this.debugMode = debugMode;
     _isInit = true;
     await _initAccounts(debugMode: debugMode);
   }
@@ -55,17 +63,15 @@ class AccountCore {
   _initAccounts({bool debugMode}) async {
     final chains = await this.getNetworks(
         publish: USE_NETWORK == NETWORK.MAINNET, debugMode: debugMode);
-    Log.debug('AccountCore _initAccounts chains[${chains.length}]: $chains');
+
     final accounts = await this.getAccounts();
-    Log.debug(
-        'AccountCore _initAccounts accounts[${accounts.length}]: $accounts');
 
     await this.getSupportedCurrencies();
 
     for (var i = 0; i < accounts.length; i++) {
       int blockIndex = chains
           .indexWhere((chain) => chain.networkId == accounts[i].networkId);
-      Log.debug('AccountCore _initAccounts accounts[${i}]: $blockIndex');
+
       if (blockIndex > -1) {
         AccountService svc;
         ACCOUNT account;
@@ -95,8 +101,6 @@ class AccountCore {
           await svc.start();
         }
       }
-      Log.debug(
-          'AccountCore _initAccounts this._currencies[${this._currencies.length}]: ${this._services.length}');
     }
 
     Future.wait(
