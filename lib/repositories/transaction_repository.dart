@@ -353,7 +353,7 @@ class TransactionRepository {
         _gasPrice = Converter.toCurrencyUnit(
                 transaction.gasPrice, this._currency.accountDecimals)
             .toString();
-        if (this._currency.symbol.toLowerCase() == 'eth') {
+        if (this._currency.type.toLowerCase() != 'token') {
           _updateCurrency(this._currency.id, balance.toString());
           _updateTransaction(
               this._currency.id, _curr, transaction, _amount, _fee,
