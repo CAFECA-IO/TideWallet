@@ -41,7 +41,7 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
     CurrencyEvent event,
   ) async* {
     if (event is GetCurrencyList) {
-      List<Currency> list = _repo.getCurrencies(event.account);
+      List<Currency> list = _repo.getCurrencies(event.accountId);
       Decimal _total = Decimal.zero;
 
       list = list.map((curr) {
@@ -73,7 +73,7 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
     }
 
     if (event is CleanCurrencie) {
-       List<Currency> empty = [];
+      List<Currency> empty = [];
       yield CurrencyLoaded(empty, total: Decimal.zero);
     }
   }

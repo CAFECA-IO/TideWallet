@@ -13,6 +13,7 @@ import '../database/entity/network.dart';
 import '../database/db_operator.dart';
 import '../database/entity/currency.dart';
 import '../helpers/http_agent.dart';
+import '../helpers/logger.dart';
 
 class AccountCore {
   // ignore: close_sinks
@@ -20,7 +21,12 @@ class AccountCore {
   bool _isInit = false;
   List<AccountService> _services = [];
   List<Currency> accounts = [];
-  Map<ACCOUNT, List<Currency>> currencies = {};
+  Map<String, List<Currency>> _currencies = {};
+
+  Map<String, List<Currency>> get currencies {
+    Log.warning('AccountCore currencies $_currencies');
+    return _currencies;
+  }
 
   static final AccountCore _instance = AccountCore._internal();
   factory AccountCore() => _instance;
@@ -76,11 +82,8 @@ class AccountCore {
         }
 
         if (svc != null) {
-          this.currencies[account] = [];
+          this._currencies[accounts[i].accountId] = [];
 
-          // this.messenger.add(AccountMessage(
-          //     evt: ACCOUNT_EVT.OnUpdateAccount,
-          //     value: _currency));
           this._services.add(svc);
           svc.init(accounts[i].accountId, account);
           await svc.start();
@@ -104,7 +107,7 @@ class AccountCore {
     });
     this._services = [];
     this.accounts = [];
-    this.currencies = {};
+    this._currencies = {};
   }
 
   Future<bool> checkAccountExist() async {
@@ -196,8 +199,8 @@ class AccountCore {
   //   return await this._services.getReceivingAddress();
   // }
 
-  List<Currency> getCurrencies(ACCOUNT type) => this.currencies[type];
+  List<Currency> getCurrencies(String accountId) => this._currencies[accountId];
 
   List<Currency> getAllCurrencies() =>
-      this.currencies.values.reduce((currList, currs) => currList + currs);
+      this._currencies.values.reduce((currList, currs) => currList + currs);
 }

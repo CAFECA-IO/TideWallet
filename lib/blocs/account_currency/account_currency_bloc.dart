@@ -85,7 +85,7 @@ class AccountCurrencyBloc
       List<Currency> _accounts = [...state.currencies];
 
       _accounts.forEach((acc) {
-        _repo.getCurrencies(acc.accountType).forEach((currency) {
+        _repo.getCurrencies(acc.accountId).forEach((currency) {
           Decimal v = _traderRepo.calculateToUSD(currency);
           _total += v;
         });

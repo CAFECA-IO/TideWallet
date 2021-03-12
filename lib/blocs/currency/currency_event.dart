@@ -8,9 +8,9 @@ abstract class CurrencyEvent extends Equatable {
 }
 
 class GetCurrencyList extends CurrencyEvent {
-  final ACCOUNT account;
+  final String accountId;
 
-  GetCurrencyList(this.account);
+  GetCurrencyList(this.accountId);
 }
 
 class UpdateCurrencies extends CurrencyEvent {

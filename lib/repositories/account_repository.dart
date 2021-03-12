@@ -25,8 +25,8 @@ class AccountRepository {
     return AccountCore().getAllCurrencies();
   }
 
-  List<Currency> getCurrencies(ACCOUNT acc) {
-    return AccountCore().getCurrencies(acc);
+  List<Currency> getCurrencies(String accountId) {
+    return AccountCore().getCurrencies(accountId);
   }
 
   bool validateETHAddress(String address) {
