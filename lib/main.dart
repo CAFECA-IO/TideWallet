@@ -29,6 +29,7 @@ import './screens/setting_fiat.screen.dart';
 import './screens/feedback.screen.dart';
 import './screens/terms.screen.dart';
 import './screens/update_password.screen.dart';
+import './screens/add_investment.screen.dart';
 import './blocs/fiat/fiat_bloc.dart';
 import './blocs/account_currency/account_currency_bloc.dart';
 import './blocs/delegate.dart';
@@ -42,6 +43,7 @@ import './blocs/receive/receive_bloc.dart';
 import './blocs/invest/invest_bloc.dart';
 import './helpers/i18n.dart';
 import 'theme.dart';
+
 // class MyHttpOverrides extends HttpOverrides {
 //   @override
 //   HttpClient createHttpClient(SecurityContext context) {
@@ -162,6 +164,7 @@ MaterialApp _material = MaterialApp(
     TransactionDetailScreen.routeName: (context) => TransactionDetailScreen(),
     CurrencyScreen.routeName: (context) => CurrencyScreen(),
     AddCurrencyScreen.routeName: (context) => AddCurrencyScreen(),
+    AddInvestmentScreen.routeName: (context) => AddInvestmentScreen(),
     ReceiveScreen.routeName: (context) => ReceiveScreen(),
     SettingFiatScreen.routeName: (context) => SettingFiatScreen(),
     WalletConnectScreen.routeName: (context) => WalletConnectScreen(),

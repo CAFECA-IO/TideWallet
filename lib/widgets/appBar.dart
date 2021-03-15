@@ -13,6 +13,7 @@ import '../screens/transaction_detail.screen.dart';
 import '../screens/currency.screen.dart';
 import '../screens/settings.screen.dart';
 import '../screens/add_currency.screen.dart';
+import '../screens/add_investment.screen.dart';
 import '../screens/receive.screen.dart';
 import '../screens/setting_fiat.screen.dart';
 import '../screens/update_password.screen.dart';
@@ -52,6 +53,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
         case TransactionDetailScreen.routeName:
         case CurrencyScreen.routeName:
         case AddCurrencyScreen.routeName:
+        case AddInvestmentScreen.routeName:
         case ReceiveScreen.routeName:
         case SettingFiatScreen.routeName:
         case UpdatePasswordScreen.routeName:

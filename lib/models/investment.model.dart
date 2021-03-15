@@ -9,13 +9,13 @@ extension InvestStrategyExft on InvestStrategy {
   String get value {
     switch (this) {
       case InvestStrategy.Climb:
-        return 'climb';
+        return 'strategy_of_climb';
         break;
       case InvestStrategy.Decline:
-        return 'decline';
+        return 'strategy_of_decline';
         break;
       case InvestStrategy.Fluctuating:
-        return 'fluctuating';
+        return 'strategy_of_flutuating';
         break;
       default:
         return 'unknown';
@@ -28,13 +28,13 @@ extension InvestAmplitudeExt on InvestAmplitude {
   String get value {
     switch (this) {
       case InvestAmplitude.Low:
-        return 'low';
+        return 'low_amplitude';
         break;
       case InvestAmplitude.Normal:
-        return 'normal';
+        return 'high_amplitude';
         break;
       case InvestAmplitude.High:
-        return 'high';
+        return 'high_amplitude';
         break;
       default:
         return 'unknown';

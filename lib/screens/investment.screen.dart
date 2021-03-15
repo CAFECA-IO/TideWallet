@@ -52,7 +52,7 @@ class _InvestmentScreenState extends State<InvestmentScreen>
                   if (state is InvestInitial) {
                     return Expanded(
                       child: Center(
-                        child: Text('Loading...'),
+                        child: Text(t('no_investment_plan')),
                       ),
                     );
                   }
