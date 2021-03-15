@@ -40,19 +40,19 @@ class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
     if (state is InvestPlanStatus) {
       InvestPlanStatus _state = state;
       if (event is CurrencySelected) {
-        _state.copyWith(currency: event.currency);
+        yield _state.copyWith(currency: event.currency);
       }
       if (event is StrategySetected) {
-        _state.copyWith(strategy: event.strategy);
+        yield _state.copyWith(strategy: event.strategy);
       }
       if (event is AmplitudeSelected) {
-        _state.copyWith(amplitude: event.amplitude);
+        yield _state.copyWith(amplitude: event.amplitude);
       }
       if (event is PercentageSelected) {
         Decimal investAmount = Decimal.tryParse(_state.currency.amount) ??
             Decimal.zero * Decimal.tryParse(event.percentage) ??
             Decimal.zero / Decimal.fromInt(100);
-        _state.copyWith(investAmount: investAmount);
+        yield _state.copyWith(investAmount: investAmount);
       }
       if (event is CreateInvestPlan) {
         // TOOD

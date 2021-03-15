@@ -84,25 +84,14 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
                 ),
                 ItemPicker(
                   title: t('invest_account'),
-                  constraints: BoxConstraints(
-                      minWidth: MediaQuery.of(context).size.width / 2 - 24),
                   items: AccountCore().getAllCurrencies(),
                   selectedItem: state.currency,
-                  onTap: () {
-                    //   if (!currentFocus.hasPrimaryFocus) {
-                    //     currentFocus.unfocus();
-                    //   }
-                    //   setState(() {
-                    //     _language = t('select_language');
-                    //     _length = t('select_length');
-                    //   });
-                  },
+                  onTap: () {},
                   notifyParent: ({int index, dynamic value}) {
-                    // setState(() {
-                    //   _language = value;
-                    // });
+                    _bloc.add(CurrencySelected(value));
                   },
                 ),
+                SizedBox(height: 32),
                 Container(
                   child: Align(
                     child: Text(
@@ -114,25 +103,14 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
                 ),
                 ItemPicker(
                   title: t('invest_strategy'),
-                  constraints: BoxConstraints(
-                      minWidth: MediaQuery.of(context).size.width / 2 - 24),
                   items: InvestStrategy.values.map((e) => t(e.value)).toList(),
-                  selectedItem: t(InvestStrategy.values[0].value),
-                  onTap: () {
-                    //   if (!currentFocus.hasPrimaryFocus) {
-                    //     currentFocus.unfocus();
-                    //   }
-                    //   setState(() {
-                    //     _language = t('select_language');
-                    //     _length = t('select_length');
-                    //   });
-                  },
+                  selectedItem: t(state.strategy.value),
+                  onTap: () {},
                   notifyParent: ({int index, dynamic value}) {
-                    // setState(() {
-                    //   _language = value;
-                    // });
+                    _bloc.add(StrategySetected(InvestStrategy.values[index]));
                   },
                 ),
+                SizedBox(height: 32),
                 Container(
                   child: Align(
                     child: Text(
@@ -142,6 +120,32 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
                     alignment: Alignment.centerLeft,
                   ),
                 ),
+                SizedBox(height: 10),
+                RadioGroupButton(
+                  state.amplitude.index,
+                  InvestAmplitude.values
+                      .map(
+                        (amplitude) => [
+                          t(amplitude.value),
+                          () {
+                            _bloc.add(AmplitudeSelected(amplitude));
+                            Log.debug(amplitude);
+                          }
+                        ],
+                      )
+                      .toList(),
+                ),
+                SizedBox(height: 20),
+                Container(
+                  child: Align(
+                    child: Text(
+                      t('choose_invest_amount'),
+                      // style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    alignment: Alignment.centerLeft,
+                  ),
+                ),
+                SizedBox(height: 10),
                 _isSelected
                     ? Container(
                         child: Column(
@@ -157,14 +161,14 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
                         ),
                       )
                     : RadioGroupButton(
-                        state?.amplitude?.index ?? 1,
-                        InvestAmplitude.values
+                        state.amplitude.index,
+                        ['10%', '50%', '90%']
                             .map(
-                              (amplitude) => [
-                                t(amplitude.value),
+                              (v) => [
+                                v,
                                 () {
-                                  _bloc.add(AmplitudeSelected(amplitude));
-                                  Log.debug(state.amplitude);
+                                  _bloc.add(PercentageSelected(v));
+                                  Log.debug(v);
                                 }
                               ],
                             )
@@ -211,7 +215,6 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
                     borderColor: Theme.of(context).accentColor,
                   ),
                 ),
-                SizedBox(height: 20.0),
               ]),
             );
           }

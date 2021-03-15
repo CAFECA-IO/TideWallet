@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../helpers/i18n.dart';
+import '../theme.dart';
 
 final t = I18n.t;
 
@@ -90,13 +91,8 @@ class _ItemPickerState extends State<ItemPicker> {
                           ?.map(
                             (item) => FlatButton(
                               child: Text(
-                                item.runtimeType != String ? item.name : item,
-                                style:
-                                    Theme.of(context).textTheme.button.copyWith(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400,
-                                        ),
-                              ),
+                                  item.runtimeType != String ? item.name : item,
+                                  style: Theme.of(context).textTheme.subtitle2),
                               onPressed: () {},
                             ),
                           )
@@ -193,11 +189,12 @@ class _ItemPickerState extends State<ItemPicker> {
       behavior: HitTestBehavior.translucent,
       child: widget.child ??
           Container(
-            constraints: widget.constraints ?? BoxConstraints(),
+            alignment: Alignment.centerLeft,
             margin: EdgeInsets.symmetric(vertical: 10),
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
             decoration: BoxDecoration(
-              color: Theme.of(context).inputDecorationTheme.fillColor,
+              color: MyColors
+                  .secondary_05, //Theme.of(context).inputDecorationTheme.fillColor,
               borderRadius: BorderRadius.circular(5),
             ),
             child: Text(
