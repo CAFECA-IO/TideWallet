@@ -11,7 +11,7 @@ class InvestPlanInitialed extends InvestPlanEvent {
   final Currency currency;
   final InvestStrategy strategy;
   final InvestAmplitude amplitude;
-  final String percentage;
+  final InvestPercentage percentage;
   InvestPlanInitialed(
       this.currency, this.strategy, this.amplitude, this.percentage);
 }
@@ -32,7 +32,7 @@ class AmplitudeSelected extends InvestPlanEvent {
 }
 
 class PercentageSelected extends InvestPlanEvent {
-  final String percentage;
+  final InvestPercentage percentage;
   PercentageSelected(this.percentage);
 }
 

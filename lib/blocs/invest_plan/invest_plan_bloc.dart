@@ -27,13 +27,14 @@ class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
   ) async* {
     if (event is InvestPlanInitialed) {
       Decimal investAmount = Decimal.tryParse(event.currency.amount) ??
-          Decimal.zero * Decimal.tryParse(event.percentage) ??
+          Decimal.zero * Decimal.tryParse(event.percentage.value) ??
           Decimal.zero / Decimal.fromInt(100);
       Log.debug('event.currency.name: ${event.currency.name}');
       yield InvestPlanStatus(
           currency: event.currency,
           strategy: event.strategy,
           amplitude: event.amplitude,
+          percentage: event.percentage,
           investAmount: investAmount);
     }
 
@@ -50,9 +51,10 @@ class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
       }
       if (event is PercentageSelected) {
         Decimal investAmount = Decimal.tryParse(_state.currency.amount) ??
-            Decimal.zero * Decimal.tryParse(event.percentage) ??
+            Decimal.zero * Decimal.tryParse(event.percentage.value) ??
             Decimal.zero / Decimal.fromInt(100);
-        yield _state.copyWith(investAmount: investAmount);
+        yield _state.copyWith(
+            percentage: event.percentage, investAmount: investAmount);
       }
       if (event is CreateInvestPlan) {
         // TOOD

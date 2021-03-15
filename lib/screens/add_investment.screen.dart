@@ -1,4 +1,6 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:tidewallet3/cores/account.dart';
@@ -36,13 +38,17 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
   TextEditingController _controller = TextEditingController();
   InvestRepository _repo;
   InvestPlanBloc _bloc;
+  int index = 1;
 
   @override
   void didChangeDependencies() {
     this._repo = Provider.of<InvestRepository>(context);
     this._bloc = InvestPlanBloc(this._repo)
-      ..add(InvestPlanInitialed(AccountCore().getAllCurrencies()[0],
-          InvestStrategy.Climb, InvestAmplitude.Normal, '10'));
+      ..add(InvestPlanInitialed(
+          AccountCore().getAllCurrencies()[0],
+          InvestStrategy.Climb,
+          InvestAmplitude.Normal,
+          InvestPercentage.Normal));
     super.didChangeDependencies();
   }
 
@@ -147,28 +153,53 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
                 ),
                 SizedBox(height: 10),
                 _isSelected
-                    ? Container(
-                        child: Column(
-                          children: [
-                            Input(
-                              labelText: '${state.amplitude} %',
-                              autovalidate: AutovalidateMode.disabled,
-                              controller: _controller,
-                              onChanged: (String v) {},
-                              keyboardType: TextInputType.number,
-                            )
-                          ],
-                        ),
+                    ? Column(
+                        children: [
+                          Container(
+                            child: Column(
+                              children: [
+                                Container(
+                                  child: Align(
+                                    child: Text(
+                                      '請輸入0～1之間的數字',
+                                      style:
+                                          Theme.of(context).textTheme.caption,
+                                    ),
+                                    alignment: Alignment.centerLeft,
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                Input(
+                                  inputFormatter: [
+                                    FilteringTextInputFormatter.deny(
+                                        RegExp(r"\s")),
+                                    FilteringTextInputFormatter.allow(
+                                        RegExp(r'(^\d*\.?\d*)$')),
+                                  ],
+                                  labelText: '投資比例',
+                                  autovalidate: AutovalidateMode.disabled,
+                                  controller: _controller,
+                                  onChanged: (String v) {},
+                                  keyboardType: TextInputType.number,
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
                       )
                     : RadioGroupButton(
-                        state.amplitude.index,
-                        ['10%', '50%', '90%']
+                        state.percentage.index,
+                        InvestPercentage.values
                             .map(
-                              (v) => [
-                                v,
+                              (percentage) => [
+                                percentage.value + '%',
                                 () {
-                                  _bloc.add(PercentageSelected(v));
-                                  Log.debug(v);
+                                  _bloc.add(PercentageSelected(percentage));
+                                  _controller.text =
+                                      (Decimal.tryParse(percentage.value) /
+                                              Decimal.fromInt(100))
+                                          .toString();
+                                  Log.debug(percentage.value);
                                 }
                               ],
                             )

@@ -4,6 +4,7 @@ import 'account.model.dart';
 
 enum InvestStrategy { Climb, Decline, Fluctuating }
 enum InvestAmplitude { Low, Normal, High }
+enum InvestPercentage { Low, Normal, High }
 
 extension InvestStrategyExft on InvestStrategy {
   String get value {
@@ -52,6 +53,42 @@ extension InvestAmplitudeExt on InvestAmplitude {
         break;
       case InvestAmplitude.High:
         return 'high_amplitude';
+        break;
+      default:
+        return 'unknown';
+        break;
+    }
+  }
+}
+
+extension InvestPercentageExt on InvestPercentage {
+  int get index {
+    switch (this) {
+      case InvestPercentage.Low:
+        return 0;
+        break;
+      case InvestPercentage.Normal:
+        return 1;
+        break;
+      case InvestPercentage.High:
+        return 2;
+        break;
+      default:
+        return 0;
+        break;
+    }
+  }
+
+  String get value {
+    switch (this) {
+      case InvestPercentage.Low:
+        return '10';
+        break;
+      case InvestPercentage.Normal:
+        return '50';
+        break;
+      case InvestPercentage.High:
+        return '90';
         break;
       default:
         return 'unknown';
