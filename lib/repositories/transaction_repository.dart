@@ -86,7 +86,6 @@ class TransactionRepository {
 
   Future<String> getReceivingAddress() async {
     // TEST: is BackendAddress correct?
-    Log.debug(hex.encode(await _getSeed('tideWallet3')));
     List result = await _accountService.getReceivingAddress(this._currency.id);
     String address = result[0];
 
