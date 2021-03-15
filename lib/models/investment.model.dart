@@ -25,13 +25,30 @@ extension InvestStrategyExft on InvestStrategy {
 }
 
 extension InvestAmplitudeExt on InvestAmplitude {
+  int get index {
+    switch (this) {
+      case InvestAmplitude.Low:
+        return 0;
+        break;
+      case InvestAmplitude.Normal:
+        return 1;
+        break;
+      case InvestAmplitude.High:
+        return 2;
+        break;
+      default:
+        return 0;
+        break;
+    }
+  }
+
   String get value {
     switch (this) {
       case InvestAmplitude.Low:
         return 'low_amplitude';
         break;
       case InvestAmplitude.Normal:
-        return 'high_amplitude';
+        return 'normal_amplitude';
         break;
       case InvestAmplitude.High:
         return 'high_amplitude';

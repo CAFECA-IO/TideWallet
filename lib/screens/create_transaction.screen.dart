@@ -252,32 +252,20 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                                 ],
                               ),
                             )
-                          : RadioGroupButton(state.priority.value, [
-                              [
-                                t('slow'),
-                                () {
-                                  _bloc.add(
-                                      ChangePriority(TransactionPriority.slow));
-                                  Log.debug(state.priority);
-                                }
-                              ],
-                              [
-                                t('standard'),
-                                () {
-                                  _bloc.add(ChangePriority(
-                                      TransactionPriority.standard));
-                                  Log.debug(state.priority);
-                                }
-                              ],
-                              [
-                                t('fast'),
-                                () {
-                                  _bloc.add(
-                                      ChangePriority(TransactionPriority.fast));
-                                  Log.debug(state.priority);
-                                }
-                              ]
-                            ]),
+                          : RadioGroupButton(
+                              state.priority.index,
+                              TransactionPriority.values
+                                  .map(
+                                    (priority) => [
+                                      t(priority.value),
+                                      () {
+                                        _bloc.add(ChangePriority(priority));
+                                        Log.debug(state.priority);
+                                      }
+                                    ],
+                                  )
+                                  .toList(),
+                            ),
                       SizedBox(height: 28.0),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

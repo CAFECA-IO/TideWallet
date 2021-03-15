@@ -4,6 +4,8 @@ import 'package:bloc/bloc.dart';
 import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
 
+import '../../repositories/invest_repository.dart';
+
 import '../../models/account.model.dart';
 import '../../models/investment.model.dart';
 
@@ -11,7 +13,11 @@ part 'invest_plan_event.dart';
 part 'invest_plan_state.dart';
 
 class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
-  InvestPlanBloc() : super(InvestPlanInitial());
+  final InvestRepository _repo;
+
+  InvestPlanBloc(
+    this._repo,
+  ) : super(InvestPlanInitial());
 
   @override
   Stream<InvestPlanState> mapEventToState(

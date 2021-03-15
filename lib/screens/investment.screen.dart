@@ -8,9 +8,10 @@ import '../models/account.model.dart';
 import '../models/investment.model.dart';
 import '../widgets/header.dart';
 import '../widgets/invest_account_tile.dart';
-import '../widgets/forms/create_invest_plan_form.dart';
+import '../widgets/invest_plan_preview.dart';
 import '../helpers/i18n.dart';
 import '../theme.dart';
+import 'add_investment.screen.dart';
 
 final t = I18n.t;
 
@@ -150,16 +151,17 @@ class _InvestmentScreenState extends State<InvestmentScreen>
         Positioned(
           child: InkWell(
             onTap: () {
-              showModalBottomSheet(
-                isScrollControlled: true,
-                shape: bottomSheetShape,
-                context: context,
-                builder: (context) => Container(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 22.0, horizontal: 16.0),
-                  child: CreateInvestPlanForm(),
-                ),
-              );
+              // showModalBottomSheet(
+              //   isScrollControlled: true,
+              //   shape: bottomSheetShape,
+              //   context: context,
+              //   builder: (context) => Container(
+              //     padding:
+              //         EdgeInsets.symmetric(vertical: 22.0, horizontal: 16.0),
+              //     child: CreateInvestPlanForm(),
+              //   ),
+              // );
+              Navigator.of(context).pushNamed(AddInvestmentScreen.routeName);
             },
             child: Container(
               child: Text(

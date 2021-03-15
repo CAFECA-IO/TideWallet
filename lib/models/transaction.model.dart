@@ -103,7 +103,7 @@ class Transaction {
 enum TransactionPriority { slow, standard, fast }
 
 extension TransactionPriorityExt on TransactionPriority {
-  int get value {
+  int get index {
     switch (this) {
       case TransactionPriority.slow:
         return 0;
@@ -111,6 +111,17 @@ extension TransactionPriorityExt on TransactionPriority {
         return 1;
       case TransactionPriority.fast:
         return 2;
+    }
+  }
+
+  String get value {
+    switch (this) {
+      case TransactionPriority.slow:
+        return 'slow';
+      case TransactionPriority.standard:
+        return 'standard';
+      case TransactionPriority.fast:
+        return 'fast';
     }
   }
 }

@@ -1,7 +1,11 @@
 part of 'invest_plan_bloc.dart';
 
 abstract class InvestPlanState extends Equatable {
-  const InvestPlanState();
+  Currency currency;
+  InvestStrategy strategy;
+  InvestAmplitude amplitude;
+  Decimal investAmount;
+  InvestPlanState();
 
   @override
   List<Object> get props => [];
@@ -12,7 +16,7 @@ class InvestPlanInitial extends InvestPlanState {
 }
 
 class InvestPlanStatus extends InvestPlanState {
-  final Currency currency;
+  Currency currency;
   final InvestStrategy strategy;
   final InvestAmplitude amplitude;
   final Decimal investAmount;

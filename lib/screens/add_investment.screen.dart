@@ -1,17 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:tidewallet3/cores/account.dart';
 
-import '../blocs/add_currency/add_currency_bloc.dart';
-import '../repositories/account_repository.dart';
+import '../models/investment.model.dart';
+import '../blocs/invest_plan/invest_plan_bloc.dart';
+import '../repositories/invest_repository.dart';
 import '../widgets/appBar.dart';
+import '../widgets/inputs/input.dart';
+import '../widgets/buttons/radio_button.dart';
+import '../widgets/item_picker.dart';
+import '../widgets/buttons/secondary_button.dart';
+import '../widgets/invest_plan_preview.dart';
+
 import '../widgets/buttons/primary_button.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/error_dialog.dart';
 import '../widgets/dialogs/loading_dialog.dart';
-import '../widgets/inputs/input.dart';
-import '../models/account.model.dart';
+
+import '../helpers/logger.dart';
 import '../helpers/i18n.dart';
+
+import '../theme.dart';
 
 final t = I18n.t;
 
@@ -22,22 +32,20 @@ class AddInvestmentScreen extends StatefulWidget {
 }
 
 class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
-  AddCurrencyBloc _bloc;
-  AccountRepository _repo;
+  bool _isSelected = false;
   TextEditingController _controller = TextEditingController();
+  InvestRepository _repo;
+  InvestPlanBloc _bloc;
 
   @override
   void didChangeDependencies() {
-    Map<String, Currency> arg = ModalRoute.of(context).settings.arguments;
-
-    _repo = Provider.of<AccountRepository>(context);
-    _bloc = AddCurrencyBloc(_repo, currency: arg['account']);
+    this._repo = Provider.of<InvestRepository>(context);
+    this._bloc = InvestPlanBloc(this._repo);
     super.didChangeDependencies();
   }
 
   @override
   void dispose() {
-    _bloc.close();
     super.dispose();
   }
 
@@ -48,151 +56,153 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
       appBar: GeneralAppbar(
         routeName: AddInvestmentScreen.routeName,
       ),
-      body: BlocBuilder<AddCurrencyBloc, AddCurrencyState>(
+      body: BlocBuilder<InvestPlanBloc, InvestPlanState>(
         cubit: _bloc,
-        builder: (context, state) {
-          Widget result = SizedBox();
-          bool addable = (state is GetToken && state.result != null);
-
-          if (state is GetToken) {
-            Widget item(String _title, String _value) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: RichText(
-                  text: TextSpan(
-                    text: '$_title：\n',
-                    children: [
-                      TextSpan(
-                          text: _value,
-                          style: Theme.of(context).textTheme.bodyText1)
-                    ],
-                    style: Theme.of(context)
-                        .textTheme
-                        .subtitle2
-                        .copyWith(height: 1.5),
-                  ),
+        builder: (context, state) => Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16),
+          child: Column(children: [
+            Container(
+              child: Align(
+                child: Text(
+                  t('choose_invest_account'),
+                  // style: Theme.of(context).textTheme.subtitle1,
                 ),
-              );
-            }
-
-            if (state.result != null) {
-              result = SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      alignment: Alignment.center,
-                      child: Image.network(
-                        state.result.imgUrl,
-                        width: 80.0,
-                        height: 80.0,
-                      ),
-                    ),
-                    item(t('symbol'), state.result.symbol),
-                    item(t('name'), state.result.name),
-                    item(t('contract'), state.result.contract),
-                    item(t('decimal'), state.result.decimal.toString()),
-                    item(
-                        t('total_supply'), state.result.totalSupply.toString()),
-                    item(t('description'), state.result.description),
-                  ],
-                ),
-              );
-            } else {
-              result = Container(child: Text(t('not_found')));
-            }
-          }
-
-          return BlocListener<AddCurrencyBloc, AddCurrencyState>(
-            cubit: _bloc,
-            listenWhen: (prev, curr) => (prev != curr),
-            listener: (context, state) {
-              if (state is Loading) {
-                DialogController.showUnDissmissible(context, LoadingDialog());
-              }
-
-              if (state is GetToken) {
-                DialogController.dismiss(context);
-              }
-
-              if (state is AddSuccess) {
-                DialogController.dismiss(context);
-                Navigator.of(context).pop();
-              }
-
-              if (state is AddFail) {
-                DialogController.dismiss(context);
-                DialogController.show(context, ErrorDialog(t('error_add')));
-              }
-            },
-            child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16),
-              child: Column(children: [
-                Container(
-                  // padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  width: MediaQuery.of(context).size.width - 20.0,
-                  // height: 40,
-                  child: Text(t('support_token_type'),
-                      style: Theme.of(context).textTheme.bodyText1
-                      // .copyWith(color: Colors.white),
-                      ),
-                  // decoration: BoxDecoration(
-                  //   borderRadius: BorderRadius.circular(16.0),
-                  //   gradient: LinearGradient(
-                  //     begin: Alignment.centerLeft,
-                  //     end: Alignment.centerRight,
-                  //     colors: <Color>[
-                  //       Theme.of(context).primaryColor,
-                  //       Theme.of(context).accentColor
-                  //     ],
-                  //   ),
-                  // ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Input(
-                  labelText: t('enter_address'),
-                  controller: _controller,
-                  autovalidate: AutovalidateMode.always,
-                  validator: (String v) {
-                    if (!_repo.validateETHAddress(v) &&
-                        _controller.text.isNotEmpty) {
-                      return t('error_address');
-                    }
-
-                    return null;
-                  },
-                  onChanged: (String v) {
-                    _bloc.add(EnterAddress(v));
-                  },
-                ),
-                Expanded(
-                  child: Container(
-                    alignment: Alignment.center,
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 20.0),
-                    child: result,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 30.0),
-                  child: PrimaryButton(
-                    t('add'),
-                    addable
-                        ? () {
-                            _bloc.add(AddToken());
-                          }
-                        : null,
-                    disableColor: Theme.of(context).disabledColor,
-                    borderColor: Colors.transparent,
-                  ),
-                )
-              ]),
+                alignment: Alignment.centerLeft,
+              ),
             ),
-          );
-        },
+            ItemPicker(
+              title: t('invest_account'),
+              constraints: BoxConstraints(
+                  minWidth: MediaQuery.of(context).size.width / 2 - 24),
+              items:
+                  AccountCore().getAllCurrencies().map((e) => e.name).toList(),
+              selectedItem: AccountCore().getAllCurrencies()[0].name,
+              onTap: () {
+                //   if (!currentFocus.hasPrimaryFocus) {
+                //     currentFocus.unfocus();
+                //   }
+                //   setState(() {
+                //     _language = t('select_language');
+                //     _length = t('select_length');
+                //   });
+              },
+              notifyParent: ({int index, dynamic value}) {
+                // setState(() {
+                //   _language = value;
+                // });
+              },
+            ),
+            Container(
+              child: Align(
+                child: Text(
+                  t('choose_invest_strategy'),
+                  // style: Theme.of(context).textTheme.subtitle1,
+                ),
+                alignment: Alignment.centerLeft,
+              ),
+            ),
+            ItemPicker(
+              title: t('invest_strategy'),
+              constraints: BoxConstraints(
+                  minWidth: MediaQuery.of(context).size.width / 2 - 24),
+              items: InvestStrategy.values.map((e) => t(e.value)).toList(),
+              selectedItem: t(InvestStrategy.values[0].value),
+              onTap: () {
+                //   if (!currentFocus.hasPrimaryFocus) {
+                //     currentFocus.unfocus();
+                //   }
+                //   setState(() {
+                //     _language = t('select_language');
+                //     _length = t('select_length');
+                //   });
+              },
+              notifyParent: ({int index, dynamic value}) {
+                // setState(() {
+                //   _language = value;
+                // });
+              },
+            ),
+            Container(
+              child: Align(
+                child: Text(
+                  t('choose_invest_amplitude'),
+                  // style: Theme.of(context).textTheme.subtitle1,
+                ),
+                alignment: Alignment.centerLeft,
+              ),
+            ),
+            _isSelected
+                ? Container(
+                    child: Column(
+                      children: [
+                        Input(
+                          labelText: '${state.amplitude} %',
+                          autovalidate: AutovalidateMode.disabled,
+                          controller: _controller,
+                          onChanged: (String v) {},
+                          keyboardType: TextInputType.number,
+                        )
+                      ],
+                    ),
+                  )
+                : RadioGroupButton(
+                    state?.amplitude?.index ?? 1,
+                    InvestAmplitude.values
+                        .map(
+                          (amplitude) => [
+                            t(amplitude.value),
+                            () {
+                              _bloc.add(AmplitudeSelected(amplitude));
+                              Log.debug(state.amplitude);
+                            }
+                          ],
+                        )
+                        .toList(),
+                  ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  t('advanced_settings'),
+                  style: Theme.of(context).textTheme.caption,
+                ),
+                // SizedBox(width: 5),
+                Switch(
+                  activeColor: Theme.of(context).primaryColor,
+                  value: _isSelected,
+                  onChanged: (bool newValue) {
+                    setState(() {
+                      _isSelected = newValue;
+                    });
+                  },
+                ),
+              ],
+            ),
+            Spacer(),
+            Container(
+              padding: EdgeInsets.only(bottom: 48),
+              margin: EdgeInsets.symmetric(horizontal: 36),
+              child: SecondaryButton(
+                t('next'),
+                () {
+                  showModalBottomSheet(
+                    isScrollControlled: true,
+                    shape: bottomSheetShape,
+                    context: context,
+                    builder: (context) => Container(
+                      padding: EdgeInsets.symmetric(
+                          vertical: 22.0, horizontal: 16.0),
+                      child: InvestPlanPreview(),
+                    ),
+                  );
+                },
+                textColor: Theme.of(context).accentColor,
+                borderColor: Theme.of(context).accentColor,
+              ),
+            ),
+            SizedBox(height: 20.0),
+          ]),
+        ),
       ),
     );
   }
