@@ -110,8 +110,8 @@ class _AccountCurrencyScreenState extends State<AccountCurrencyScreen> {
         Positioned(
           child: InkWell(
             onTap: () {
-              Currency currency = _currencies[_currencies
-                  .indexWhere((curr) => curr.symbol.toLowerCase() == 'eth')];
+              Currency currency = _currencies[_currencies.indexWhere(
+                  (curr) => curr.blockchainId.toUpperCase() == '8000025B')];
               Navigator.of(context).pushNamed(AddCurrencyScreen.routeName,
                   arguments: {"account": currency});
             },
