@@ -566,7 +566,7 @@ class _$NetworkDao extends NetworkDao {
   @override
   Future<List<int>> insertNetworks(List<NetworkEntity> networks) {
     return _networkEntityInsertionAdapter.insertListAndReturnIds(
-        networks, OnConflictStrategy.abort);
+        networks, OnConflictStrategy.replace);
   }
 }
 

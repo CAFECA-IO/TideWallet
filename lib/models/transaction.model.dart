@@ -177,11 +177,11 @@ extension TransactionDirectionExt on TransactionDirection {
   String get subtitle {
     switch (this) {
       case TransactionDirection.sent:
-        return "transfer_to";
+        return "save_to";
         break;
       case TransactionDirection.received:
       case TransactionDirection.moved:
-        return "save_to";
+        return "transfer_to";
         break;
       case TransactionDirection.unknown:
         return "Unknown";

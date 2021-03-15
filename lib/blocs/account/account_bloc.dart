@@ -47,7 +47,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
           .indexWhere((account) => account.symbol == event.account.symbol);
 
       Currency acc = event.account;
-      List<Currency> list = _repo.getCurrencies(acc.accountType);
+      List<Currency> list = _repo.getCurrencies(acc.accountId);
 
       Decimal _usd = Decimal.zero;
 
@@ -68,7 +68,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
       Decimal _total = Decimal.zero;
 
       _accounts.forEach((acc) {
-        _repo.getCurrencies(acc.accountType).forEach((currency) {
+        _repo.getCurrencies(acc.accountId).forEach((currency) {
           Decimal v = _traderRepo.calculateToUSD(currency);
           _total += v;
         });

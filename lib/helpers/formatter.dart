@@ -26,4 +26,5 @@ class Formatter {
         address.substring(address.length - showLength, address.length);
     return prefix + "..." + suffix;
   }
+
 }

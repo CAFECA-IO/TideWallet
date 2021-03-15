@@ -13,6 +13,7 @@ import '../database/entity/network.dart';
 import '../database/db_operator.dart';
 import '../database/entity/currency.dart';
 import '../helpers/http_agent.dart';
+import '../helpers/logger.dart';
 
 class AccountCore {
   // ignore: close_sinks
@@ -20,7 +21,22 @@ class AccountCore {
   bool _isInit = false;
   List<AccountService> _services = [];
   List<Currency> accounts = [];
-  Map<ACCOUNT, List<Currency>> currencies = {};
+  Map<String, List<Currency>> _currencies = {};
+  bool debugMode = false;
+
+  Map<String, List<Currency>> get currencies {
+    Log.debug('AccountCore currencies [${_currencies.length}]');
+    Log.debug('AccountCore _services [${_services.length}]');
+    this
+        ._currencies
+        .values
+        .reduce((value, element) => value + element)
+        .forEach((currency) {
+      Log.debug(
+          'AccountCore currency network[${currency.publish}] ${currency.network}');
+    });
+    return _currencies;
+  }
 
   static final AccountCore _instance = AccountCore._internal();
   factory AccountCore() => _instance;
@@ -38,16 +54,19 @@ class AccountCore {
     messenger = PublishSubject<AccountMessage>();
   }
 
-  init() async {
+  init({bool debugMode}) async {
     //
+    this.debugMode = debugMode;
     _isInit = true;
-    await _initAccounts();
+    await _initAccounts(debugMode: debugMode);
   }
 
-  _initAccounts() async {
-    final chains =
-        await this.getNetworks(publish: USE_NETWORK == NETWORK.MAINNET);
+  _initAccounts({bool debugMode}) async {
+    final chains = await this.getNetworks(
+        publish: USE_NETWORK == NETWORK.MAINNET, debugMode: debugMode);
+
     final accounts = await this.getAccounts();
+
     await this.getSupportedCurrencies();
 
     for (var i = 0; i < accounts.length; i++) {
@@ -68,15 +87,16 @@ class AccountCore {
             svc = EthereumService(AccountServiceBase());
             account = ACCOUNT.ETH;
             break;
+          case 3324:
+            svc = EthereumService(AccountServiceBase());
+            account = ACCOUNT.CFC;
+            break;
           default:
         }
 
-        if (svc != null) {
-          this.currencies[account] = [];
+        if (svc != null && this._currencies[accounts[i].accountId] == null) {
+          this._currencies[accounts[i].accountId] = [];
 
-          // this.messenger.add(AccountMessage(
-          //     evt: ACCOUNT_EVT.OnUpdateAccount,
-          //     value: _currency));
           this._services.add(svc);
           svc.init(accounts[i].accountId, account);
           await svc.start();
@@ -100,7 +120,7 @@ class AccountCore {
     });
     this._services = [];
     this.accounts = [];
-    this.currencies = {};
+    this._currencies = {};
   }
 
   Future<bool> checkAccountExist() async {
@@ -113,26 +133,29 @@ class AccountCore {
     await DBOperator().accountDao.insertAccount(account);
   }
 
-  AccountService getService(ACCOUNT type) {
-    return _services.firstWhere((svc) => (svc.base == type));
+  AccountService getService(String accountId) {
+    return _services.firstWhere((svc) => (svc.accountId == accountId));
   }
 
-  Future<List<NetworkEntity>> getNetworks({publish = true}) async {
+  Future<List<NetworkEntity>> getNetworks(
+      {bool publish = true, bool debugMode}) async {
     List<NetworkEntity> networks =
         await DBOperator().networkDao.findAllNetworks();
 
     if (networks.isEmpty) {
       APIResponse res = await HTTPAgent().get(Endpoint.SUSANOO + '/blockchain');
       List l = res.data;
-      networks = l.map((chain) => NetworkEntity.fromJson(chain)).toList();
 
-      if (publish)
-        networks.removeWhere((NetworkEntity n) => !n.publish);
-      else
-        networks.removeWhere((NetworkEntity n) => n.publish);
+      networks = l.map((chain) => NetworkEntity.fromJson(chain)).toList();
 
       await DBOperator().networkDao.insertNetworks(networks);
     }
+
+    if (debugMode) return networks;
+
+    if (publish)
+      networks.removeWhere((NetworkEntity n) => !n.publish);
+    else if (!publish) networks.removeWhere((NetworkEntity n) => n.publish);
 
     return networks;
   }
@@ -191,8 +214,8 @@ class AccountCore {
   //   return await this._services.getReceivingAddress();
   // }
 
-  List<Currency> getCurrencies(ACCOUNT type) => this.currencies[type];
+  List<Currency> getCurrencies(String accountId) => this._currencies[accountId];
 
   List<Currency> getAllCurrencies() =>
-      this.currencies.values.reduce((currList, currs) => currList + currs);
+      this._currencies.values.reduce((currList, currs) => currList + currs);
 }

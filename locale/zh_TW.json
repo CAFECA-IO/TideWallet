@@ -131,5 +131,8 @@
   "credit_card": "信用卡",
   "invest": "投資",
   "total_value": "總價值",
-  "add_invest_plan": "新增投資計畫"
+  "add_invest_plan": "新增投資計畫",
+  "copy": "複製",
+  "debug_mode": "除錯模式",
+  "developer_option": "開發人員選項"
 }

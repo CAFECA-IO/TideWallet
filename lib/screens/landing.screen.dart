@@ -11,6 +11,7 @@ import '../blocs/fiat/fiat_bloc.dart';
 import '../blocs/user/user_bloc.dart';
 
 class LandingScreen extends StatefulWidget {
+  static const routeName = 'landing-screen';
   @override
   _LandingScreenState createState() => _LandingScreenState();
 }
@@ -23,12 +24,14 @@ class _LandingScreenState extends State<LandingScreen> {
 
   @override
   void didChangeDependencies() async {
-    if (_isInit) {
+    Map<String, bool> arg = ModalRoute.of(context).settings.arguments;
+    bool debugMode = arg != null ? arg["debugMode"] : false;
+    if (_isInit || debugMode) {
       await DBOperator().init();
       // force AccountCurrencyBloc call constructor
       _accountBloc = BlocProvider.of<AccountCurrencyBloc>(context);
-
-      _bloc = BlocProvider.of<UserBloc>(context)..add(UserCheck());
+      _bloc = BlocProvider.of<UserBloc>(context)
+        ..add(UserCheck(debugMode: debugMode));
       _fiatBloc = BlocProvider.of<FiatBloc>(context);
       _isInit = false;
     }

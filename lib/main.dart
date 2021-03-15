@@ -1,3 +1,5 @@
+// import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -40,8 +42,19 @@ import './blocs/receive/receive_bloc.dart';
 import './blocs/invest/invest_bloc.dart';
 import './helpers/i18n.dart';
 import 'theme.dart';
-
+// class MyHttpOverrides extends HttpOverrides {
+//   @override
+//   HttpClient createHttpClient(SecurityContext context) {
+//     return super.createHttpClient(context)
+//       ..badCertificateCallback =
+//           (X509Certificate cert, String host, int port) => true;
+//   }
+// }
 void main() async {
+  // TODO: for socket.io-client-dart
+  // see: https://github.com/rikulo/socket.io-client-dart/issues/84
+  // HttpOverrides.global = new MyHttpOverrides();
+
   runApp(MyApp());
   Bloc.observer = ObserverDelegate();
 
@@ -139,6 +152,7 @@ MaterialApp _material = MaterialApp(
   theme: myThemeData,
   routes: {
     '/': (context) => LandingScreen(),
+    LandingScreen.routeName: (context) => LandingScreen(),
     CreateTransactionScreen.routeName: (context) => CreateTransactionScreen(),
     TransactionPreviewScreen.routeName: (context) => TransactionPreviewScreen(),
     RestoreWalletScreen.routeName: (context) => RestoreWalletScreen(),

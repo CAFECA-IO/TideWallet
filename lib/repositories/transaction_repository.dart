@@ -41,13 +41,14 @@ class TransactionRepository {
 
   void setCurrency(Currency currency) {
     this._currency = currency;
-    _accountService = AccountCore().getService(this._currency.accountType);
+    _accountService = AccountCore().getService(this._currency.accountId);
     switch (this._currency.accountType) {
       case ACCOUNT.BTC:
         _transactionService =
             BitcoinTransactionService(TransactionServiceBased());
         break;
       case ACCOUNT.ETH:
+      case ACCOUNT.CFC:
         _transactionService =
             EthereumTransactionService(TransactionServiceBased());
         break;
@@ -86,6 +87,7 @@ class TransactionRepository {
   Future<String> getReceivingAddress() async {
     // TEST: is BackendAddress correct?
     getPubKey('tideWallet3', 0, 0);
+    Log.debug(hex.encode(await _getSeed('tideWallet3')));
     List result = await _accountService.getReceivingAddress(this._currency.id);
     String address = result[0];
 
@@ -129,6 +131,7 @@ class TransactionRepository {
         return [fee];
         break;
       case ACCOUNT.ETH:
+      case ACCOUNT.CFC:
         if (this._address == null) {
           _address =
               (await _accountService.getChangingAddress(_currency.id))[0];
@@ -273,6 +276,7 @@ class TransactionRepository {
         ]; // [Transaction, String(balance)]
         break;
       case ACCOUNT.ETH:
+      case ACCOUNT.CFC:
         int nonce = await _accountService.getNonce(
             this._currency.blockchainId, this._address);
 
@@ -317,15 +321,15 @@ class TransactionRepository {
     }
   }
 
-  Future<bool> publishTransaction(
+  Future<List> publishTransaction(
       Transaction transaction, String balance) async {
     List result = await _accountService.publishTransaction(
         this._currency.blockchainId, transaction);
     bool success = result[0];
     Transaction _transaction = result[1];
-    if (!success) return success;
+    if (!success) return [success];
     _pushResult(_transaction, Decimal.parse(balance));
-    return result[0];
+    return result;
   }
 
   _pushResult(Transaction transaction, Decimal balance) async {
@@ -347,10 +351,11 @@ class TransactionRepository {
             this._currency.id, _curr, transaction, _amount, _fee);
         break;
       case ACCOUNT.ETH:
+      case ACCOUNT.CFC:
         _gasPrice = Converter.toCurrencyUnit(
                 transaction.gasPrice, this._currency.accountDecimals)
             .toString();
-        if (this._currency.symbol.toLowerCase() == 'eth') {
+        if (this._currency.type.toLowerCase() != 'token') {
           _updateCurrency(this._currency.id, balance.toString());
           _updateTransaction(
               this._currency.id, _curr, transaction, _amount, _fee,

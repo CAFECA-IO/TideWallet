@@ -165,11 +165,11 @@ class AccountServiceBase extends AccountService {
 
     AccountMessage msg =
         AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: cs[0]);
-    AccountCore().currencies[this._base] = cs;
+    AccountCore().currencies[this._accountId] = cs;
 
     AccountMessage currMsg = AccountMessage(
         evt: ACCOUNT_EVT.OnUpdateCurrency,
-        value: AccountCore().currencies[this._base]);
+        value: AccountCore().currencies[this._accountId]);
 
     AccountCore().messenger.add(msg);
     AccountCore().messenger.add(currMsg);
@@ -194,7 +194,7 @@ class AccountServiceBase extends AccountService {
   }
 
   Future _syncTransactions() async {
-    final currencies = AccountCore().currencies[this._base];
+    final currencies = AccountCore().currencies[this._accountId];
 
     for (var currency in currencies) {
       final transactions = await this._getTransactions(currency);
