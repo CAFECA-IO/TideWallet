@@ -119,14 +119,32 @@ class AccountServiceBase extends AccountService {
     APIResponse res = await HTTPAgent()
         .get(Endpoint.SUSANOO + '/wallet/account/${this._accountId}');
     final acc = res.data;
+    List<CurrencyEntity> _currs =
+        await DBOperator().currencyDao.findAllCurrencies();
 
     if (acc != null) {
-      List tks = acc['tokens'];
-
-      // CurrencyEntity.Currency.fromJson(acc);
-
-      // final result = [Currency.fromMap(acc)] +
-      //     tks.map((e) => Currency.fromMap({...e, 'accountType': this.base, 'accountId': this.accountId})).toList();
+      List<dynamic> tks = acc['tokens'];
+      tks.forEach((token) async {
+        Log.debug("Token getData token: $token");
+        Log.debug("Token getData token['token_id']: ${token['token_id']}");
+        int index =
+            // _currs.indexWhere((_curr) => _curr.currencyId == token['token_id']);
+            _currs.indexWhere((_curr) {
+          Log.debug("Token getData _curr: ${_curr.currencyId}");
+          return _curr.currencyId == token['token_id'];
+        });
+        Log.debug("Token getData index: $index");
+        if (index < 0) {
+          APIResponse res = await HTTPAgent().get(Endpoint.SUSANOO +
+              '/blockchain/${token['blockchain_id']}/token/${token['token_id']}');
+          if (res.data != null) {
+            Map token = res.data;
+            await DBOperator()
+                .currencyDao
+                .insertCurrency(CurrencyEntity.fromJson(token));
+          }
+        }
+      });
 
       return [acc] + tks;
     }

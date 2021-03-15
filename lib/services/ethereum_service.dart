@@ -83,6 +83,7 @@ class EthereumService extends AccountServiceDecorator {
         .get(Endpoint.SUSANOO + '/blockchain/$blockchainId/contract/$address');
 
     if (res.data != null && res.success) {
+      Log.debug('Token res.data: ${res.data}');
       Token _token = Token(
           symbol: res.data['symbol'],
           name: res.data['name'],
@@ -103,18 +104,23 @@ class EthereumService extends AccountServiceDecorator {
             '/wallet/blockchain/$blockchainId/contract/${tk.contract}',
         {});
     if (res.success == false) return false;
+    Log.debug('Token res.data: ${res.data}');
 
     try {
       String id = res.data['token_id'];
-
       APIResponse updateRes = await HTTPAgent()
           .get(Endpoint.SUSANOO + '/wallet/account/${this.service.accountId}');
 
-      final acc = updateRes.data;
-      if (acc != null) {
+      if (updateRes.success) {
+        final acc = updateRes.data;
         List tks = [acc] + acc['tokens'];
-        final index =
-            tks.indexWhere((token) => token['contract'] == tk.contract);
+        final index = tks.indexWhere((token) => token['token_id'] == id);
+        var data = {
+          ...tks[index],
+          'icon': tk.imgUrl ?? acc['icon'],
+          'currency_id': id
+        };
+        Log.debug("Token data: $data");
 
         await DBOperator().currencyDao.insertCurrency(
               CurrencyEntity.fromJson(
@@ -126,13 +132,12 @@ class EthereumService extends AccountServiceDecorator {
               ),
             );
         Log.info(id);
-        int now = DateTime.now().millisecondsSinceEpoch;
-        final v = tks
-            .map((c) =>
-                AccountCurrencyEntity.fromJson(c, this.service.accountId, now))
-            .toList();
 
-        await DBOperator().accountCurrencyDao.insertCurrencies(v);
+        int now = DateTime.now().millisecondsSinceEpoch;
+        final v = AccountCurrencyEntity.fromJson(
+            tks[index], this.service.accountId, now);
+
+        await DBOperator().accountCurrencyDao.insertAccount(v);
 
         List<JoinCurrency> jcs = await DBOperator()
             .accountCurrencyDao
