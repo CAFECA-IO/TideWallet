@@ -40,7 +40,9 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
   @override
   void didChangeDependencies() {
     this._repo = Provider.of<InvestRepository>(context);
-    this._bloc = InvestPlanBloc(this._repo);
+    this._bloc = InvestPlanBloc(this._repo)
+      ..add(InvestPlanInitialed(AccountCore().getAllCurrencies()[0],
+          InvestStrategy.Climb, InvestAmplitude.Normal, '10'));
     super.didChangeDependencies();
   }
 
@@ -58,151 +60,162 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
       ),
       body: BlocBuilder<InvestPlanBloc, InvestPlanState>(
         cubit: _bloc,
-        builder: (context, state) => Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16),
-          child: Column(children: [
-            Container(
-              child: Align(
-                child: Text(
-                  t('choose_invest_account'),
-                  // style: Theme.of(context).textTheme.subtitle1,
-                ),
-                alignment: Alignment.centerLeft,
+        builder: (context, state) {
+          if (state is InvestPlanInitial) {
+            return Expanded(
+              child: Center(
+                child: Text('Loading...'),
               ),
-            ),
-            ItemPicker(
-              title: t('invest_account'),
-              constraints: BoxConstraints(
-                  minWidth: MediaQuery.of(context).size.width / 2 - 24),
-              items:
-                  AccountCore().getAllCurrencies().map((e) => e.name).toList(),
-              selectedItem: AccountCore().getAllCurrencies()[0].name,
-              onTap: () {
-                //   if (!currentFocus.hasPrimaryFocus) {
-                //     currentFocus.unfocus();
-                //   }
-                //   setState(() {
-                //     _language = t('select_language');
-                //     _length = t('select_length');
-                //   });
-              },
-              notifyParent: ({int index, dynamic value}) {
-                // setState(() {
-                //   _language = value;
-                // });
-              },
-            ),
-            Container(
-              child: Align(
-                child: Text(
-                  t('choose_invest_strategy'),
-                  // style: Theme.of(context).textTheme.subtitle1,
-                ),
-                alignment: Alignment.centerLeft,
-              ),
-            ),
-            ItemPicker(
-              title: t('invest_strategy'),
-              constraints: BoxConstraints(
-                  minWidth: MediaQuery.of(context).size.width / 2 - 24),
-              items: InvestStrategy.values.map((e) => t(e.value)).toList(),
-              selectedItem: t(InvestStrategy.values[0].value),
-              onTap: () {
-                //   if (!currentFocus.hasPrimaryFocus) {
-                //     currentFocus.unfocus();
-                //   }
-                //   setState(() {
-                //     _language = t('select_language');
-                //     _length = t('select_length');
-                //   });
-              },
-              notifyParent: ({int index, dynamic value}) {
-                // setState(() {
-                //   _language = value;
-                // });
-              },
-            ),
-            Container(
-              child: Align(
-                child: Text(
-                  t('choose_invest_amplitude'),
-                  // style: Theme.of(context).textTheme.subtitle1,
-                ),
-                alignment: Alignment.centerLeft,
-              ),
-            ),
-            _isSelected
-                ? Container(
-                    child: Column(
-                      children: [
-                        Input(
-                          labelText: '${state.amplitude} %',
-                          autovalidate: AutovalidateMode.disabled,
-                          controller: _controller,
-                          onChanged: (String v) {},
-                          keyboardType: TextInputType.number,
-                        )
-                      ],
+            );
+          }
+          if (state is InvestPlanStatus) {
+            return Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16),
+              child: Column(children: [
+                Container(
+                  child: Align(
+                    child: Text(
+                      t('choose_invest_account'),
+                      // style: Theme.of(context).textTheme.subtitle1,
                     ),
-                  )
-                : RadioGroupButton(
-                    state?.amplitude?.index ?? 1,
-                    InvestAmplitude.values
-                        .map(
-                          (amplitude) => [
-                            t(amplitude.value),
-                            () {
-                              _bloc.add(AmplitudeSelected(amplitude));
-                              Log.debug(state.amplitude);
-                            }
-                          ],
-                        )
-                        .toList(),
+                    alignment: Alignment.centerLeft,
                   ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  t('advanced_settings'),
-                  style: Theme.of(context).textTheme.caption,
                 ),
-                // SizedBox(width: 5),
-                Switch(
-                  activeColor: Theme.of(context).primaryColor,
-                  value: _isSelected,
-                  onChanged: (bool newValue) {
-                    setState(() {
-                      _isSelected = newValue;
-                    });
+                ItemPicker(
+                  title: t('invest_account'),
+                  constraints: BoxConstraints(
+                      minWidth: MediaQuery.of(context).size.width / 2 - 24),
+                  items: AccountCore().getAllCurrencies(),
+                  selectedItem: state.currency,
+                  onTap: () {
+                    //   if (!currentFocus.hasPrimaryFocus) {
+                    //     currentFocus.unfocus();
+                    //   }
+                    //   setState(() {
+                    //     _language = t('select_language');
+                    //     _length = t('select_length');
+                    //   });
+                  },
+                  notifyParent: ({int index, dynamic value}) {
+                    // setState(() {
+                    //   _language = value;
+                    // });
                   },
                 ),
-              ],
-            ),
-            Spacer(),
-            Container(
-              padding: EdgeInsets.only(bottom: 48),
-              margin: EdgeInsets.symmetric(horizontal: 36),
-              child: SecondaryButton(
-                t('next'),
-                () {
-                  showModalBottomSheet(
-                    isScrollControlled: true,
-                    shape: bottomSheetShape,
-                    context: context,
-                    builder: (context) => Container(
-                      padding: EdgeInsets.symmetric(
-                          vertical: 22.0, horizontal: 16.0),
-                      child: InvestPlanPreview(),
+                Container(
+                  child: Align(
+                    child: Text(
+                      t('choose_invest_strategy'),
+                      // style: Theme.of(context).textTheme.subtitle1,
                     ),
-                  );
-                },
-                textColor: Theme.of(context).accentColor,
-                borderColor: Theme.of(context).accentColor,
-              ),
-            ),
-            SizedBox(height: 20.0),
-          ]),
-        ),
+                    alignment: Alignment.centerLeft,
+                  ),
+                ),
+                ItemPicker(
+                  title: t('invest_strategy'),
+                  constraints: BoxConstraints(
+                      minWidth: MediaQuery.of(context).size.width / 2 - 24),
+                  items: InvestStrategy.values.map((e) => t(e.value)).toList(),
+                  selectedItem: t(InvestStrategy.values[0].value),
+                  onTap: () {
+                    //   if (!currentFocus.hasPrimaryFocus) {
+                    //     currentFocus.unfocus();
+                    //   }
+                    //   setState(() {
+                    //     _language = t('select_language');
+                    //     _length = t('select_length');
+                    //   });
+                  },
+                  notifyParent: ({int index, dynamic value}) {
+                    // setState(() {
+                    //   _language = value;
+                    // });
+                  },
+                ),
+                Container(
+                  child: Align(
+                    child: Text(
+                      t('choose_invest_amplitude'),
+                      // style: Theme.of(context).textTheme.subtitle1,
+                    ),
+                    alignment: Alignment.centerLeft,
+                  ),
+                ),
+                _isSelected
+                    ? Container(
+                        child: Column(
+                          children: [
+                            Input(
+                              labelText: '${state.amplitude} %',
+                              autovalidate: AutovalidateMode.disabled,
+                              controller: _controller,
+                              onChanged: (String v) {},
+                              keyboardType: TextInputType.number,
+                            )
+                          ],
+                        ),
+                      )
+                    : RadioGroupButton(
+                        state?.amplitude?.index ?? 1,
+                        InvestAmplitude.values
+                            .map(
+                              (amplitude) => [
+                                t(amplitude.value),
+                                () {
+                                  _bloc.add(AmplitudeSelected(amplitude));
+                                  Log.debug(state.amplitude);
+                                }
+                              ],
+                            )
+                            .toList(),
+                      ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      t('advanced_settings'),
+                      style: Theme.of(context).textTheme.caption,
+                    ),
+                    // SizedBox(width: 5),
+                    Switch(
+                      activeColor: Theme.of(context).primaryColor,
+                      value: _isSelected,
+                      onChanged: (bool newValue) {
+                        setState(() {
+                          _isSelected = newValue;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                Spacer(),
+                Container(
+                  padding: EdgeInsets.only(bottom: 48),
+                  margin: EdgeInsets.symmetric(horizontal: 36),
+                  child: SecondaryButton(
+                    t('next'),
+                    () {
+                      showModalBottomSheet(
+                        isScrollControlled: true,
+                        shape: bottomSheetShape,
+                        context: context,
+                        builder: (context) => Container(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 22.0, horizontal: 16.0),
+                          child: InvestPlanPreview(),
+                        ),
+                      );
+                    },
+                    textColor: Theme.of(context).accentColor,
+                    borderColor: Theme.of(context).accentColor,
+                  ),
+                ),
+                SizedBox(height: 20.0),
+              ]),
+            );
+          }
+        },
       ),
     );
   }

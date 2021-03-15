@@ -9,6 +9,8 @@ import '../../repositories/invest_repository.dart';
 import '../../models/account.model.dart';
 import '../../models/investment.model.dart';
 
+import '../../helpers/logger.dart';
+
 part 'invest_plan_event.dart';
 part 'invest_plan_state.dart';
 
@@ -27,6 +29,7 @@ class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
       Decimal investAmount = Decimal.tryParse(event.currency.amount) ??
           Decimal.zero * Decimal.tryParse(event.percentage) ??
           Decimal.zero / Decimal.fromInt(100);
+      Log.debug('event.currency.name: ${event.currency.name}');
       yield InvestPlanStatus(
           currency: event.currency,
           strategy: event.strategy,

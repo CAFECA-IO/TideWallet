@@ -28,7 +28,7 @@ class ItemPicker extends StatefulWidget {
   int initialItem;
   String title;
   bool barrierDismissible;
-  String selectedItem;
+  dynamic selectedItem;
   Widget child;
 
   @override
@@ -162,12 +162,13 @@ class _ItemPickerState extends State<ItemPicker> {
                               ),
                             ),
                             onTap: () {
+                              Navigator.of(context).pop();
+                              print('pop');
                               if (widget.selectedItem != null &&
                                   widget.items.isNotEmpty)
                                 setState(() {
                                   widget.selectedItem = widget.items[itemIndex];
                                 });
-                              Navigator.of(context).pop();
                               if (widget.items.isNotEmpty)
                                 // widget.notifyParent(widget.items[itemIndex]);
                                 widget.notifyParent(
@@ -200,7 +201,9 @@ class _ItemPickerState extends State<ItemPicker> {
               borderRadius: BorderRadius.circular(5),
             ),
             child: Text(
-              widget.selectedItem, //'Select initializing method',
+              widget.selectedItem.runtimeType != String
+                  ? widget.selectedItem.name
+                  : widget.selectedItem, //'Select initializing method',
               style: Theme.of(context).textTheme.caption.copyWith(fontSize: 16),
             ),
           ),
