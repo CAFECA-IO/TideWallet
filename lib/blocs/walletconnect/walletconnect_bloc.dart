@@ -23,14 +23,13 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
   WCSession _session;
   TransactionRepository _txRepo;
   AccountRepository _accountRepo;
-  ACCOUNT _accountType = ACCOUNT.ETH;
+  static const ACCOUNT _accountType = ACCOUNT.ETH;
   Currency _selected;
 
   WalletConnectBloc(this._accountRepo, this._txRepo)
       : super(WalletConnectInitial()) {
     final currencies = this._accountRepo.getAllCurrencies();
-    _selected = currencies
-        .firstWhere((currency) => currency.blockchainId == '8000003C');
+   _selected = currencies.firstWhere((c) => c.accountType == _accountType);
 
     this._txRepo.setCurrency(_selected);
   }
