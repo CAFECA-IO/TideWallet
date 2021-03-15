@@ -125,15 +125,9 @@ class AccountServiceBase extends AccountService {
     if (acc != null) {
       List<dynamic> tks = acc['tokens'];
       tks.forEach((token) async {
-        Log.debug("Token getData token: $token");
-        Log.debug("Token getData token['token_id']: ${token['token_id']}");
         int index =
-            // _currs.indexWhere((_curr) => _curr.currencyId == token['token_id']);
-            _currs.indexWhere((_curr) {
-          Log.debug("Token getData _curr: ${_curr.currencyId}");
-          return _curr.currencyId == token['token_id'];
-        });
-        Log.debug("Token getData index: $index");
+            _currs.indexWhere((_curr) => _curr.currencyId == token['token_id']);
+
         if (index < 0) {
           APIResponse res = await HTTPAgent().get(Endpoint.SUSANOO +
               '/blockchain/${token['blockchain_id']}/token/${token['token_id']}');
