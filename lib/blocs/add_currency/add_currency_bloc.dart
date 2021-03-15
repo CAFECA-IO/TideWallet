@@ -61,7 +61,7 @@ class AddCurrencyBloc extends Bloc<AddCurrencyEvent, AddCurrencyState> {
       yield Loading();
 
       bool result =
-          await _repo.addToken(_parentAccount.blockchainId, _state.result);
+          await _repo.addToken(_parentAccount, _state.result);
 
       if (result) {
         yield AddSuccess();
