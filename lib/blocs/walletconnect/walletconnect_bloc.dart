@@ -114,6 +114,8 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
       WalletConnectLoaded _state = state;
 
       if (event is RequestWC) {
+        _session.chainId = event.request.params[0]['chainId'];
+        _session.networkId = event.request.params[0]['chainId'];
         yield _state.copyWith(
           status: WC_STATUS.WAITING,
           peer: _connector.peerMeta,
