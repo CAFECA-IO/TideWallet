@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:tidewallet3/cores/account.dart';
+import '../cores/account.dart';
 
 import '../models/investment.model.dart';
 import '../models/account.model.dart';
+
 import '../blocs/invest_plan/invest_plan_bloc.dart';
 
 import '../widgets/appBar.dart';
@@ -15,8 +16,6 @@ import '../widgets/buttons/radio_button.dart';
 import '../widgets/item_picker.dart';
 import '../widgets/buttons/secondary_button.dart';
 import '../widgets/invest_plan_preview.dart';
-
-import '../widgets/buttons/primary_button.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/error_dialog.dart';
 import '../widgets/dialogs/loading_dialog.dart';
@@ -47,11 +46,8 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
   @override
   void didChangeDependencies() {
     this._bloc = BlocProvider.of<InvestPlanBloc>(context)
-      ..add(InvestPlanInitialed(
-          AccountCore().getAllCurrencies()[0],
-          InvestStrategy.Climb,
-          InvestAmplitude.Normal,
-          InvestPercentage.Normal));
+      ..add(InvestPlanInitialed(AccountCore().getAllCurrencies()[0],
+          InvestStrategy.Climb, InvestAmplitude.Normal, InvestPercentage.Low));
     super.didChangeDependencies();
   }
 
@@ -201,58 +197,48 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
                         ? Column(
                             children: [
                               Container(
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      child: Align(
-                                        child: Text(
-                                          '請輸入0～100之間的數字',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .caption,
-                                        ),
-                                        alignment: Alignment.centerLeft,
-                                      ),
-                                    ),
-                                    SizedBox(height: 10),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Input(
-                                          inputFormatter: [
-                                            FilteringTextInputFormatter.deny(
-                                                RegExp(r"\s")),
-                                            FilteringTextInputFormatter.allow(
-                                                RegExp(r'(^\d*\.?\d*)$')),
-                                          ],
-                                          labelText: t('invest_percentage'),
-                                          autovalidate:
-                                              AutovalidateMode.disabled,
-                                          controller: _controller,
-                                          onChanged: (String v) {
-                                            this._bloc.add(InputPercentage(
-                                                _controller.text));
-                                          },
-                                          keyboardType: TextInputType.number,
-                                        ),
-                                        SizedBox(width: 8),
-                                        Container(
-                                            child: Text(
-                                          '%',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .caption,
-                                        )),
-                                      ],
-                                    )
-                                  ],
+                                child: Align(
+                                  child: Text(
+                                    '請輸入0～100之間的數字',
+                                    style: Theme.of(context).textTheme.caption,
+                                  ),
+                                  alignment: Alignment.centerLeft,
                                 ),
                               ),
+                              SizedBox(height: 10),
+                              // Row(
+                              //   mainAxisAlignment:
+                              //       MainAxisAlignment.spaceBetween,
+                              //   children: [
+                              Input(
+                                inputFormatter: [
+                                  FilteringTextInputFormatter.deny(
+                                      RegExp(r"\s")),
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r'(^\d*\.?\d*)$')),
+                                ],
+                                labelText: t('invest_percentage'),
+                                autovalidate: AutovalidateMode.disabled,
+                                controller: _controller,
+                                onChanged: (String v) {
+                                  this
+                                      ._bloc
+                                      .add(InputPercentage(_controller.text));
+                                },
+                                keyboardType: TextInputType.number,
+                              ),
+                              // SizedBox(width: 8),
+                              // Container(
+                              //     child: Text(
+                              //   '%',
+                              //   style: Theme.of(context).textTheme.caption,
+                              // )),
                             ],
                           )
+                        //   ],
+                        // )
                         : RadioGroupButton(
-                            _percentage?.index ?? 1,
+                            _percentage?.index ?? 0,
                             InvestPercentage.values
                                 .map(
                                   (percentage) => [

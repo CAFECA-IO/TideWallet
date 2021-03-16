@@ -53,7 +53,7 @@ class _InvestmentScreenState extends State<InvestmentScreen>
                   if (state is InvestInitial) {
                     return Expanded(
                       child: Center(
-                        child: Text(t('no_investment_plan')),
+                        child: Text('Loading...'),
                       ),
                     );
                   }
@@ -62,7 +62,7 @@ class _InvestmentScreenState extends State<InvestmentScreen>
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0),
                         child: ListView.builder(
-                          itemCount: 0,
+                          itemCount: state.investAccounts.length,
                           itemBuilder: (ctx, index) {
                             InvestAccount investAccount =
                                 state.investAccounts[index];
