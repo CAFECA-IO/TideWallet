@@ -26,10 +26,9 @@ class _InvestmentScreenState extends State<InvestmentScreen>
     with TickerProviderStateMixin {
   InvestBloc _ivtBloc;
 
-  TabController _tabController;
-
   @override
   void didChangeDependencies() {
+    _ivtBloc = Provider.of<InvestBloc>(context);
     super.didChangeDependencies();
   }
 

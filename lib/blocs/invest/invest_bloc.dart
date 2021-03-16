@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:tidewallet3/repositories/user_repository.dart';
 
+import '../../models/account.model.dart';
 import '../../models/investment.model.dart';
 import '../../repositories/invest_repository.dart';
 import 'package:decimal/decimal.dart';
@@ -14,7 +15,15 @@ part 'invest_state.dart';
 class InvestBloc extends Bloc<InvestEvent, InvestState> {
   final InvestRepository _repo;
   final UserRepository _userRepo;
-  InvestBloc(this._repo, this._userRepo) : super(InvestInitial());
+  StreamSubscription _subscription;
+  InvestBloc(this._repo, this._userRepo) : super(InvestInitial()) {
+    _subscription?.cancel();
+    this._repo.listener.listen((msg) {
+      if (msg.evt == ACCOUNT_EVT.OnUpdateInvestment) {
+        this.add(UpdateInvestAccountList(msg.value['investAccounts']));
+      }
+    });
+  }
 
   @override
   Stream<InvestState> mapEventToState(
@@ -24,6 +33,9 @@ class InvestBloc extends Bloc<InvestEvent, InvestState> {
       List<InvestAccount> investAccounts =
           await _repo.getInvestmentList(this._userRepo.user.id);
       yield ListInvestments(investAccounts: investAccounts);
+    }
+    if (event is UpdateInvestAccountList) {
+      yield ListInvestments(investAccounts: event.investAccounts);
     }
   }
 }

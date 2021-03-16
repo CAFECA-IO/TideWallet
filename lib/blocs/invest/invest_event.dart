@@ -7,6 +7,12 @@ abstract class InvestEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class UpdateInvestAccountList extends InvestEvent {
+  final List<InvestAccount> investAccounts;
+
+  UpdateInvestAccountList(this.investAccounts);
+}
+
 class GetInvestments extends InvestEvent {
   GetInvestments();
 }

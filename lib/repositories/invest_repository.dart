@@ -1,14 +1,20 @@
 import 'package:decimal/decimal.dart';
+import 'package:rxdart/subjects.dart';
 
+import '../cores/account.dart';
 import '../models/account.model.dart';
 import '../models/investment.model.dart';
 import '../helpers/utils.dart';
 
 class InvestRepository {
-  Future<List<InvestAccount>> getInvestmentList(String usrId) async {
-    // TODO fetch
+  PublishSubject<AccountMessage> get listener => AccountCore().messenger;
+  List<InvestAccount> _investAccount = []; // --
 
-    return [];
+  Future<List<InvestAccount>> getInvestmentList(String usrId) async {
+    // ++ fromDB
+    await Future.delayed(Duration(milliseconds: 500));
+
+    return _investAccount;
   }
 
   Future<Investment> generateInvestment(
@@ -32,7 +38,18 @@ class InvestRepository {
       Currency currency, Investment investment) async {
     await Future.delayed(Duration(milliseconds: 500));
     // ++ api: post investment
-    // in
+    int index =
+        _investAccount.indexWhere((acc) => acc.currency.id == currency.id);
+    if (index < 0)
+      _investAccount.add(InvestAccount(currency, [investment])); // --
+    else
+      _investAccount[index].investments.add(investment);
+
+    AccountMessage invMsg = AccountMessage(
+        evt: ACCOUNT_EVT.OnUpdateCurrency,
+        value: {"investAccounts": _investAccount});
+
+    this.listener.add(invMsg);
     return true;
   }
 }
