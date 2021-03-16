@@ -36,4 +36,11 @@ class PercentageSelected extends InvestPlanEvent {
   PercentageSelected(this.percentage);
 }
 
+class InputPercentage extends InvestPlanEvent {
+  final String percentage;
+  InputPercentage(this.percentage);
+}
+
+class GenerateInvestPlan extends InvestPlanEvent {}
+
 class CreateInvestPlan extends InvestPlanEvent {}

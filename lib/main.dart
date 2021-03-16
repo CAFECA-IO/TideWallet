@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:tidewallet3/blocs/invest_plan/invest_plan_bloc.dart';
 
 import './repositories/account_repository.dart';
 import './repositories/transaction_repository.dart';
@@ -118,6 +119,12 @@ class MyApp extends StatelessWidget {
             BlocProvider<AccountCurrencyBloc>(
               create: (BuildContext context) => AccountCurrencyBloc(
                 Provider.of<AccountRepository>(context, listen: false),
+                Provider.of<TraderRepository>(context, listen: false),
+              ),
+            ),
+            BlocProvider<InvestPlanBloc>(
+              create: (BuildContext context) => InvestPlanBloc(
+                Provider.of<InvestRepository>(context, listen: false),
                 Provider.of<TraderRepository>(context, listen: false),
               ),
             ),

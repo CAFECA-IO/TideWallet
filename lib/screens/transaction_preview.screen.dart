@@ -64,7 +64,7 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
           if (state is CreateTransactionFail) {
             DialogController.dismiss(context);
             DialogController.show(
-                context, ErrorDialog(t('create_transaction_fail')));
+                context, ErrorDialog('Something went wrong...'));
             // TODO
           }
           if (state is TransactionPublishing) {

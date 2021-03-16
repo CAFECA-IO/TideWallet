@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
+import 'package:tidewallet3/repositories/trader_repository.dart';
 
 import '../../repositories/invest_repository.dart';
 
@@ -16,10 +17,9 @@ part 'invest_plan_state.dart';
 
 class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
   final InvestRepository _repo;
+  final TraderRepository _traderRepo;
 
-  InvestPlanBloc(
-    this._repo,
-  ) : super(InvestPlanInitial());
+  InvestPlanBloc(this._repo, this._traderRepo) : super(InvestPlanInitial());
 
   @override
   Stream<InvestPlanState> mapEventToState(
@@ -54,10 +54,36 @@ class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
             Decimal.zero * Decimal.tryParse(event.percentage.value) ??
             Decimal.zero / Decimal.fromInt(100);
         yield _state.copyWith(
-            percentage: event.percentage, investAmount: investAmount);
+            percentage: event.percentage, investAmount: investAmount
+            // _traderRepo.calculateFeeToFiat(_state.currency, investAmount)
+            );
+      }
+      if (event is InputPercentage) {
+        Decimal investAmount = Decimal.tryParse(_state.currency.amount) ??
+            Decimal.zero * Decimal.tryParse(event.percentage) ??
+            Decimal.zero / Decimal.fromInt(100);
+        yield _state.copyWith(investAmount: investAmount
+            // _traderRepo.calculateFeeToFiat(_state.currency, investAmount)
+            );
+      }
+      if (event is GenerateInvestPlan) {
+        // TOOD
+        yield InvestLoading();
+        Investment investment = await _repo.generateInvestment(_state.currency,
+            _state.strategy, _state.amplitude, _state.investAmount);
+        investment.feeToFiat =
+            _traderRepo.calculateFeeToFiat(_state.currency, investment.fee);
+        yield _state.copyWith(investment: investment);
       }
       if (event is CreateInvestPlan) {
         // TOOD
+        yield InvestLoading();
+        bool result =
+            await _repo.createInvestment(_state.currency, _state.investment);
+        if (result)
+          yield InvestSuccess();
+        else
+          yield InvestFail();
       }
     } else
       this.add(InvestPlanInitialed(

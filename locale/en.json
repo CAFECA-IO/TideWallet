@@ -179,5 +179,6 @@
   "service_fee":"服務費",
   "estimate_profit":"預測收入",
   "irr":"年化報酬率",
-  "authorize":"Authorize"
+  "authorize":"Authorize",
+  "invest_percentage": "投資比例"
 }

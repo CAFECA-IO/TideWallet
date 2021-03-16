@@ -105,12 +105,16 @@ class InvestAccount {
 }
 
 class Investment {
-  final String id;
+  String id;
   final InvestStrategy investStrategy;
   final InvestAmplitude investAmplitude;
   final Decimal investAmount;
+  final Decimal fee;
+  final Decimal estimateProfit;
   final Decimal iRR; //Internal Rate of Return
+  Decimal feeToFiat;
 
   Investment(this.id, this.investStrategy, this.investAmplitude,
-      this.investAmount, this.iRR);
+      this.investAmount, this.fee, this.estimateProfit, this.iRR,
+      {this.feeToFiat});
 }
