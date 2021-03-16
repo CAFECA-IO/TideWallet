@@ -23,10 +23,8 @@ class TransactionStatusBloc
     _subscription?.cancel();
     this._repo.listener.listen((msg) {
       if (msg.evt == ACCOUNT_EVT.OnUpdateCurrency) {
-        // int index = msg.value.indexWhere((Currency currency) =>
-        //     currency.accountType == this._repo.currency.accountType);
         int index = msg.value.indexWhere((Currency currency) {
-          return currency.accountType == this._repo.currency.accountType;
+          return currency.id == this._repo.currency.id;
         });
         if (index < 0) return;
         Currency currency = msg.value[index];
