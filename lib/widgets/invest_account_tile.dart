@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 
 import '../models/investment.model.dart';
+import '../models/account.model.dart';
 import '../helpers/i18n.dart';
 
 final t = I18n.t;
 
 class InvestAccountTile extends StatelessWidget {
+  final Currency currency;
   final Investment investment;
   final Function onClick;
 
-  InvestAccountTile(this.investment, this.onClick);
+  InvestAccountTile(this.currency, this.investment, this.onClick);
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -23,11 +25,11 @@ class InvestAccountTile extends StatelessWidget {
             Column(
               children: <Widget>[
                 Text(t(investment.investStrategy.value) +
-                    " (" +
+                    "  (" +
                     t(investment.investAmplitude.value) +
                     ")"),
                 SizedBox(height: 6.0),
-                Text(investment.investAmount.toString(),
+                Text(investment.investAmount.toString() + " " + currency.symbol,
                     style: Theme.of(context).textTheme.subtitle2),
               ],
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,7 +45,7 @@ class InvestAccountTile extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     investment.iRR.toString() + '%',
-                    style: Theme.of(context).textTheme.headline3.copyWith(
+                    style: Theme.of(context).textTheme.subtitle1.copyWith(
                           color: Theme.of(context).primaryColor,
                         ),
                   ),

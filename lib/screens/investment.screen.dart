@@ -73,7 +73,7 @@ class _InvestmentScreenState extends State<InvestmentScreen>
                                   16.0, 16.0, 16.0, 0),
                               margin: const EdgeInsets.symmetric(vertical: 4.0),
                               decoration: BoxDecoration(
-                                color: Theme.of(context).backgroundColor,
+                                color: Colors.white,
                                 border: Border.all(
                                     color: Theme.of(context)
                                         .dividerColor
@@ -127,8 +127,8 @@ class _InvestmentScreenState extends State<InvestmentScreen>
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: investments
-                                        .map((investment) =>
-                                            InvestAccountTile(investment, () {
+                                        .map((investment) => InvestAccountTile(
+                                                currency, investment, () {
                                               //TODO
                                             }))
                                         .toList(),

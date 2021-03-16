@@ -46,7 +46,7 @@ class InvestRepository {
       _investAccount[index].investments.add(investment);
 
     AccountMessage invMsg = AccountMessage(
-        evt: ACCOUNT_EVT.OnUpdateCurrency,
+        evt: ACCOUNT_EVT.OnUpdateInvestment,
         value: {"investAccounts": _investAccount});
 
     this.listener.add(invMsg);
