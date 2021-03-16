@@ -61,6 +61,7 @@ class _InvestmentScreenState extends State<InvestmentScreen>
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0),
                         child: ListView.builder(
+                          padding: EdgeInsets.zero,
                           itemCount: state.investAccounts.length,
                           itemBuilder: (ctx, index) {
                             InvestAccount investAccount =
