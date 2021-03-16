@@ -5,4 +5,5 @@ class Config {
   static const int logLevel = 0;
   static const String logServer = "https://log.mermer.cc/";
   Config._internal();
+  static final bool alice = false; 
 }
