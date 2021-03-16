@@ -59,7 +59,7 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      // resizeToAvoidBottomInset: false,
       appBar: GeneralAppbar(
         title: t('add_invest_plan'),
         routeName: AddInvestmentScreen.routeName,
@@ -112,7 +112,7 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
                     );
                   }
                 },
-                child: Container(
+                child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 20.0, vertical: 16),
                   child: Column(children: [
@@ -274,7 +274,8 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
                         ),
                       ],
                     ),
-                    Spacer(),
+                    // Spacer(),
+                    SizedBox(height: 40),
                     Container(
                       padding: EdgeInsets.only(bottom: 48),
                       margin: EdgeInsets.symmetric(horizontal: 36),
