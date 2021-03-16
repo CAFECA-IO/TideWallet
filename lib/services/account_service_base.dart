@@ -119,14 +119,26 @@ class AccountServiceBase extends AccountService {
     APIResponse res = await HTTPAgent()
         .get(Endpoint.SUSANOO + '/wallet/account/${this._accountId}');
     final acc = res.data;
+    List<CurrencyEntity> _currs =
+        await DBOperator().currencyDao.findAllCurrencies();
 
     if (acc != null) {
-      List tks = acc['tokens'];
+      List<dynamic> tks = acc['tokens'];
+      tks.forEach((token) async {
+        int index =
+            _currs.indexWhere((_curr) => _curr.currencyId == token['token_id']);
 
-      // CurrencyEntity.Currency.fromJson(acc);
-
-      // final result = [Currency.fromMap(acc)] +
-      //     tks.map((e) => Currency.fromMap({...e, 'accountType': this.base, 'accountId': this.accountId})).toList();
+        if (index < 0) {
+          APIResponse res = await HTTPAgent().get(Endpoint.SUSANOO +
+              '/blockchain/${token['blockchain_id']}/token/${token['token_id']}');
+          if (res.data != null) {
+            Map token = res.data;
+            await DBOperator()
+                .currencyDao
+                .insertCurrency(CurrencyEntity.fromJson(token));
+          }
+        }
+      });
 
       return [acc] + tks;
     }

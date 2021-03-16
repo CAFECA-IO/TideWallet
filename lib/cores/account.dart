@@ -44,7 +44,7 @@ class AccountCore {
     messenger = PublishSubject<AccountMessage>();
   }
 
-  init({bool debugMode}) async {
+  Future init({bool debugMode}) async {
     //
     this.debugMode = debugMode;
     _isInit = true;

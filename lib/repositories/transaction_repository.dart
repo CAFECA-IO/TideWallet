@@ -207,6 +207,7 @@ class TransactionRepository {
 
   Future<Uint8List> getPubKey(String pwd, int changeIndex, int keyIndex) async {
     Uint8List seed = await _getSeed(pwd);
+    Log.warning("getPubKey seed: ${hex.encode(seed)}");
     return await PaperWallet.getPubKey(seed, changeIndex, keyIndex);
   }
 
