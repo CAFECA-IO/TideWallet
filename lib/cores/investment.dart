@@ -1,19 +1,23 @@
+import 'package:rxdart/rxdart.dart';
 import 'package:decimal/decimal.dart';
-import 'package:rxdart/subjects.dart';
 
-import '../cores/investment.dart';
-import '../models/account.model.dart';
 import '../models/investment.model.dart';
+import '../models/account.model.dart';
+
 import '../helpers/utils.dart';
 
-class InvestRepository {
-  PublishSubject<InvestmentMessage> get listener => InvestmentCore().messenger;
-
-  InvestRepository() {
-    InvestmentCore().setMessenger();
-  }
-
+class InvestmentCore {
+  PublishSubject<InvestmentMessage> messenger;
   List<InvestAccount> _investAccount = []; // --
+
+  static final InvestmentCore _instance = InvestmentCore._internal();
+  factory InvestmentCore() => _instance;
+
+  InvestmentCore._internal();
+
+  setMessenger() {
+    messenger = PublishSubject<InvestmentMessage>();
+  }
 
   Future<List<InvestAccount>> getInvestmentList(String usrId) async {
     // ++ fromDB
@@ -39,7 +43,7 @@ class InvestRepository {
         Decimal.parse(estimatedProfit), Decimal.parse(irr));
   }
 
-  Future<bool> createInvestment(
+  Future<List> createInvestment(
       Currency currency, Investment investment) async {
     await Future.delayed(Duration(milliseconds: 500));
     // ++ api: post investment
@@ -50,11 +54,6 @@ class InvestRepository {
     else
       _investAccount[index].investments.add(investment);
 
-    InvestmentMessage invMsg = InvestmentMessage(
-        evt: INVESTMENT_EVT.OnUpdateInvestment,
-        value: {"investAccounts": _investAccount});
-
-    this.listener.add(invMsg);
-    return true;
+    return [true, _investAccount];
   }
 }

@@ -9,7 +9,6 @@ enum ACCOUNT_EVT {
   OnUpdateAccount,
   OnUpdateCurrency,
   OnUpdateTransactions,
-  OnUpdateInvestment,
   ClearAll
 }
 

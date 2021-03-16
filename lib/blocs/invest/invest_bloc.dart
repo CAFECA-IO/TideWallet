@@ -19,7 +19,7 @@ class InvestBloc extends Bloc<InvestEvent, InvestState> {
   InvestBloc(this._repo, this._userRepo) : super(InvestInitial()) {
     _subscription?.cancel();
     this._repo.listener.listen((msg) {
-      if (msg.evt == ACCOUNT_EVT.OnUpdateInvestment) {
+      if (msg.evt == INVESTMENT_EVT.OnUpdateInvestment) {
         this.add(UpdateInvestAccountList(msg.value['investAccounts']));
       }
     });

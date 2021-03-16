@@ -97,7 +97,7 @@ class _AccountCurrencyScreenState extends State<AccountCurrencyScreen> {
             if (state is UnBackup) {
               return Positioned(
                 child: BackupThumb(() {
-                  widget.jumpTo(1);
+                  widget.jumpTo(3);
                 }),
                 bottom: 30.0,
                 left: 10.0,
