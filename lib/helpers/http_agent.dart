@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:alice/alice.dart';
 import 'package:dio/dio.dart';
 
 import 'interceptors/error_interceptor.dart';
@@ -15,6 +16,7 @@ class HTTPAgent {
   factory HTTPAgent() => _instance;
   Dio _dio;
   PrefManager _prefManager = PrefManager();
+  Alice _alice;
 
   TokenInterceptor _tokenInterceptor = TokenInterceptor();
   RetryInterceptor _retryInterceptor;
@@ -28,6 +30,11 @@ class HTTPAgent {
     _dio = Dio(options);
 
     setInterceptor();
+  }
+
+  setAlice(Alice alice) {
+    _alice = alice;
+    _dio.interceptors.add(_alice.getDioInterceptor());
   }
 
   setInterceptor() {
@@ -67,7 +74,7 @@ class HTTPAgent {
 
   Future<bool> _refreshToken() async {
     AuthItem tk = await this._prefManager.getAuthItem();
-    
+
     _dio.interceptors.requestLock.lock();
     _dio.interceptors.responseLock.lock();
 
