@@ -7,10 +7,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:tidewallet3/blocs/invest_plan/invest_plan_bloc.dart';
 
 import './repositories/account_repository.dart';
 import './repositories/transaction_repository.dart';
 import './repositories/user_repository.dart';
+import './repositories/trader_repository.dart';
+import './repositories/invest_repository.dart';
 import './screens/currency.screen.dart';
 import './screens/landing.screen.dart';
 import './screens/restore_wallet.screen.dart';
@@ -27,6 +30,7 @@ import './screens/setting_fiat.screen.dart';
 import './screens/feedback.screen.dart';
 import './screens/terms.screen.dart';
 import './screens/update_password.screen.dart';
+import './screens/add_investment.screen.dart';
 import './blocs/fiat/fiat_bloc.dart';
 import './blocs/account_currency/account_currency_bloc.dart';
 import './blocs/delegate.dart';
@@ -37,9 +41,10 @@ import './blocs/restore_wallet/restore_wallet_bloc.dart';
 import './blocs/backup/backup_bloc.dart';
 import './blocs/receive/receive_bloc.dart';
 // import './blocs/update_password/update_password_bloc.dart';
+import './blocs/invest/invest_bloc.dart';
 import './helpers/i18n.dart';
-import './repositories/trader_repository.dart';
 import 'theme.dart';
+
 // class MyHttpOverrides extends HttpOverrides {
 //   @override
 //   HttpClient createHttpClient(SecurityContext context) {
@@ -48,6 +53,9 @@ import 'theme.dart';
 //           (X509Certificate cert, String host, int port) => true;
 //   }
 // }
+
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   // TODO: for socket.io-client-dart
   // see: https://github.com/rikulo/socket.io-client-dart/issues/84
@@ -82,6 +90,9 @@ class MyApp extends StatelessWidget {
           ),
           Provider<TraderRepository>(
             create: (_) => TraderRepository(),
+          ),
+          Provider<InvestRepository>(
+            create: (_) => InvestRepository(),
           )
         ],
         child: MultiBlocProvider(
@@ -98,12 +109,11 @@ class MyApp extends StatelessWidget {
                 Provider.of<TraderRepository>(context, listen: false),
               ),
             ),
-            // BlocProvider<TransactionStatusBloc>(
-            //   create: (BuildContext context) => TransactionStatusBloc(
-            //     Provider.of<TransactionRepository>(context, listen: false),
-            //     Provider.of<TraderRepository>(context, listen: false),
-            //   ),
-            // ),
+            BlocProvider<InvestBloc>(
+              create: (BuildContext context) => InvestBloc(
+                  Provider.of<InvestRepository>(context, listen: false),
+                  Provider.of<UserRepository>(context, listen: false)),
+            ),
             BlocProvider<RestoreWalletBloc>(
               create: (BuildContext context) => RestoreWalletBloc(
                 Provider.of<UserRepository>(context, listen: false),
@@ -112,6 +122,12 @@ class MyApp extends StatelessWidget {
             BlocProvider<AccountCurrencyBloc>(
               create: (BuildContext context) => AccountCurrencyBloc(
                 Provider.of<AccountRepository>(context, listen: false),
+                Provider.of<TraderRepository>(context, listen: false),
+              ),
+            ),
+            BlocProvider<InvestPlanBloc>(
+              create: (BuildContext context) => InvestPlanBloc(
+                Provider.of<InvestRepository>(context, listen: false),
                 Provider.of<TraderRepository>(context, listen: false),
               ),
             ),
@@ -145,6 +161,7 @@ class MyApp extends StatelessWidget {
 
 MaterialApp _material = MaterialApp(
   title: 'TideWallet3',
+  navigatorKey: navigatorKey,
   theme: myThemeData,
   routes: {
     '/': (context) => LandingScreen(),
@@ -158,6 +175,7 @@ MaterialApp _material = MaterialApp(
     TransactionDetailScreen.routeName: (context) => TransactionDetailScreen(),
     CurrencyScreen.routeName: (context) => CurrencyScreen(),
     AddCurrencyScreen.routeName: (context) => AddCurrencyScreen(),
+    AddInvestmentScreen.routeName: (context) => AddInvestmentScreen(),
     ReceiveScreen.routeName: (context) => ReceiveScreen(),
     SettingFiatScreen.routeName: (context) => SettingFiatScreen(),
     WalletConnectScreen.routeName: (context) => WalletConnectScreen(),

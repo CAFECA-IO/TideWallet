@@ -27,12 +27,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
   Currency _selected;
 
   WalletConnectBloc(this._accountRepo, this._txRepo)
-      : super(WalletConnectInitial()) {
-    final currencies = this._accountRepo.getAllCurrencies();
-   _selected = currencies.firstWhere((c) => c.accountType == _accountType);
-
-    this._txRepo.setCurrency(_selected);
-  }
+      : super(WalletConnectInitial());
 
   getReceivingAddress() => _txRepo.getReceivingAddress();
 
@@ -87,17 +82,12 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
   ) async* {
     if (event is ScanWC) {
       if (state is WalletConnectInitial || state is WalletConnectError) {
-        int id = _selected.chainId;
-        String address = await getReceivingAddress();
-
         final connection = Connector.parseUri(event.uri);
         _session = WCSession(
-            chainId: id,
-            networkId: id,
-            key: connection.key,
-            bridge: connection.bridge,
-            peerId: connection.topic,
-            accounts: [address]);
+          key: connection.key,
+          bridge: connection.bridge,
+          peerId: connection.topic,
+        );
 
         if (connection == null) {
           yield WalletConnectError(WC_ERROR.URI);
@@ -114,6 +104,17 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
       WalletConnectLoaded _state = state;
 
       if (event is RequestWC) {
+        final chainId = event.request.params[0]['chainId'];
+        final currencies = this._accountRepo.getAllCurrencies();
+        _selected = currencies.firstWhere((c) => c.accountType == _accountType && c.chainId == chainId, orElse: () => currencies.firstWhere((c) =>c.accountType == _accountType));
+
+        this._txRepo.setCurrency(_selected);
+        _session.chainId = chainId;
+        _session.networkId = chainId;
+        String address = await getReceivingAddress();
+
+        _session.accounts = [address];
+        _connector.accounts = _session.accounts;
         yield _state.copyWith(
           status: WC_STATUS.WAITING,
           peer: _connector.peerMeta,

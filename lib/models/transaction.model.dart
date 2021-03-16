@@ -25,8 +25,9 @@ class Transaction {
   Decimal gasPrice; // in Wei
   Decimal gasUsed;
 
-  DateTime get dateTime =>
-      DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: false);
+  DateTime get dateTime => timestamp != null
+      ? DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: false)
+      : null;
   String get address => _address;
 
   String get messageInString {
@@ -102,7 +103,7 @@ class Transaction {
 enum TransactionPriority { slow, standard, fast }
 
 extension TransactionPriorityExt on TransactionPriority {
-  int get value {
+  int get index {
     switch (this) {
       case TransactionPriority.slow:
         return 0;
@@ -110,6 +111,17 @@ extension TransactionPriorityExt on TransactionPriority {
         return 1;
       case TransactionPriority.fast:
         return 2;
+    }
+  }
+
+  String get value {
+    switch (this) {
+      case TransactionPriority.slow:
+        return 'slow';
+      case TransactionPriority.standard:
+        return 'standard';
+      case TransactionPriority.fast:
+        return 'fast';
     }
   }
 }

@@ -25,16 +25,6 @@ class AccountCore {
   bool debugMode = false;
 
   Map<String, List<Currency>> get currencies {
-    Log.debug('AccountCore currencies [${_currencies.length}]');
-    Log.debug('AccountCore _services [${_services.length}]');
-    this
-        ._currencies
-        .values
-        .reduce((value, element) => value + element)
-        .forEach((currency) {
-      Log.debug(
-          'AccountCore currency network[${currency.publish}] ${currency.network}');
-    });
     return _currencies;
   }
 
@@ -54,7 +44,7 @@ class AccountCore {
     messenger = PublishSubject<AccountMessage>();
   }
 
-  init({bool debugMode}) async {
+  Future init({bool debugMode}) async {
     //
     this.debugMode = debugMode;
     _isInit = true;

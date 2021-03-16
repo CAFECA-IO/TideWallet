@@ -13,11 +13,14 @@ import '../screens/transaction_detail.screen.dart';
 import '../screens/currency.screen.dart';
 import '../screens/settings.screen.dart';
 import '../screens/add_currency.screen.dart';
+import '../screens/add_investment.screen.dart';
 import '../screens/receive.screen.dart';
 import '../screens/setting_fiat.screen.dart';
 import '../screens/update_password.screen.dart';
 import '../screens/feedback.screen.dart';
 import '../screens/terms.screen.dart';
+import '../screens/investment.screen.dart';
+import '../screens/credit_card.screen.dart';
 
 class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
   final String title;
@@ -50,6 +53,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
         case TransactionDetailScreen.routeName:
         case CurrencyScreen.routeName:
         case AddCurrencyScreen.routeName:
+        case AddInvestmentScreen.routeName:
         case ReceiveScreen.routeName:
         case SettingFiatScreen.routeName:
         case UpdatePasswordScreen.routeName:
@@ -200,6 +204,8 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
       // if (routeName == AccountScreen.routeName) return false;
       if (routeName == CurrencyScreen.routeName) return false;
       if (routeName == SettingsScreen.routeName) return false;
+      if (routeName == InvestmentScreen.routeName) return false;
+      // if (routeName == CreditCardScreen.routeName) return false;
       return true;
     }
 
