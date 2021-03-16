@@ -53,6 +53,9 @@ import 'theme.dart';
 //           (X509Certificate cert, String host, int port) => true;
 //   }
 // }
+
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   // TODO: for socket.io-client-dart
   // see: https://github.com/rikulo/socket.io-client-dart/issues/84
@@ -158,6 +161,7 @@ class MyApp extends StatelessWidget {
 
 MaterialApp _material = MaterialApp(
   title: 'TideWallet3',
+  navigatorKey: navigatorKey,
   theme: myThemeData,
   routes: {
     '/': (context) => LandingScreen(),

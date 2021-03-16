@@ -46,7 +46,7 @@ class EthereumService extends AccountServiceDecorator {
   @override
   void init(String id, ACCOUNT base, {int interval}) {
     Log.eth('ETH Service Init');
-    this.service.init(id, this.base, interval: this.syncInterval);
+    this.service.init(id, base ?? this.base, interval: this.syncInterval);
   }
 
   @override

@@ -14,7 +14,7 @@ part 'error.dart';
 part 'ctypto.dart';
 part 'transport.dart';
 part 'event_manager.dart';
-part 'mode.dart';
+part 'model.dart';
 part 'utils.dart';
 
 class Connector {
@@ -160,7 +160,7 @@ class Connector {
       'result': {
         "approved": true,
         "chainId": this.chainId ?? 1,
-        "networkId": this.networkId ?? 0,
+        "networkId": this.networkId ?? 1,
         "accounts": this.accounts ?? [],
         "rpcUrl": "",
         'peerId': this.clientId,
