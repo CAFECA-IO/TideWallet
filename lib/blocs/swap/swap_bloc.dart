@@ -3,6 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
 import 'package:tidewallet3/cores/account.dart';
+import 'package:tidewallet3/helpers/logger.dart';
 
 import '../../cores/account.dart';
 import '../../models/account.model.dart';
@@ -32,6 +33,8 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       Decimal sellAmount = Decimal.tryParse(sellCurrency.amount) *
           usePercent /
           Decimal.fromInt(100);
+      Log.debug(
+          'sellAmount[runtimeType: ${sellAmount.runtimeType}]: $sellAmount');
       Map<String, Decimal> result = _traderRepo.getSwapRateAndAmount(
           sellCurrency, buyCurrency, sellAmount);
       Decimal buyAmount = result['buyAmount'];
@@ -113,7 +116,8 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     if (event is UpdateBuyAmount) {
       SwapLoaded _state = state;
       Decimal buyAmount = Decimal.tryParse(event.amount);
-
+      // ++ add debounce && check function 2021/03/17 Emily
+      if (buyAmount == null || buyAmount == Decimal.zero) return;
       Decimal usePercent = buyAmount /
           Decimal.tryParse(_state.exchangeRate) /
           Decimal.tryParse(_state.sellCurrency.amount) *

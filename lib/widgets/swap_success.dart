@@ -1,6 +1,6 @@
-import 'package:PocketBank/widgets/gradient_container.dart';
-import 'package:PocketBank/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
+
+import 'buttons/primary_button.dart';
 
 class SwapSuccess extends StatelessWidget {
   final Map<String, String> from;
@@ -9,7 +9,20 @@ class SwapSuccess extends StatelessWidget {
   SwapSuccess(this.from, this.to);
   @override
   Widget build(BuildContext context) {
-    return GradientContainer(
+    return Container(
+      padding: EdgeInsets.all(16.0),
+      height: double.infinity,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Theme.of(context).primaryColor,
+            Theme.of(context).accentColor
+          ],
+        ),
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
@@ -110,7 +123,7 @@ class SwapItem extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(
+          Image.network(
             icon,
             width: 28.0,
             height: 28.0,

@@ -8,6 +8,10 @@ import '../models/investment.model.dart';
 class InvestRepository {
   PublishSubject<InvestmentMessage> get listener => InvestmentCore().messenger;
 
+  InvestRepository() {
+    InvestmentCore().setMessenger();
+  }
+
   Future<List<InvestAccount>> getInvestmentList(String usrId) async {
     return await InvestmentCore().getInvestmentList(usrId);
   }

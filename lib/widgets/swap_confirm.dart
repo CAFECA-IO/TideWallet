@@ -22,7 +22,7 @@ class SwapConfirm extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget accountItem(Map item) => Column(
           children: <Widget>[
-            Image.asset(
+            Image.network(
               item['icon'],
               width: 30.0,
               height: 30.0,
@@ -128,6 +128,7 @@ class SwapConfirm extends StatelessWidget {
                 ),
               ),
             ),
+            // ++ add verifyPassword BLOC 2021/3/17 Emily
             Container(
               padding:
                   const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),

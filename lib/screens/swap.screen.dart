@@ -136,6 +136,7 @@ class _SwapScreenState extends State<SwapScreen> {
             return SingleChildScrollView(
               child: Column(
                 children: <Widget>[
+                  SizedBox(height: 80),
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(

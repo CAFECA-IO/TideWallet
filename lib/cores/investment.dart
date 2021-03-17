@@ -13,7 +13,9 @@ class InvestmentCore {
   static final InvestmentCore _instance = InvestmentCore._internal();
   factory InvestmentCore() => _instance;
 
-  InvestmentCore._internal();
+  InvestmentCore._internal() {
+    if (this.messenger == null) this.setMessenger();
+  }
 
   setMessenger() {
     messenger = PublishSubject<InvestmentMessage>();

@@ -2,6 +2,7 @@ import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 
 import '../models/account.model.dart';
+import '../helpers/formatter.dart';
 import './inputs/normal_input.dart';
 import '../theme.dart';
 
@@ -88,24 +89,24 @@ class SwapCard extends StatelessWidget {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: <Widget>[
-                                        Image.asset(e.imgPath,
+                                        Image.network(e.imgPath,
                                             width: 30.0, height: 30.0),
                                         SizedBox(width: 10.0),
                                         Text(
                                           e.name,
                                           style: Theme.of(context)
                                               .textTheme
-                                              .headline4,
+                                              .bodyText2,
                                         ),
                                         Spacer(),
                                         Text(
-                                            '${e.amount} ${e.symbol.toUpperCase()}',
+                                            '${Formatter.formatDecimal(e.amount)} ${e.symbol.toUpperCase()}',
                                             style: Theme.of(context)
                                                 .textTheme
-                                                .headline6)
+                                                .caption)
                                       ])),
                               onTap: () {
-                                onSelect(e.symbol);
+                                onSelect(e);
                                 Navigator.of(context).pop();
                               },
                             ),
@@ -128,7 +129,7 @@ class SwapCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
       decoration: BoxDecoration(
-        color: Theme.of(context).backgroundColor,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(6.0),
         boxShadow: [
           BoxShadow(
@@ -144,7 +145,7 @@ class SwapCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset(
+              Image.network(
                 _currency.imgPath,
                 width: 36.0,
                 height: 36.0,
