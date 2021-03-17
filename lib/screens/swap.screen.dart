@@ -80,7 +80,7 @@ class _SwapScreenState extends State<SwapScreen> {
             );
 
           if (state.result == SwapResult.failure) {
-            // ++ SHOW ERROR
+            // ++ SHOW ERROR 2021/3/17 Emily
             Log.error(state.result.toString());
           }
 
@@ -112,17 +112,17 @@ class _SwapScreenState extends State<SwapScreen> {
           }
 
           if (state.result == SwapResult.insufficient) {
-            // ++ SHOW ERROR
+            // ++ SHOW ERROR 2021/3/17 Emily
             Log.error(state.result.toString());
           }
 
           if (state.result == SwapResult.zero) {
-            // ++ SHOW ERROR
+            // ++ SHOW ERROR 2021/3/17 Emily
             Log.error(state.result.toString());
           }
 
           if (state.result == SwapResult.failure) {
-            // ++ SHOW ERROR
+            // ++ SHOW ERROR 2021/3/17 Emily
             Log.error(state.result.toString());
           }
           // <== CheckSwap

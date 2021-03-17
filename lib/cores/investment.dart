@@ -20,7 +20,7 @@ class InvestmentCore {
   }
 
   Future<List<InvestAccount>> getInvestmentList(String usrId) async {
-    // ++ fromDB
+    // ++ fromDB 2021/3/16 Emily
     await Future.delayed(Duration(milliseconds: 500));
 
     return _investAccount;
@@ -31,7 +31,7 @@ class InvestmentCore {
       InvestStrategy strategy,
       InvestAmplitude amplitude,
       Decimal amount) async {
-    // ++ api: estimate profit, fee, id
+    // ++ api: estimate profit, fee, id 2021/3/16 Emily
     String id = randomHex(6);
     String fee = '0.0003';
     String estimatedProfit = '102.125';
@@ -46,7 +46,7 @@ class InvestmentCore {
   Future<List> createInvestment(
       Currency currency, Investment investment) async {
     await Future.delayed(Duration(milliseconds: 500));
-    // ++ api: post investment
+    // ++ api: post investment 2021/3/16 Emily
     int index =
         _investAccount.indexWhere((acc) => acc.currency.id == currency.id);
     if (index < 0)

@@ -37,7 +37,8 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       Decimal buyAmount = result['buyAmount'];
       Decimal exchangeRate = result['exchangeRate'];
 
-      Decimal fee = _swapRepo.getFee(); //++ get transaction fee 2021/3/17 Emily
+      Decimal fee; //= _swapRepo
+      //     .getTransactionFee(); //++ get transaction fee 2021/3/17 Emily
 
       yield SwapLoaded(
         sellCurrency: sellCurrency,
@@ -150,7 +151,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     if (event is SwapConfirmed) {
       SwapLoaded _state = state;
 
-      List result; // ++ swapRepo call ContractCore().swap
+      List result; // ++ swapRepo call ContractCore().swap 2021/3/17 Emily
       if (result == result[0])
         yield _state.copyWith(result: SwapResult.success);
       else
