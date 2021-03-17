@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../helpers/i18n.dart';
 import './buttons/primary_button.dart';
 import '../theme.dart';
+
+final t = I18n.t;
 
 class SwapConfirm extends StatelessWidget {
   final Map<String, String> sellCurrency;
@@ -94,7 +97,7 @@ class SwapConfirm extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 20.0),
                       child: Text(
-                        'Exchange Details',
+                        t('exchange_details'),
                         style: Theme.of(context).textTheme.subtitle1,
                       ),
                     ),
@@ -112,11 +115,11 @@ class SwapConfirm extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
-                          detailItem('Amount',
+                          detailItem(t('exchange_rate'),
                               '1${sellCurrency['symbol']} = $exchangeRate ${buyCurrency['symbol']}'),
-                          detailItem('Exchanging To',
+                          detailItem(t('buy'),
                               '${buyCurrency['amount']} ${buyCurrency['symbol']}'),
-                          detailItem('Exchanging',
+                          detailItem(t('sell'),
                               '${sellCurrency['amount']} ${sellCurrency['symbol']}')
                         ],
                       ),

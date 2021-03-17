@@ -80,7 +80,7 @@ class _SwapScreenState extends State<SwapScreen> {
             );
 
           if (state.result == SwapResult.failure) {
-            // TODO: SHOW ERROR
+            // ++ SHOW ERROR
             Log.error(state.result.toString());
           }
 
@@ -112,17 +112,17 @@ class _SwapScreenState extends State<SwapScreen> {
           }
 
           if (state.result == SwapResult.insufficient) {
-            // TODO: SHOW ERROR
+            // ++ SHOW ERROR
             Log.error(state.result.toString());
           }
 
           if (state.result == SwapResult.zero) {
-            // TODO: SHOW ERROR
+            // ++ SHOW ERROR
             Log.error(state.result.toString());
           }
 
           if (state.result == SwapResult.failure) {
-            // TODO: SHOW ERROR
+            // ++ SHOW ERROR
             Log.error(state.result.toString());
           }
           // <== CheckSwap
@@ -151,7 +151,7 @@ class _SwapScreenState extends State<SwapScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Exchange exchangeRate',
+                          t('exchange_rate'),
                           textAlign: TextAlign.center,
                         ),
                         Text(

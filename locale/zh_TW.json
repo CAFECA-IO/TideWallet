@@ -155,5 +155,9 @@
   "authorize":"確認委託",
   "invest_percentage": "投資比例",
   "swap_title": "Swap",
-  "swap_info": "Swap Information"
+  "swap_info": "Swap Information",
+  "exchange_rate": "Exchange rate",
+  "exchange_details": "Exchange Details",
+  "buy": "買進",
+  "sell": "賣出"
 }
