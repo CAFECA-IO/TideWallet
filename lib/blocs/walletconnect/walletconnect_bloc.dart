@@ -187,6 +187,8 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
             break;
 
           case 'eth_signTypedData':
+                      final key = await _txRepo.getPrivKey(event.password, 0, 0);
+            Log.warning(hex.encode(key));
             // TODO:
             await Future.delayed(Duration(seconds: 1));
             reuslt =

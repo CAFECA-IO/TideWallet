@@ -21,7 +21,7 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
     final painter = QrPainter(
       data: wallet,
       version: QrVersions.auto,
-      gapless: true,
+      gapless: false,
       color: Colors.white,
       emptyColor: Colors.black,
       errorCorrectionLevel: QrErrorCorrectLevel.L,

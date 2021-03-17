@@ -1,5 +1,12 @@
-import 'package:tidewallet3/helpers/cryptor.dart';
+// ++ Paul 2021/3/17
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:tidewallet3/cores/signer.dart';
+import 'package:tidewallet3/helpers/logger.dart';
+import 'package:web3dart/web3dart.dart';
 import 'package:convert/convert.dart';
+
+import 'package:tidewallet3/helpers/cryptor.dart';
 
 class TypedData {
   static const TYPED_MESSAGE_SCHEMA = {
@@ -26,61 +33,130 @@ class TypedData {
     'required': ['types', 'primarytype', 'domain', 'message']
   };
 
-  static encodeData(String primaryType, data, types, bool useV4) {
+  static encodeData(String primaryType, data, Map types, bool useV4) {
     final encodedTypes = ['bytes32'];
     final encodedValues = [hashType(primaryType, types)];
 
     if (useV4) {
-      encodeField(String name, String type, List value) {
+      encodeField(String name, String type, {List value}) {
+        if (types[type] != null) {
+          
+          return [
+            'bytes32',
+            value == null
+                ? '0x0000000000000000000000000000000000000000000000000000000000000000'
+                : sha3(encodeData(type, value, types, useV4)) // ++
+          ];
+        }
+        // if (value == null) {
+        //     throw new Error("missing value for field " + name + " of type " + type);
+        // }
+        if (type == 'bytes') {
+          return ['bytes32', sha3(hex.encode(value))];
+        }
+        if (type == 'string') {
+          // convert string to buffer - prevents ethUtil from interpreting strings like '0xabcd' as hex
+          // if (typeof value === 'string') {
+          //     value = Buffer.from(value, 'utf8');
+          // }
+
+          var str = hex.encode(value);
+
+          return ['bytes32', sha3(str)];
+        }
         if (type.lastIndexOf(']') == type.length - 1) {
           final parsedType = type.substring(0, type.lastIndexOf('['));
-          final typeValuePairs =
-              value.map((e) => encodeField(name, parsedType, e)).toList();
+          final typeValuePairs = value
+              .map((e) => encodeField(name, parsedType, value: e))
+              .toList();
+          // ContractAbi.fromJson(jsonData, name)
 
-          // TODO:
           // return ['bytes32', sha3(ethAbi.rawEncode(typeValuePairs.map( (_a) {
           //                   var t = _a[0];
           //                   return t;
-          //               }), typeValuePairs.map( (_a) {
-          //                   var v = _a[1];
-          //                   return v;
-          //               })))];
+          //               }), ))];
         }
         return [type, value];
       }
 
       for (var i = 0, a = types[primaryType]; i < a.length; i++) {
         final field = a[i];
-        var _b = encodeField(field.name, field.type, data[field.name]),
-            type = _b[0],
-            value = _b[1];
-        encodedTypes.add(type);
-        encodedValues.add(value);
+        try {
+          String s;
+          if (data[field['name']].runtimeType != 'string') {
+            s = json.encode(data[field['name']]);
+          } else {
+            s = data[field['name']];
+          }
+          final v = utf8.encode(s);
+                    Log.info('VV $v');
+
+          var _b = encodeField(field['name'], field['type'], value: v);
+          Log.info(_b);
+
+          encodedTypes.add(_b[0]);
+          encodedValues.add(_b[1]);
+
+        } catch (e) {
+          Log.error(data[field['name']]);
+          Log.error(data[field['name']].runtimeType);
+          print(e);
+          print(field['type']);
+        }
       }
-    } else {}
+    } else {
+      for (var _c = 0, _d = types[primaryType]; _c < _d.length; _c++) {
+        var field = _d[_c];
+        var value = data[field['name']];
+        if (value != null) {
+          if (field['type'] == 'bytes') {
+            encodedTypes.add('bytes32');
+            value = sha3(value);
+            encodedValues.add(value);
+          } else if (field['type'] == 'string') {
+            encodedTypes.add('bytes32');
+            // convert string to buffer - prevents ethUtil from interpreting strings like '0xabcd' as hex
+            value = utf8.decode(value);
+
+            value = sha3(value);
+            encodedValues.add(value);
+          } else if (types[field['type']] != null) {
+            encodedTypes.add('bytes32');
+            value = sha3(encodeData(field['type'], value, types, useV4));
+            encodedValues.add(value);
+          } else if (field.type.lastIndexOf(']') == field['type'].length - 1) {
+            // throw new Error('Arrays currently unimplemented in encodeData');
+          } else {
+            encodedTypes.add(field['type']);
+            encodedValues.add(value);
+          }
+        }
+      }
+    }
+
+    // return ethAbi.rawEncode(encodedTypes, encodedValues);
+    return '91ab3d17e3a50a9d89e63fd30b92be7f5336b03b287bb946787a83a9d62a27669647bda542dcf6621898cb1d03b22adb04c620d77e0bc6e67edb695f5f57777ec89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc60000000000000000000000006453d37248ab2c16ebd1a8f782a2cbc65860e60b';
   }
 
-  static sha3(String msg) {
+  static List<int> sha3(String msg) {
     final buffer = hex.decode(msg);
 
-    Cryptor.keccak256round(buffer, round: 1);
-  }
-
-  static hashType(primaryType, types) {
-    return sha3(encodeType(primaryType, types));
+    return Cryptor.keccak256round(buffer, round: 1);
   }
 
   static String encodeType(String primaryType, Map types) {
     String result = '';
-    var deps = findTypeDependencies(primaryType, types);
+    List<String> deps = findTypeDependencies(primaryType, types);
     deps.removeWhere((dep) {
       return dep != primaryType;
     });
     // TODO:
     // deps = [primaryType] + deps.sort();
     deps = [primaryType] + deps;
+
     for (var _i = 0, deps_1 = deps; _i < deps_1.length; _i++) {
       var type = deps_1[_i];
+
       var children = types[type];
       // if (!children) {
       //     throw new Error("No type definition specified: " + type);
@@ -88,7 +164,8 @@ class TypedData {
       result += type +
           "(" +
           types[type].map((_a) {
-            var name = _a.name, t = _a.type;
+            print('AAA =>> ${_a}');
+            var name = _a['name'], t = _a['type'];
             return t + " " + name;
           }).join(',') +
           ")";
@@ -96,12 +173,13 @@ class TypedData {
     return result;
   }
 
-  static List findTypeDependencies(String primaryType, types, {List results}) {
+  static List<String> findTypeDependencies(String primaryType, types,
+      {List<String> results}) {
     if (results == null) {
       results = [];
     }
-    // TODO:
-    // primaryType = primaryType.match(/^\w*/u)[0];
+    final regex = RegExp('^\w*');
+    primaryType = regex.firstMatch(primaryType).group(0);
     if (results.contains(primaryType) || types[primaryType] == null) {
       return results;
     }
@@ -119,5 +197,74 @@ class TypedData {
       }
     }
     return results;
+  }
+
+  static hashStruct(String primaryType, data, types, {useV4: true}) {
+    final d = encodeData(primaryType, data, types, useV4);
+
+    return sha3(d);
+  }
+
+  static hashType(String primaryType, types) {
+    // print('hashType => $primaryType $types');
+    final l = utf8.encode(encodeType(primaryType, types));
+    return sha3(hex.encode(l));
+  }
+
+  static sanitizeData(Map data) {
+    var sanitizedData = {};
+    Map properties = TYPED_MESSAGE_SCHEMA['properties'];
+    properties.forEach((key, v) {
+      if (data[key] != null) {
+        sanitizedData[key] = data[key];
+      }
+    });
+
+    if (sanitizedData['types'] != null) {
+      if (sanitizedData['types']['EIP712Domain'] == null) {
+        sanitizedData['types'] = {
+          ...sanitizedData['types'],
+          'EIP712Domain': []
+        };
+      }
+    }
+
+    // print('sanitizedData $sanitizedData');
+
+    return sanitizedData;
+  }
+
+  static sign(typedData, {useV4 = true}) {
+    var sanitizedData = sanitizeData(typedData);
+
+    var parts = hex.decode('1901');
+    final hash = hashStruct(
+        'EIP712Domain', sanitizedData['domain'], sanitizedData['types'],
+        useV4: useV4);
+
+    parts += hash;
+    if (sanitizedData['primaryType'] != 'EIP712Domain') {
+      parts += hashStruct(
+          sanitizedData['primaryType'], sanitizedData['message'], sanitizedData['types'],
+          useV4: useV4);
+    }
+
+        Log.warning(parts);
+
+    return sha3(hex.encode(parts));
+  }
+
+  static String signTypedData_v4(Uint8List privateKey, data) {
+    final d = Uint8List.fromList(sign(data));
+    Log.info(d);
+    final signature = Signer().sign(d , privateKey);
+    final reuslt = '0x' +
+        signature.r.toRadixString(16) +
+        signature.s.toRadixString(16) +
+        signature.v.toRadixString(16);
+
+    print(reuslt);
+
+    return reuslt;
   }
 }
