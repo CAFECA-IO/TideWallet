@@ -62,8 +62,7 @@ class TransactionStatusBloc
       }
     }
     if (event is UpdateTransactionList) {
-      if (state.currency != null &&
-          state.currency.symbol == event.currency.symbol) {
+      if (state.currency != null && state.currency.id == event.currency.id) {
         if (state.transaction != null) {
           int index = event.transactions.indexWhere(
               (Transaction tx) => tx.txId == state.transaction.txId);
