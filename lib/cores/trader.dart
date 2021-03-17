@@ -62,7 +62,7 @@ class Trader {
 
   Future<Fiat> getSelectedFiat() async {
     String symbol = await this._prefManager.getSeletedFiat();
-    
+
     if (symbol == null) return this._fiats[0];
 
     int index = this._fiats.indexWhere((f) => f.name == symbol);
@@ -78,10 +78,26 @@ class Trader {
         Decimal.tryParse(_currency.amount);
   }
 
-  Decimal calculateFeeToUSD(Currency _currency, Decimal amount) {
+  Decimal calculateUSDToCurrency(Currency _currency, Decimal amountInUSD) {
+    int index = this._cryptos.indexWhere((c) => c.name == _currency.symbol);
+    if (index < 0) return Decimal.zero;
+
+    return amountInUSD / this._cryptos[index].exchangeRate;
+  }
+
+  Decimal calculateAmountToUSD(Currency _currency, Decimal amount) {
     int index = this._cryptos.indexWhere((c) => c.name == _currency.symbol);
     if (index < 0) return Decimal.zero;
 
     return this._cryptos[index].exchangeRate * amount;
+  }
+
+  Map<String, Decimal> getSwapRateAndAmount(
+      Currency sellCurrency, Currency buyCurrency, Decimal sellAmount) {
+    Decimal exchangeRate = calculateUSDToCurrency(
+        buyCurrency, calculateAmountToUSD(sellCurrency, Decimal.one));
+    Decimal buyAmount =
+        calculateUSDToCurrency(buyCurrency, sellAmount * exchangeRate);
+    return {"buyAmount": buyAmount, "exchangeRate": exchangeRate};
   }
 }

@@ -55,7 +55,7 @@ class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
             Decimal.zero / Decimal.fromInt(100);
         yield _state.copyWith(
             percentage: event.percentage, investAmount: investAmount
-            // _traderRepo.calculateFeeToFiat(_state.currency, investAmount)
+            // _traderRepo.calculateAmountToFiat(_state.currency, investAmount)
             );
       }
       if (event is InputPercentage) {
@@ -63,7 +63,7 @@ class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
             Decimal.zero * Decimal.tryParse(event.percentage) ??
             Decimal.zero / Decimal.fromInt(100);
         yield _state.copyWith(investAmount: investAmount
-            // _traderRepo.calculateFeeToFiat(_state.currency, investAmount)
+            // _traderRepo.calculateAmountToFiat(_state.currency, investAmount)
             );
       }
       if (event is GenerateInvestPlan) {
@@ -72,7 +72,7 @@ class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
         Investment investment = await _repo.generateInvestment(_state.currency,
             _state.strategy, _state.amplitude, _state.investAmount);
         investment.feeToFiat =
-            _traderRepo.calculateFeeToFiat(_state.currency, investment.fee);
+            _traderRepo.calculateAmountToFiat(_state.currency, investment.fee);
         yield _state.copyWith(investment: investment);
       }
       if (event is CreateInvestPlan) {

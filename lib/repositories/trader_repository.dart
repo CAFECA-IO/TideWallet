@@ -26,17 +26,22 @@ class TraderRepository {
     return _trader.calculateToUSD(_curr);
   }
 
-  Decimal calculateFeeToUSD(Currency _curr, Decimal _amount) {
-    return _trader.calculateFeeToUSD(_curr, _amount);
+  Decimal calculateAmountToUSD(Currency _curr, Decimal _amount) {
+    return _trader.calculateAmountToUSD(_curr, _amount);
   }
 
-  Decimal calculateFeeToFiat(Currency _curr, Decimal _amount) {
-    return _trader.calculateFeeToUSD(_curr, _amount) /
+  Decimal calculateAmountToFiat(Currency _curr, Decimal _amount) {
+    return _trader.calculateAmountToUSD(_curr, _amount) /
         _selectedFiat.exchangeRate;
   }
 
   Future changeSelectedFiat(Fiat fiat) async {
     this._selectedFiat = fiat;
     await this._trader.setSelectedFiat(fiat);
+  }
+
+  Map<String, Decimal> getSwapRateAndAmount(
+      Currency _sellCurr, Currency _buyCurr, Decimal _amount) {
+    return _trader.getSwapRateAndAmount(_sellCurr, _buyCurr, _amount);
   }
 }

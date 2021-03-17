@@ -1,10 +1,8 @@
 import 'dart:async';
 
-import 'package:tidewallet3/repositories/user_repository.dart';
-
-import '../../models/account.model.dart';
 import '../../models/investment.model.dart';
 import '../../repositories/invest_repository.dart';
+import '../../repositories/user_repository.dart';
 import 'package:decimal/decimal.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';

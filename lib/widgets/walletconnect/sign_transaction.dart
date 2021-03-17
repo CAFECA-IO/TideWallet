@@ -37,7 +37,6 @@ class _SignTransactionState extends State<SignTransaction> {
   FiatBloc _fiatBloc;
   TraderRepository _traderRepo;
 
-  
   @override
   void didChangeDependencies() {
     _fiatBloc = BlocProvider.of<FiatBloc>(context);
@@ -53,10 +52,13 @@ class _SignTransactionState extends State<SignTransaction> {
         hexStringToDecimal(widget.param['gas']) /
         Decimal.fromInt(pow(10, 18));
     Decimal amountInFiat =
-        _traderRepo.calculateFeeToFiat(widget.currency, amount);
-    Decimal feeInFiat = _traderRepo.calculateFeeToFiat(widget.currency, fee);
+        _traderRepo.calculateAmountToFiat(widget.currency, amount);
+    Decimal feeInFiat = _traderRepo.calculateAmountToFiat(widget.currency, fee);
 
-    bool able = (Decimal.tryParse(widget.currency.amount) * Decimal.fromInt(pow(10, 18)) - amount - fee) >
+    bool able = (Decimal.tryParse(widget.currency.amount) *
+                Decimal.fromInt(pow(10, 18)) -
+            amount -
+            fee) >
         Decimal.zero;
 
     return BlocBuilder<FiatBloc, FiatState>(
@@ -134,7 +136,8 @@ class _SignTransactionState extends State<SignTransaction> {
                       ),
                       Spacer(),
                       Text(' $fee ETH'),
-                      Text('(\$ ${Formatter.formatDecimal(feeInFiat.toString())} $fiat)')
+                      Text(
+                          '(\$ ${Formatter.formatDecimal(feeInFiat.toString())} $fiat)')
                     ],
                   ),
                 ),
