@@ -68,6 +68,31 @@ void main() {
           'd4d124fcf2dbb8c7b3fdba71ca7d085e2ef84141e4e237abc2d7e44f336e8dee0000000000000000000000000000000000000000000000000000000000009a53000000000000000000000000000000000000000000000000000000006553f10000000000000000000000000000000000000000000000000000000000000000460000000000000000000000000000000000000000000000000000000000000000');
     });
 
+    test('encodeData RelayRequest', () {
+      final primaryType = 'RelayRequest';
+      final data = {
+        'target': '0x9cf40ef3d1622efe270fe6fe720585b4be4eeeff',
+        'encodedFunction':
+            '0xa9059cbb0000000000000000000000002e0d94754b348d208d64d52d78bcd443afa9fa520000000000000000000000000000000000000000000000000000000000000007',
+        'gasData': {
+          'gasLimit': '39507',
+          'gasPrice': '1700000000',
+          'pctRelayFee': '70',
+          'baseRelayFee': '0'
+        },
+        'relayData': {
+          'senderAddress': '0x22d491bde2303f2f43325b2108d26f1eaba1e32b',
+          'senderNonce': '3',
+          'relayWorker': '0x3baee457ad824c94bd3953183d725847d023a2cf',
+          'paymaster': '0x957F270d45e9Ceca5c5af2b49f1b5dC1Abb0421c'
+        }
+      };
+
+      final result = TypedData.encodeData(primaryType, data, types, true);
+      expect(result,
+          '2ff8cad9fc52c931beef9178a726d1ab6280a9c2b6a6396450a181819cf1e5400000000000000000000000009cf40ef3d1622efe270fe6fe720585b4be4eeeffa9485354dd9d340e02789cfc540c6c4a2ff5511beb414b64634a5e11c6a7168cff9bf07e24e6ff0943eadc198a43500e4016d41517b01c92d4b2217909610371b070fcfff74c07b7820d93159a2fd5cb8e2fdf060ee7b42e79f1b4414bccccc1');
+    });
+
     test('signTypedData', () {
       final result = TypedData.signTypedData_v4(key, data);
 

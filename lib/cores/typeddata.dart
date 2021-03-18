@@ -2,8 +2,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:tidewallet3/cores/signer.dart';
-import 'package:tidewallet3/helpers/logger.dart';
-import 'package:web3dart/web3dart.dart';
 import 'package:convert/convert.dart';
 
 import 'package:tidewallet3/helpers/cryptor.dart';
@@ -47,12 +45,12 @@ class TypedData {
                 : sha3(encodeData(type, value, types, useV4)) // ++
           ];
         } else {
-          // Log.debug('types[type] == null $name $type');
         }
         // if (value == null) {
         //     throw new Error("missing value for field " + name + " of type " + type);
         // }
         if (type == 'bytes') {
+
           return ['bytes32', sha3(value)];
         }
         if (type == 'string') {
@@ -83,12 +81,6 @@ class TypedData {
 
       for (var i = 0, args = types[primaryType]; i < args.length; i++) {
         final field = args[i];
-        // Log.debug(field);
-        // Log.info(data);
-
-        // Log.info(data[field['name']]);
-        // Log.info(data[field['name']].runtimeType);
-
         var _b = encodeField(field['name'], field['type'], value: data[field['name']]);
 
         encodedTypes.add(_b[0]);
@@ -124,8 +116,18 @@ class TypedData {
       }
     }
 
-    // return ethAbi.rawEncode(encodedTypes, encodedValues);
-    return '91ab3d17e3a50a9d89e63fd30b92be7f5336b03b287bb946787a83a9d62a27669647bda542dcf6621898cb1d03b22adb04c620d77e0bc6e67edb695f5f57777ec89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc60000000000000000000000006453d37248ab2c16ebd1a8f782a2cbc65860e60b';
+    String result = '';
+
+
+    for (int i = 0; i < encodedTypes.length; i ++) {
+      result += simpleRawEncode(encodedTypes[i], encodedValues[i]);
+    }
+
+
+
+    print('FINAL ==> ${result.toLowerCase()}');
+    
+    return result.toLowerCase();
   }
 
   static List<int> sha3(String msg) {
@@ -138,7 +140,7 @@ class TypedData {
     String result = '';
     List<String> deps = findTypeDependencies(primaryType, types);
     deps.removeWhere((dep) {
-      return dep != primaryType;
+      return dep == primaryType;
     });
 
     deps.sort((a, b) => a.compareTo(b));
@@ -159,6 +161,7 @@ class TypedData {
           }).join(',') +
           ")";
     }
+
     return result;
   }
 
@@ -167,8 +170,8 @@ class TypedData {
     if (results == null) {
       results = [];
     }
-    final regex = RegExp('^\w*');
-    primaryType = regex.firstMatch(primaryType).group(0);
+    final regex = RegExp(r'^\w*');
+    primaryType = regex.stringMatch(primaryType).toString();
     if (results.contains(primaryType) || types[primaryType] == null) {
       return results;
     }
@@ -176,7 +179,7 @@ class TypedData {
     for (var _i = 0, _a = types[primaryType]; _i < _a.length; _i++) {
       var field = _a[_i];
       for (var _b = 0,
-              _c = findTypeDependencies(field.type, types, results: results);
+              _c = findTypeDependencies(field['type'], types, results: results);
           _b < _c.length;
           _b++) {
         var dep = _c[_b];
@@ -238,13 +241,12 @@ class TypedData {
           useV4: useV4);
     }
 
-    Log.warning(parts);
-
     return sha3(hex.encode(parts));
   }
 
   static String signTypedData_v4(Uint8List privateKey, data) {
     final d = Uint8List.fromList(sign(data));
+
     final signature = Signer().sign(d, privateKey);
     final reuslt = '0x' +
         signature.r.toRadixString(16) +
@@ -252,5 +254,22 @@ class TypedData {
         signature.v.toRadixString(16);
 
     return reuslt;
+  }
+
+  static simpleRawEncode(String type, value) {
+
+    if (value is String) {
+        value = value.replaceAll('0x', '');
+
+        if (type == 'address') {
+          return value.padLeft(64, '0');
+
+        }
+
+        if (type == 'uint256') {
+          return int.tryParse(value).toRadixString(16).padLeft(64, '0');
+        }
+      }
+      return hex.encode(value).padLeft(64, '0');
   }
 }

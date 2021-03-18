@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'dart:convert';
 import 'package:convert/convert.dart';
 import 'package:bloc/bloc.dart';
 import 'package:decimal/decimal.dart';
@@ -15,6 +16,7 @@ import '../../repositories/account_repository.dart';
 import '../../repositories/transaction_repository.dart';
 import '../../cores/walletconnect/core.dart';
 import '../../constants/account_config.dart';
+import '../../cores/typeddata.dart';
 part 'walletconnect_event.dart';
 part 'walletconnect_state.dart';
 
@@ -106,7 +108,10 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
       if (event is RequestWC) {
         final chainId = event.request.params[0]['chainId'];
         final currencies = this._accountRepo.getAllCurrencies();
-        _selected = currencies.firstWhere((c) => c.accountType == _accountType && c.chainId == chainId, orElse: () => currencies.firstWhere((c) =>c.accountType == _accountType));
+        _selected = currencies.firstWhere(
+            (c) => c.accountType == _accountType && c.chainId == chainId,
+            orElse: () =>
+                currencies.firstWhere((c) => c.accountType == _accountType));
 
         this._txRepo.setCurrency(_selected);
         _session.chainId = chainId;
@@ -141,7 +146,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
         yield _state.copyWith(currentEvent: null);
       }
       if (event is ApproveRequest) {
-        String reuslt;
+        String result;
         yield _state.copyWith(loading: true);
 
         switch (event.request.method) {
@@ -165,7 +170,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
             List publishRes =
                 await _txRepo.publishTransaction(txRes[0], txRes[1]);
             if (publishRes[0] == true) {
-              reuslt = publishRes[1].txId;
+              result = publishRes[1].txId;
             }
 
             break;
@@ -180,31 +185,31 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
             final data =
                 Uint8List.fromList(Cryptor.keccak256round(lst, round: 1));
             final signature = Signer().sign(data, key);
-            reuslt = '0x' +
+            result = '0x' +
                 signature.r.toRadixString(16) +
                 signature.s.toRadixString(16) +
                 signature.v.toRadixString(16);
             break;
 
           case 'eth_signTypedData':
-                      final key = await _txRepo.getPrivKey(event.password, 0, 0);
-            Log.warning(hex.encode(key));
-            // TODO:
-            await Future.delayed(Duration(seconds: 1));
-            reuslt =
-                '0x88daf041984dfbc4e2da1cf4e4f1b3e205c6409052c749a7890ecf248855a4bd7fd4e908db3cd3593515bebf971c5b448bf3142b34999cb3963e6e33e0a0d50d1c';
+            final key = await _txRepo.getPrivKey(event.password, 0, 0);
+            print('KKK => $key');
+            final data = json.decode(event.request.params[1]);
+            result = TypedData.signTypedData_v4(key, data);
             break;
           default:
             throw (ERROR_MISSING.METHOD);
         }
 
-        if (reuslt == null) {
+        print('===> $result');
+
+        if (result == null) {
           _connector.rejectRequest(WCReject.fromRequest(event.request));
 
           yield _state.copyWith(currentEvent: null, error: WC_ERROR.SEND_TX);
         } else {
           _connector.approveRequest(
-              WCApprove.fromRequest(event.request, result: reuslt));
+              WCApprove.fromRequest(event.request, result: result));
           yield _state.copyWith(currentEvent: null);
         }
       }
