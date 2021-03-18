@@ -42,6 +42,15 @@ String eip55Address(String address) {
   return newAddr;
 }
 
+Uint8List getEthereumAddressBytes(String address) {
+  if (!isValidFormat(address)) {
+    throw ArgumentError.value(address, "address", "invalid address");
+  }
+  final String addr = stripHexPrefix(address).toLowerCase();
+  Uint8List buffer = Uint8List.fromList(hex.decode(addr));
+  return buffer;
+}
+
 bool verifyEthereumAddress(String address) {
   if (address.contains(':')) {
     address = address.split(':')[1];
@@ -73,7 +82,7 @@ Uint8List encodeToRlpFromJson(Map json, MsgSignature signature) {
   ];
 
   if (json['to'] != null) {
-    list.add(json['to']);
+    list.add(getEthereumAddressBytes(json['to']));
   } else {
     list.add('');
   }
@@ -95,7 +104,7 @@ Uint8List encodeToRlp(EthereumTransaction transaction) {
   ];
 
   if (transaction.to != null) {
-    list.add(transaction.to);
+    list.add(getEthereumAddressBytes(transaction.to));
   } else {
     list.add('');
   }

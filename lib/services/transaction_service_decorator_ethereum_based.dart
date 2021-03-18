@@ -84,11 +84,6 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
 
   @override
   Uint8List extractAddressData(String address, bool publish) {
-    if (!isValidFormat(address)) {
-      throw ArgumentError.value(address, "address", "invalid address");
-    }
-    final String addr = stripHexPrefix(address).toLowerCase();
-    Uint8List buffer = Uint8List.fromList(hex.decode(addr));
-    return buffer;
+    return getEthereumAddressBytes(address);
   }
 }
