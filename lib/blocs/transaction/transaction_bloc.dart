@@ -88,8 +88,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     if (event is ScanQRCode) {
       Log.debug("ValidAddress address: ${event.address}");
-      bool verifiedAddress = await _repo.verifyAddress(
-          event.address, false); // TODO Account add publish property
+      bool verifiedAddress = await _repo
+          .verifyAddress(event.address); // TODO Account add publish property
       List<bool> _rules = [verifiedAddress, _state.rules[1]];
       Log.debug(_rules);
       yield _state.copyWith(
@@ -98,7 +98,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       );
     }
     if (event is ValidAddress) {
-      bool verifiedAddress = await _repo.verifyAddress(event.address, false);
+      bool verifiedAddress = await _repo.verifyAddress(event.address);
       List<bool> _rules = [verifiedAddress, _state.rules[1]];
       Log.debug(_rules);
       yield _state.copyWith(

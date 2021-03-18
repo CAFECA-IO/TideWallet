@@ -1,10 +1,12 @@
 import 'dart:typed_data';
 import 'package:decimal/decimal.dart';
+import 'package:convert/convert.dart';
 
 import 'transaction_service.dart';
 import '../cores/signer.dart';
 import '../models/utxo.model.dart';
 import '../models/ethereum_transaction.model.dart';
+import '../helpers/utils.dart';
 import '../helpers/ethereum_based_utils.dart';
 import '../helpers/cryptor.dart';
 import '../helpers/logger.dart';
@@ -49,15 +51,6 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
     String changeAddress,
     int changeIndex,
   }) {
-    Log.debug('ETH from: $changeAddress');
-    Log.debug('ETH to: $to');
-    Log.debug('ETH nonce: $nonce');
-    Log.debug('ETH amount: $amount');
-    Log.debug('ETH gasPrice: $gasPrice');
-    Log.debug('ETH gasUsed: $gasLimit');
-    Log.warning('ETH message: $message');
-    Log.debug('ETH chainId: $chainId');
-    Log.debug('ETH fee: ${gasLimit * gasPrice}');
     EthereumTransaction transaction = EthereumTransaction.prepareTransaction(
       from: changeAddress,
       to: to.contains(':') ? to.split(':')[1] : to,
@@ -87,5 +80,15 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
       Uint8List message}) {
     // TODO: implement calculateTransactionVSize
     throw UnimplementedError();
+  }
+
+  @override
+  Uint8List extractAddressData(String address, bool publish) {
+    if (!isValidFormat(address)) {
+      throw ArgumentError.value(address, "address", "invalid address");
+    }
+    final String addr = stripHexPrefix(address).toLowerCase();
+    Uint8List buffer = Uint8List.fromList(hex.decode(addr));
+    return buffer;
   }
 }

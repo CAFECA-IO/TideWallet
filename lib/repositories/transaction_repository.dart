@@ -182,14 +182,15 @@ class TransactionRepository {
     }
   }
 
-  Future<bool> verifyAddress(String address, bool publish) async {
+  Future<bool> verifyAddress(String address) async {
     bool verified = false;
     if (this._address == null) {
       _address = (await _accountService.getChangingAddress(_currency.id))[0];
     }
     verified = address != _address && address.length > 0;
     if (verified) {
-      verified = _transactionService.verifyAddress(address, publish);
+      verified =
+          _transactionService.verifyAddress(address, this.currency.publish);
     }
     return verified;
   }
