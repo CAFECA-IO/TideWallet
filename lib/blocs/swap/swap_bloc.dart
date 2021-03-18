@@ -33,8 +33,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       Decimal sellAmount = Decimal.tryParse(sellCurrency.amount) *
           usePercent /
           Decimal.fromInt(100);
-      Log.debug(
-          'sellAmount[runtimeType: ${sellAmount.runtimeType}]: $sellAmount');
+
       Map<String, Decimal> result = _traderRepo.getSwapRateAndAmount(
           sellCurrency, buyCurrency, sellAmount);
       Decimal buyAmount = result['buyAmount'];

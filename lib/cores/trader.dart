@@ -1,4 +1,5 @@
 import 'package:decimal/decimal.dart';
+import 'package:tidewallet3/helpers/logger.dart';
 import 'package:tidewallet3/helpers/prefer_manager.dart';
 
 import '../database/entity/exchage_rate.dart';
@@ -71,7 +72,8 @@ class Trader {
   }
 
   Decimal calculateToUSD(Currency _currency) {
-    int index = this._cryptos.indexWhere((c) => c.name == _currency.symbol);
+    int index =
+        this._cryptos.indexWhere((c) => c.currencyId == _currency.currencyId);
     if (index < 0) return Decimal.zero;
 
     return this._cryptos[index].exchangeRate *
@@ -79,21 +81,31 @@ class Trader {
   }
 
   Decimal calculateUSDToCurrency(Currency _currency, Decimal amountInUSD) {
-    int index = this._cryptos.indexWhere((c) => c.name == _currency.symbol);
+    int index =
+        this._cryptos.indexWhere((c) => c.currencyId == _currency.currencyId);
     if (index < 0) return Decimal.zero;
 
     return amountInUSD / this._cryptos[index].exchangeRate;
   }
 
   Decimal calculateAmountToUSD(Currency _currency, Decimal amount) {
-    int index = this._cryptos.indexWhere((c) => c.name == _currency.symbol);
+    int index =
+        this._cryptos.indexWhere((c) => c.currencyId == _currency.currencyId);
     if (index < 0) return Decimal.zero;
-
     return this._cryptos[index].exchangeRate * amount;
   }
 
   Map<String, Decimal> getSwapRateAndAmount(
       Currency sellCurrency, Currency buyCurrency, Decimal sellAmount) {
+    Fiat sellCryptos = this
+        ._cryptos
+        .firstWhere((c) => c.currencyId == sellCurrency.currencyId);
+    Fiat buyCryptos =
+        this._cryptos.firstWhere((c) => c.currencyId == buyCurrency.currencyId);
+    Log.debug(
+        'sellCryptos ${sellCryptos.name} [${sellCryptos.currencyId}]: ${sellCryptos.exchangeRate}');
+    Log.debug(
+        'buyCryptos ${buyCryptos.name} [${buyCryptos.currencyId}]: ${buyCryptos.exchangeRate}');
     Decimal exchangeRate = calculateUSDToCurrency(
         buyCurrency, calculateAmountToUSD(sellCurrency, Decimal.one));
     Decimal buyAmount =
