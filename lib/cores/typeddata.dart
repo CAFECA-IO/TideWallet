@@ -38,29 +38,31 @@ class TypedData {
     final encodedValues = [hashType(primaryType, types)];
 
     if (useV4) {
-      encodeField(String name, String type, {List value}) {
+      encodeField(String name, String type, {value}) {
         if (types[type] != null) {
-          
           return [
             'bytes32',
             value == null
                 ? '0x0000000000000000000000000000000000000000000000000000000000000000'
                 : sha3(encodeData(type, value, types, useV4)) // ++
           ];
+        } else {
+          // Log.debug('types[type] == null $name $type');
         }
         // if (value == null) {
         //     throw new Error("missing value for field " + name + " of type " + type);
         // }
         if (type == 'bytes') {
-          return ['bytes32', sha3(hex.encode(value))];
+          return ['bytes32', sha3(value)];
         }
         if (type == 'string') {
           // convert string to buffer - prevents ethUtil from interpreting strings like '0xabcd' as hex
           // if (typeof value === 'string') {
           //     value = Buffer.from(value, 'utf8');
           // }
-
-          var str = hex.encode(value);
+          
+          
+          var str = hex.encode(utf8.encode(value));
 
           return ['bytes32', sha3(str)];
         }
@@ -79,30 +81,18 @@ class TypedData {
         return [type, value];
       }
 
-      for (var i = 0, a = types[primaryType]; i < a.length; i++) {
-        final field = a[i];
-        try {
-          String s;
-          if (data[field['name']].runtimeType != 'string') {
-            s = json.encode(data[field['name']]);
-          } else {
-            s = data[field['name']];
-          }
-          final v = utf8.encode(s);
-                    Log.info('VV $v');
+      for (var i = 0, args = types[primaryType]; i < args.length; i++) {
+        final field = args[i];
+        // Log.debug(field);
+        // Log.info(data);
 
-          var _b = encodeField(field['name'], field['type'], value: v);
-          Log.info(_b);
+        // Log.info(data[field['name']]);
+        // Log.info(data[field['name']].runtimeType);
 
-          encodedTypes.add(_b[0]);
-          encodedValues.add(_b[1]);
+        var _b = encodeField(field['name'], field['type'], value: data[field['name']]);
 
-        } catch (e) {
-          Log.error(data[field['name']]);
-          Log.error(data[field['name']].runtimeType);
-          print(e);
-          print(field['type']);
-        }
+        encodedTypes.add(_b[0]);
+        encodedValues.add(_b[1]);
       }
     } else {
       for (var _c = 0, _d = types[primaryType]; _c < _d.length; _c++) {
@@ -139,7 +129,7 @@ class TypedData {
   }
 
   static List<int> sha3(String msg) {
-    final buffer = hex.decode(msg);
+    final buffer = hex.decode(msg.replaceAll('0x', ''));
 
     return Cryptor.keccak256round(buffer, round: 1);
   }
@@ -150,8 +140,8 @@ class TypedData {
     deps.removeWhere((dep) {
       return dep != primaryType;
     });
-    // TODO:
-    // deps = [primaryType] + deps.sort();
+
+    deps.sort((a, b) => a.compareTo(b));
     deps = [primaryType] + deps;
 
     for (var _i = 0, deps_1 = deps; _i < deps_1.length; _i++) {
@@ -164,7 +154,6 @@ class TypedData {
       result += type +
           "(" +
           types[type].map((_a) {
-            print('AAA =>> ${_a}');
             var name = _a['name'], t = _a['type'];
             return t + " " + name;
           }).join(',') +
@@ -244,26 +233,23 @@ class TypedData {
 
     parts += hash;
     if (sanitizedData['primaryType'] != 'EIP712Domain') {
-      parts += hashStruct(
-          sanitizedData['primaryType'], sanitizedData['message'], sanitizedData['types'],
+      parts += hashStruct(sanitizedData['primaryType'],
+          sanitizedData['message'], sanitizedData['types'],
           useV4: useV4);
     }
 
-        Log.warning(parts);
+    Log.warning(parts);
 
     return sha3(hex.encode(parts));
   }
 
   static String signTypedData_v4(Uint8List privateKey, data) {
     final d = Uint8List.fromList(sign(data));
-    Log.info(d);
-    final signature = Signer().sign(d , privateKey);
+    final signature = Signer().sign(d, privateKey);
     final reuslt = '0x' +
         signature.r.toRadixString(16) +
         signature.s.toRadixString(16) +
         signature.v.toRadixString(16);
-
-    print(reuslt);
 
     return reuslt;
   }
