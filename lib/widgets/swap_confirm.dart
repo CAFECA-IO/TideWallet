@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
+
+import '../blocs/verify_password/verify_password_bloc.dart';
+import '../repositories/user_repository.dart';
 
 import '../helpers/i18n.dart';
-import './buttons/primary_button.dart';
 import '../theme.dart';
+
+import 'buttons/primary_button.dart';
+import 'dialogs/dialog_controller.dart';
+import 'dialogs/error_dialog.dart';
+import 'dialogs/verify_password_dialog.dart';
 
 final t = I18n.t;
 
-class SwapConfirm extends StatelessWidget {
+class SwapConfirm extends StatefulWidget {
   final Map<String, String> sellCurrency;
   final Map<String, String> buyCurrency;
   final String exchangeRate;
@@ -17,6 +26,22 @@ class SwapConfirm extends StatelessWidget {
       this.buyCurrency,
       this.confirmFunc,
       this.exchangeRate});
+
+  @override
+  _SwapConfirmState createState() => _SwapConfirmState();
+}
+
+class _SwapConfirmState extends State<SwapConfirm> {
+  VerifyPasswordBloc _verifyPasswordBloc;
+  UserRepository _userRepo;
+
+  @override
+  void didChangeDependencies() {
+    this._userRepo = Provider.of<UserRepository>(context, listen: false);
+    this._verifyPasswordBloc = VerifyPasswordBloc(this._userRepo);
+
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,12 +111,12 @@ class SwapConfirm extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        accountItem(sellCurrency),
+                        accountItem(widget.sellCurrency),
                         Text(
                           'to',
                           style: TextStyle(color: MyColors.secondary_02),
                         ),
-                        accountItem(buyCurrency)
+                        accountItem(widget.buyCurrency)
                       ],
                     ),
                     Padding(
@@ -116,11 +141,11 @@ class SwapConfirm extends StatelessWidget {
                       child: Column(
                         children: [
                           detailItem(t('exchange_rate'),
-                              '1${sellCurrency['symbol']} = $exchangeRate ${buyCurrency['symbol']}'),
+                              '1${widget.sellCurrency['symbol']} = ${widget.exchangeRate} ${widget.buyCurrency['symbol']}'),
                           detailItem(t('buy'),
-                              '${buyCurrency['amount']} ${buyCurrency['symbol']}'),
+                              '${widget.buyCurrency['amount']} ${widget.buyCurrency['symbol']}'),
                           detailItem(t('sell'),
-                              '${sellCurrency['amount']} ${sellCurrency['symbol']}')
+                              '${widget.sellCurrency['amount']} ${widget.sellCurrency['symbol']}')
                         ],
                       ),
                     ),
@@ -129,11 +154,34 @@ class SwapConfirm extends StatelessWidget {
               ),
             ),
             // ++ add verifyPassword BLOC 2021/3/17 Emily
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
-              width: double.infinity,
-              child: PrimaryButton('Confirm', confirmFunc),
+            BlocListener<VerifyPasswordBloc, VerifyPasswordState>(
+              cubit: _verifyPasswordBloc,
+              listener: (context, state) {
+                if (state is PasswordVerified) {
+                  widget.confirmFunc();
+                  Navigator.of(context).pop();
+                }
+                if (state is PasswordInvalid) {
+                  DialogController.show(
+                      context, ErrorDialog(t('error_password')));
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 16.0),
+                width: double.infinity,
+                child: PrimaryButton('Confirm', () {
+                  DialogController.showUnDissmissible(
+                    context,
+                    VerifyPasswordDialog((String password) {
+                      _verifyPasswordBloc.add(VerifyPassword(password));
+                      DialogController.dismiss(context);
+                    }, (String password) {
+                      DialogController.dismiss(context);
+                    }),
+                  );
+                }),
+              ),
             ),
           ],
         ),

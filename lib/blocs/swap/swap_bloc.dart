@@ -155,8 +155,10 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     if (event is SwapConfirmed) {
       SwapLoaded _state = state;
 
-      List result; // ++ swapRepo call ContractCore().swap 2021/3/17 Emily
-      if (result == result[0])
+      List result = [
+        true
+      ]; // ++ swapRepo call ContractCore().swap 2021/3/17 Emily
+      if (result[0])
         yield _state.copyWith(result: SwapResult.success);
       else
         yield _state.copyWith(result: SwapResult.none);
