@@ -6,9 +6,7 @@ import 'package:bloc/bloc.dart';
 import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:tidewallet3/cores/signer.dart';
-import 'package:tidewallet3/helpers/cryptor.dart';
-import 'package:tidewallet3/helpers/utils.dart';
+
 
 import '../../helpers/logger.dart';
 import '../../models/account.model.dart';
@@ -17,6 +15,10 @@ import '../../repositories/transaction_repository.dart';
 import '../../cores/walletconnect/core.dart';
 import '../../constants/account_config.dart';
 import '../../cores/typeddata.dart';
+import '../../cores/signer.dart';
+import '../../helpers/cryptor.dart';
+import '../../helpers/utils.dart';
+import '../../models/transaction.model.dart';
 part 'walletconnect_event.dart';
 part 'walletconnect_state.dart';
 
@@ -27,6 +29,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
   AccountRepository _accountRepo;
   static const ACCOUNT _accountType = ACCOUNT.ETH;
   Currency _selected;
+ Map<TransactionPriority, Decimal> _gasPrice;
 
   WalletConnectBloc(this._accountRepo, this._txRepo)
       : super(WalletConnectInitial());
@@ -34,6 +37,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
   getReceivingAddress() => _txRepo.getReceivingAddress();
 
   get currency => this._selected;
+  get gasPrice => this._gasPrice;
 
   @override
   Stream<Transition<WalletConnectEvent, WalletConnectState>> transformEvents(
@@ -129,6 +133,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
 
       if (event is ApproveWC) {
         _connector.approveSession(_session);
+        this._gasPrice = await _txRepo.getGasPrice();
       }
 
       if (event is ConnectWC) {

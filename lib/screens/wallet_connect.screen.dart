@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:math';
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +23,7 @@ import '../widgets/buttons/primary_button.dart';
 import '../widgets/walletconnect/sign_transaction.dart';
 import '../widgets/appBar.dart';
 import '../widgets/qrcode_view.dart';
+import '../models/transaction.model.dart';
 
 class WalletConnectScreen extends StatefulWidget {
   static const routeName = '/wallet-connect';
@@ -119,10 +122,15 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
 
             switch (state.currentEvent.method) {
               case 'eth_sendTransaction':
+                final tx = state.currentEvent.params[0];
+
+                if (tx['gasPrice'] == null) {
+                  tx['gasPrice'] = _bloc.gasPrice[TransactionPriority.standard] * Decimal.fromInt(pow(10, 18));
+                }
                 content = SignTransaction(
                     context: context,
                     dapp: state.peer.url,
-                    param: state.currentEvent.params[0],
+                    param: tx,
                     currency: _bloc.currency,
                     submit: submit,
                     cancel: cancel);

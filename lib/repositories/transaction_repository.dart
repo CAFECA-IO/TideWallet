@@ -92,6 +92,12 @@ class TransactionRepository {
     return address;
   }
 
+  Future getGasPrice() async {
+     Map<TransactionPriority, Decimal> _fee = await _accountService.getTransactionFee(this._currency.blockchainId);
+
+     return _fee;
+  }
+
   Future<List<dynamic>> getTransactionFee(
       {String address, Decimal amount, String message}) async {
     Map<TransactionPriority, Decimal> _fee =

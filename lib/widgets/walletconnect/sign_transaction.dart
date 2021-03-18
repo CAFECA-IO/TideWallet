@@ -49,7 +49,8 @@ class _SignTransactionState extends State<SignTransaction> {
   @override
   Widget build(BuildContext context) {
     Decimal amount = hexStringToDecimal(widget.param['value']);
-    Decimal fee = hexStringToDecimal(widget.param['gasPrice']) *
+    String gasPrice = widget.param['gasPrice'];
+    Decimal fee = hexStringToDecimal(gasPrice) *
         hexStringToDecimal(widget.param['gas']) /
         Decimal.fromInt(pow(10, 18));
     Decimal amountInFiat =
