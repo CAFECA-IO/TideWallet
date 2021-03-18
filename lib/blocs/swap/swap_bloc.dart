@@ -2,8 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
-import 'package:tidewallet3/cores/account.dart';
-import 'package:tidewallet3/helpers/logger.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../../cores/account.dart';
 import '../../models/account.model.dart';
@@ -17,6 +16,20 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
   SwapRepository _swapRepo;
   TraderRepository _traderRepo;
   SwapBloc(this._swapRepo, this._traderRepo) : super(SwapInitial());
+
+  @override
+  Stream<Transition<SwapEvent, SwapState>> transformEvents(
+      Stream<SwapEvent> events, transitionFn) {
+    final nonDebounceStream = events.where(
+        (event) => event is! UpdateBuyAmount && event is! UpdateUsePercent);
+
+    final debounceStream = events
+        .where((event) => event is UpdateBuyAmount || event is UpdateUsePercent)
+        .debounceTime(Duration(milliseconds: 1000));
+
+    return super.transformEvents(
+        MergeStream([nonDebounceStream, debounceStream]), transitionFn);
+  }
 
   @override
   Stream<SwapState> mapEventToState(
@@ -115,7 +128,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     if (event is UpdateBuyAmount) {
       SwapLoaded _state = state;
       Decimal buyAmount = Decimal.tryParse(event.amount);
-      // ++ add debounce && check function 2021/03/17 Emily
+
       if (buyAmount == null || buyAmount == Decimal.zero) return;
       Decimal usePercent = buyAmount /
           Decimal.tryParse(_state.exchangeRate) /

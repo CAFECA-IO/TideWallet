@@ -102,10 +102,10 @@ class Trader {
         .firstWhere((c) => c.currencyId == sellCurrency.currencyId);
     Fiat buyCryptos =
         this._cryptos.firstWhere((c) => c.currencyId == buyCurrency.currencyId);
-    Log.debug(
-        'sellCryptos ${sellCryptos.name} [${sellCryptos.currencyId}]: ${sellCryptos.exchangeRate}');
-    Log.debug(
-        'buyCryptos ${buyCryptos.name} [${buyCryptos.currencyId}]: ${buyCryptos.exchangeRate}');
+    // Log.debug(
+    //     'sellCryptos ${sellCryptos.name} [${sellCryptos.currencyId}]: ${sellCryptos.exchangeRate}');
+    // Log.debug(
+    //     'buyCryptos ${buyCryptos.name} [${buyCryptos.currencyId}]: ${buyCryptos.exchangeRate}');
     Decimal exchangeRate = calculateUSDToCurrency(
         buyCurrency, calculateAmountToUSD(sellCurrency, Decimal.one));
     Decimal buyAmount =

@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
-import 'package:tidewallet3/repositories/trader_repository.dart';
+import 'package:rxdart/rxdart.dart';
 
+import '../../repositories/trader_repository.dart';
 import '../../repositories/invest_repository.dart';
 
 import '../../models/account.model.dart';
@@ -20,6 +21,20 @@ class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
   final TraderRepository _traderRepo;
 
   InvestPlanBloc(this._repo, this._traderRepo) : super(InvestPlanInitial());
+
+  @override
+  Stream<Transition<InvestPlanEvent, InvestPlanState>> transformEvents(
+      Stream<InvestPlanEvent> events, transitionFn) {
+    final nonDebounceStream =
+        events.where((event) => event is! InputPercentage);
+
+    final debounceStream = events
+        .where((event) => event is InputPercentage)
+        .debounceTime(Duration(milliseconds: 1000));
+
+    return super.transformEvents(
+        MergeStream([nonDebounceStream, debounceStream]), transitionFn);
+  }
 
   @override
   Stream<InvestPlanState> mapEventToState(
@@ -59,6 +74,7 @@ class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
             );
       }
       if (event is InputPercentage) {
+        // ++ add debounce 2021/03/18 Emily
         Decimal investAmount = Decimal.tryParse(_state.currency.amount) ??
             Decimal.zero * Decimal.tryParse(event.percentage) ??
             Decimal.zero / Decimal.fromInt(100);
