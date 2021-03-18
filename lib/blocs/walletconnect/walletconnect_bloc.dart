@@ -193,15 +193,12 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
 
           case 'eth_signTypedData':
             final key = await _txRepo.getPrivKey(event.password, 0, 0);
-            print('KKK => $key');
             final data = json.decode(event.request.params[1]);
             result = TypedData.signTypedData_v4(key, data);
             break;
           default:
             throw (ERROR_MISSING.METHOD);
         }
-
-        print('===> $result');
 
         if (result == null) {
           _connector.rejectRequest(WCReject.fromRequest(event.request));

@@ -122,10 +122,6 @@ class TypedData {
     for (int i = 0; i < encodedTypes.length; i ++) {
       result += simpleRawEncode(encodedTypes[i], encodedValues[i]);
     }
-
-
-
-    print('FINAL ==> ${result.toLowerCase()}');
     
     return result.toLowerCase();
   }
@@ -198,7 +194,6 @@ class TypedData {
   }
 
   static hashType(String primaryType, types) {
-    // print('hashType => $primaryType $types');
     final l = utf8.encode(encodeType(primaryType, types));
     return sha3(hex.encode(l));
   }
@@ -220,8 +215,6 @@ class TypedData {
         };
       }
     }
-
-    // print('sanitizedData $sanitizedData');
 
     return sanitizedData;
   }
