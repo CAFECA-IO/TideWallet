@@ -20,11 +20,11 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
   @override
   Stream<Transition<SwapEvent, SwapState>> transformEvents(
       Stream<SwapEvent> events, transitionFn) {
-    final nonDebounceStream = events.where(
-        (event) => event is! UpdateBuyAmount && event is! UpdateUsePercent);
+    final nonDebounceStream =
+        events.where((event) => event is! UpdateBuyAmount);
 
     final debounceStream = events
-        .where((event) => event is UpdateBuyAmount || event is UpdateUsePercent)
+        .where((event) => event is UpdateBuyAmount)
         .debounceTime(Duration(milliseconds: 1000));
 
     return super.transformEvents(

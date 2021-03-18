@@ -74,7 +74,6 @@ class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
             );
       }
       if (event is InputPercentage) {
-        // ++ add debounce 2021/03/18 Emily
         Decimal investAmount = Decimal.tryParse(_state.currency.amount) ??
             Decimal.zero * Decimal.tryParse(event.percentage) ??
             Decimal.zero / Decimal.fromInt(100);
