@@ -44,7 +44,7 @@ class ContractCore {
 
   ContractCore._internal();
 
-  Future<dynamic> extractAddressData(Currency currency) async {
+  Future<dynamic> _extractAddressData(Currency currency) async {
     dynamic _data;
     AccountService _service = AccountCore().getService(currency.accountId);
     String _address =
@@ -94,7 +94,7 @@ class ContractCore {
     BigInt _buyAmount =
         BigInt.from(Converter.toEthSmallestUnit(buyAmount).toInt());
 
-    String _address = await extractAddressData(buyCurrency);
+    String _address = await _extractAddressData(buyCurrency);
     Uint8List _buffer = rlp.encode([
       ContractFunction.swap.name,
       '0x${sellCurrency.blockchainId}',
@@ -120,7 +120,7 @@ class ContractCore {
   Future<String> withdrawData(Currency currency, Decimal amount) async {
     BigInt _amount = BigInt.from(Converter.toEthSmallestUnit(amount).toInt());
     var _address;
-    _address = await extractAddressData(currency);
+    _address = await _extractAddressData(currency);
     Uint8List _buffer = rlp.encode([
       ContractFunction.transfer,
       '0x${currency.blockchainId}',
@@ -161,7 +161,7 @@ class ContractCore {
     BigInt _amount = BigInt.from(Converter.toEthSmallestUnit(amount).toInt());
 
     var _address;
-    _address = await extractAddressData(currency);
+    _address = await _extractAddressData(currency);
 
     Uint8List _buffer = rlp.encode([
       ContractFunction.donate,

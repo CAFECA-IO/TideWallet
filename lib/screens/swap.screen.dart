@@ -11,6 +11,8 @@ import '../widgets/buttons/primary_button.dart';
 import '../widgets/swap_card.dart';
 import '../widgets/swap_confirm.dart';
 import '../widgets/swap_success.dart';
+import '../widgets/dialogs/dialog_controller.dart';
+import '../widgets/dialogs/error_dialog.dart';
 
 import '../helpers/i18n.dart';
 import '../helpers/logger.dart';
@@ -76,11 +78,16 @@ class _SwapScreenState extends State<SwapScreen> {
             showModalBottomSheet(
               isScrollControlled: true,
               context: context,
-              builder: (context) => SwapSuccess(_sellCurrency, _buyCurrency),
+              builder: (context) =>
+                  SwapSuccess(_sellCurrency, _buyCurrency, () {
+                this._swapBloc.add(InitSwap(state.sellCurrency));
+              }),
             );
 
           if (state.result == SwapResult.failure) {
-            // ++ SHOW ERROR 2021/3/17 Emily
+            // ++ add Key and data to translation file. Emily 2021/3/18
+            DialogController.show(
+                context, ErrorDialog(state.result.toString()));
             Log.error(state.result.toString());
           }
 
