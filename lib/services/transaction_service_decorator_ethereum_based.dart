@@ -1,12 +1,10 @@
 import 'dart:typed_data';
 import 'package:decimal/decimal.dart';
-import 'package:convert/convert.dart';
 
 import 'transaction_service.dart';
 import '../cores/signer.dart';
 import '../models/utxo.model.dart';
 import '../models/ethereum_transaction.model.dart';
-import '../helpers/utils.dart';
 import '../helpers/ethereum_based_utils.dart';
 import '../helpers/cryptor.dart';
 import '../helpers/logger.dart';
