@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
-import 'package:tidewallet3/repositories/trader_repository.dart';
+import 'package:rxdart/rxdart.dart';
 
+import '../../repositories/trader_repository.dart';
 import '../../repositories/invest_repository.dart';
 
 import '../../models/account.model.dart';
@@ -20,6 +21,20 @@ class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
   final TraderRepository _traderRepo;
 
   InvestPlanBloc(this._repo, this._traderRepo) : super(InvestPlanInitial());
+
+  @override
+  Stream<Transition<InvestPlanEvent, InvestPlanState>> transformEvents(
+      Stream<InvestPlanEvent> events, transitionFn) {
+    final nonDebounceStream =
+        events.where((event) => event is! InputPercentage);
+
+    final debounceStream = events
+        .where((event) => event is InputPercentage)
+        .debounceTime(Duration(milliseconds: 1000));
+
+    return super.transformEvents(
+        MergeStream([nonDebounceStream, debounceStream]), transitionFn);
+  }
 
   @override
   Stream<InvestPlanState> mapEventToState(
@@ -55,7 +70,7 @@ class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
             Decimal.zero / Decimal.fromInt(100);
         yield _state.copyWith(
             percentage: event.percentage, investAmount: investAmount
-            // _traderRepo.calculateFeeToFiat(_state.currency, investAmount)
+            // _traderRepo.calculateAmountToFiat(_state.currency, investAmount)
             );
       }
       if (event is InputPercentage) {
@@ -63,7 +78,7 @@ class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
             Decimal.zero * Decimal.tryParse(event.percentage) ??
             Decimal.zero / Decimal.fromInt(100);
         yield _state.copyWith(investAmount: investAmount
-            // _traderRepo.calculateFeeToFiat(_state.currency, investAmount)
+            // _traderRepo.calculateAmountToFiat(_state.currency, investAmount)
             );
       }
       if (event is GenerateInvestPlan) {
@@ -72,7 +87,7 @@ class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
         Investment investment = await _repo.generateInvestment(_state.currency,
             _state.strategy, _state.amplitude, _state.investAmount);
         investment.feeToFiat =
-            _traderRepo.calculateFeeToFiat(_state.currency, investment.fee);
+            _traderRepo.calculateAmountToFiat(_state.currency, investment.fee);
         yield _state.copyWith(investment: investment);
       }
       if (event is CreateInvestPlan) {

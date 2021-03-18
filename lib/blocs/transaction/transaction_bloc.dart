@@ -149,7 +149,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         Log.debug(rules);
         if (gasLimit != null)
           feeToFiat =
-              _traderRepo.calculateFeeToFiat(_repo.currency, fee).toString();
+              _traderRepo.calculateAmountToFiat(_repo.currency, fee).toString();
         yield _state.copyWith(
           amount: amount,
           rules: rules,
@@ -194,7 +194,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           } catch (e) {}
         }
         String feeToFiat =
-            _traderRepo.calculateFeeToFiat(_repo.currency, fee).toString();
+            _traderRepo.calculateAmountToFiat(_repo.currency, fee).toString();
         yield _state.copyWith(
             priority: event.priority,
             fee: fee,
@@ -215,7 +215,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         rule2 = _repo.verifyAmount(_state.amount, fee: fee);
         List<bool> rules = [_state.rules[0], rule2];
         String feeToFiat =
-            _traderRepo.calculateFeeToFiat(_repo.currency, fee).toString();
+            _traderRepo.calculateAmountToFiat(_repo.currency, fee).toString();
         yield _state.copyWith(
             gasLimit: Decimal.parse(event.gasLimit),
             rules: rules,
@@ -232,7 +232,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         rule2 = _repo.verifyAmount(_state.amount, fee: fee);
         List<bool> rules = [_state.rules[0], rule2];
         String feeToFiat =
-            _traderRepo.calculateFeeToFiat(_repo.currency, fee).toString();
+            _traderRepo.calculateAmountToFiat(_repo.currency, fee).toString();
         yield _state.copyWith(
             gasPrice: Decimal.parse(event.gasPrice),
             rules: rules,
@@ -253,7 +253,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             message: _state.message);
         Log.debug('PublishTransaction result: $result'); //--
 
-        final publishResult = await _repo.publishTransaction(result[0], result[1]);
+        final publishResult =
+            await _repo.publishTransaction(result[0], result[1]);
         bool success = publishResult[0];
         Log.warning('PublishTransaction success: $success'); //--
         if (success)

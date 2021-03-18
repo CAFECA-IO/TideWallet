@@ -272,7 +272,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                         children: [
                           Text(
                             '${t('estimated')}:',
-                            style: Theme.of(context).textTheme.headline6,
+                            style: Theme.of(context).textTheme.headline3,
                           ),
                           Text(
                             '${state.fee == null || state.fee.toString().isEmpty ? "loading..." : (Formatter.formatDecimal(state.fee.toString()) + " " + _repo.currency.accountSymbol)}',

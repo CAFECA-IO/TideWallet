@@ -14,6 +14,7 @@ import './repositories/transaction_repository.dart';
 import './repositories/user_repository.dart';
 import './repositories/trader_repository.dart';
 import './repositories/invest_repository.dart';
+import './repositories/swap_repository.dart';
 import './screens/currency.screen.dart';
 import './screens/landing.screen.dart';
 import './screens/restore_wallet.screen.dart';
@@ -93,6 +94,9 @@ class MyApp extends StatelessWidget {
           ),
           Provider<InvestRepository>(
             create: (_) => InvestRepository(),
+          ),
+          Provider<SwapRepository>(
+            create: (_) => SwapRepository(),
           )
         ],
         child: MultiBlocProvider(
