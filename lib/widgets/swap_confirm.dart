@@ -158,7 +158,7 @@ class _SwapConfirmState extends State<SwapConfirm> {
               cubit: _verifyPasswordBloc,
               listener: (context, state) {
                 if (state is PasswordVerified) {
-                  widget.confirmFunc();
+                  widget.confirmFunc(state.password);
                   Navigator.of(context).pop();
                 }
                 if (state is PasswordInvalid) {

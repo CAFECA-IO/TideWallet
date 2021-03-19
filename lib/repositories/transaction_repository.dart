@@ -320,8 +320,8 @@ class TransactionRepository {
     }
   }
 
-  Future<List> publishTransaction(
-      Transaction transaction, String balance) async {
+  Future<List> publishTransaction(Transaction transaction, String balance,
+      {String blockchainId}) async {
     List result = await _accountService.publishTransaction(
         this._currency.blockchainId, transaction);
     bool success = result[0];
