@@ -79,9 +79,9 @@ class UtxoEntity {
         this.sequence = _utxo.sequence,
         this.address = _utxo.address;
 
-  UtxoEntity.fromJson(String currencyId, Map<String, dynamic> data)
-      : this.utxoId = data['UTXO_id'],
-        this.accountcurrencyId = currencyId,
+  UtxoEntity.fromJson(String accountId, Map<String, dynamic> data)
+      : this.utxoId = data['utxo_id'],
+        this.accountcurrencyId = accountId,
         this.txId = data['txid'],
         this.vout = data['vout'],
         this.type = data['type'],

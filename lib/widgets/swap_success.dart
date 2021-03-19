@@ -5,8 +5,9 @@ import 'buttons/primary_button.dart';
 class SwapSuccess extends StatelessWidget {
   final Map<String, String> from;
   final Map<String, String> to;
+  final Function onPressed;
 
-  SwapSuccess(this.from, this.to);
+  SwapSuccess(this.from, this.to, this.onPressed);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -97,6 +98,7 @@ class SwapSuccess extends StatelessWidget {
           Container(
             width: double.infinity,
             child: PrimaryButton('Ok', () {
+              onPressed();
               Navigator.of(context).popUntil(
                 (ModalRoute.withName('/')),
               ); // To MaterialApp root

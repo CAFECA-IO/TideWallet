@@ -23,44 +23,51 @@ class SwapLoaded extends SwapState {
   final Currency buyCurrency;
   final String sellAmount;
   final List<Currency> targets;
-  final String fee;
+  final String contract;
   final int usePercent;
   final String buyAmount;
   final String exchangeRate;
   final SwapResult result;
+  final Decimal gasPrice;
+  final Decimal gasLimit;
 
   SwapLoaded(
       {this.sellCurrency,
       this.buyCurrency,
       this.sellAmount,
-      this.fee,
+      this.contract,
       this.usePercent,
       this.targets,
       this.buyAmount,
       this.exchangeRate,
-      this.result});
+      this.result,
+      this.gasPrice,
+      this.gasLimit});
 
-  SwapLoaded copyWith({
-    Currency sellCurrency,
-    Currency buyCurrency,
-    String sellAmount,
-    List<Currency> targets,
-    String fee,
-    int usePercent,
-    String buyAmount,
-    String exchangeRate,
-    SwapResult result,
-  }) {
+  SwapLoaded copyWith(
+      {Currency sellCurrency,
+      Currency buyCurrency,
+      String sellAmount,
+      List<Currency> targets,
+      String contract,
+      int usePercent,
+      String buyAmount,
+      String exchangeRate,
+      SwapResult result,
+      Decimal gasPrice,
+      Decimal gasLimit}) {
     return SwapLoaded(
         sellCurrency: sellCurrency ?? this.sellCurrency,
         buyCurrency: buyCurrency ?? this.buyCurrency,
         sellAmount: sellAmount ?? this.sellAmount,
-        fee: fee ?? this.fee,
+        contract: contract ?? this.contract,
         usePercent: usePercent ?? this.usePercent,
         targets: targets ?? this.targets,
         buyAmount: buyAmount ?? this.buyAmount,
         exchangeRate: exchangeRate ?? this.exchangeRate,
-        result: result ?? this.result);
+        result: result ?? this.result,
+        gasPrice: gasPrice ?? this.gasPrice,
+        gasLimit: gasLimit ?? this.gasLimit);
   }
 
   @override
@@ -68,11 +75,13 @@ class SwapLoaded extends SwapState {
         sellCurrency,
         buyCurrency,
         sellAmount,
-        fee,
+        contract,
         usePercent,
         targets,
         buyAmount,
         exchangeRate,
-        result.toString()
+        result.toString(),
+        gasPrice,
+        gasLimit
       ];
 }
