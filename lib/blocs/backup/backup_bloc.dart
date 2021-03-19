@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'dart:ui';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../helpers/logger.dart';
@@ -17,32 +17,22 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
   UserRepository _repo;
   BackupBloc(this._repo) : super(BackupInitial());
 
-  Future<bool> _capture(String wallet) async {
-    final painter = QrPainter(
-      data: wallet,
-      version: QrVersions.auto,
-      gapless: true,
-      color: Colors.white,
-      emptyColor: Colors.black,
-      errorCorrectionLevel: QrErrorCorrectLevel.L,
-    );
-    ByteData imageData;
-
-    imageData = await painter.toImageData(600.0);
-    final imageBytes = imageData.buffer.asUint8List();
+  Future<bool> _capture(RenderRepaintBoundary boundary) async {
+    final image = await boundary.toImage();
+    ByteData byteData = await image.toByteData(format: ImageByteFormat.png);
 
     try {
-       PermissionStatus status = await Permission.storage.request();
+      PermissionStatus status = await Permission.storage.request();
 
-       if (status.isGranted) {
-        final result = await ImageGallerySaver.saveImage(Uint8List.fromList(imageBytes),
-            quality: 60, name: "PaperWallet");
+      if (status.isGranted) {
+        final result = await ImageGallerySaver.saveImage(
+            byteData.buffer.asUint8List(),
+            name: "PaperWallet");
         Log.debug(result);
         return true;
-
-       } else {
-         return false;
-       }
+      } else {
+        return false;
+      }
     } catch (e) {
       return false;
     }
@@ -78,9 +68,8 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
     }
 
     if (event is Backup) {
-      BackupAuth _state = state;
       yield Backuping();
-      bool storeRes = await _capture(_state.wallet);
+      bool storeRes = await _capture(event.boundary);
       bool res = await _repo.backupWallet();
 
       if (res && storeRes) {
@@ -93,7 +82,7 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
       }
     }
 
-    if (event is CleanBackupAuth) {
+    if (event is CleanBackup) {
       yield UnBackup();
     }
   }

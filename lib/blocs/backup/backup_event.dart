@@ -15,6 +15,10 @@ class VerifyBackupPassword extends BackupEvent {
   VerifyBackupPassword(this.password);
 }
 
-class Backup extends BackupEvent {}
+class Backup extends BackupEvent {
+  final RenderRepaintBoundary boundary;
 
-class CleanBackupAuth extends BackupEvent {}
+  Backup(this.boundary);
+}
+
+class CleanBackup extends BackupEvent {}

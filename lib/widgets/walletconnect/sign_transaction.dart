@@ -53,8 +53,8 @@ class _SignTransactionState extends State<SignTransaction> {
         hexStringToDecimal(widget.param['gas']) /
         Decimal.fromInt(pow(10, 18));
     Decimal amountInFiat =
-        _traderRepo.calculateFeeToFiat(widget.currency, amount) / Decimal.fromInt(pow(10, 18));
-    Decimal feeInFiat = _traderRepo.calculateFeeToFiat(widget.currency, fee);
+        _traderRepo.calculateAmountToFiat(widget.currency, amount) / Decimal.fromInt(pow(10, 18));
+    Decimal feeInFiat = _traderRepo.calculateAmountToFiat(widget.currency, fee);
 
     bool able = (Decimal.tryParse(widget.currency.amount) *
                 Decimal.fromInt(pow(10, 18)) -
