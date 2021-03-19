@@ -125,7 +125,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                 final tx = state.currentEvent.params[0];
 
                 if (tx['gasPrice'] == null) {
-                  tx['gasPrice'] = _bloc.gasPrice[TransactionPriority.standard] * Decimal.fromInt(pow(10, 18));
+                  tx['gasPrice'] = (_bloc.gasPrice[TransactionPriority.standard] * Decimal.fromInt(pow(10, 18))).toInt().toRadixString(16);
                 }
                 content = SignTransaction(
                     context: context,

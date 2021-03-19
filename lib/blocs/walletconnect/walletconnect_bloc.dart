@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:typed_data';
 import 'dart:convert';
 import 'package:convert/convert.dart';
@@ -6,7 +7,6 @@ import 'package:bloc/bloc.dart';
 import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
 import 'package:rxdart/rxdart.dart';
-
 
 import '../../helpers/logger.dart';
 import '../../models/account.model.dart';
@@ -29,15 +29,15 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
   AccountRepository _accountRepo;
   static const ACCOUNT _accountType = ACCOUNT.ETH;
   Currency _selected;
- Map<TransactionPriority, Decimal> _gasPrice;
+  Map<TransactionPriority, Decimal> _gasPrice;
 
   WalletConnectBloc(this._accountRepo, this._txRepo)
       : super(WalletConnectInitial());
 
   getReceivingAddress() => _txRepo.getReceivingAddress();
 
-  get currency => this._selected;
-  get gasPrice => this._gasPrice;
+  Currency get currency => this._selected;
+  Map<TransactionPriority, Decimal> get gasPrice => this._gasPrice;
 
   @override
   Stream<Transition<WalletConnectEvent, WalletConnectState>> transformEvents(
@@ -116,6 +116,9 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
             (c) => c.accountType == _accountType && c.chainId == chainId,
             orElse: () =>
                 currencies.firstWhere((c) => c.accountType == _accountType));
+        
+        // check to use the right chain
+        // Log.info('*** chainId $chainId ${_selected.network} __ ${_selected.chainId}');
 
         this._txRepo.setCurrency(_selected);
         _session.chainId = chainId;
@@ -158,8 +161,8 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
           case 'eth_sendTransaction':
             final param = event.request.params[0];
 
-            Decimal amount = hexStringToDecimal(param['value']);
-            Decimal gasPrice = hexStringToDecimal(param['gasPrice']);
+            Decimal amount = hexStringToDecimal(param['value']) / Decimal.fromInt(pow(10, 18));
+            Decimal gasPrice = hexStringToDecimal(param['gasPrice']) / Decimal.fromInt(pow(10, 18));
             Decimal gasLimit = hexStringToDecimal(param['gas']);
 
             final txRes = await _txRepo.prepareTransaction(

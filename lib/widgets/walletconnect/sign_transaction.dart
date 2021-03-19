@@ -54,12 +54,11 @@ class _SignTransactionState extends State<SignTransaction> {
         hexStringToDecimal(widget.param['gas']) /
         Decimal.fromInt(pow(10, 18));
     Decimal amountInFiat =
-        _traderRepo.calculateFeeToFiat(widget.currency, amount);
+        _traderRepo.calculateFeeToFiat(widget.currency, amount) / Decimal.fromInt(pow(10, 18));
     Decimal feeInFiat = _traderRepo.calculateFeeToFiat(widget.currency, fee);
 
     bool able = (Decimal.tryParse(widget.currency.amount) * Decimal.fromInt(pow(10, 18)) - amount - fee) >
         Decimal.zero;
-
     return BlocBuilder<FiatBloc, FiatState>(
         cubit: _fiatBloc,
         builder: (context, state) {
@@ -111,10 +110,10 @@ class _SignTransactionState extends State<SignTransaction> {
                         width: 4.0,
                       ),
                       Text(
-                        '- $amount ETH',
+                        '- ${amount / Decimal.fromInt(pow(10, 18))} ETH',
                         style: Theme.of(context).textTheme.headline1,
                       ),
-                      Text('(\$ $amountInFiat $fiat)')
+                      Text('(\$ ${Formatter.formatDecimal(amountInFiat.toString())} $fiat)')
                     ],
                   ),
                 ),
@@ -153,7 +152,7 @@ class _SignTransactionState extends State<SignTransaction> {
                             .headline1
                             .copyWith(fontSize: 18),
                       ),
-                      Text('\$ ${amountInFiat + feeInFiat} $fiat')
+                      Text('\$ ${Formatter.formatDecimal((amountInFiat + feeInFiat).toString())} $fiat')
                     ],
                   ),
                 ),
