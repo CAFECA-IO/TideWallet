@@ -39,9 +39,11 @@ class TransactionRepository {
 
   TransactionRepository();
 
-  void setCurrency(Currency currency) {
+  void setCurrency(Currency currency) async {
     this._currency = currency;
     _accountService = AccountCore().getService(this._currency.accountId);
+    _address = (await _accountService.getChangingAddress(_currency.id))[0];
+
     switch (this._currency.accountType) {
       case ACCOUNT.BTC:
         _transactionService =
@@ -90,6 +92,13 @@ class TransactionRepository {
     String address = result[0];
 
     return address;
+  }
+
+  Future getGasPrice() async {
+    Map<TransactionPriority, Decimal> _fee =
+        await _accountService.getTransactionFee(this._currency.blockchainId);
+
+    return _fee;
   }
 
   Future<List<dynamic>> getTransactionFee(
