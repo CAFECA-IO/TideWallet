@@ -9,7 +9,6 @@ enum ACCOUNT_EVT {
   OnUpdateAccount,
   OnUpdateCurrency,
   OnUpdateTransactions,
-  OnUpdateInvestment,
   ClearAll
 }
 
@@ -183,13 +182,15 @@ class Token {
 }
 
 class Fiat {
+  final String currencyId;
   final String name;
   final Decimal exchangeRate;
 
-  Fiat({this.name, this.exchangeRate});
+  Fiat({this.currencyId, this.name, this.exchangeRate});
 
   Fiat.fromMap(Map map)
-      : name = map['name'],
+      : currencyId = map['currency_id'],
+        name = map['name'],
         exchangeRate = Decimal.tryParse(map['rate']);
 
   // Fiat.fromExChangeRateCurrencyEntity(ExchageRateCurrency entity)
@@ -197,6 +198,7 @@ class Fiat {
   //       exchangeRate = Decimal.parse(entity.rate);
 
   Fiat.fromExchangeRateEntity(ExchangeRateEntity entity)
-      : name = entity.name,
+      : currencyId = entity.exchangeRateId,
+        name = entity.name,
         exchangeRate = Decimal.parse(entity.rate);
 }

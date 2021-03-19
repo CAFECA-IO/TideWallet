@@ -180,5 +180,11 @@
   "estimate_profit":"預測收入",
   "irr":"年化報酬率",
   "authorize":"Authorize",
-  "invest_percentage": "投資比例"
+  "invest_percentage": "投資比例",
+  "swap_title": "Swap",
+  "swap_info": "Swap Information",
+  "exchange_rate": "Exchange rate",
+  "exchange_details": "Exchange Details",
+  "buy": "Buy",
+  "sell": "Sell"
 }

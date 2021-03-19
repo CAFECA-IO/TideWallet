@@ -36,7 +36,11 @@ TextTheme myTextTheme = TextTheme(
     headline4: TextStyle(color: Colors.white),
     headline5: TextStyle(
         color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),
-    headline6: TextStyle(color: MyColors.secondary_02, fontSize: 13.0),
+    headline3: TextStyle(color: MyColors.secondary_02, fontSize: 13.0),
+    headline6: TextStyle(
+        fontSize: 18.0,
+        color: MyColors.secondary_02,
+        fontWeight: FontWeight.normal),
     bodyText1: TextStyle(color: MyColors.secondary_01),
     bodyText2: TextStyle(color: MyColors.primary_06, fontSize: 13),
     button: TextStyle(color: MyColors.font_01),
@@ -45,17 +49,17 @@ TextTheme myTextTheme = TextTheme(
     subtitle2: TextStyle(fontSize: 12.0, color: MyColors.secondary_02));
 
 ThemeData myThemeData = ThemeData(
-  primaryColor: MyColors.primary_02,
-  primaryColorLight: MyColors.primary_02,
-  primaryColorDark: MyColors.primary_01,
-  accentColor: MyColors.primary_03,
-  errorColor: MyColors.primary_05,
-  hintColor: MyColors.primary_04,
-  dividerColor: MyColors.secondary_06,
-  textTheme: myTextTheme,
-  cursorColor: MyColors.secondary_03,
-  disabledColor: MyColors.secondary_05,
-);
+    primaryColor: MyColors.primary_02,
+    primaryColorLight: MyColors.primary_02,
+    primaryColorDark: MyColors.primary_01,
+    accentColor: MyColors.primary_03,
+    errorColor: MyColors.primary_05,
+    hintColor: MyColors.primary_04,
+    dividerColor: MyColors.secondary_06,
+    textTheme: myTextTheme,
+    cursorColor: MyColors.secondary_03,
+    disabledColor: MyColors.secondary_05,
+    backgroundColor: MyColors.font_01);
 
 ThemeData myDarkThemeData = ThemeData();
 

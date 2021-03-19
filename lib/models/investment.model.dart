@@ -1,4 +1,5 @@
 import 'package:decimal/decimal.dart';
+import 'package:flutter/material.dart';
 
 import 'account.model.dart';
 
@@ -102,6 +103,15 @@ class InvestAccount {
   final List<Investment> investments;
 
   InvestAccount(this.currency, this.investments);
+}
+
+enum INVESTMENT_EVT { OnUpdateInvestment, ClearAll }
+
+class InvestmentMessage {
+  final INVESTMENT_EVT evt;
+  final value;
+
+  InvestmentMessage({@required this.evt, this.value});
 }
 
 class Investment {

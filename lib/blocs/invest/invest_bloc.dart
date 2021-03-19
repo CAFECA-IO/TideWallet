@@ -1,10 +1,8 @@
 import 'dart:async';
 
-import 'package:tidewallet3/repositories/user_repository.dart';
-
-import '../../models/account.model.dart';
 import '../../models/investment.model.dart';
 import '../../repositories/invest_repository.dart';
+import '../../repositories/user_repository.dart';
 import 'package:decimal/decimal.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -19,7 +17,7 @@ class InvestBloc extends Bloc<InvestEvent, InvestState> {
   InvestBloc(this._repo, this._userRepo) : super(InvestInitial()) {
     _subscription?.cancel();
     this._repo.listener.listen((msg) {
-      if (msg.evt == ACCOUNT_EVT.OnUpdateInvestment) {
+      if (msg.evt == INVESTMENT_EVT.OnUpdateInvestment) {
         this.add(UpdateInvestAccountList(msg.value['investAccounts']));
       }
     });

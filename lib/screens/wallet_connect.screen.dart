@@ -237,7 +237,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
               Widget status;
               TextStyle style = Theme.of(context)
                   .textTheme
-                  .headline6
+                  .headline3
                   .copyWith(fontSize: 16.0);
 
               if (state.status == WC_STATUS.CONNECTED ||
