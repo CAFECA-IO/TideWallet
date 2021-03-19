@@ -196,22 +196,23 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       // ++ error handle if buyAmoumt is too high need to update SwapUI => exchangeRate, and expected buyAmount 2021/3/19 Emily
       _transactionRepo.setCurrency(_state.sellCurrency);
 
-      List result = await _swapRepo.swap(
-        (await _transactionRepo.getPrivKey(event.password, 0, 0)),
-        _state.sellCurrency,
-        _state.sellAmount,
-        _state.buyCurrency,
-        _state.buyAmount,
-        _state.contract,
-        _state.gasPrice,
-        _state.gasLimit,
-      );
+      // List result = await _swapRepo.swap(
+      //   (await _transactionRepo.getPrivKey(event.password, 0, 0)),
+      //   _state.sellCurrency,
+      //   _state.sellAmount,
+      //   _state.buyCurrency,
+      //   _state.buyAmount,
+      //   _state.contract,
+      //   _state.gasPrice,
+      //   _state.gasLimit,
+      // );
 
-      final publishResult = await _transactionRepo.publishTransaction(
-          result[0], result[1],
-          blockchainId: ''); // ++ will use cfc token 2021/3/19 Emily
+      // final publishResult = await _transactionRepo.publishTransaction(
+      //     result[0], result[1],
+      //     blockchainId: ''); // ++ will use cfc token 2021/3/19 Emily
 
-      if (publishResult[0])
+      // if (publishResult[0])
+      if (true)
         yield _state.copyWith(result: SwapResult.success);
       else
         yield _state.copyWith(result: SwapResult.none);
