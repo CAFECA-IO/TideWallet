@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../blocs/reset/reset_bloc.dart';
 import '../../blocs/user/user_bloc.dart';
+import '../../blocs/backup/backup_bloc.dart';
 import '../../repositories/account_repository.dart';
 import '../../repositories/user_repository.dart';
 import '../../widgets/dialogs/dialog_controller.dart';
@@ -25,6 +26,7 @@ class _ResetSettingState extends State<ResetSetting> {
 
   ResetBloc _bloc;
   UserBloc _userBloc;
+  BackupBloc _backupBloc;
 
   AccountRepository _accountRepository;
   UserRepository _userRepository;
@@ -35,6 +37,7 @@ class _ResetSettingState extends State<ResetSetting> {
     _userRepository = Provider.of<UserRepository>(context);
     _bloc = ResetBloc(_userRepository, _accountRepository);
     _userBloc = BlocProvider.of<UserBloc>(context);
+    _backupBloc = BlocProvider.of<BackupBloc>(context);
     super.didChangeDependencies();
   }
 
@@ -64,6 +67,7 @@ class _ResetSettingState extends State<ResetSetting> {
 
           DialogController.dismiss(context);
           _userBloc.add(UserReset());
+          _backupBloc.add(CleanBackup());
         }
       },
       child: InkWell(

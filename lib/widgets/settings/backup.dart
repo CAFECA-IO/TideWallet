@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -20,7 +21,7 @@ class BackupSetting extends StatefulWidget {
 
 class _BackupSettingState extends State<BackupSetting> {
   BackupBloc _backupBloc;
-  // final GlobalKey globalKey = GlobalKey();
+  final GlobalKey globalKey = GlobalKey();
   final t = I18n.t;
   bool _clickedBackup = false;
 
@@ -29,7 +30,6 @@ class _BackupSettingState extends State<BackupSetting> {
     _backupBloc = BlocProvider.of<BackupBloc>(context);
     super.didChangeDependencies();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -50,10 +50,13 @@ class _BackupSettingState extends State<BackupSetting> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        QrImage(
-                          data: state.wallet,
-                          version: QrVersions.auto,
-                          size: 240.0,
+                        RepaintBoundary(
+                          key: this.globalKey,
+                          child: QrImage(
+                            data: state.wallet,
+                            version: QrVersions.auto,
+                            size: 240.0,
+                          ),
                         ),
                         SizedBox(height: 40.0),
                         Padding(
@@ -61,7 +64,12 @@ class _BackupSettingState extends State<BackupSetting> {
                           child: SecondaryButton(
                             t('save_image'),
                             () {
-                              _backupBloc.add(Backup());
+                              RenderRepaintBoundary boundary = this
+                                  .globalKey
+                                  .currentContext
+                                  .findRenderObject();
+
+                              _backupBloc.add(Backup(boundary));
                               this._clickedBackup = true;
                               Navigator.of(context).pop();
                             },
@@ -76,7 +84,7 @@ class _BackupSettingState extends State<BackupSetting> {
             },
           ).then((value) {
             if (!this._clickedBackup) {
-              _backupBloc.add(CleanBackupAuth());
+              _backupBloc.add(CleanBackup());
             }
 
             this._clickedBackup = false;
