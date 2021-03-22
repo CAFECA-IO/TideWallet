@@ -25,23 +25,14 @@ class EthereumService extends AccountServiceDecorator {
   EthereumService(AccountService service) : super(service) {
     this.base = ACCOUNT.ETH;
     this.syncInterval = 7500;
-    // this.syncInterval = 1 * 60 * 1000;
     // this.path = "m/44'/60'/0'";
   }
   String _address;
-  String _contract; // ?
-  String _tokenAddress; // ?
   Map<TransactionPriority, Decimal> _fee;
   int _gasLimit;
   int _feeTimestamp; // fetch transactionFee timestamp;
   // int _gasLimitTimestamp; // fetch estimatedGas timestamp;
   int _nonce = 0;
-
-  @override
-  Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) async {
-    // TODO: implement getUnspentTxOut
-    throw UnimplementedError();
-  }
 
   @override
   void init(String id, ACCOUNT base, {int interval}) {
@@ -50,31 +41,20 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   @override
-  prepareTransaction() {
-    // TODO: implement prepareTransaction
-    throw UnimplementedError();
-  }
-
-  @override
   Future start() async {
     await this.service.start();
+
+    this.synchro();
+
+    this.service.timer =
+        Timer.periodic(Duration(milliseconds: this.syncInterval), (_) {
+      synchro();
+    });
   }
 
   @override
   void stop() {
     this.service.stop();
-  }
-
-  @override
-  Decimal toCoinUnit() {
-    // TODO: implement toCoinUnit
-    throw UnimplementedError();
-  }
-
-  @override
-  Decimal toSmallUnit() {
-    // TODO: implement toSmallUnit
-    throw UnimplementedError();
   }
 
   static Future<Token> getTokeninfo(String blockchainId, String address) async {
@@ -168,7 +148,6 @@ class EthereumService extends AccountServiceDecorator {
     }
   }
 
-  @override
   Future<Decimal> estimateGasLimit(String blockchainId, String from, String to,
       String amount, String message) async {
     if (message == '0x' && _gasLimit != null)
@@ -299,8 +278,7 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   @override
-  getTransactions() {
-    // TODO: implement getTransactions
-    throw UnimplementedError();
+  Future synchro() async {
+    await this.service.synchro();
   }
 }
