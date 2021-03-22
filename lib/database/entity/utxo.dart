@@ -80,7 +80,7 @@ class UtxoEntity {
         this.address = _utxo.address;
 
   UtxoEntity.fromJson(String currencyId, Map<String, dynamic> data)
-      : this.utxoId = data['UTXO_id'],
+      : this.utxoId = data['utxo_id'],
         this.accountcurrencyId = currencyId,
         this.txId = data['txid'],
         this.vout = data['vout'],

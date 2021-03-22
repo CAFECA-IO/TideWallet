@@ -2,8 +2,6 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
-
-import '../../constants/account_config.dart';
 import '../../models/account.model.dart';
 import '../../repositories/account_repository.dart';
 import '../../repositories/trader_repository.dart';
@@ -45,7 +43,9 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
       Decimal _total = Decimal.zero;
 
       list = list.map((curr) {
-        Decimal v = _traderRepo.calculateToUSD(curr);
+        // Decimal v = _traderRepo.calculateAmountToUSD(curr, Decimal.parse(curr.amount));
+                Decimal v = _traderRepo.calculateToUSD(curr);
+
         _total += v;
 
         return curr.copyWith(inUSD: v.toString());

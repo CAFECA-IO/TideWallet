@@ -3,6 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:decimal/decimal.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../../repositories/account_repository.dart';
 import '../../repositories/trader_repository.dart';
@@ -56,13 +57,19 @@ class AccountCurrencyBloc
         return curr.copyWith(inUSD: v.toString());
       }).toList();
 
+      list.sort((a, b) => a.accountType.index.compareTo(b.accountType.index));
+
       yield AccountCurrencyLoaded(list, total: _total);
     }
     if (event is UpdateAccountCurrencies) {
-      List<Currency> _list = state.currencies;
-      event.currencies.forEach((newCurr) {
-        int index =
-            state.currencies.indexWhere((oldCurr) => oldCurr.id == newCurr.id);
+      List<Currency> _list = [...state.currencies];
+      final _currency = event.currencies.map((e) {
+        Decimal v = _traderRepo.calculateToUSD(e);
+
+        return e.copyWith(inUSD: v.toString());
+      }).toList();
+      _currency.forEach((newCurr) {
+        int index = _list.indexWhere((oldCurr) => oldCurr.id == newCurr.id);
         if (index < 0)
           _list.add(newCurr);
         else
@@ -71,28 +78,13 @@ class AccountCurrencyBloc
 
       Decimal _total = Decimal.zero;
 
-      _list = _list.map(
-        (e) {
-          Decimal v = _traderRepo.calculateToUSD(e);
-          _total += v;
-
-          return e.copyWith(inUSD: v.toString());
-        },
-      ).toList();
-
-      yield AccountCurrencyLoaded(_list, total: _total);
-
-      List<Currency> _accounts = [...state.currencies];
-
-      _repo.getAllCurrencies().forEach((currency) {
-        Decimal v = _traderRepo.calculateToUSD(currency);
-        _total += v;
+      _list.forEach((c) {
+        _total += Decimal.parse(c.inUSD);
       });
 
-      _accounts
-          .sort((a, b) => a.accountType.index.compareTo(b.accountType.index));
+      _list.sort((a, b) => a.accountType.index.compareTo(b.accountType.index));
 
-      yield AccountCurrencyLoaded(_accounts, total: _total);
+      yield AccountCurrencyLoaded(_list, total: _total);
     }
 
     if (event is CleanAccountCurrencies) {

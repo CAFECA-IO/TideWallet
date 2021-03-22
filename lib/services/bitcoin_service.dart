@@ -231,7 +231,7 @@ class BitcoinService extends AccountServiceDecorator {
 
     if (now - this.service.lastSyncTimestamp > this.syncInterval) {
       Log.btc('_syncUTXO');
-      String currencyId = this.service.accountId; // TODO is Id correct?
+      String currencyId = this.service.accountId;
       Log.btc('_syncUTXO currencyId: $currencyId');
 
       APIResponse response = await HTTPAgent()
