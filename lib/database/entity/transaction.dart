@@ -84,11 +84,7 @@ class TransactionEntity {
         this.gasUsed = data['gas_limit'],
         this.fee = data['fee'].toString(),
         this.direction = data['direction'],
-        this.status = data['status'].runtimeType == bool
-            ? data['status']
-                ? 'success'
-                : 'pending'
-            : data['status'], // -- backend data type is different: usdt
+        this.status = data['status'],
         this.timestamp = data['timestamp'],
         this.note = data['note'];
 
