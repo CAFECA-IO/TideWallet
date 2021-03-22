@@ -40,4 +40,10 @@ class TransactionServiceBased extends TransactionService {
     // TODO: implement calculateTransactionVSize
     throw UnimplementedError();
   }
+
+  @override
+  Uint8List extractAddressData(String address, bool publish) {
+    // TODO: implement extractAddressData
+    throw UnimplementedError();
+  }
 }

@@ -49,15 +49,6 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
     String changeAddress,
     int changeIndex,
   }) {
-    Log.debug('ETH from: $changeAddress');
-    Log.debug('ETH to: $to');
-    Log.debug('ETH nonce: $nonce');
-    Log.debug('ETH amount: $amount');
-    Log.debug('ETH gasPrice: $gasPrice');
-    Log.debug('ETH gasUsed: $gasLimit');
-    Log.warning('ETH message: $message');
-    Log.debug('ETH chainId: $chainId');
-    Log.debug('ETH fee: ${gasLimit * gasPrice}');
     EthereumTransaction transaction = EthereumTransaction.prepareTransaction(
       from: changeAddress,
       to: to.contains(':') ? to.split(':')[1] : to,
@@ -87,5 +78,10 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
       Uint8List message}) {
     // TODO: implement calculateTransactionVSize
     throw UnimplementedError();
+  }
+
+  @override
+  Uint8List extractAddressData(String address, bool publish) {
+    return getEthereumAddressBytes(address);
   }
 }

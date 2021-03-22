@@ -25,7 +25,7 @@ class TransactionItem extends StatelessWidget {
             arguments: {"currency": currency, "transaction": transaction});
       },
       child: Container(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.symmetric(vertical: 12.0),
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(color: Theme.of(context).dividerColor),

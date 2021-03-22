@@ -96,28 +96,8 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
       to = to.split(':')[1];
     }
     // output
-    List<int> script;
-    if (isP2pkhAddress(
-        to,
-        publish
-            ? this.p2pkhAddressPrefixMainnet
-            : this.p2pkhAddressPrefixTestnet)) {
-      script = toP2pkhScript(decodeAddress(to).sublist(1));
-    } else if (isP2shAddress(
-        to,
-        publish
-            ? this.p2shAddressPrefixMainnet
-            : this.p2shAddressPrefixTestnet)) {
-      script = toP2shScript(decodeAddress(to).sublist(1));
-    } else if (isSegWitAddress(
-        to,
-        publish ? this.bech32HrpMainnet : this.bech32HrpTestnet,
-        bech32Separator)) {
-      script = extractScriptPubkeyFromSegwitAddress(to);
-    } else {
-      // TODO BitcoinCash Address condition
-      Log.warning('unsupported Address');
-    }
+    List result = extractAddressData(to, publish);
+    List<int> script = _addressDataToScript(result[0], result[1]);
     transaction.addOutput(amount, to, script);
     // input
     if (unspentTxOuts == null || unspentTxOuts.isEmpty) return null;
@@ -136,28 +116,8 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     Decimal change = utxoAmount - amount - fee;
     Log.debug('prepareTransaction change: $change');
     if (change > Decimal.zero) {
-      List<int> script;
-      if (isP2pkhAddress(
-          changeAddress,
-          publish
-              ? this.p2pkhAddressPrefixMainnet
-              : this.p2pkhAddressPrefixTestnet)) {
-        script = toP2pkhScript(decodeAddress(changeAddress).sublist(1));
-      } else if (isP2shAddress(
-          changeAddress,
-          publish
-              ? this.p2shAddressPrefixMainnet
-              : this.p2shAddressPrefixTestnet)) {
-        script = toP2shScript(decodeAddress(changeAddress).sublist(1));
-      } else if (isSegWitAddress(
-          changeAddress,
-          publish ? this.bech32HrpMainnet : this.bech32HrpTestnet,
-          bech32Separator)) {
-        script = extractScriptPubkeyFromSegwitAddress(changeAddress);
-      } else {
-        // TODO BitcoinCash Address condition
-        Log.warning('unsupported Address');
-      }
+      List result = extractAddressData(changeAddress, publish);
+      List<int> script = _addressDataToScript(result[0], result[1]);
       transaction.addOutput(change, changeAddress, script);
     }
     // Message
@@ -250,5 +210,56 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     }
     Decimal fee = Decimal.fromInt(vsize) * feePerByte;
     return fee;
+  }
+
+  Uint8List _addressDataToScript(
+      BitcoinTransactionType transactionType, Uint8List data) {
+    Uint8List script;
+    switch (transactionType) {
+      case BitcoinTransactionType.PUBKEYHASH:
+      case BitcoinTransactionType.PUBKEY:
+        script = toP2pkhScript(data);
+        break;
+      case BitcoinTransactionType.SCRIPTHASH:
+        script = toP2shScript(data);
+        break;
+      case BitcoinTransactionType.WITNESS_V0_KEYHASH:
+        script = data;
+        break;
+      default:
+        break;
+    }
+    return script;
+  }
+
+  @override
+  List<dynamic> extractAddressData(String address, bool publish) {
+    Uint8List data;
+    BitcoinTransactionType type;
+    if (isP2pkhAddress(
+        address,
+        publish
+            ? this.p2pkhAddressPrefixMainnet
+            : this.p2pkhAddressPrefixTestnet)) {
+      type = BitcoinTransactionType.PUBKEYHASH;
+      data = decodeAddress(address).sublist(1);
+    } else if (isP2shAddress(
+        address,
+        publish
+            ? this.p2shAddressPrefixMainnet
+            : this.p2shAddressPrefixTestnet)) {
+      type = BitcoinTransactionType.SCRIPTHASH;
+      data = decodeAddress(address).sublist(1);
+    } else if (isSegWitAddress(
+        address,
+        publish ? this.bech32HrpMainnet : this.bech32HrpTestnet,
+        bech32Separator)) {
+      type = BitcoinTransactionType.WITNESS_V0_KEYHASH;
+      data = extractScriptPubkeyFromSegwitAddress(address);
+    } else {
+      // TODO BitcoinCash Address condition
+      Log.warning('unsupported Address');
+    }
+    return [type, data];
   }
 }

@@ -6,11 +6,13 @@ import '../cores/account.dart';
 import '../models/account.model.dart';
 import '../blocs/swap/swap_bloc.dart';
 import '../repositories/swap_repository.dart';
-import '../repositories/trader_repository.dart';
+import '../repositories/transaction_repository.dart';
 import '../widgets/buttons/primary_button.dart';
 import '../widgets/swap_card.dart';
 import '../widgets/swap_confirm.dart';
 import '../widgets/swap_success.dart';
+import '../widgets/dialogs/dialog_controller.dart';
+import '../widgets/dialogs/error_dialog.dart';
 
 import '../helpers/i18n.dart';
 import '../helpers/logger.dart';
@@ -27,7 +29,7 @@ class SwapScreen extends StatefulWidget {
 
 class _SwapScreenState extends State<SwapScreen> {
   SwapRepository _swapRepo;
-  TraderRepository _traderRepo;
+  TransactionRepository _traderRepo;
   SwapBloc _swapBloc;
   TextEditingController _amountController = TextEditingController();
   Map<String, String> _sellCurrency;
@@ -38,7 +40,7 @@ class _SwapScreenState extends State<SwapScreen> {
   void didChangeDependencies() {
     if (_isInit) {
       _swapRepo = Provider.of<SwapRepository>(context);
-      _traderRepo = Provider.of<TraderRepository>(context);
+      _traderRepo = Provider.of<TransactionRepository>(context);
       _swapBloc = SwapBloc(_swapRepo, _traderRepo);
 
       Map argument = ModalRoute.of(context).settings.arguments;
@@ -76,11 +78,16 @@ class _SwapScreenState extends State<SwapScreen> {
             showModalBottomSheet(
               isScrollControlled: true,
               context: context,
-              builder: (context) => SwapSuccess(_sellCurrency, _buyCurrency),
+              builder: (context) =>
+                  SwapSuccess(_sellCurrency, _buyCurrency, () {
+                this._swapBloc.add(InitSwap(state.sellCurrency));
+              }),
             );
 
           if (state.result == SwapResult.failure) {
-            // ++ SHOW ERROR 2021/3/17 Emily
+            // ++ add Key and data to translation file. Emily 2021/3/18
+            DialogController.show(
+                context, ErrorDialog(state.result.toString()));
             Log.error(state.result.toString());
           }
 
@@ -104,8 +111,8 @@ class _SwapScreenState extends State<SwapScreen> {
                 exchangeRate: state.exchangeRate.toString(),
                 sellCurrency: _sellCurrency,
                 buyCurrency: _buyCurrency,
-                confirmFunc: () {
-                  _swapBloc.add(SwapConfirmed());
+                confirmFunc: (String password) {
+                  _swapBloc.add(SwapConfirmed(password));
                 },
               ),
             );
@@ -229,19 +236,7 @@ class _SwapScreenState extends State<SwapScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Flexible(
-                          child: Container(
-                            child: Text(
-                              'Fee: ' +
-                                  state.fee.toString() +
-                                  state.sellCurrency.symbol,
-                              overflow: TextOverflow.fade,
-                              style: TextStyle(
-                                color: Colors.transparent,
-                              ),
-                            ),
-                          ),
-                        ),
+                        Spacer(),
                         PrimaryButton('Swap', () {
                           _swapBloc.add(CheckSwap());
                         }),

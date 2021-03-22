@@ -10,6 +10,7 @@ abstract class TransactionService {
   int currencyDecimals;
 
   bool verifyAddress(String address, bool publish);
+  dynamic extractAddressData(String address, bool publish);
   Decimal calculateTransactionVSize(
       {List<UnspentTxOut> unspentTxOuts,
       Decimal feePerByte,

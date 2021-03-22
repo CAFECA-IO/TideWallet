@@ -36,7 +36,8 @@ class UpdateBuyAmount extends SwapEvent {
 class CheckSwap extends SwapEvent {}
 
 class SwapConfirmed extends SwapEvent {
-  SwapConfirmed();
+  final String password;
+  SwapConfirmed(this.password);
 }
 
 class ClearSwapResult extends SwapEvent {}
