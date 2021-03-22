@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:rxdart/subjects.dart';
 import 'package:decimal/decimal.dart';
 import 'package:convert/convert.dart';
+import 'package:tidewallet3/services/bitcoin_service.dart';
 import 'package:web3dart/web3dart.dart' as web3dart;
 
 import '../cores/paper_wallet.dart';
@@ -16,6 +17,7 @@ import '../services/transaction_service.dart';
 import '../services/transaction_service_based.dart';
 import '../services/transaction_service_bitcoin.dart';
 import '../services/transaction_service_ethereum.dart';
+import '../services/ethereum_service.dart';
 import '../constants/account_config.dart';
 import '../helpers/cryptor.dart';
 import '../helpers/utils.dart';
@@ -110,8 +112,10 @@ class TransactionRepository {
     Decimal _gasLimit;
     switch (this._currency.accountType) {
       case ACCOUNT.BTC:
+        BitcoinService _svc = _accountService;
+
         List<UnspentTxOut> unspentTxOuts =
-            await _accountService.getUnspentTxOut(_currency.id);
+            await _svc.getUnspentTxOut(_currency.id);
         Map<TransactionPriority, Decimal> fee = {
           TransactionPriority.slow:
               _transactionService.calculateTransactionVSize(
@@ -139,6 +143,7 @@ class TransactionRepository {
         break;
       case ACCOUNT.ETH:
       case ACCOUNT.CFC:
+        EthereumService _svc = _accountService;
         if (this._address == null) {
           _address =
               (await _accountService.getChangingAddress(_currency.id))[0];
@@ -168,7 +173,7 @@ class TransactionRepository {
           to = this._currency.contract;
         }
         try {
-          _gasLimit = await _accountService.estimateGasLimit(
+          _gasLimit = await _svc.estimateGasLimit(
               this._currency.blockchainId,
               from,
               to,
@@ -239,10 +244,11 @@ class TransactionRepository {
       {Decimal fee, Decimal gasPrice, Decimal gasLimit, String message}) async {
     switch (this._currency.accountType) {
       case ACCOUNT.BTC:
+        BitcoinService _svc = _accountService;
         String changeAddress;
         int changeIndex;
         List<UnspentTxOut> unspentTxOuts =
-            await _accountService.getUnspentTxOut(_currency.id);
+            await _svc.getUnspentTxOut(_currency.id);
         Decimal utxoAmount = Decimal.zero;
         Log.btc('amount + fee: ${amount + fee}');
         for (UnspentTxOut utxo in unspentTxOuts) {
@@ -257,8 +263,7 @@ class TransactionRepository {
               await getPrivKey(pwd, utxo.chainIndex, utxo.keyIndex);
           utxo.publickey = await getPubKey(pwd, utxo.chainIndex, utxo.keyIndex);
           if (utxoAmount > (amount + fee)) {
-            List result =
-                await _accountService.getChangingAddress(_currency.id);
+            List result = await _svc.getChangingAddress(_currency.id);
             Log.btc('prepareTransaction getChangingAddress: $result');
             changeAddress = result[0];
             changeIndex = result[1];
@@ -285,8 +290,9 @@ class TransactionRepository {
         break;
       case ACCOUNT.ETH:
       case ACCOUNT.CFC:
-        int nonce = await _accountService.getNonce(
-            this._currency.blockchainId, this._address);
+        EthereumService _svc = _accountService;
+        int nonce =
+            await _svc.getNonce(this._currency.blockchainId, this._address);
 
         Decimal fee = gasPrice * gasLimit;
         Decimal balance = Decimal.parse(this._currency.amount) - amount - fee;

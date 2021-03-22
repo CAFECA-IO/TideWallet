@@ -32,21 +32,10 @@ class BitcoinService extends AccountServiceDecorator {
   Map<TransactionPriority, Decimal> _fee;
   int _timestamp; // fetch transactionFee timestamp;
 
-  @override
-  getTransactions() {
-    // TODO: implement getTransactions
-    throw UnimplementedError();
-  }
 
   @override
   void init(String id, ACCOUNT base, {int interval}) {
     this.service.init(id, base ?? this.base, interval: this.syncInterval);
-  }
-
-  @override
-  prepareTransaction() {
-    // TODO: implement prepareTransaction
-    throw UnimplementedError();
   }
 
   @override
@@ -63,19 +52,6 @@ class BitcoinService extends AccountServiceDecorator {
   @override
   void stop() {
     this.service.stop();
-  }
-
-  @override
-  Future<int> getNonce(String blockchainId, String address) {
-    // TODO: implement getNonce
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Decimal> estimateGasLimit(
-      String blockchainId, String from, String to, String amount, String data) {
-    // TODO: implement estimateGasLimit
-    throw UnimplementedError();
   }
 
   @override

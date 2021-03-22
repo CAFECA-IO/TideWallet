@@ -35,21 +35,9 @@ class EthereumService extends AccountServiceDecorator {
   int _nonce = 0;
 
   @override
-  Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) async {
-    // TODO: implement getUnspentTxOut
-    throw UnimplementedError();
-  }
-
-  @override
   void init(String id, ACCOUNT base, {int interval}) {
     Log.eth('ETH Service Init');
     this.service.init(id, base ?? this.base, interval: this.syncInterval);
-  }
-
-  @override
-  prepareTransaction() {
-    // TODO: implement prepareTransaction
-    throw UnimplementedError();
   }
 
   @override
@@ -58,7 +46,8 @@ class EthereumService extends AccountServiceDecorator {
 
     this.synchro();
 
-    this.service.timer = Timer.periodic(Duration(milliseconds: this.syncInterval), (_) {
+    this.service.timer =
+        Timer.periodic(Duration(milliseconds: this.syncInterval), (_) {
       synchro();
     });
   }
@@ -66,18 +55,6 @@ class EthereumService extends AccountServiceDecorator {
   @override
   void stop() {
     this.service.stop();
-  }
-
-  @override
-  Decimal toCoinUnit() {
-    // TODO: implement toCoinUnit
-    throw UnimplementedError();
-  }
-
-  @override
-  Decimal toSmallUnit() {
-    // TODO: implement toSmallUnit
-    throw UnimplementedError();
   }
 
   static Future<Token> getTokeninfo(String blockchainId, String address) async {
@@ -171,7 +148,6 @@ class EthereumService extends AccountServiceDecorator {
     }
   }
 
-  @override
   Future<Decimal> estimateGasLimit(String blockchainId, String from, String to,
       String amount, String message) async {
     if (message == '0x' && _gasLimit != null)
@@ -299,12 +275,6 @@ class EthereumService extends AccountServiceDecorator {
     transaction.timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     transaction.confirmations = 0;
     return [success, transaction];
-  }
-
-  @override
-  getTransactions() {
-    // TODO: implement getTransactions
-    throw UnimplementedError();
   }
 
   @override

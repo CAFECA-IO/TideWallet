@@ -33,30 +33,6 @@ class AccountServiceBase extends AccountService {
   AccountServiceBase();
 
   @override
-  Decimal calculateFastFee() {
-    // TODO: implement calculateFastFee
-    throw UnimplementedError();
-  }
-
-  @override
-  Decimal calculateSlowFee() {
-    // TODO: implement calculateSlowFee
-    throw UnimplementedError();
-  }
-
-  @override
-  Decimal calculateStandardFee() {
-    // TODO: implement calculateStandardFee
-    throw UnimplementedError();
-  }
-
-  @override
-  getTransactions() {
-    // TODO: implement getTransactions
-    throw UnimplementedError();
-  }
-
-  @override
   void init(String id, ACCOUNT base, {int interval}) {
     this._accountId = id;
     this._base = base;
@@ -91,21 +67,9 @@ class AccountServiceBase extends AccountService {
   }
 
   @override
-  Decimal toCoinUnit(Decimal smallUnit) {
-    // TODO: implement toCoinUnit
-    throw UnimplementedError();
-  }
-
-  @override
-  Decimal toSmallUnit(Decimal coinUnit) {
-    // TODO: implement toSmallUnit
-    throw UnimplementedError();
-  }
-
-  @override
   Future<Map<TransactionPriority, Decimal>> getTransactionFee(
       String blockchainId) async {
-    // TODO: implement publishTransaction
+    // TODO: implement getTransactionFee
     throw UnimplementedError();
   }
 
@@ -234,33 +198,14 @@ class AccountServiceBase extends AccountService {
   }
 
   @override
-  Future<Decimal> estimateGasLimit(
-      String blockchainId, String from, String to, String amount, String data) {
-    // TODO: implement estimateGasLimit
-    throw UnimplementedError();
-  }
-
-  @override
   Future<List> getChangingAddress(String currencyId) {
     // TODO: implement getChangingAddress
     throw UnimplementedError();
   }
 
   @override
-  Future<int> getNonce(String blockchainId, String address) {
-    // TODO: implement getNonce
-    throw UnimplementedError();
-  }
-
-  @override
   Future<List> getReceivingAddress(String currencyId) {
     // TODO: implement getReceivingAddress
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) {
-    // TODO: implement getUnspentTxOut
     throw UnimplementedError();
   }
 
