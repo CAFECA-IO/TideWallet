@@ -38,7 +38,7 @@ class SwapCard extends StatelessWidget {
       shape: bottomSheetShape,
       builder: (ctx) {
         return Container(
-          child: Column(
+          child: ListView(
             children: <Widget>[
               Container(
                 padding: const EdgeInsets.symmetric(
@@ -182,17 +182,20 @@ class SwapCard extends StatelessWidget {
                   style: Theme.of(context).textTheme.subtitle2,
                 ),
               ),
-              InkWell(
-                onTap: onTap,
-                child: Container(
-                  width: 100,
-                  child: NormalInput(
-                    focusNode: focusNode,
-                    readOnly: readOnly,
-                    fontSize: Theme.of(context).textTheme.headline3.fontSize,
-                    controller: amountController,
-                    onChange: onChanged,
-                  ),
+              Container(
+                width: 100,
+                height: 40,
+                // color: Colors.blueGrey,
+                child: NormalInput(
+                  onTap: () {
+                    print('ALERT LAYER2');
+                    onTap();
+                  },
+                  focusNode: focusNode,
+                  readOnly: readOnly,
+                  fontSize: Theme.of(context).textTheme.headline3.fontSize,
+                  controller: amountController,
+                  onChange: onChanged,
                 ),
               ),
             ],

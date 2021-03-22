@@ -6,6 +6,7 @@ class NormalInput extends StatelessWidget {
   final TextEditingController controller;
   final Function validator;
   final Function onChange;
+  final Function onTap;
   final double fontSize;
   final bool readOnly;
   final FocusNode focusNode;
@@ -16,6 +17,7 @@ class NormalInput extends StatelessWidget {
     this.controller,
     this.validator,
     this.onChange,
+    this.onTap,
     this.fontSize,
     this.readOnly,
   });
@@ -23,6 +25,7 @@ class NormalInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      onTap: onTap,
       textAlign: TextAlign.end,
       inputFormatters: [
         FilteringTextInputFormatter.deny(RegExp(r"\s")),
