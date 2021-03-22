@@ -55,7 +55,6 @@ class _ScanAddressScreenState extends State<ScanAddressScreen> {
                 if (state is TransactionInitial &&
                     (state.address != null && state.address.isNotEmpty) &&
                     !state.rules[0]) {
-                  print(state.rules[0]);
                   return Positioned(
                     child: Container(
                       padding: const EdgeInsets.symmetric(
