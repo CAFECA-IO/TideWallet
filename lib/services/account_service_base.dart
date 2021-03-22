@@ -13,11 +13,8 @@ import '../database/entity/transaction.dart';
 import '../helpers/http_agent.dart';
 import '../models/account.model.dart';
 import '../models/api_response.mode.dart';
-import '../models/utxo.model.dart';
 import '../models/transaction.model.dart';
 import 'account_service.dart';
-
-import '../helpers/logger.dart';
 
 class AccountServiceBase extends AccountService {
   Timer _timer;
@@ -37,12 +34,6 @@ class AccountServiceBase extends AccountService {
     this._accountId = id;
     this._base = base;
     this._syncInterval = interval ?? this._syncInterval;
-  }
-
-  @override
-  prepareTransaction() {
-    // TODO: implement prepareTransaction
-    throw UnimplementedError();
   }
 
   @override
@@ -69,8 +60,7 @@ class AccountServiceBase extends AccountService {
   @override
   Future<Map<TransactionPriority, Decimal>> getTransactionFee(
       String blockchainId) async {
-    // TODO: implement getTransactionFee
-    throw UnimplementedError();
+    throw UnimplementedError('Implement on decorator');
   }
 
   Future<List> getData() async {
@@ -199,20 +189,17 @@ class AccountServiceBase extends AccountService {
 
   @override
   Future<List> getChangingAddress(String currencyId) {
-    // TODO: implement getChangingAddress
-    throw UnimplementedError();
+    throw UnimplementedError('Implement on decorator');
   }
 
   @override
   Future<List> getReceivingAddress(String currencyId) {
-    // TODO: implement getReceivingAddress
-    throw UnimplementedError();
+    throw UnimplementedError('Implement on decorator');
   }
 
   @override
   Future<List> publishTransaction(
       String blockchainId, Transaction transaction) {
-    // TODO: implement publishTransaction
-    throw UnimplementedError();
+    throw UnimplementedError('Implement on decorator');
   }
 }

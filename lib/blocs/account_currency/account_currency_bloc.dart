@@ -3,7 +3,6 @@ import 'package:bloc/bloc.dart';
 import 'package:decimal/decimal.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
-import 'package:rxdart/rxdart.dart';
 
 import '../../repositories/account_repository.dart';
 import '../../repositories/trader_repository.dart';

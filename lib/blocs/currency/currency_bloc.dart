@@ -43,8 +43,7 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
       Decimal _total = Decimal.zero;
 
       list = list.map((curr) {
-        // Decimal v = _traderRepo.calculateAmountToUSD(curr, Decimal.parse(curr.amount));
-                Decimal v = _traderRepo.calculateToUSD(curr);
+        Decimal v = _traderRepo.calculateToUSD(curr);
 
         _total += v;
 
