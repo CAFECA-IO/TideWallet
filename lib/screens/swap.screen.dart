@@ -77,7 +77,7 @@ class _SwapScreenState extends State<SwapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(_currentFocusNode);
+
     return BlocListener<SwapBloc, SwapState>(
       cubit: _swapBloc,
       listener: (ctx, state) {

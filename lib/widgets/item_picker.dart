@@ -159,7 +159,7 @@ class _ItemPickerState extends State<ItemPicker> {
                             ),
                             onTap: () {
                               Navigator.of(context).pop();
-                              print('pop');
+
                               if (widget.selectedItem != null &&
                                   widget.items.isNotEmpty)
                                 setState(() {

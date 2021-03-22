@@ -187,10 +187,7 @@ class SwapCard extends StatelessWidget {
                 height: 40,
                 // color: Colors.blueGrey,
                 child: NormalInput(
-                  onTap: () {
-                    print('ALERT LAYER2');
-                    onTap();
-                  },
+                  onTap: onTap,
                   focusNode: focusNode,
                   readOnly: readOnly,
                   fontSize: Theme.of(context).textTheme.headline3.fontSize,

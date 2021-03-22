@@ -45,7 +45,6 @@ class ComputerKeyboard extends StatelessWidget {
         return InkWell(
           onTap: () {
             if (focusNode != null && !focusNode.hasFocus) return;
-            print(_controller.text);
             if (_controller.text.startsWith('0') &&
                 _controller.text.length == 1) {
               if (n != 10) _controller.text = '';
