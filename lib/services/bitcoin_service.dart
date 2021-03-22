@@ -21,24 +21,17 @@ import '../cores/paper_wallet.dart'; //TODO TEST
 import '../helpers/bitcoin_based_utils.dart'; //TODO TEST
 
 class BitcoinService extends AccountServiceDecorator {
-  Timer _utxoTimer;
   BitcoinService(AccountService service) : super(service) {
     this.base = ACCOUNT.BTC;
     this.syncInterval = 10 * 60 * 1000;
     // this.path = "m/44'/0'/0'";
   }
-  Timer _timer;
   int _numberOfUsedExternalKey;
   int _numberOfUsedInternalKey;
   int _lastSyncTimestamp;
   Map<TransactionPriority, Decimal> _fee;
   int _timestamp; // fetch transactionFee timestamp;
 
-  @override
-  getTransactions() {
-    // TODO: implement getTransactions
-    throw UnimplementedError();
-  }
 
   @override
   void init(String id, ACCOUNT base, {int interval}) {
@@ -46,41 +39,19 @@ class BitcoinService extends AccountServiceDecorator {
   }
 
   @override
-  prepareTransaction() {
-    // TODO: implement prepareTransaction
-    throw UnimplementedError();
-  }
-
-  @override
   Future start() async {
     await this.service.start();
 
-    await this._syncUTXO();
+    this.synchro();
 
-    this._utxoTimer =
-        Timer.periodic(Duration(milliseconds: this.syncInterval), (_) {
-      this._syncUTXO();
+    this.service.timer = Timer.periodic(Duration(milliseconds: this.syncInterval), (_) {
+      synchro();
     });
   }
 
   @override
   void stop() {
     this.service.stop();
-
-    _utxoTimer?.cancel();
-  }
-
-  @override
-  Future<int> getNonce(String blockchainId, String address) {
-    // TODO: implement getNonce
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Decimal> estimateGasLimit(
-      String blockchainId, String from, String to, String amount, String data) {
-    // TODO: implement estimateGasLimit
-    throw UnimplementedError();
   }
 
   @override
@@ -231,7 +202,7 @@ class BitcoinService extends AccountServiceDecorator {
 
     if (now - this.service.lastSyncTimestamp > this.syncInterval) {
       Log.btc('_syncUTXO');
-      String currencyId = this.service.accountId; // TODO is Id correct?
+      String currencyId = this.service.accountId;
       Log.btc('_syncUTXO currencyId: $currencyId');
 
       APIResponse response = await HTTPAgent()
@@ -245,5 +216,11 @@ class BitcoinService extends AccountServiceDecorator {
         // TODO
       }
     }
+  }
+
+  @override
+  Future synchro() async {
+    await this.service.synchro();
+    await this._syncUTXO();
   }
 }

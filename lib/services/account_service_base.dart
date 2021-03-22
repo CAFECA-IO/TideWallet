@@ -13,11 +13,8 @@ import '../database/entity/transaction.dart';
 import '../helpers/http_agent.dart';
 import '../models/account.model.dart';
 import '../models/api_response.mode.dart';
-import '../models/utxo.model.dart';
 import '../models/transaction.model.dart';
 import 'account_service.dart';
-
-import '../helpers/logger.dart';
 
 class AccountServiceBase extends AccountService {
   Timer _timer;
@@ -33,40 +30,10 @@ class AccountServiceBase extends AccountService {
   AccountServiceBase();
 
   @override
-  Decimal calculateFastFee() {
-    // TODO: implement calculateFastFee
-    throw UnimplementedError();
-  }
-
-  @override
-  Decimal calculateSlowFee() {
-    // TODO: implement calculateSlowFee
-    throw UnimplementedError();
-  }
-
-  @override
-  Decimal calculateStandardFee() {
-    // TODO: implement calculateStandardFee
-    throw UnimplementedError();
-  }
-
-  @override
-  getTransactions() {
-    // TODO: implement getTransactions
-    throw UnimplementedError();
-  }
-
-  @override
   void init(String id, ACCOUNT base, {int interval}) {
     this._accountId = id;
     this._base = base;
     this._syncInterval = interval ?? this._syncInterval;
-  }
-
-  @override
-  prepareTransaction() {
-    // TODO: implement prepareTransaction
-    throw UnimplementedError();
   }
 
   @override
@@ -83,12 +50,6 @@ class AccountServiceBase extends AccountService {
     } else {
       this._lastSyncTimestamp = 0;
     }
-
-    _sync();
-
-    _timer = Timer.periodic(Duration(milliseconds: this._syncInterval), (_) {
-      _sync();
-    });
   }
 
   @override
@@ -97,22 +58,9 @@ class AccountServiceBase extends AccountService {
   }
 
   @override
-  Decimal toCoinUnit(Decimal smallUnit) {
-    // TODO: implement toCoinUnit
-    throw UnimplementedError();
-  }
-
-  @override
-  Decimal toSmallUnit(Decimal coinUnit) {
-    // TODO: implement toSmallUnit
-    throw UnimplementedError();
-  }
-
-  @override
   Future<Map<TransactionPriority, Decimal>> getTransactionFee(
       String blockchainId) async {
-    // TODO: implement publishTransaction
-    throw UnimplementedError();
+    throw UnimplementedError('Implement on decorator');
   }
 
   Future<List> getData() async {
@@ -146,7 +94,7 @@ class AccountServiceBase extends AccountService {
     return [];
   }
 
-  _sync() async {
+  synchro() async {
     int now = DateTime.now().millisecondsSinceEpoch;
 
     if (now - this._lastSyncTimestamp > this._syncInterval) {
@@ -166,7 +114,6 @@ class AccountServiceBase extends AccountService {
     List<JoinCurrency> jcs = await DBOperator()
         .accountCurrencyDao
         .findJoinedByAccountId(this._accountId);
-
     if (jcs.isEmpty) return;
 
     List<Currency> cs = jcs
@@ -241,40 +188,18 @@ class AccountServiceBase extends AccountService {
   }
 
   @override
-  Future<Decimal> estimateGasLimit(
-      String blockchainId, String from, String to, String amount, String data) {
-    // TODO: implement estimateGasLimit
-    throw UnimplementedError();
-  }
-
-  @override
   Future<List> getChangingAddress(String currencyId) {
-    // TODO: implement getChangingAddress
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<int> getNonce(String blockchainId, String address) {
-    // TODO: implement getNonce
-    throw UnimplementedError();
+    throw UnimplementedError('Implement on decorator');
   }
 
   @override
   Future<List> getReceivingAddress(String currencyId) {
-    // TODO: implement getReceivingAddress
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) {
-    // TODO: implement getUnspentTxOut
-    throw UnimplementedError();
+    throw UnimplementedError('Implement on decorator');
   }
 
   @override
   Future<List> publishTransaction(
       String blockchainId, Transaction transaction) {
-    // TODO: implement publishTransaction
-    throw UnimplementedError();
+    throw UnimplementedError('Implement on decorator');
   }
 }

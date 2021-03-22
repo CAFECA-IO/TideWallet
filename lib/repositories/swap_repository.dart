@@ -10,6 +10,7 @@ import '../services/account_service.dart';
 import '../services/transaction_service.dart';
 import '../services/transaction_service_based.dart';
 import '../services/transaction_service_ethereum.dart';
+import '../services/ethereum_service.dart';
 import '../helpers/rlp.dart' as rlp;
 import '../helpers/converter.dart';
 import '../helpers/logger.dart'; // --
@@ -33,7 +34,7 @@ class SwapRepository {
       Decimal gasPrice,
       Decimal gasLimit) async {
     // ++ Get sellCurrency's cfc currency to do the transaction
-    AccountService _accountService =
+    EthereumService _accountService =
         AccountCore().getService(sellCurrency.accountId);
     String address =
         (await _accountService.getReceivingAddress(sellCurrency.id))[0];
