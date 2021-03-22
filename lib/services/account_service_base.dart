@@ -83,12 +83,6 @@ class AccountServiceBase extends AccountService {
     } else {
       this._lastSyncTimestamp = 0;
     }
-
-    _sync();
-
-    _timer = Timer.periodic(Duration(milliseconds: this._syncInterval), (_) {
-      _sync();
-    });
   }
 
   @override
@@ -146,7 +140,7 @@ class AccountServiceBase extends AccountService {
     return [];
   }
 
-  _sync() async {
+  synchro() async {
     int now = DateTime.now().millisecondsSinceEpoch;
 
     if (now - this._lastSyncTimestamp > this._syncInterval) {
@@ -166,7 +160,6 @@ class AccountServiceBase extends AccountService {
     List<JoinCurrency> jcs = await DBOperator()
         .accountCurrencyDao
         .findJoinedByAccountId(this._accountId);
-
     if (jcs.isEmpty) return;
 
     List<Currency> cs = jcs

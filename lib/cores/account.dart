@@ -97,7 +97,6 @@ class AccountCore {
     Future.wait(
       [
         _addAccount(accounts),
-        _addSupportedCurrencies(),
       ],
     );
   }
@@ -184,17 +183,17 @@ class AccountCore {
 
   Future getSupportedCurrencies() async {
     final local = await DBOperator().currencyDao.findAllCurrencies();
-
     if (local.isEmpty) {
-      await _addSupportedCurrencies();
+      await _addSupportedCurrencies(local);
     }
   }
 
-  Future _addSupportedCurrencies() async {
+  Future _addSupportedCurrencies(List<CurrencyEntity>local) async {
     APIResponse res = await HTTPAgent().get(Endpoint.SUSANOO + '/currency');
 
     if (res.data != null) {
       List l = res.data;
+      l.removeWhere((el) => local.indexWhere((c) => c.currencyId == el['currency_id']) > -1);
       l = l.map((c) => CurrencyEntity.fromJson(c)).toList();
       await DBOperator().currencyDao.insertCurrencies(l);
     }

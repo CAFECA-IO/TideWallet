@@ -21,13 +21,11 @@ import '../cores/paper_wallet.dart'; //TODO TEST
 import '../helpers/bitcoin_based_utils.dart'; //TODO TEST
 
 class BitcoinService extends AccountServiceDecorator {
-  Timer _utxoTimer;
   BitcoinService(AccountService service) : super(service) {
     this.base = ACCOUNT.BTC;
     this.syncInterval = 10 * 60 * 1000;
     // this.path = "m/44'/0'/0'";
   }
-  Timer _timer;
   int _numberOfUsedExternalKey;
   int _numberOfUsedInternalKey;
   int _lastSyncTimestamp;
@@ -55,19 +53,16 @@ class BitcoinService extends AccountServiceDecorator {
   Future start() async {
     await this.service.start();
 
-    await this._syncUTXO();
+    this.synchro();
 
-    this._utxoTimer =
-        Timer.periodic(Duration(milliseconds: this.syncInterval), (_) {
-      this._syncUTXO();
+    this.service.timer = Timer.periodic(Duration(milliseconds: this.syncInterval), (_) {
+      synchro();
     });
   }
 
   @override
   void stop() {
     this.service.stop();
-
-    _utxoTimer?.cancel();
   }
 
   @override
@@ -245,5 +240,11 @@ class BitcoinService extends AccountServiceDecorator {
         // TODO
       }
     }
+  }
+
+  @override
+  Future synchro() async {
+    await this.service.synchro();
+    await this._syncUTXO();
   }
 }

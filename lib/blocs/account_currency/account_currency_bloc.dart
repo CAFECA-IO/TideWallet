@@ -70,10 +70,11 @@ class AccountCurrencyBloc
       }).toList();
       _currency.forEach((newCurr) {
         int index = _list.indexWhere((oldCurr) => oldCurr.id == newCurr.id);
-        if (index < 0)
+        if (index < 0) {
           _list.add(newCurr);
-        else
+        } else {
           _list[index] = newCurr;
+        }
       });
 
       Decimal _total = Decimal.zero;
