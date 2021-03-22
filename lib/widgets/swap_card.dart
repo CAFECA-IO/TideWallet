@@ -1,4 +1,3 @@
-import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 
 import '../models/account.model.dart';
@@ -8,29 +7,29 @@ import '../theme.dart';
 
 class SwapCard extends StatelessWidget {
   final Currency _currency;
-  final Function onPercentChanged;
-  final int percent;
-  final bool isSender;
   final Function onChanged;
   final TextEditingController amountController;
+  final FocusNode focusNode;
+  final bool readOnly;
   final List<Currency> currencies;
   final Function onSelect;
+  final String label;
+  final Function onTap;
 
   SwapCard(this._currency,
-      {this.percent,
-      this.onPercentChanged,
-      this.isSender: true,
+      {this.label,
       this.currencies,
       this.onChanged,
       this.amountController,
-      this.onSelect})
+      this.focusNode,
+      this.onSelect,
+      this.readOnly: true,
+      this.onTap})
       : assert(
-          (isSender && percent != null && onPercentChanged != null) ||
-              (!isSender &&
-                  onChanged != null &&
-                  amountController != null &&
-                  percent != null &&
-                  onPercentChanged != null),
+          (onChanged != null &&
+              amountController != null &&
+              focusNode != null &&
+              label != null),
         );
 
   _openList(BuildContext context) {
@@ -125,106 +124,79 @@ class SwapCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!isSender) print(percent);
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(6.0),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 1,
-            blurRadius: 2,
-            offset: Offset(0, 1),
-          ),
-        ],
       ),
-      child: Column(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Row(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.network(
-                _currency.imgPath,
-                width: 36.0,
-                height: 36.0,
-              ),
-              SizedBox(width: 10.0),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Text(
-                        _currency.name,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Text(
-                        'Balance: ${_currency.amount} ${_currency.symbol}',
-                        style: Theme.of(context).textTheme.subtitle2,
-                      ),
-                    ),
-                    SizedBox(height: 12.0),
-                    if (isSender)
-                      SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          activeTrackColor: Theme.of(context).primaryColor,
-                          inactiveTrackColor: Color(0xFFDDDDDD),
-                          trackHeight: 3.0,
-                          thumbColor: Theme.of(context).primaryColorLight,
-                          thumbShape:
-                              RoundSliderThumbShape(enabledThumbRadius: 6.0),
-                          overlayColor: Colors.purple.withAlpha(32),
-                          overlayShape:
-                              RoundSliderOverlayShape(overlayRadius: 10.0),
-                        ),
-                        child: Slider(
-                          label: percent.round().toString() + '%',
-                          value: percent.toDouble(),
-                          min: 0,
-                          max: 100,
-                          divisions: 100,
-                          onChanged: (double v) {
-                            onPercentChanged(v.toInt());
-                          },
-                        ),
-                      ),
-                  ],
-                ),
-              ),
               InkWell(
-                child: Icon(Icons.arrow_drop_down),
                 onTap: () {
                   _openList(context);
                 },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.network(
+                      _currency.imgPath,
+                      width: 36.0,
+                      height: 36.0,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(
+                        _currency.symbol.toUpperCase(),
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline1
+                            .copyWith(fontWeight: FontWeight.w400),
+                      ),
+                    ),
+                    Container(
+                      child: Icon(Icons.arrow_drop_down),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Text(
+                  'Balance: ${Formatter.formatDecimal(_currency.amount)} ${_currency.symbol}',
+                  style: Theme.of(context).textTheme.subtitle2,
+                ),
               ),
             ],
           ),
-          if (isSender) SizedBox(height: 20.0),
-          if (isSender)
-            Container(
-              width: double.infinity,
-              child: Text(
-                (Decimal.tryParse(_currency.amount) *
-                        Decimal.fromInt(percent) /
-                        Decimal.fromInt(100))
-                    .toString(),
-                style: Theme.of(context).textTheme.headline3.copyWith(
-                    color: Theme.of(context).accentColor,
-                    fontWeight: FontWeight.bold),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 0.0),
+                child: Text(
+                  label,
+                  style: Theme.of(context).textTheme.subtitle2,
+                ),
               ),
-            ),
-          if (!isSender)
-            NormalInput(
-              fontSize: Theme.of(context).textTheme.headline3.fontSize,
-              controller: amountController,
-              onChange: onChanged,
-            )
+              InkWell(
+                onTap: onTap,
+                child: Container(
+                  width: 100,
+                  child: NormalInput(
+                    focusNode: focusNode,
+                    readOnly: readOnly,
+                    fontSize: Theme.of(context).textTheme.headline3.fontSize,
+                    controller: amountController,
+                    onChange: onChanged,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

@@ -7,33 +7,42 @@ class NormalInput extends StatelessWidget {
   final Function validator;
   final Function onChange;
   final double fontSize;
+  final bool readOnly;
+  final FocusNode focusNode;
 
-  NormalInput(
-      {this.label,
-      this.controller,
-      this.validator,
-      this.onChange,
-      this.fontSize});
+  NormalInput({
+    this.focusNode,
+    this.label,
+    this.controller,
+    this.validator,
+    this.onChange,
+    this.fontSize,
+    this.readOnly,
+  });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      textAlign: TextAlign.end,
       inputFormatters: [
         FilteringTextInputFormatter.deny(RegExp(r"\s")),
         FilteringTextInputFormatter.allow(RegExp(r'(^\d*\.?\d*)$')),
       ],
-      keyboardType: TextInputType.number,
+      readOnly: readOnly,
+      keyboardType: TextInputType.numberWithOptions(decimal: true),
+      focusNode: focusNode,
+      controller: controller,
       onChanged: onChange,
       validator: validator,
       textInputAction: TextInputAction.done,
       style: TextStyle(fontSize: fontSize ?? 16.0),
-      controller: controller,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.all(8.0),
         labelStyle: TextStyle(fontSize: 14.0, color: Color(0xFF888888)),
         labelText: label,
         errorStyle: TextStyle(color: Colors.red, fontSize: 10.0),
       ),
+      autofocus: true,
     );
   }
 }

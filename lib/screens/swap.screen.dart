@@ -13,8 +13,10 @@ import '../widgets/swap_confirm.dart';
 import '../widgets/swap_success.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/error_dialog.dart';
+import '../widgets/computer_keyborad.dart';
 
 import '../helpers/i18n.dart';
+import '../helpers/formatter.dart';
 import '../helpers/logger.dart';
 import '../theme.dart';
 
@@ -31,10 +33,15 @@ class _SwapScreenState extends State<SwapScreen> {
   SwapRepository _swapRepo;
   TransactionRepository _traderRepo;
   SwapBloc _swapBloc;
-  TextEditingController _amountController = TextEditingController();
+  TextEditingController _sellAmountController = TextEditingController();
+  TextEditingController _buyAmountController = TextEditingController();
   Map<String, String> _sellCurrency;
   Map<String, String> _buyCurrency;
   bool _isInit = true;
+  FocusNode _sellAmountFocusNode = FocusNode();
+  FocusNode _buyAmountFocusNode = FocusNode();
+  TextEditingController _currentController;
+  FocusNode _currentFocusNode;
 
   @override
   void didChangeDependencies() {
@@ -42,7 +49,8 @@ class _SwapScreenState extends State<SwapScreen> {
       _swapRepo = Provider.of<SwapRepository>(context);
       _traderRepo = Provider.of<TransactionRepository>(context);
       _swapBloc = SwapBloc(_swapRepo, _traderRepo);
-
+      _currentController = _sellAmountController;
+      _currentFocusNode = _sellAmountFocusNode;
       Map argument = ModalRoute.of(context).settings.arguments;
 
       if (argument != null) {
@@ -59,19 +67,27 @@ class _SwapScreenState extends State<SwapScreen> {
 
   @override
   dispose() {
-    _amountController.dispose();
+    _sellAmountController.dispose();
+    _buyAmountController.dispose();
+    _sellAmountFocusNode.dispose();
+    _buyAmountFocusNode.dispose();
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    print(_currentFocusNode);
     return BlocListener<SwapBloc, SwapState>(
       cubit: _swapBloc,
       listener: (ctx, state) {
         if (state is SwapLoaded) {
           // UpdateUsePercent || ChangeSwapTarget
-          if (state.buyAmount.toString() != _amountController.text)
-            _amountController.text = state.buyAmount.toString();
+          if (state.buyAmount.toString() != _buyAmountController.text)
+            _buyAmountController.text = state.buyAmount.toString();
+
+          if (state.sellAmount.toString() != _sellAmountController.text)
+            _sellAmountController.text = state.sellAmount.toString();
 
           // SwapConfirmed
           if (state.result == SwapResult.success)
@@ -140,111 +156,131 @@ class _SwapScreenState extends State<SwapScreen> {
         cubit: _swapBloc,
         builder: (context, state) {
           if (state is SwapLoaded) {
-            return SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  SizedBox(height: 80),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 12.0, horizontal: 20.0),
-                    child: Text(
-                      t('swap_info'),
-                      style: Theme.of(context).textTheme.headline6,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          t('exchange_rate'),
-                          textAlign: TextAlign.center,
-                        ),
-                        Text(
-                            '1 ${state.sellCurrency.symbol} = ${state.exchangeRate} ${state.buyCurrency.symbol}')
-                        // Text('${state.sellCurrency.symbol}/${state.buyCurrency.symbol} = ${state.exchangeRate}')
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0, vertical: 20.0),
-                    // color: Theme.of(context).primaryColor,
-                    child: Stack(
-                      children: <Widget>[
-                        Column(
-                          children: [
-                            SwapCard(state.sellCurrency,
-                                percent: state.usePercent,
-                                onPercentChanged: (int v) {
-                              _swapBloc.add(UpdateUsePercent(v));
-                            }, onSelect: (Currency v) {
-                              _swapBloc.add(ChangeSwapSellCurrency(v));
-                            },
-                                currencies:
-                                    [state.sellCurrency] + state.targets),
-                            SizedBox(height: 10.0),
-                            SwapCard(state.buyCurrency,
-                                isSender: false,
-                                percent: state.usePercent,
-                                onChanged: (String v) {
-                                  if (v.isEmpty) return;
-                                  _swapBloc.add(UpdateBuyAmount(v));
-                                },
-                                amountController: _amountController,
-                                onPercentChanged: (int v) {
-                                  _swapBloc.add(UpdateUsePercent(v));
-                                },
-                                onSelect: (Currency v) {
-                                  _swapBloc.add(ChangeSwapBuyCurrency(v));
-                                },
-                                currencies: state.targets),
-                          ],
-                        ),
-                        Positioned.fill(
-                          right: 40.0,
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 1,
-                                    blurRadius: 1,
-                                  )
-                                ],
-                              ),
-                              child: CircleAvatar(
-                                child: Icon(Icons.cached,
-                                    color: Theme.of(context).primaryColor),
-                                backgroundColor: Color(0xFFFFFFFF),
-                              ),
+            return Column(
+              children: <Widget>[
+                Container(
+                  height: 90,
+                  color: Colors.white,
+                ),
+                Container(
+                  child: Stack(
+                    children: <Widget>[
+                      Column(
+                        children: [
+                          SwapCard(state.sellCurrency,
+                              onTap: () {
+                                setState(() {
+                                  _currentController = _sellAmountController;
+                                  _currentFocusNode = _sellAmountFocusNode;
+                                });
+                              },
+                              focusNode: _sellAmountFocusNode,
+                              amountController: _sellAmountController,
+                              label: t('send'),
+                              onChanged: (String v) {
+                                if (v.isEmpty) return;
+                                _swapBloc.add(UpdateBuyAmount(v));
+                              },
+                              onSelect: (Currency v) {
+                                _swapBloc.add(ChangeSwapSellCurrency(v));
+                              },
+                              currencies: [state.sellCurrency] + state.targets),
+                          SwapCard(state.buyCurrency,
+                              onTap: () {
+                                setState(() {
+                                  _currentController = _buyAmountController;
+                                  _currentFocusNode = _buyAmountFocusNode;
+                                });
+                              },
+                              focusNode: _buyAmountFocusNode,
+                              amountController: _buyAmountController,
+                              label: t('receive'),
+                              onChanged: (String v) {
+                                if (v.isEmpty) return;
+                                _swapBloc.add(UpdateBuyAmount(v));
+                              },
+                              onSelect: (Currency v) {
+                                _swapBloc.add(ChangeSwapBuyCurrency(v));
+                              },
+                              currencies: state.targets),
+                        ],
+                      ),
+                      Positioned.fill(
+                        // right: 40.0,
+                        child: Align(
+                            alignment: Alignment.center,
+                            child: Divider(color: Colors.black26)),
+                      ),
+                      Positioned.fill(
+                        // right: 40.0,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.5),
+                                  spreadRadius: 1,
+                                  blurRadius: 1,
+                                )
+                              ],
+                            ),
+                            child: CircleAvatar(
+                              child: Icon(Icons.cached,
+                                  color: Theme.of(context).primaryColor),
+                              backgroundColor: Color(0xFFFFFFFF),
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20.0, vertical: 10.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Spacer(),
-                        PrimaryButton('Swap', () {
-                          _swapBloc.add(CheckSwap());
-                        }),
-                      ],
-                    ),
-                  )
-                ],
-              ),
+                ),
+                SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        t('exchange_rate'),
+                        textAlign: TextAlign.center,
+                      ),
+                      Text(
+                          '1 ${state.sellCurrency.symbol} = ${Formatter.formatDecimal(state.exchangeRate)} ${state.buyCurrency.symbol}')
+                      // Text('${state.sellCurrency.symbol}/${state.buyCurrency.symbol} = ${state.exchangeRate}')
+                    ],
+                  ),
+                ),
+                SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Spacer(),
+                      PrimaryButton('Swap', () {
+                        _swapBloc.add(CheckSwap());
+                      }),
+                    ],
+                  ),
+                ),
+                _currentFocusNode == _sellAmountFocusNode
+                    ? Container(
+                        child: ComputerKeyboard(
+                          _sellAmountController,
+                          focusNode: _sellAmountFocusNode,
+                        ),
+                      )
+                    : Container(
+                        child: ComputerKeyboard(
+                          _buyAmountController,
+                          focusNode: _buyAmountFocusNode,
+                        ),
+                      ),
+              ],
             );
           } else {
             return SizedBox();
