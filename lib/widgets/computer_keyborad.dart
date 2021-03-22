@@ -46,8 +46,11 @@ class ComputerKeyboard extends StatelessWidget {
           onTap: () {
             if (focusNode != null && !focusNode.hasFocus) return;
             print(_controller.text);
-            if (_controller.text.startsWith('0')) {
-              _controller.text = '';
+            if (_controller.text.startsWith('0') &&
+                _controller.text.length == 1) {
+              if (n != 10) _controller.text = '';
+            } else if (_controller.text.startsWith('.')) {
+              _controller.text = '0.';
             }
             if (n < 10) {
               _controller.text += n.toString();
@@ -68,6 +71,7 @@ class ComputerKeyboard extends StatelessWidget {
               _controller.text =
                   _controller.text.substring(0, _controller.text.length - 1);
             }
+            if (_controller.text.isEmpty) _controller.text = '0';
           },
           child: Container(
             child: Center(child: _widget),

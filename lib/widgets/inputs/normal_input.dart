@@ -45,7 +45,6 @@ class NormalInput extends StatelessWidget {
         labelText: label,
         errorStyle: TextStyle(color: Colors.red, fontSize: 10.0),
       ),
-      autofocus: true,
     );
   }
 }
