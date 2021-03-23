@@ -1,12 +1,11 @@
 import 'package:decimal/decimal.dart';
-import 'package:tidewallet3/helpers/logger.dart';
-import 'package:tidewallet3/helpers/prefer_manager.dart';
 
 import '../database/entity/exchage_rate.dart';
 import '../database/db_operator.dart';
 import '../helpers/http_agent.dart';
 import '../models/account.model.dart';
 import '../constants/endpoint.dart';
+import '../helpers/prefer_manager.dart';
 
 class Trader {
   static const syncInterval = 24 * 60 * 60 * 1000;
