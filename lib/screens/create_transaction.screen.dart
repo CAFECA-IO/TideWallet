@@ -52,7 +52,6 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
     _gasPriceController = TextEditingController();
     this._repo = Provider.of<TransactionRepository>(context);
     this._repo.setCurrency(_currency);
-    print('didChangeDependencies: ${_currency.symbol}');
     _fiatBloc = BlocProvider.of<FiatBloc>(context);
     _bloc = BlocProvider.of<TransactionBloc>(context)
       ..add(UpdateTransactionCreateCurrency(this._currency));

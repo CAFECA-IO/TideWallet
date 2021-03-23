@@ -2,6 +2,7 @@ import 'dart:math'; // --
 import 'package:decimal/decimal.dart';
 
 import '../models/account.model.dart';
+import '../helpers/logger.dart'; // --
 
 class SwapCore {
   static final SwapCore _instance = SwapCore._internal();
@@ -27,6 +28,7 @@ class SwapCore {
       // } else {
       // ++
       // --
+      Log.debug('sellAmount.toString(): ${sellAmount.toString()}');
       Decimal randomNumber =
           Decimal.tryParse((Random().nextDouble() * 100).toString());
       result = {

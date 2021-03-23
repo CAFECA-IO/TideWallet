@@ -79,10 +79,17 @@ class TransactionRepository {
   Future<List<Transaction>> getTransactions() async {
     List<TransactionEntity> transactions = await DBOperator()
         .transactionDao
-        .findAllTransactionsById(this._currency.id)
-      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+        .findAllTransactionsById(this._currency.id);
 
-    List<Transaction> txs = transactions
+    List<TransactionEntity> _transactions1 = transactions
+        .where((transaction) => transaction.timestamp == null)
+        .toList();
+    List<TransactionEntity> _transactions2 = transactions
+        .where((transaction) => transaction.timestamp != null)
+        .toList()
+          ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+
+    List<Transaction> txs = (_transactions1 + _transactions2)
         .map((tx) => Transaction.fromTransactionEntity(tx))
         .toList();
     return txs;
@@ -437,13 +444,19 @@ class TransactionRepository {
     await DBOperator().transactionDao.insertTransaction(tx);
     // inform screen
     List transactions =
-        await DBOperator().transactionDao.findAllTransactionsById(id)
+        await DBOperator().transactionDao.findAllTransactionsById(id);
+    List<TransactionEntity> _transactions1 = transactions
+        .where((transaction) => transaction.timestamp == null)
+        .toList();
+    List<TransactionEntity> _transactions2 = transactions
+        .where((transaction) => transaction.timestamp != null)
+        .toList()
           ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
     AccountMessage txMsg =
         AccountMessage(evt: ACCOUNT_EVT.OnUpdateTransactions, value: {
       "currency": currency,
-      "transactions": transactions
+      "transactions": (_transactions1 + _transactions2)
           .map((tx) => Transaction.fromTransactionEntity(tx))
           .toList()
     });
