@@ -36,5 +36,7 @@
   <string>Some Reason</string>
   <key>NSLocationWhenInUseUsageDescription</key>
   <string>Some Reason</string>
+  <key>NSFaceIDUsageDescription</key>
+  <string>Why is my app authenticating using face id?</string>
 </dict>
 </plist>
