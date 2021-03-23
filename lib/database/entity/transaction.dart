@@ -1,6 +1,5 @@
 import 'package:convert/convert.dart';
 import 'package:floor/floor.dart';
-import 'package:tidewallet3/helpers/logger.dart';
 
 import 'account_currency.dart';
 import '../../models/transaction.model.dart';

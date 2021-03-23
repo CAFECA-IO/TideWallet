@@ -183,8 +183,18 @@ class AccountServiceBase extends AccountService {
   }
 
   Future<List<TransactionEntity>> _loadTransactions(String currencyId) async {
-    return await DBOperator().transactionDao.findAllTransactionsById(currencyId)
-      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    List<TransactionEntity> transactions =
+        await DBOperator().transactionDao.findAllTransactionsById(currencyId);
+
+    List<TransactionEntity> _transactions1 = transactions
+        .where((transaction) => transaction.timestamp == null)
+        .toList();
+    List<TransactionEntity> _transactions2 = transactions
+        .where((transaction) => transaction.timestamp != null)
+        .toList()
+          ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+
+    return (_transactions1 + _transactions2);
   }
 
   @override
