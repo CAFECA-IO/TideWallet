@@ -24,7 +24,6 @@ class SwapLoaded extends SwapState {
   final String sellAmount;
   final List<Currency> targets;
   final String contract;
-  final int usePercent;
   final String buyAmount;
   final String exchangeRate;
   final SwapResult result;
@@ -36,7 +35,6 @@ class SwapLoaded extends SwapState {
       this.buyCurrency,
       this.sellAmount,
       this.contract,
-      this.usePercent,
       this.targets,
       this.buyAmount,
       this.exchangeRate,
@@ -50,7 +48,6 @@ class SwapLoaded extends SwapState {
       String sellAmount,
       List<Currency> targets,
       String contract,
-      int usePercent,
       String buyAmount,
       String exchangeRate,
       SwapResult result,
@@ -61,7 +58,6 @@ class SwapLoaded extends SwapState {
         buyCurrency: buyCurrency ?? this.buyCurrency,
         sellAmount: sellAmount ?? this.sellAmount,
         contract: contract ?? this.contract,
-        usePercent: usePercent ?? this.usePercent,
         targets: targets ?? this.targets,
         buyAmount: buyAmount ?? this.buyAmount,
         exchangeRate: exchangeRate ?? this.exchangeRate,
@@ -76,7 +72,6 @@ class SwapLoaded extends SwapState {
         buyCurrency,
         sellAmount,
         contract,
-        usePercent,
         targets,
         buyAmount,
         exchangeRate,

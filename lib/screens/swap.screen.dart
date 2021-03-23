@@ -1,3 +1,4 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,7 @@ import '../widgets/computer_keyborad.dart';
 
 import '../helpers/i18n.dart';
 import '../helpers/formatter.dart';
-import '../helpers/logger.dart';
+import '../helpers/logger.dart'; // --
 import '../theme.dart';
 
 final t = I18n.t;
@@ -57,7 +58,10 @@ class _SwapScreenState extends State<SwapScreen> {
         Currency currency = argument['currency'];
         _swapBloc.add(InitSwap(currency));
       } else {
-        _swapBloc.add(InitSwap(AccountCore().getAllCurrencies()[0]));
+        _swapBloc.add(InitSwap(AccountCore().getAllCurrencies().firstWhere(
+            (curr) =>
+                Decimal.tryParse(curr.amount) != null &&
+                Decimal.tryParse(curr.amount) > Decimal.zero)));
       }
       _isInit = false;
     }
@@ -69,20 +73,26 @@ class _SwapScreenState extends State<SwapScreen> {
   dispose() {
     _sellAmountController.dispose();
     _buyAmountController.dispose();
+    _currentController.dispose();
     _sellAmountFocusNode.dispose();
     _buyAmountFocusNode.dispose();
+    _currentFocusNode.dispose();
 
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return BlocListener<SwapBloc, SwapState>(
       cubit: _swapBloc,
       listener: (ctx, state) {
+        Log.debug('state: ${state.props}'); // --
+
         if (state is SwapLoaded) {
           // UpdateUsePercent || ChangeSwapTarget
+          Log.debug(
+              '_buyAmountController.text: ${_buyAmountController.text}'); // --
+          Log.debug('state: ${state.props}'); // --
           if (state.buyAmount.toString() != _buyAmountController.text)
             _buyAmountController.text = state.buyAmount.toString();
 
@@ -213,24 +223,29 @@ class _SwapScreenState extends State<SwapScreen> {
                       ),
                       Positioned.fill(
                         // right: 40.0,
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  spreadRadius: 1,
-                                  blurRadius: 1,
-                                )
-                              ],
-                            ),
-                            child: CircleAvatar(
-                              child: Icon(Icons.cached,
-                                  color: Theme.of(context).primaryColor),
-                              backgroundColor: Color(0xFFFFFFFF),
+                        child: GestureDetector(
+                          onTap: () {
+                            this._swapBloc.add(ExchangeSwapCurrency());
+                          },
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 1,
+                                    blurRadius: 1,
+                                  )
+                                ],
+                              ),
+                              child: CircleAvatar(
+                                child: Icon(Icons.cached,
+                                    color: Theme.of(context).primaryColor),
+                                backgroundColor: Color(0xFFFFFFFF),
+                              ),
                             ),
                           ),
                         ),
