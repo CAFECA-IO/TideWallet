@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:alice/alice.dart';
-import 'package:tidewallet3/constants/log_config.dart';
+import 'package:local_auth/auth_strings.dart';
+import '../constants/log_config.dart';
 
 import '../database/db_operator.dart';
 import './welcome.screen.dart';
@@ -13,6 +17,9 @@ import '../blocs/fiat/fiat_bloc.dart';
 import '../blocs/user/user_bloc.dart';
 import '../main.dart';
 import '../helpers/http_agent.dart';
+import '../helpers/logger.dart';
+
+import 'package:local_auth/local_auth.dart';
 
 class LandingScreen extends StatefulWidget {
   static const routeName = 'landing-screen';
@@ -25,8 +32,89 @@ class _LandingScreenState extends State<LandingScreen> {
   UserBloc _bloc;
   FiatBloc _fiatBloc;
   AccountCurrencyBloc _accountBloc;
-
   Alice alice;
+
+// -- TEST AUTH
+  final noEnrolledWording = "未啟用生物辨識";
+
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+  final LocalAuthentication _localAuth = LocalAuthentication();
+  String _canEvaluatePolicy = "";
+  String _biometryType = "";
+
+  Future<void> _checkBiometrics() async {
+    bool canCheckBiometrics;
+    canCheckBiometrics = await _localAuth.canCheckBiometrics;
+
+    if (!mounted) return;
+
+    setState(() {
+      _canEvaluatePolicy = canCheckBiometrics ? "是" : "否";
+    });
+  }
+
+  Future<void> _getAvailableBiometrics() async {
+    List<BiometricType> availableBiometrics =
+        await _localAuth.getAvailableBiometrics();
+
+    if (!mounted) return;
+
+    if (availableBiometrics.isEmpty) {
+      _biometryType = noEnrolledWording;
+    } else {
+      if (availableBiometrics.contains(BiometricType.face)) {
+        _biometryType = "點我驗證Face ID";
+        Log.debug(_biometryType);
+      } else if (availableBiometrics.contains(BiometricType.fingerprint)) {
+        _biometryType = "點我驗證Touch ID";
+        Log.debug('_biometryType');
+      }
+      // if (Platform.isIOS) {
+      //   if (availableBiometrics.contains(BiometricType.face)) {
+      //     Log.debug('IOS Face ID');
+      //   } else if (availableBiometrics.contains(BiometricType.fingerprint)) {
+      //     Log.debug('IOS Touch ID');
+      //   }
+      // } else {
+      //   if (availableBiometrics.contains(BiometricType.fingerprint)) {
+      //     Log.debug('Android Touch ID');
+      //   } else if (availableBiometrics.contains(BiometricType.face)) {
+      //     Log.debug('Android Face ID');
+      //   }
+      // }
+    }
+  }
+
+  Future<void> _authenticate() async {
+    print("驗證中");
+    bool authenticated = false;
+
+    // try {
+    authenticated = await _localAuth.authenticateWithBiometrics(
+        localizedReason: _biometryType,
+        stickyAuth: true,
+        useErrorDialogs: true,
+        iOSAuthStrings: IOSAuthMessages(
+            lockOut: "鎖",
+            goToSettingsButton: "設定",
+            goToSettingsDescription: "請設定",
+            cancelButton: "算了"),
+        androidAuthStrings: AndroidAuthMessages(
+            fingerprintHint: "鎖",
+            goToSettingsButton: "設定",
+            goToSettingsDescription: "請設定",
+            cancelButton: "Cancel"));
+    // } on PlatformException catch (e) {
+    //   print("例外");
+    //   print(e);
+    // }
+
+    if (!mounted) return;
+
+    final result = authenticated ? "驗證成功" : "驗證失敗";
+    // scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(result)));
+  }
+// --
 
   @override
   void initState() {
@@ -37,6 +125,10 @@ class _LandingScreenState extends State<LandingScreen> {
           showNotification: true, navigatorKey: navigatorKey, darkTheme: true);
       HTTPAgent().setAlice(alice);
     }
+    // -- TEST AUTH
+    _checkBiometrics();
+    _getAvailableBiometrics();
+    // --
   }
 
   @override
@@ -100,6 +192,7 @@ class _LandingScreenState extends State<LandingScreen> {
             );
           }
           if (state is UserSuccess) {
+            _authenticate();
             return HomeScreen();
           }
 

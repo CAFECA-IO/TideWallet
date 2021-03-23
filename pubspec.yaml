@@ -26,6 +26,7 @@ dependencies:
   flutter:
     sdk: flutter
   intl: ^0.16.1
+  local_auth: ^0.6.2+1
 
   # UI
   # barcode_scan: ^3.0.1
