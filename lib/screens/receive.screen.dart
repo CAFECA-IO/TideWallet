@@ -56,7 +56,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
         routeName: ReceiveScreen.routeName,
       ),
       body: BlocListener<ReceiveBloc, ReceiveState>(
-          cubit: _bloc,
+          bloc: _bloc,
           listener: (context, state) {
             if (state is AddressLoading) {
               DialogController.showUnDissmissible(context, LoadingDialog());

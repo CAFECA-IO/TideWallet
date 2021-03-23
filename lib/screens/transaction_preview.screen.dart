@@ -59,7 +59,7 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
         routeName: TransactionPreviewScreen.routeName,
       ),
       body: BlocListener<TransactionBloc, TransactionState>(
-        cubit: _bloc,
+        bloc: _bloc,
         listener: (context, state) async {
           if (state is CreateTransactionFail) {
             DialogController.dismiss(context);
@@ -150,7 +150,7 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
               ),
               Spacer(),
               BlocListener<VerifyPasswordBloc, VerifyPasswordState>(
-                cubit: _verifyPasswordBloc,
+                bloc: _verifyPasswordBloc,
                 listener: (context, state) {
                   if (state is PasswordVerified) {
                     _bloc.add(PublishTransaction(state.password));

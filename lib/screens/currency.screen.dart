@@ -55,7 +55,7 @@ class _CurrencyScreenState extends State<CurrencyScreen> {
         routeName: CurrencyScreen.routeName,
       ),
       body: BlocBuilder<CurrencyBloc, CurrencyState>(
-        cubit: _bloc,
+        bloc: _bloc,
         builder: (context, state) {
           return Container(
             decoration: BoxDecoration(color: Color(0xFFF7F8F9)),

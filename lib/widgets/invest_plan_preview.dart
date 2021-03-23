@@ -56,7 +56,7 @@ class _InvestPlanPreviewState extends State<InvestPlanPreview> {
     Size size = MediaQuery.of(context).size;
     return
         // BlocListener(
-        //   cubit: _bloc,
+        //   bloc: _bloc,
         //   listener: (BuildContext context, state) {},
         //   child:
         Container(
@@ -220,7 +220,7 @@ class _InvestPlanPreviewState extends State<InvestPlanPreview> {
           ),
           Spacer(),
           BlocListener<VerifyPasswordBloc, VerifyPasswordState>(
-            cubit: _verifyPasswordBloc,
+            bloc: _verifyPasswordBloc,
             listener: (context, state) {
               if (state is PasswordVerified) {
                 this._bloc.add(CreateInvestPlan());

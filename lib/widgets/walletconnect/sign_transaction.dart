@@ -62,7 +62,7 @@ class _SignTransactionState extends State<SignTransaction> {
             fee) >
         Decimal.zero;
     return BlocBuilder<FiatBloc, FiatState>(
-        cubit: _fiatBloc,
+        bloc: _fiatBloc,
         builder: (context, state) {
           String fiat = '';
           if (state is FiatLoaded) {

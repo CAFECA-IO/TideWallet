@@ -66,7 +66,7 @@ class _SwapScreenState extends State<SwapScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<SwapBloc, SwapState>(
-      cubit: _swapBloc,
+      bloc: _swapBloc,
       listener: (ctx, state) {
         if (state is SwapLoaded) {
           // UpdateUsePercent || ChangeSwapTarget
@@ -137,7 +137,7 @@ class _SwapScreenState extends State<SwapScreen> {
         }
       },
       child: BlocBuilder<SwapBloc, SwapState>(
-        cubit: _swapBloc,
+        bloc: _swapBloc,
         builder: (context, state) {
           if (state is SwapLoaded) {
             return SingleChildScrollView(

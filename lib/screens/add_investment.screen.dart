@@ -65,7 +65,7 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
         routeName: AddInvestmentScreen.routeName,
       ),
       body: BlocBuilder<InvestPlanBloc, InvestPlanState>(
-          cubit: _bloc,
+          bloc: _bloc,
           builder: (context, state) {
             if (state is InvestPlanInitial)
               return Expanded(
@@ -81,7 +81,7 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
                 _percentage = state.percentage;
               }
               return BlocListener(
-                cubit: _bloc,
+                bloc: _bloc,
                 listener: (context, state) {
                   if (state is InvestLoading) {
                     DialogController.showUnDissmissible(
