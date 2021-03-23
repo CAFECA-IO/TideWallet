@@ -23,9 +23,13 @@ class ChangeSwapBuyCurrency extends SwapEvent {
   ChangeSwapBuyCurrency(this.buyCurrency);
 }
 
-class UpdateUsePercent extends SwapEvent {
-  final int percent;
-  UpdateUsePercent(this.percent);
+class ExchangeSwapCurrency extends SwapEvent {
+  ExchangeSwapCurrency();
+}
+
+class UpdateSellAmount extends SwapEvent {
+  final String amount;
+  UpdateSellAmount(this.amount);
 }
 
 class UpdateBuyAmount extends SwapEvent {
