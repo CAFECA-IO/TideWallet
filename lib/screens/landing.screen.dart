@@ -1,10 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:alice/alice.dart';
-import 'package:local_auth/auth_strings.dart';
-import 'package:tidewallet3/constants/log_config.dart';
 import 'package:local_auth/local_auth.dart';
+import '../constants/log_config.dart';
 
 import '../database/db_operator.dart';
 import './welcome.screen.dart';
@@ -28,7 +29,6 @@ class _LandingScreenState extends State<LandingScreen> {
   UserBloc _bloc;
   FiatBloc _fiatBloc;
   AccountCurrencyBloc _accountBloc;
-
   Alice alice;
 
   @override
