@@ -5,7 +5,6 @@ import 'package:equatable/equatable.dart';
 
 import '../../repositories/transaction_repository.dart';
 import '../../models/account.model.dart';
-import '../../helpers/logger.dart';
 
 part 'receive_event.dart';
 part 'receive_state.dart';

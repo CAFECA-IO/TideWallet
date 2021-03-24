@@ -32,7 +32,6 @@ class BitcoinService extends AccountServiceDecorator {
   Map<TransactionPriority, Decimal> _fee;
   int _timestamp; // fetch transactionFee timestamp;
 
-
   @override
   void init(String id, ACCOUNT base, {int interval}) {
     this.service.init(id, base ?? this.base, interval: this.syncInterval);
@@ -44,7 +43,8 @@ class BitcoinService extends AccountServiceDecorator {
 
     this.synchro();
 
-    this.service.timer = Timer.periodic(Duration(milliseconds: this.syncInterval), (_) {
+    this.service.timer =
+        Timer.periodic(Duration(milliseconds: this.syncInterval), (_) {
       synchro();
     });
   }
@@ -88,7 +88,7 @@ class BitcoinService extends AccountServiceDecorator {
     if (response.success) {
       Map data = response.data;
       String _address = data['address'];
-      _numberOfUsedInternalKey = data['change_index'];
+      _numberOfUsedInternalKey = data['key_index'];
       return [_address, _numberOfUsedInternalKey];
     } else {
       //TODO
@@ -119,7 +119,6 @@ class BitcoinService extends AccountServiceDecorator {
     }
   }
 
-  @override
   Future<List<UnspentTxOut>> getUnspentTxOut(String currencyId) async {
     List<JoinUtxo> utxos =
         await DBOperator().utxoDao.findAllJoinedUtxosById(currencyId);
@@ -176,14 +175,18 @@ class BitcoinService extends AccountServiceDecorator {
       _transaction = transaction;
       _transaction.id = response.data['txid'];
       _transaction.txId = response.data['txid'];
-      _transaction.timestamp = DateTime.now().millisecondsSinceEpoch;
+      _transaction.timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
       _transaction.confirmations = 0;
+      _transaction.message = transaction.message ?? Uint8List(0);
+      _transaction.direction =
+          transaction.direction ?? TransactionDirection.sent;
+      _transaction.status = transaction.status ?? TransactionStatus.pending;
       _transaction.inputs.forEach((Input input) async {
         UnspentTxOut _utxo = input.utxo;
         _utxo.locked = true;
         await DBOperator()
             .utxoDao
-            .updateUtxo(UtxoEntity.fromUnspentUtxo(_utxo));
+            .insertUtxo(UtxoEntity.fromUnspentUtxo(_utxo));
       });
       // insertChangeUtxo
       if (transaction.changeUtxo != null) {

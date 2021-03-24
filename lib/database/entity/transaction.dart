@@ -98,7 +98,7 @@ class TransactionEntity {
             destinationAddresses ?? transaction.destinationAddresses,
         this.confirmation = transaction.confirmations,
         this.gasPrice = gasPrice, // in smallest parentCoin unit
-        this.gasUsed = transaction.gasUsed.toInt(),
+        this.gasUsed = transaction?.gasUsed?.toInt(),
         this.fee = fee, // in smallest parentCoin unit
         this.direction = transaction.direction.title,
         this.status = transaction.status.title,

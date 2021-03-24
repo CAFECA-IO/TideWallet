@@ -87,8 +87,8 @@ class Transaction {
                 ? TransactionDirection.received
                 : TransactionDirection.unknown;
     _address = (direction == TransactionDirection.sent)
-        ? entity.destinctionAddress
-        : entity.sourceAddress;
+        ? entity.sourceAddress
+        : entity.destinctionAddress;
     confirmations = entity.confirmation;
     timestamp = entity.timestamp;
     message = hex.decode(stripHexPrefix(entity.note));
@@ -188,11 +188,11 @@ extension TransactionDirectionExt on TransactionDirection {
   String get subtitle {
     switch (this) {
       case TransactionDirection.sent:
-        return "save_to";
+        return "transfer_to";
         break;
       case TransactionDirection.received:
       case TransactionDirection.moved:
-        return "transfer_to";
+        return "save_to";
         break;
       case TransactionDirection.unknown:
         return "Unknown";
