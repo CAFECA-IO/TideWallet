@@ -47,7 +47,7 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
     Decimal fee,
     List<UnspentTxOut> unspentTxOuts = const [],
     String changeAddress,
-    int changeIndex,
+    int keyIndex,
   }) {
     EthereumTransaction transaction = EthereumTransaction.prepareTransaction(
       from: changeAddress,

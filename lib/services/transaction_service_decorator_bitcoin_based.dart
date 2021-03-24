@@ -89,7 +89,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     String accountcurrencyId,
     Decimal fee,
     List<UnspentTxOut> unspentTxOuts,
-    int changeIndex,
+    int keyIndex,
     String changeAddress,
   }) {
     BitcoinTransaction transaction = BitcoinTransaction.prepareTransaction(
@@ -140,7 +140,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     // Add ChangeUtxo
     if (change > Decimal.zero) {
       UnspentTxOut changeUtxo = UnspentTxOut.fromSmallestUint(
-          id: signedTransaction.txId.substring(0, 6),
+          id: signedTransaction.txId + "-1",
           accountcurrencyId: accountcurrencyId,
           txId: signedTransaction.txId,
           vout: 1,
@@ -151,7 +151,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
                   : BitcoinTransactionType.PUBKEYHASH,
           amount: change,
           changeIndex: _Index_InternalChain,
-          keyIndex: changeIndex,
+          keyIndex: keyIndex,
           timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
           locked: false,
           data: Uint8List(0),

@@ -253,7 +253,7 @@ class TransactionRepository {
       case ACCOUNT.BTC:
         BitcoinService _svc = _accountService;
         String changeAddress;
-        int changeIndex;
+        int keyIndex;
         List<UnspentTxOut> unspentTxOuts =
             await _svc.getUnspentTxOut(_currency.id);
         Decimal utxoAmount = Decimal.zero;
@@ -276,7 +276,7 @@ class TransactionRepository {
             List result = await _svc.getChangingAddress(_currency.id);
             Log.btc('prepareTransaction getChangingAddress: $result');
             changeAddress = result[0];
-            changeIndex = result[1];
+            keyIndex = result[1];
             break;
           } else if (utxoAmount == (amount + fee)) break;
         }
@@ -290,7 +290,7 @@ class TransactionRepository {
           fee: Converter.toCurrencySmallestUnit(
               fee, this._currency.accountDecimals),
           unspentTxOuts: _utxos,
-          changeIndex: changeIndex,
+          keyIndex: keyIndex,
           changeAddress: changeAddress,
         );
         Decimal balance = Decimal.parse(this._currency.amount) - amount - fee;
