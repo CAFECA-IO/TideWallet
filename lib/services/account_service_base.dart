@@ -17,7 +17,6 @@ import '../models/transaction.model.dart';
 import 'account_service.dart';
 
 class AccountServiceBase extends AccountService {
-  Timer _timer;
   ACCOUNT _base;
   String _accountId;
   int _syncInterval;
@@ -54,7 +53,7 @@ class AccountServiceBase extends AccountService {
 
   @override
   void stop() {
-    _timer?.cancel();
+    this.timer?.cancel();
   }
 
   @override

@@ -83,7 +83,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
       ),
       resizeToAvoidBottomInset: false,
       body: BlocBuilder<TransactionBloc, TransactionState>(
-          cubit: _bloc,
+          bloc: _bloc,
           builder: (context, state) {
             if (state is TransactionInitial) {
               Log.debug(state.props);

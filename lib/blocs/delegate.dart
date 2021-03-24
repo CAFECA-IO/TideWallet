@@ -16,8 +16,8 @@ class ObserverDelegate extends BlocObserver {
   }
 
   @override
-  void onError(Cubit bloc, Object error, StackTrace stackTrace) {
-    // Log.error('BLOC $bloc error $error');
+  void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
+    Log.error('BLOC $bloc error $error');
     super.onError(bloc, error, stackTrace);
   }
 }

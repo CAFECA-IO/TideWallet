@@ -50,7 +50,7 @@ class _ResetSettingState extends State<ResetSetting> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<ResetBloc, ResetState>(
-      cubit: _bloc,
+      bloc: _bloc,
       listener: (context, state) async {
         if (state is ResetError) {
           if (state.error == RESET_ERROR.password) {

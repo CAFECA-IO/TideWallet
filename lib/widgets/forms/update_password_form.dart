@@ -45,7 +45,7 @@ class _UpdatePasswordFormState extends State<UpdatePasswordForm> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<UpdatePasswordBloc, UpdatePasswordState>(
-      cubit: _bloc,
+      bloc: _bloc,
       listener: (context, state) async {
         if (state is UpdatePasswordStateCheck) {
           UpdatePasswordStateCheck _state = state;
@@ -101,7 +101,7 @@ class _UpdatePasswordFormState extends State<UpdatePasswordForm> {
         }
       },
       child: BlocBuilder<UpdatePasswordBloc, UpdatePasswordState>(
-          cubit: _bloc,
+          bloc: _bloc,
           builder: (BuildContext ctx, UpdatePasswordState state) {
             if (state is UpdatePasswordStateCheck) {
               return CheckingView(_bloc, state, widget.appBarHeight);

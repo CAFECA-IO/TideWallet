@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:alice/alice.dart';
@@ -18,8 +19,6 @@ import '../blocs/user/user_bloc.dart';
 import '../main.dart';
 import '../helpers/http_agent.dart';
 import '../helpers/logger.dart';
-
-import 'package:local_auth/local_auth.dart';
 
 class LandingScreen extends StatefulWidget {
   static const routeName = 'landing-screen';
@@ -100,7 +99,7 @@ class _LandingScreenState extends State<LandingScreen> {
             goToSettingsDescription: "請設定",
             cancelButton: "算了"),
         androidAuthStrings: AndroidAuthMessages(
-            fingerprintHint: "鎖",
+            biometricHint: "鎖",
             goToSettingsButton: "設定",
             goToSettingsDescription: "請設定",
             cancelButton: "Cancel"));
