@@ -5,8 +5,21 @@ set [database config](#DB)
 
 
 ## Flutter
-- version: 1.22.5
+- version: 2.0.3
 
+
+#### Upgrade
+```
+flutter upgrade
+flutter clean
+flutter pub get
+
+cd ios
+rm -rf Pods
+rm -rf Flutter/Flutter.framework
+pod install
+
+```
 ### DB
 * If is using first time or changing ./lib/database run:
 

@@ -192,7 +192,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                     );
                   }
                 },
-                cubit: _verifyPasswordBloc,
+                bloc: _verifyPasswordBloc,
                 child: content,
               ),
             ).then(
@@ -209,7 +209,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
           }
         }
       },
-      cubit: _bloc,
+      bloc: _bloc,
       child: Scaffold(
         appBar: GeneralAppbar(
           title: 'TideWallet Connect',
@@ -220,7 +220,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
           },
         ),
         body: BlocBuilder<WalletConnectBloc, WalletConnectState>(
-          cubit: _bloc,
+          bloc: _bloc,
           builder: (context, state) {
             if (state is WalletConnectInitial) {
               return Stack(

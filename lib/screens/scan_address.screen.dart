@@ -31,7 +31,7 @@ class _ScanAddressScreenState extends State<ScanAddressScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<TransactionBloc, TransactionState>(
-      cubit: _bloc,
+      bloc: _bloc,
       listener: (context, state) {
         if (state is TransactionInitial && state.rules[0]) {
           Navigator.of(context).pop();
@@ -50,7 +50,7 @@ class _ScanAddressScreenState extends State<ScanAddressScreen> {
               scanCallback: this._scanResult,
             ),
             BlocBuilder<TransactionBloc, TransactionState>(
-              cubit: _bloc,
+              bloc: _bloc,
               builder: (context, state) {
                 if (state is TransactionInitial &&
                     (state.address != null && state.address.isNotEmpty) &&

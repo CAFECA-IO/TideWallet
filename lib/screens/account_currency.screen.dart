@@ -48,7 +48,7 @@ class _AccountCurrencyScreenState extends State<AccountCurrencyScreen> {
     return Stack(
       children: [
         BlocBuilder<AccountCurrencyBloc, AccountCurrencyState>(
-          cubit: _bloc,
+          bloc: _bloc,
           builder: (context, state) {
             _currencies = state.currencies;
             return Container(

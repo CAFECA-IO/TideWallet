@@ -59,7 +59,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
         routeName: TransactionListScreen.routeName,
       ),
       body: BlocBuilder<TransactionStatusBloc, TransactionStatusState>(
-          cubit: _bloc,
+          bloc: _bloc,
           builder: (context, state) {
             return Container(
               child: Column(children: [
