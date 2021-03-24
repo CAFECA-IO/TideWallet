@@ -258,6 +258,7 @@ class TransactionRepository {
             await _svc.getUnspentTxOut(_currency.id);
         Decimal utxoAmount = Decimal.zero;
         Log.btc('amount + fee: ${amount + fee}');
+        List<UnspentTxOut> _utxos = [];
         for (UnspentTxOut utxo in unspentTxOuts) {
           Log.btc('utxo.locked: ${utxo.locked}');
 
@@ -267,8 +268,10 @@ class TransactionRepository {
           Log.btc('utxoAmount: $utxoAmount');
           Log.btc('utxo.amount: ${utxo.amount}');
           utxo.privatekey =
-              await getPrivKey(pwd, utxo.chainIndex, utxo.keyIndex);
-          utxo.publickey = await getPubKey(pwd, utxo.chainIndex, utxo.keyIndex);
+              await getPrivKey(pwd, utxo.changeIndex, utxo.keyIndex);
+          utxo.publickey =
+              await getPubKey(pwd, utxo.changeIndex, utxo.keyIndex);
+          _utxos.add(utxo);
           if (utxoAmount > (amount + fee)) {
             List result = await _svc.getChangingAddress(_currency.id);
             Log.btc('prepareTransaction getChangingAddress: $result');
@@ -277,6 +280,7 @@ class TransactionRepository {
             break;
           } else if (utxoAmount == (amount + fee)) break;
         }
+        Log.btc('unspentTxOuts: $unspentTxOuts');
         Transaction transaction = _transactionService.prepareTransaction(
           this._currency.publish,
           to,
@@ -285,7 +289,7 @@ class TransactionRepository {
           accountcurrencyId: this._currency.id,
           fee: Converter.toCurrencySmallestUnit(
               fee, this._currency.accountDecimals),
-          unspentTxOuts: unspentTxOuts,
+          unspentTxOuts: _utxos,
           changeIndex: changeIndex,
           changeAddress: changeAddress,
         );

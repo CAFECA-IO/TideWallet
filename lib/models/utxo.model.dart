@@ -15,7 +15,7 @@ class UnspentTxOut {
   final BitcoinTransactionType type;
   final String address;
   final Decimal amount; // in currency uint
-  final int chainIndex;
+  final int changeIndex;
   final int keyIndex;
   final Uint8List data; // hex string
   final int timestamp;
@@ -42,7 +42,7 @@ class UnspentTxOut {
     this.type,
     this.address,
     this.amount, // in currency uint
-    this.chainIndex,
+    this.changeIndex,
     this.keyIndex,
     this.data,
     this.timestamp,
@@ -63,7 +63,7 @@ class UnspentTxOut {
     this.type,
     this.address,
     Decimal amount, // in currency uint
-    this.chainIndex,
+    this.changeIndex,
     this.keyIndex,
     this.data,
     this.timestamp,
@@ -83,8 +83,9 @@ class UnspentTxOut {
         vout = utxo.vout,
         type = BitcoinTransactionType.values
             .firstWhere((type) => type.value == utxo.type),
-        amount = Decimal.parse(utxo.amount),
-        chainIndex = utxo.chainIndex,
+        amount =
+            Converter.toCurrencyUnit(Decimal.parse(utxo.amount), utxo.decimals),
+        changeIndex = utxo.changeIndex,
         keyIndex = utxo.keyIndex,
         data = hex.decode(utxo.script),
         timestamp = utxo.timestamp,
