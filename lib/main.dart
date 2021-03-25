@@ -15,6 +15,7 @@ import './repositories/user_repository.dart';
 import './repositories/trader_repository.dart';
 import './repositories/invest_repository.dart';
 import './repositories/swap_repository.dart';
+import './repositories/local_auth_repository.dart';
 import './screens/currency.screen.dart';
 import './screens/landing.screen.dart';
 import './screens/restore_wallet.screen.dart';
@@ -41,6 +42,7 @@ import './blocs/transaction/transaction_bloc.dart';
 import './blocs/restore_wallet/restore_wallet_bloc.dart';
 import './blocs/backup/backup_bloc.dart';
 import './blocs/receive/receive_bloc.dart';
+import './blocs/local_auth/local_auth_bloc.dart';
 // import './blocs/update_password/update_password_bloc.dart';
 import './blocs/invest/invest_bloc.dart';
 import './helpers/i18n.dart';
@@ -97,6 +99,9 @@ class MyApp extends StatelessWidget {
           ),
           Provider<SwapRepository>(
             create: (_) => SwapRepository(),
+          ),
+          Provider<LocalAuthRepository>(
+            create: (_) => LocalAuthRepository(),
           )
         ],
         child: MultiBlocProvider(
@@ -144,6 +149,11 @@ class MyApp extends StatelessWidget {
               create: (BuildContext context) => BackupBloc(
                 Provider.of<UserRepository>(context, listen: false),
               )..add(CheckBackup()),
+            ),
+            BlocProvider<LocalAuthBloc>(
+              create: (BuildContext context) => LocalAuthBloc(
+                Provider.of<LocalAuthRepository>(context, listen: false),
+              )..add(Authenticate()),
             ),
             // BlocProvider<ReceiveBloc>(
             //   create: (BuildContext context) => ReceiveBloc(
