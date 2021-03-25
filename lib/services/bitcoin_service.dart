@@ -181,7 +181,7 @@ class BitcoinService extends AccountServiceDecorator {
       _transaction.direction =
           transaction.direction ?? TransactionDirection.sent;
       _transaction.status = transaction.status ?? TransactionStatus.pending;
-      _transaction.inputs.forEach((Input input) async {
+      transaction.inputs.forEach((Input input) async {
         UnspentTxOut _utxo = input.utxo;
         _utxo.locked = true;
         await DBOperator()

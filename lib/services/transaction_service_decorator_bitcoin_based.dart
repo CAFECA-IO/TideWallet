@@ -144,7 +144,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
           accountcurrencyId: accountcurrencyId,
           txId: signedTransaction.txId,
           vout: 1,
-          type: this.segwitType == SegwitType.nonSegWit
+          type: this.segwitType == SegwitType.nativeSegWit
               ? BitcoinTransactionType.WITNESS_V0_KEYHASH
               : this.segwitType == SegwitType.segWit
                   ? BitcoinTransactionType.SCRIPTHASH
@@ -155,7 +155,8 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
           timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
           locked: false,
           data: Uint8List(0),
-          decimals: this.currencyDecimals);
+          decimals: this.currencyDecimals,
+          address: changeAddress);
       signedTransaction.addChangeUtxo(changeUtxo);
     }
 

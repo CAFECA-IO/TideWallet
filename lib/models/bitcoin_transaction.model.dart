@@ -275,7 +275,7 @@ class BitcoinTransaction extends Transaction {
         this.note = note ?? Uint8List(0) {
     _inputs = [];
     _outputs = [];
-    _segwitType = segwitType ?? SegwitType.nonSegWit;
+    _segwitType = segwitType ?? SegwitType.nativeSegWit;
     setVersion(publish ? 1 : 2);
     setlockTime(lockTime ?? 0);
   }
@@ -300,10 +300,13 @@ class BitcoinTransaction extends Transaction {
   void addInput(UnspentTxOut utxo, HashType hashType) {
     Input input = Input(utxo, hashType);
     _inputs.add(input);
-    this.sourceAddresses = this.sourceAddresses.isEmpty
-        ? this.sourceAddresses += utxo.address
-        : this.sourceAddresses += '${", " + utxo.address}';
-    Log.warning('addInput: $sourceAddresses');
+    try {
+      this.sourceAddresses = this.sourceAddresses.isEmpty
+          ? this.sourceAddresses += utxo.address
+          : this.sourceAddresses += '${", " + utxo.address}';
+    } catch (e) {
+      Log.warning(e);
+    }
   }
 
   void addOutput(
