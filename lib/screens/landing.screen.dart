@@ -1,15 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:alice/alice.dart';
-import 'package:local_auth/local_auth.dart';
 import '../constants/log_config.dart';
 
 import '../database/db_operator.dart';
 import './welcome.screen.dart';
-import './home.screen.dart';
+import './authenticate.screen.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/loading_dialog.dart';
 import '../blocs/account_currency/account_currency_bloc.dart';
@@ -34,7 +30,6 @@ class _LandingScreenState extends State<LandingScreen> {
   @override
   void initState() {
     super.initState();
-
     if (Config.alice) {
       alice = Alice(
           showNotification: true, navigatorKey: navigatorKey, darkTheme: true);
@@ -55,7 +50,6 @@ class _LandingScreenState extends State<LandingScreen> {
       _fiatBloc = BlocProvider.of<FiatBloc>(context);
       _isInit = false;
     }
-
     super.didChangeDependencies();
   }
 
@@ -74,7 +68,6 @@ class _LandingScreenState extends State<LandingScreen> {
         if (state is UserLoading) {
           DialogController.showUnDissmissible(context, LoadingDialog());
         }
-
         if (state is UserSuccess || state is UserFail) {
           DialogController.dismiss(context);
         }
@@ -103,9 +96,8 @@ class _LandingScreenState extends State<LandingScreen> {
             );
           }
           if (state is UserSuccess) {
-            return HomeScreen();
+            return AuthenticateScreen();
           }
-
           return WelcomeScreen();
         },
       ),
