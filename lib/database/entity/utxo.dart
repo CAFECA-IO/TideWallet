@@ -12,6 +12,7 @@ import '../../models/bitcoin_transaction.model.dart';
       childColumns: ['accountcurrency_id'],
       parentColumns: ['accountcurrency_id'],
       entity: AccountCurrencyEntity,
+      onDelete: ForeignKeyAction.cascade,
     )
   ],
 )
