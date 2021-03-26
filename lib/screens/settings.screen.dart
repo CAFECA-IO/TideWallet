@@ -153,7 +153,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       navigatorKey: navigatorKey,
                       darkTheme: true);
                   HTTPAgent().setAlice(alice);
-                  HTTPAgent().setAlice(alice);
                   Navigator.of(context).pushNamed(LandingScreen.routeName,
                       arguments: {"debugMode": true});
                 })
