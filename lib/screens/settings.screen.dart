@@ -16,6 +16,7 @@ import '../widgets/settings/reset.dart';
 import '../helpers/i18n.dart';
 import '../helpers/http_agent.dart';
 import '../main.dart';
+
 class SettingsScreen extends StatefulWidget {
   static const routeName = '/settings';
 
@@ -25,8 +26,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   BackupBloc _backupBloc;
-    Alice alice;
-
+  Alice alice;
 
   final t = I18n.t;
 
@@ -148,9 +148,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ]),
               _section(t('developer_option'), [
                 _item(t('debug_mode'), () {
-                    alice = Alice(
-          showNotification: true, navigatorKey: navigatorKey, darkTheme: true);
-      HTTPAgent().setAlice(alice);
+                  alice = Alice(
+                      showNotification: true,
+                      navigatorKey: navigatorKey,
+                      darkTheme: true);
+                  HTTPAgent().setAlice(alice);
                   HTTPAgent().setAlice(alice);
                   Navigator.of(context).pushNamed(LandingScreen.routeName,
                       arguments: {"debugMode": true});
