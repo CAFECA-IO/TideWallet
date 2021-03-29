@@ -64,13 +64,13 @@ class PaperWallet {
     return seed;
   }
 
-  static Future<Uint8List> getPubKey(
+  static Uint8List getPubKey(
     Uint8List seed,
     int chainIndex,
     int keyIndex, {
     String path = EXT_PATH,
     bool compressed = true,
-  }) async {
+  }) {
     Uint8List bytes = Uint8List.fromList(seed);
     bip32.BIP32 root = bip32.BIP32.fromSeed(bytes);
     bip32.BIP32 child = root.derivePath("$path/$chainIndex/$keyIndex");
@@ -93,13 +93,13 @@ class PaperWallet {
     return publicKey;
   }
 
-  static Future<Uint8List> getPrivKey(
+  static Uint8List getPrivKey(
     Uint8List seed,
     int chainIndex,
     int keyIndex, {
     String path = EXT_PATH,
     bool compressed = true,
-  }) async {
+  }) {
     Uint8List bytes = Uint8List.fromList(seed);
     bip32.BIP32 root = bip32.BIP32.fromSeed(bytes);
     bip32.BIP32 child = root.derivePath("$path/$chainIndex/$keyIndex");
@@ -114,7 +114,7 @@ class PaperWallet {
   }) {
     const publicPrefix = [0x04, 0x88, 0xb2, 0x1e];
     const childNumber = 2147483648; // 2 ^ 31;
-   
+
     Uint8List bytes = Uint8List.fromList(seed);
 
     var root = bip32.BIP32.fromSeed(bytes);
