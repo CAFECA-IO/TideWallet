@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:decimal/decimal.dart';
 import 'package:convert/convert.dart';
@@ -222,8 +223,10 @@ class TransactionRepository {
     //     'd130e96ae9f5ede60e33c5264d1e2beb03c54b5eb67d8d52773a408287178ccc'));
     // TEST (END)
     UserEntity user = await DBOperator().userDao.findUser();
-    web3dart.Wallet wallet = PaperWallet.jsonToWallet([user.keystore, pwd]);
-    List<int> seed = PaperWallet.magicSeed(wallet.privateKey.privateKey);
+    web3dart.Wallet wallet =
+        await compute(PaperWallet.jsonToWallet, [user.keystore, pwd]);
+    List<int> seed =
+        await compute(PaperWallet.magicSeed, wallet.privateKey.privateKey);
     return Uint8List.fromList(seed);
   }
 
@@ -250,12 +253,12 @@ class TransactionRepository {
         int keyIndex;
         List<UnspentTxOut> unspentTxOuts =
             await _svc.getUnspentTxOut(_currency.id);
+        Log.debug('unspentTxOuts: $unspentTxOuts');
         Decimal utxoAmount = Decimal.zero;
         Log.btc('amount + fee: ${amount + fee}');
         List<UnspentTxOut> _utxos = [];
         for (UnspentTxOut utxo in unspentTxOuts) {
           Log.btc('utxo.locked: ${utxo.locked}');
-
           if (utxo.locked || !(utxo.amount > Decimal.zero) || utxo.type == null)
             continue;
           utxoAmount += utxo.amount; // in currency uint
@@ -274,7 +277,6 @@ class TransactionRepository {
             break;
           } else if (utxoAmount == (amount + fee)) break;
         }
-        Log.btc('unspentTxOuts: $unspentTxOuts');
         Transaction transaction = _transactionService.prepareTransaction(
           this._currency.publish,
           to,

@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:decimal/decimal.dart';
 import 'package:convert/convert.dart';
 
 import 'account_service.dart';
 import 'account_service_decorator.dart';
+
 import '../models/api_response.mode.dart';
 import '../models/transaction.model.dart';
 import '../models/bitcoin_transaction.model.dart';
@@ -15,10 +17,6 @@ import '../constants/endpoint.dart';
 import '../constants/account_config.dart';
 import '../database/db_operator.dart';
 import '../database/entity/utxo.dart';
-
-import 'dart:typed_data'; //TODO TEST
-import '../cores/paper_wallet.dart'; //TODO TEST
-import '../helpers/bitcoin_based_utils.dart'; //TODO TEST
 
 class BitcoinService extends AccountServiceDecorator {
   BitcoinService(AccountService service) : super(service) {
@@ -182,9 +180,11 @@ class BitcoinService extends AccountServiceDecorator {
       });
       // insertChangeUtxo
       if (transaction.changeUtxo != null) {
+        Log.debug('changeUtxo txId: ${transaction.changeUtxo.txId}');
         await DBOperator()
             .utxoDao
             .insertUtxo(UtxoEntity.fromUnspentUtxo(transaction.changeUtxo));
+        Log.debug('changeUtxo amount: ${transaction.changeUtxo.amount}');
       }
       // backend will parse transaction and insert changeUtxo to backend DB
     }
