@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:decimal/decimal.dart';
 import 'package:convert/convert.dart';
 
+import '../models/utxo.model.dart';
 import '../helpers/utils.dart';
 import '../helpers/logger.dart';
 import '../theme.dart';
@@ -52,7 +53,7 @@ class Transaction {
     throw UnimplementedError();
   }
 
-  dynamic get changeUtxo {
+  UnspentTxOut get changeUtxo {
     throw UnimplementedError();
   }
 
