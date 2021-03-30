@@ -39,14 +39,18 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
   TextEditingController _gasPriceController;
   TransactionRepository _repo;
   Currency _currency;
+  String _address;
   final _form = GlobalKey<FormState>();
   bool _isSelected = false;
 
   @override
   void didChangeDependencies() {
-    Map<String, Currency> arg = ModalRoute.of(context).settings.arguments;
+    Map<String, dynamic> arg = ModalRoute.of(context).settings.arguments;
+    Log.debug(arg);
     _currency = arg["account"];
+    _address = arg["address"];
     _addressController = TextEditingController();
+    if (_address != null) _addressController.text = _address;
     _amountController = TextEditingController();
     _gasController = TextEditingController();
     _gasPriceController = TextEditingController();

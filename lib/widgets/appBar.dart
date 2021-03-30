@@ -21,6 +21,7 @@ import '../screens/feedback.screen.dart';
 import '../screens/terms.screen.dart';
 import '../screens/investment.screen.dart';
 import '../screens/credit_card.screen.dart';
+import '../screens/scan.screen.dart';
 
 class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
   final String title;
@@ -48,6 +49,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
         case TransactionPreviewScreen.routeName:
         case ScanWalletScreen.routeName:
         case ScanAddressScreen.routeName:
+        case ScanScreen.routeName:
         case RestoreWalletScreen.routeName:
         case TransactionListScreen.routeName:
         case TransactionDetailScreen.routeName:
@@ -199,6 +201,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
     bool showBackground() {
       if (routeName == ScanWalletScreen.routeName) return false;
       if (routeName == ScanAddressScreen.routeName) return false;
+      if (routeName == ScanScreen.routeName) return false;
       if (routeName == TransactionListScreen.routeName) return false;
       if (routeName == AccountCurrencyScreen.routeName) return false;
       // if (routeName == AccountScreen.routeName) return false;

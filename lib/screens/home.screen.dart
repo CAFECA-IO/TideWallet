@@ -4,6 +4,7 @@ import './account_currency.screen.dart';
 import './investment.screen.dart';
 import './swap.screen.dart';
 import './wallet_connect.screen.dart';
+import './scan.screen.dart';
 import './credit_card.screen.dart';
 import './settings.screen.dart';
 import '../widgets/appBar.dart';
@@ -125,7 +126,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       floatingActionButton: FloatingActionButton(
         // backgroundColor: MyColors.ui_01,
         onPressed: () async {
-          Navigator.of(context).pushNamed(WalletConnectScreen.routeName);
+          // Navigator.of(context).pushNamed(WalletConnectScreen.routeName);
+          Navigator.of(context).pushNamed(ScanScreen.routeName);
         },
         child: Icon(
           Icons.center_focus_weak,

@@ -38,6 +38,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
   TransactionRepository _txRepo;
   UserRepository _userRepo;
   VerifyPasswordBloc _verifyPasswordBloc;
+  String _uri;
   final t = I18n.t;
 
   _scanResult(String v) {
@@ -52,6 +53,11 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
 
     _bloc = WalletConnectBloc(_accountRepo, _txRepo);
     _verifyPasswordBloc = VerifyPasswordBloc(_userRepo);
+    dynamic arg = ModalRoute.of(context).settings.arguments;
+    if (arg != null) {
+      _uri = arg;
+      this._bloc.add(ScanWC(_uri));
+    }
 
     super.didChangeDependencies();
   }
@@ -125,7 +131,11 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                 final tx = state.currentEvent.params[0];
 
                 if (tx['gasPrice'] == null) {
-                  tx['gasPrice'] = (_bloc.gasPrice[TransactionPriority.standard] * Decimal.fromInt(pow(10, 18))).toInt().toRadixString(16);
+                  tx['gasPrice'] =
+                      (_bloc.gasPrice[TransactionPriority.standard] *
+                              Decimal.fromInt(pow(10, 18)))
+                          .toInt()
+                          .toRadixString(16);
                 }
                 content = SignTransaction(
                     context: context,

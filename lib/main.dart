@@ -33,6 +33,7 @@ import './screens/feedback.screen.dart';
 import './screens/terms.screen.dart';
 import './screens/update_password.screen.dart';
 import './screens/add_investment.screen.dart';
+import './screens/scan.screen.dart';
 import './blocs/fiat/fiat_bloc.dart';
 import './blocs/account_currency/account_currency_bloc.dart';
 import './blocs/delegate.dart';
@@ -196,6 +197,7 @@ MaterialApp _material = MaterialApp(
     UpdatePasswordScreen.routeName: (context) => UpdatePasswordScreen(),
     FeedbackScreen.routeName: (context) => FeedbackScreen(),
     TermsScreen.routeName: (context) => TermsScreen(),
+    ScanScreen.routeName: (context) => ScanScreen(),
   },
   localizationsDelegates: [
     const I18nDelegate(),
