@@ -22,28 +22,47 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
   ) async* {
     if (event is ScanQRCode) {
       String result = event.result;
+      Log.debug(result);
+      Currency currency;
       if (result.contains(':')) {
         String prefix = result.split(':')[0];
-        String data = result.split(':')[1];
+
         if (prefix.toLowerCase() == 'wc')
-          yield ScannedWalletConnect(data);
+          yield ScannedWalletConnect(result);
         else if (prefix.toLowerCase() == 'ethereum') {
-          Currency currency = AccountCore().getAllCurrencies()?.firstWhere(
-              (currency) =>
-                  currency.type.toLowerCase() == 'currency' &&
-                  currency.symbol.toLowerCase() == 'eth');
-          yield ScannedAddress(currency, data);
-        } else if (prefix.toLowerCase() == 'bitcoin' ||
-            prefix.toLowerCase() == 'bitcointestnet') {
-          Currency currency = AccountCore().getAllCurrencies()?.firstWhere(
-              (currency) =>
-                  currency.type.toLowerCase() == 'currency' &&
-                  currency.symbol.toLowerCase() == 'btc');
-          yield ScannedAddress(currency, data);
+          try {
+            currency = AccountCore().getAllCurrencies().firstWhere((currency) =>
+                currency.type.toLowerCase() == 'currency' &&
+                currency.symbol.toLowerCase() == 'eth' &&
+                currency.publish);
+          } catch (e) {
+            currency = null;
+          }
+        } else if (prefix.toLowerCase() == 'bitcoin') {
+          try {
+            currency = AccountCore().getAllCurrencies().firstWhere((currency) =>
+                currency.type.toLowerCase() == 'currency' &&
+                currency.symbol.toLowerCase() == 'btc' &&
+                currency.publish);
+          } catch (e) {
+            currency = null;
+          }
+        } else if (prefix.toLowerCase() == 'bitcointestnet') {
+          try {
+            currency = AccountCore().getAllCurrencies().firstWhere((currency) =>
+                currency.type.toLowerCase() == 'currency' &&
+                currency.symbol.toLowerCase() == 'btc' &&
+                !currency.publish);
+          } catch (e) {
+            currency = null;
+          }
         } else
           yield ErrorFormat();
+        if (currency != null)
+          yield ScannedAddress(currency, result);
+        else
+          yield ErrorFormat();
       } else {
-        String result = event.result;
         Currency currency = this._repo.getAddressType(result);
         if (currency != null)
           yield ScannedAddress(currency, result);

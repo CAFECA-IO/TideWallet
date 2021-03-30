@@ -50,7 +50,6 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
     _currency = arg["account"];
     _address = arg["address"];
     _addressController = TextEditingController();
-    if (_address != null) _addressController.text = _address;
     _amountController = TextEditingController();
     _gasController = TextEditingController();
     _gasPriceController = TextEditingController();
@@ -59,6 +58,10 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
     _fiatBloc = BlocProvider.of<FiatBloc>(context);
     _bloc = BlocProvider.of<TransactionBloc>(context)
       ..add(UpdateTransactionCreateCurrency(this._currency));
+    if (_address != null) {
+      _addressController.text = _address;
+      _bloc.add(ValidAddress(_addressController.text));
+    }
     super.didChangeDependencies();
   }
 
@@ -93,6 +96,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
               Log.debug(state.props);
               if (state.address != null && state.address.isNotEmpty) {
                 _addressController.text = state.address;
+                _bloc.add(ValidAddress(_addressController.text));
               }
 
               return Container(
