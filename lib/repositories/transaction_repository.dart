@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:decimal/decimal.dart';
 import 'package:convert/convert.dart';
-import 'package:tidewallet3/services/bitcoin_service.dart';
 import 'package:web3dart/web3dart.dart' as web3dart;
 
 import '../cores/paper_wallet.dart';
@@ -14,6 +13,7 @@ import '../models/account.model.dart';
 import '../models/transaction.model.dart';
 import '../models/utxo.model.dart';
 import '../services/account_service.dart';
+import '../services/bitcoin_service.dart';
 import '../services/transaction_service.dart';
 import '../services/transaction_service_based.dart';
 import '../services/transaction_service_bitcoin.dart';
