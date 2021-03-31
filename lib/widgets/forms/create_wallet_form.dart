@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -9,6 +11,8 @@ import '../buttons/secondary_button.dart';
 import '../dialogs/dialog_controller.dart';
 import '../dialogs/error_dialog.dart';
 import '../../helpers/i18n.dart';
+import './third_party_signin_form.dart';
+import '../../theme.dart';
 
 class CreateWalletForm extends StatefulWidget {
   @override
@@ -55,7 +59,7 @@ class _CreateWalletFormState extends State<CreateWalletForm> {
             default:
           }
           DialogController.show(context, ErrorDialog(_text), onDismiss: () {
-             _bloc.add(
+            _bloc.add(
               CleanCreateWalletError(),
             );
           });
@@ -207,6 +211,43 @@ class _CheckingViewState extends State<CheckingView> {
                   textColor: Theme.of(context).accentColor,
                 ),
               ),
+              Platform.isIOS
+                  ? Column(
+                      children: [
+                        SizedBox(height: 16.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(t('or'),
+                                style: Theme.of(context).textTheme.subtitle1),
+                            SizedBox(width: 5.0),
+                            GestureDetector(
+                              child: Text(t('create_wallet_with_apple_id'),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .subtitle1
+                                      .copyWith(
+                                          decoration:
+                                              TextDecoration.underline)),
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                showModalBottomSheet(
+                                  isScrollControlled: true,
+                                  shape: bottomSheetShape,
+                                  context: context,
+                                  builder: (context) => Container(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 22.0, horizontal: 16.0),
+                                    child: ThirdPartySignInForm(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
+                  : SizedBox(),
               SizedBox(height: 50.0)
             ],
           ),

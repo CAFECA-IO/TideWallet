@@ -32,6 +32,8 @@
 	<string>Camera permission is required for barcode scanning.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Some Reason</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Protection</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Some Reason</string>
 	<key>NSMotionUsageDescription</key>
@@ -63,7 +65,5 @@
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
 	<true/>
-	<key>NSFaceIDUsageDescription</key>
-	<string>Protection</string>
 </dict>
 </plist>
