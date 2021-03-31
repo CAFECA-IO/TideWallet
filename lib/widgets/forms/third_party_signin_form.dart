@@ -1,13 +1,14 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart' as lib;
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../buttons/primary_button.dart';
-import '../../helpers/i18n.dart';
+import '../../repositories/third_party_sign_in_repository.dart';
+import '../../blocs/third_party_sign_in/third_party_sign_in_bloc.dart';
+import '../../blocs/user/user_bloc.dart';
 
-import '../../helpers/logger.dart';
+import '../../helpers/i18n.dart';
 
 final t = I18n.t;
 double height = 44;
@@ -28,7 +29,7 @@ final appleIcon = Container(
       width: fontSize * (25 / 31),
       height: fontSize,
       child: CustomPaint(
-        painter: AppleLogoPainter(
+        painter: lib.AppleLogoPainter(
           color: Colors.white,
         ),
       ),
@@ -36,39 +37,47 @@ final appleIcon = Container(
   ),
 );
 
-class ThirdPartySignInForm extends StatelessWidget {
+class ThirdPartySignInForm extends StatefulWidget {
+  @override
+  _ThirdPartySignInFormState createState() => _ThirdPartySignInFormState();
+}
+
+class _ThirdPartySignInFormState extends State<ThirdPartySignInForm> {
+  ThirdPartySignInBloc _bloc =
+      ThirdPartySignInBloc(ThirdPartySignInRepository());
+
+  UserBloc _userBloc;
+  @override
+  void didChangeDependencies() {
+    _userBloc = BlocProvider.of<UserBloc>(context);
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 50.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          PrimaryButton(
-            t('sign_in_with_apple_id'),
-            () async {
-              final credential = await SignInWithApple.getAppleIDCredential(
-                scopes: [
-                  AppleIDAuthorizationScopes.email,
-                  AppleIDAuthorizationScopes.fullName,
-                ],
-                webAuthenticationOptions: WebAuthenticationOptions(
-                  // ++: Set the `clientId` and `redirectUri` arguments to the values you entered in the Apple Developer portal during the setup
-                  // ++ 目前設定是錯的 Emily 03/31/2021
-                  clientId:
-                      'com.example.tidewallet3.dart_packages.sign_in_with_apple.example',
-                  redirectUri: Uri.parse(
-                    'https://tidewallet3.glitch.me/callbacks/sign_in_with_apple',
-                  ),
-                ),
-              );
-
-              Log.debug(
-                  'credential userIdentifier: ${credential.userIdentifier}');
-            },
-            icon: appleIcon,
-          ),
-        ],
+    return BlocListener<ThirdPartySignInBloc, ThirdPartySignInState>(
+      bloc: this._bloc,
+      listener: (context, state) {
+        if (state is FailedSignInWithApple) {}
+        if (state is SignedInWithApple) {
+          Navigator.of(context).pop();
+          _userBloc.add(UserCreate(state.userIndentifier, ''));
+        }
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 50.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            PrimaryButton(
+              t('sign_in_with_apple_id'),
+              () {
+                this._bloc.add(SignInWithApple());
+              },
+              icon: appleIcon,
+            ),
+          ],
+        ),
       ),
     );
   }
