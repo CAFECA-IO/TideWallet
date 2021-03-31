@@ -49,7 +49,7 @@
             android:value="2" />
         <!-- Set up the Sign in with Apple activity, such that it's callable from the browser-redirect -->
         <activity
-            android:name="com.aboutyou.dart_packages.sign_in_with_apple.SignInWithAppleCallback"
+            android:name="com.example.tidewallet3.sign_in_with_apple.SignInWithAppleCallback"
             android:exported="true"
         >
             <intent-filter>
