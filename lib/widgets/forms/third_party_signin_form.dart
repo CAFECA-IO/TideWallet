@@ -8,6 +8,9 @@ import '../../repositories/third_party_sign_in_repository.dart';
 import '../../blocs/third_party_sign_in/third_party_sign_in_bloc.dart';
 import '../../blocs/user/user_bloc.dart';
 
+import '../../widgets/dialogs/dialog_controller.dart';
+import '../../widgets/dialogs/error_dialog.dart';
+
 import '../../helpers/i18n.dart';
 
 final t = I18n.t;
@@ -58,7 +61,17 @@ class _ThirdPartySignInFormState extends State<ThirdPartySignInForm> {
     return BlocListener<ThirdPartySignInBloc, ThirdPartySignInState>(
       bloc: this._bloc,
       listener: (context, state) {
-        if (state is FailedSignInWithApple) {}
+        if (state is FailedSignInWithApple) {
+          Navigator.of(context).pop();
+          DialogController.show(
+              context,
+              ErrorDialog(state.message != null
+                  ? state.message
+                  : 'Something went wrong...'));
+        }
+        if (state is CancelledSignInWithApple) {
+          Navigator.of(context).pop();
+        }
         if (state is SignedInWithApple) {
           Navigator.of(context).pop();
           _userBloc.add(UserCreate(state.userIndentifier, 'tide'));

@@ -17,5 +17,10 @@ class SignedInWithApple extends ThirdPartySignInState {
 }
 
 class FailedSignInWithApple extends ThirdPartySignInState {
-  FailedSignInWithApple();
+  final String message;
+  FailedSignInWithApple(this.message);
+}
+
+class CancelledSignInWithApple extends ThirdPartySignInState {
+  CancelledSignInWithApple();
 }
