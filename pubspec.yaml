@@ -50,6 +50,7 @@ dependencies:
   # socket_io_client: ^0.9.12
   web_socket_channel: ^1.2.0
   local_auth: ^1.1.0
+  sign_in_with_apple: ^3.0.0
 
   #db
   sqflite: ^1.3.2+2
