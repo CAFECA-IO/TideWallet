@@ -61,7 +61,7 @@ class _ThirdPartySignInFormState extends State<ThirdPartySignInForm> {
         if (state is FailedSignInWithApple) {}
         if (state is SignedInWithApple) {
           Navigator.of(context).pop();
-          _userBloc.add(UserCreate(state.userIndentifier, ''));
+          _userBloc.add(UserCreate(state.userIndentifier, 'tide'));
         }
       },
       child: Container(
