@@ -41,7 +41,6 @@ class ThirdPartySignInBloc
               yield FailedSignInWithApple(message);
               break;
           }
-          yield FailedSignInWithApple('Something went wrong...');
         }
       } catch (e) {
         Log.debug(e);

@@ -27,11 +27,11 @@ class RestoreWalletBloc extends Bloc<RestoreWalletEvent, RestoreWalletState> {
   ) async* {
     if (event is GetPaperWallet) {
       if (state is RestoreWalletInitial || state is PaperWalletFail) {
-        if (_repo.validPaperWallet(event.paperWallet)) {
-          yield PaperWalletSuccess(event.paperWallet);
-        } else {
-          yield PaperWalletFail();
-        }
+        // if (_repo.validPaperWallet(event.paperWallet)) {
+        //   yield PaperWalletSuccess(event.paperWallet);
+        // } else {
+        //   yield PaperWalletFail();
+        // }
       }
     }
 
@@ -43,23 +43,23 @@ class RestoreWalletBloc extends Bloc<RestoreWalletEvent, RestoreWalletState> {
       PaperWalletSuccess _state = state;
 
       yield PaperWallletRestoring();
-      final w =
-          await _repo.restorePaperWallet(_state.paperWallet, event.password);
-      if (w == null) {
-        yield PaperWalletRestoreFail(error: RESTORE_ERROR.PASSWORD);
+      // final w =
+      //     await _repo.restorePaperWallet(_state.paperWallet, event.password);
+      // if (w == null) {
+      //   yield PaperWalletRestoreFail(error: RESTORE_ERROR.PASSWORD);
 
-        this.add(CleanWalletResult());
-      } else {
-        User _user =
-            await _repo.restoreUser(w, _state.paperWallet, event.password);
-        if (_user == null) {
-          yield PaperWalletRestoreFail();
+      //   this.add(CleanWalletResult());
+      // } else {
+      // User _user =
+      //     await _repo.restoreUser(w, _state.paperWallet, event.password);
+      // if (_user == null) {
+      //   yield PaperWalletRestoreFail();
 
-          this.add(CleanWalletResult());
-        } else {
-          yield PaperWalletRestored();
-        }
-      }
+      //   this.add(CleanWalletResult());
+      // } else {
+      //   yield PaperWalletRestored();
+      // }
+      // }
     }
   }
 }

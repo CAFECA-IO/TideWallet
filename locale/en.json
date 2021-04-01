@@ -190,6 +190,6 @@
   "authenticate": "authenticate",
   "create_wallet_with_apple_id": "Create wallet with AppleId",
   "or": "Or",
-  "sign_in_with_apple_id": "Sign in with AppleID",
-  "sign_in_with_phone": "Sign in with Phone"
+  "sign_in_with_apple_id": "Sign in with AppleId",
+  "sign_in_with_google_id": "Sign in with GoogleId"
 }

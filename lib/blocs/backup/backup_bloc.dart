@@ -7,6 +7,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:tidewallet3/repositories/local_auth_repository.dart';
 
 import '../../helpers/logger.dart';
 import '../../repositories/user_repository.dart';
@@ -15,6 +16,7 @@ part 'backup_state.dart';
 
 class BackupBloc extends Bloc<BackupEvent, BackupState> {
   UserRepository _repo;
+  LocalAuthRepository _localAuthRepo = LocalAuthRepository();
   BackupBloc(this._repo) : super(BackupInitial());
 
   Future<bool> _capture(RenderRepaintBoundary boundary) async {
@@ -55,7 +57,7 @@ class BackupBloc extends Bloc<BackupEvent, BackupState> {
     if (event is VerifyBackupPassword) {
       yield UnBackup();
 
-      if (_repo.verifyPassword(event.password)) {
+      if (await (_localAuthRepo.authenticateUser())) {
         final wallet = await _repo.getPaperWallet();
 
         yield BackupAuth(wallet);
