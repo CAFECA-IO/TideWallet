@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme.dart';
 import './restore_wallet.screen.dart';
-import '../widgets/forms/create_wallet_form.dart';
+import '../widgets/forms/third_party_signin_form.dart';
 import '../widgets/buttons/primary_button.dart';
 import '../helpers/i18n.dart';
 
@@ -41,7 +41,7 @@ class WelcomeScreen extends StatelessWidget {
                   builder: (context) => Container(
                     padding:
                         EdgeInsets.symmetric(vertical: 22.0, horizontal: 16.0),
-                    child: CreateWalletForm(),
+                    child: ThirdPartySignInForm(),
                   ),
                 );
               },
