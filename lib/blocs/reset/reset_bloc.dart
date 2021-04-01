@@ -19,22 +19,22 @@ class ResetBloc extends Bloc<ResetEvent, ResetState> {
   ) async* {
     if (event is ResetWallet) {
       yield ResetInitial();
-      final verified = _userRepo.verifyPassword(event.password);
+      // final verified = _userRepo.verifyPassword(event.password);
 
-      if (!verified) {
-        yield ResetError(RESET_ERROR.password);
+      // if (!verified) {
+      //   yield ResetError(RESET_ERROR.password);
+      // } else {
+      _accountRepository.close();
+      final success = await _userRepo.deleteUser();
+
+      if (success) {
+        yield ResetSuccess();
       } else {
-        _accountRepository.close();
-        final success = await _userRepo.deleteUser();
+        _accountRepository.coreInit();
 
-        if (success) {
-          yield ResetSuccess();
-        } else {
-          _accountRepository.coreInit();
-
-          yield ResetError(RESET_ERROR.unknown);
-        }
+        yield ResetError(RESET_ERROR.unknown);
       }
+      // }
     }
   }
 }

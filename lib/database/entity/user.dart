@@ -8,11 +8,13 @@ class UserEntity {
 
   final String keystore;
 
-  @ColumnInfo(name: 'password_hash')
-  final String passwordHash;
+  @ColumnInfo(name: 'third_party_id') // apple/google Id
+  final String thirdPartyId;
 
-  @ColumnInfo(name: 'password_salt')
-  final String passwordSalt;
+  @ColumnInfo(name: 'install_id')
+  final String installId;
+
+  final int timestamp;
 
   @ColumnInfo(name: 'backup_status', nullable: false)
   final bool backupStatus;
@@ -20,8 +22,9 @@ class UserEntity {
   UserEntity(
     this.userId,
     this.keystore,
-    this.passwordHash,
-    this.passwordSalt,
+    this.thirdPartyId,
+    this.installId,
+    this.timestamp,
     this.backupStatus,
   );
 
@@ -39,15 +42,17 @@ class UserEntity {
   UserEntity copyWith({
     String userId,
     String keystore,
-    String passwordHash,
-    String passwordSalt,
+    String thirdPartyId,
+    String installId,
+    int timestamp,
     bool backupStatus,
   }) {
     return UserEntity(
       userId ?? this.userId,
       keystore ?? this.keystore,
-      passwordHash ?? this.passwordHash,
-      passwordSalt ?? this.passwordSalt,
+      thirdPartyId ?? this.thirdPartyId,
+      installId ?? this.installId,
+      timestamp ?? this.timestamp,
       backupStatus ?? this.backupStatus,
     );
   }

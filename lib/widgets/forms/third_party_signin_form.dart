@@ -70,7 +70,7 @@ class _ThirdPartySignInFormState extends State<ThirdPartySignInForm> {
           DialogController.show(context, ErrorDialog(t('cancel')));
         }
         if (state is SignedInWithApple) {
-          _userBloc.add(UserCreate(state.userIndentifier, 'tide'));
+          // _userBloc.add(UserCreate(state.userIndentifier, 'tide'));
         }
       },
       child: Container(

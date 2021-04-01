@@ -21,14 +21,14 @@ void main() {
   });
   group('database tests', () {
     group('user', () {
-      test('find user', () async {
-        UserEntity _user = UserEntity(
-            '1qaz2wsx', keystore, 'password_hash1qaz2wsx', 'saltxyz', false);
-        await opt.userDao.insertUser(_user);
+      // test('find user', () async {
+      //   UserEntity _user = UserEntity(
+      //       '1qaz2wsx', keystore, 'password_hash1qaz2wsx', 'saltxyz', false);
+      //   await opt.userDao.insertUser(_user);
 
-        final actual = await opt.userDao.findUser();
-        expect(actual, equals(_user));
-      });
+      //   final actual = await opt.userDao.findUser();
+      //   expect(actual, equals(_user));
+      // });
     });
 
     group('account', () {
