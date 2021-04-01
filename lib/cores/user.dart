@@ -64,6 +64,7 @@ class User {
     Uint8List userIdentifierBuffer =
         ascii.encode(userIdentifier ?? this._thirdPartyId);
     Uint8List installIdBuffer = ascii.encode(installId ?? this._installId);
+    Log.debug('userId: ${this._id}');
     List<int> pwseedBuffer = Cryptor.keccak256round(Cryptor.keccak256round(
             Cryptor.keccak256round(userIdentifierBuffer, round: 1) +
                 Cryptor.keccak256round(hex.decode(userId ?? this._id),
@@ -139,8 +140,14 @@ class User {
 
       String keystore = await compute(PaperWallet.walletToJson, wallet);
 
-      UserEntity user = UserEntity(res.data['user_id'], keystore,
-          userIdentifier, installId, timestamp, false);
+      UserEntity user = UserEntity(
+          // res.data['user_id'], // ++ inform backend to update userId become radom hex[Emily 04/01/2021]
+          userId,
+          keystore,
+          userIdentifier,
+          installId,
+          timestamp,
+          false);
       await DBOperator().userDao.insertUser(user);
 
       await this._initUser(user);

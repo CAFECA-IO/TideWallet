@@ -8,8 +8,8 @@ abstract class ResetEvent extends Equatable {
 }
 
 class ResetWallet extends ResetEvent {
-  final String password;
+  // final String password;
 
-  ResetWallet(this.password);
+  // ResetWallet(this.password);
+  ResetWallet();
 }
-
