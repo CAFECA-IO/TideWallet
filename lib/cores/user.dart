@@ -64,7 +64,7 @@ class User {
     Uint8List userIdentifierBuffer =
         ascii.encode(userIdentifier ?? this._thirdPartyId);
     Uint8List installIdBuffer = ascii.encode(installId ?? this._installId);
-    Log.debug('userId: ${this._id}');
+    Log.warning('userId: ${this._id}');
     List<int> pwseedBuffer = Cryptor.keccak256round(Cryptor.keccak256round(
             Cryptor.keccak256round(userIdentifierBuffer, round: 1) +
                 Cryptor.keccak256round(hex.decode(userId ?? this._id),
@@ -109,8 +109,8 @@ class User {
   Future<bool> createUser(String userIdentifier) async {
     // ++ get userId & userSecret by providing Apple/Android ID from backend [Emily 04/01/2021]
     // -- mockup data
-    String userId = randomHex(24);
-    String userSecret = randomHex(24);
+    String userId = "11dc08d3f85b1ae3f4df7ead"; //randomHex(24);
+    String userSecret = "aad57270f1738517c50b8de7"; //randomHex(24);
     // --
     String installId = await this._prefManager.getInstallationId();
     Log.debug('installId: $installId');
