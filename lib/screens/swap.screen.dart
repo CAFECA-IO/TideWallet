@@ -58,10 +58,11 @@ class _SwapScreenState extends State<SwapScreen> {
         Currency currency = argument['currency'];
         _swapBloc.add(InitSwap(currency));
       } else {
-        _swapBloc.add(InitSwap(AccountCore().getAllCurrencies().firstWhere(
-            (curr) =>
-                Decimal.tryParse(curr.amount) != null &&
-                Decimal.tryParse(curr.amount) > Decimal.zero)));
+        List<Currency> _currencies = AccountCore().getAllCurrencies();
+        Currency _curr = _currencies.firstWhere((curr) =>
+            Decimal.tryParse(curr.amount) != null &&
+            Decimal.tryParse(curr.amount) > Decimal.zero);
+        _swapBloc.add(InitSwap(_curr ?? _currencies.first));
       }
       _isInit = false;
     }
