@@ -19,9 +19,10 @@ class HomeScreenContent {
   final String title;
   final IconData iconData;
   final String bottomText;
+  final bool disable;
 
   HomeScreenContent(this.widget, this.routeName, this.title,
-      {this.iconData: Icons.home, this.bottomText: ''});
+      {this.iconData: Icons.home, this.bottomText: '', this.disable = false});
 }
 
 class HomeScreen extends StatefulWidget {
@@ -85,9 +86,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           iconData: Icons.account_balance_wallet, bottomText: ''),
       HomeScreenContent(
           InvestmentScreen(), InvestmentScreen.routeName, t('total_value'),
-          iconData: Icons.assessment_outlined, bottomText: ''),
+          iconData: Icons.assessment_outlined, bottomText: '', disable: true),
       HomeScreenContent(SwapScreen(), SwapScreen.routeName, t('swap_title'),
-          iconData: Icons.swap_horiz, bottomText: ''),
+          iconData: Icons.swap_horiz, bottomText: '', disable: true),
       HomeScreenContent(
           SettingsScreen(), SettingsScreen.routeName, t('setting'),
           iconData: Icons.settings, bottomText: ''),
@@ -110,6 +111,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         selectedColor: Theme.of(context).primaryColor,
         notchedShape: CircularNotchedRectangle(),
         onTabSelected: (int index) {
+          if (_screens[index].disable) return;
+
           _pageController.jumpToPage(index);
           setState(() {
             _selectedIndex = index;
@@ -117,8 +120,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         },
         selectedIndex: _selectedIndex,
         items: _screens
-            .map((s) =>
-                CBottomAppBarItem(iconData: s.iconData, text: s.bottomText))
+            .map((s) => CBottomAppBarItem(
+                iconData: s.iconData, text: s.bottomText, disable: s.disable))
             .toList(),
         iconSize: 20,
       ),
