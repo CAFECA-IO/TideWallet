@@ -70,7 +70,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   Platform.isIOS
                       ? t('sign_in_with_apple_id')
                       : t('sign_in_with_google_id'), () {
-                this._bloc.add(SignInWithApple());
+                this._bloc.add(
+                    Platform.isIOS ? SignInWithApple() : SignInWithGoogle());
               },
                   icon: appleIcon,
                   padding:

@@ -47,5 +47,13 @@ class ThirdPartySignInBloc
         yield FailedSignInWithApple('Something went wrong...');
       }
     }
+    if (event is SignInWithGoogle) {
+      try {
+        List response = await this._repo.signInWithGoogleId();
+      } catch (e) {
+        Log.debug(e);
+        yield FailedSignInWithApple('Something went wrong...');
+      }
+    }
   }
 }
