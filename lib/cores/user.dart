@@ -107,11 +107,18 @@ class User {
   }
 
   Future<bool> createUser(String userIdentifier) async {
-    // ++ get userId & userSecret by providing Apple/Android ID from backend [Emily 04/01/2021]
-    // -- mockup data
-    String userId = "11dc08d3f85b1ae3f4df7ead"; //randomHex(24);
-    String userSecret = "aad57270f1738517c50b8de7"; //randomHex(24);
-    // --
+    Log.debug('createUser: ${userIdentifier}');
+
+    String userId;
+    String userSecret;
+    APIResponse _res = await HTTPAgent()
+        .post(Endpoint.SUSANOO + '/user/id', {"id": userIdentifier});
+    if (_res.success) {
+      Log.debug('_res.data: ${_res.data}');
+      userId = _res.data['user_id'];
+      userSecret = _res.data['user_secret'];
+    }
+
     String installId = await this._prefManager.getInstallationId();
     Log.debug('installId: $installId');
 

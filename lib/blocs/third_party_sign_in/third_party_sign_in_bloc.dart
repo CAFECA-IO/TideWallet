@@ -26,33 +26,42 @@ class ThirdPartySignInBloc
 
         if (success) {
           String userIndentifier = response[1];
-          yield SignedInWithApple(userIndentifier);
+          yield SignedInWithThirdParty(userIndentifier);
         } else {
           AuthorizationErrorCode errorCode = response[1];
           switch (errorCode) {
             case AuthorizationErrorCode.canceled:
-              yield CancelledSignInWithApple();
+              yield CancelledSignInWithThirdParty();
               break;
             case AuthorizationErrorCode.failed:
             case AuthorizationErrorCode.invalidResponse:
             case AuthorizationErrorCode.notHandled:
             case AuthorizationErrorCode.unknown:
               String message = response[2];
-              yield FailedSignInWithApple(message);
+              yield FailedSignInWithThirdParty(message);
               break;
           }
         }
       } catch (e) {
         Log.debug(e);
-        yield FailedSignInWithApple('Something went wrong...');
+        yield FailedSignInWithThirdParty('Something went wrong...');
       }
     }
     if (event is SignInWithGoogle) {
+      yield SigningInWithThirdParty();
       try {
         List response = await this._repo.signInWithGoogleId();
+        bool success = response[0];
+        if (success) {
+          String userIndentifier = response[1];
+          yield SignedInWithThirdParty(userIndentifier);
+        } else {
+          String message = response[2];
+          yield FailedSignInWithThirdParty(message);
+        }
       } catch (e) {
         Log.debug(e);
-        yield FailedSignInWithApple('Something went wrong...');
+        yield FailedSignInWithThirdParty('Something went wrong...');
       }
     }
   }
