@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 class CBottomAppBarItem {
-  CBottomAppBarItem({this.iconData, this.text});
+  CBottomAppBarItem({this.iconData, this.text, this.disable});
   IconData iconData;
   String text;
+  bool disable;
 }
 
 class CBottomAppBar extends StatefulWidget {
@@ -37,7 +38,6 @@ class CBottomAppBar extends StatefulWidget {
 }
 
 class CBottomAppBarState extends State<CBottomAppBar> {
-
   _updateIndex(int index) {
     widget.onTabSelected(index);
   }
@@ -101,7 +101,9 @@ class CBottomAppBarState extends State<CBottomAppBar> {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Icon(item.iconData, color: color, size: widget.iconSize),
+                Icon(item.iconData,
+                    color: item.disable ? Colors.grey.shade400 : color,
+                    size: widget.iconSize),
                 if (_isSelected)
                   Text(
                     item.text,
