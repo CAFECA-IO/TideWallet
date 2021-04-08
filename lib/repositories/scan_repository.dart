@@ -17,9 +17,11 @@ class ScanRepository {
     try {
       result = _ethTxSvc.verifyAddress(data, true);
       if (result)
-        return AccountCore().getAllCurrencies()?.firstWhere((currency) =>
-            currency.type.toLowerCase() == 'currency' &&
-            currency.symbol.toLowerCase() == 'eth');
+        return AccountCore().getAllCurrencies()?.firstWhere(
+            (currency) =>
+                currency.type.toLowerCase() == 'currency' &&
+                currency.symbol.toLowerCase() == 'eth',
+            orElse: () => null);
     } catch (e) {
       return null;
     }
@@ -27,10 +29,12 @@ class ScanRepository {
     try {
       result = _btcTxSvc.verifyAddress(data, true);
       if (result)
-        return AccountCore().getAllCurrencies()?.firstWhere((currency) =>
-            currency.type.toLowerCase() == 'currency' &&
-            currency.symbol.toLowerCase() == 'btc' &&
-            !currency.publish);
+        return AccountCore().getAllCurrencies()?.firstWhere(
+            (currency) =>
+                currency.type.toLowerCase() == 'currency' &&
+                currency.symbol.toLowerCase() == 'btc' &&
+                !currency.publish,
+            orElse: () => null);
     } catch (e) {
       return null;
     }
@@ -38,10 +42,12 @@ class ScanRepository {
     try {
       result = _btcTxSvc.verifyAddress(data, false);
       if (result)
-        return AccountCore().getAllCurrencies()?.firstWhere((currency) =>
-            currency.type.toLowerCase() == 'currency' &&
-            currency.symbol.toLowerCase() == 'btc' &&
-            currency.publish);
+        return AccountCore().getAllCurrencies()?.firstWhere(
+            (currency) =>
+                currency.type.toLowerCase() == 'currency' &&
+                currency.symbol.toLowerCase() == 'btc' &&
+                currency.publish,
+            orElse: () => null);
     } catch (e) {
       return null;
     }

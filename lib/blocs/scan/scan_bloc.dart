@@ -31,28 +31,34 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
           yield ScannedWalletConnect(result);
         else if (prefix.toLowerCase() == 'ethereum') {
           try {
-            currency = AccountCore().getAllCurrencies().firstWhere((currency) =>
-                currency.type.toLowerCase() == 'currency' &&
-                currency.symbol.toLowerCase() == 'eth' &&
-                currency.publish);
+            currency = AccountCore().getAllCurrencies().firstWhere(
+                (currency) =>
+                    currency.type.toLowerCase() == 'currency' &&
+                    currency.symbol.toLowerCase() == 'eth' &&
+                    currency.publish,
+                orElse: () => null);
           } catch (e) {
             currency = null;
           }
         } else if (prefix.toLowerCase() == 'bitcoin') {
           try {
-            currency = AccountCore().getAllCurrencies().firstWhere((currency) =>
-                currency.type.toLowerCase() == 'currency' &&
-                currency.symbol.toLowerCase() == 'btc' &&
-                currency.publish);
+            currency = AccountCore().getAllCurrencies().firstWhere(
+                (currency) =>
+                    currency.type.toLowerCase() == 'currency' &&
+                    currency.symbol.toLowerCase() == 'btc' &&
+                    currency.publish,
+                orElse: () => null);
           } catch (e) {
             currency = null;
           }
         } else if (prefix.toLowerCase() == 'bitcointestnet') {
           try {
-            currency = AccountCore().getAllCurrencies().firstWhere((currency) =>
-                currency.type.toLowerCase() == 'currency' &&
-                currency.symbol.toLowerCase() == 'btc' &&
-                !currency.publish);
+            currency = AccountCore().getAllCurrencies().firstWhere(
+                (currency) =>
+                    currency.type.toLowerCase() == 'currency' &&
+                    currency.symbol.toLowerCase() == 'btc' &&
+                    !currency.publish,
+                orElse: () => null);
           } catch (e) {
             currency = null;
           }
