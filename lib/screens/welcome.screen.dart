@@ -10,6 +10,8 @@ import '../blocs/user/user_bloc.dart';
 import '../widgets/buttons/primary_button.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/error_dialog.dart';
+import '../widgets/dialogs/loading_dialog.dart';
+
 import '../helpers/i18n.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -37,15 +39,20 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     return BlocListener<ThirdPartySignInBloc, ThirdPartySignInState>(
       bloc: this._bloc,
       listener: (context, state) {
-        if (state is FailedSignInWithApple) {
+        if (state is FailedSignInWithThirdParty) {
           if (state.message != null)
             DialogController.show(context, ErrorDialog(state.message));
         }
-        if (state is CancelledSignInWithApple) {
+        if (state is CancelledSignInWithThirdParty) {
+          Navigator.of(context).pop();
           DialogController.show(context, ErrorDialog(t('cancel')));
         }
-        if (state is SignedInWithApple) {
+        if (state is SignedInWithThirdParty) {
+          Navigator.of(context).pop();
           _userBloc.add(UserCreate(state.userIndentifier));
+        }
+        if (state is SigningInWithThirdParty) {
+          DialogController.showUnDissmissible(context, LoadingDialog());
         }
       },
       child: Scaffold(
@@ -70,9 +77,27 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   Platform.isIOS
                       ? t('sign_in_with_apple_id')
                       : t('sign_in_with_google_id'), () {
-                this._bloc.add(SignInWithApple());
+                this._bloc.add(
+                    Platform.isIOS ? SignInWithApple() : SignInWithGoogle());
               },
-                  icon: appleIcon,
+                  icon: Platform.isIOS
+                      ? appleIcon
+                      : Row(
+                          children: [
+                            Center(
+                              child: Image(
+                                image: AssetImage(
+                                  "assets/graphics/google-logo.png",
+                                ),
+                                height: 18.0,
+                                width: 18.0,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 8,
+                            )
+                          ],
+                        ),
                   padding:
                       EdgeInsets.symmetric(horizontal: 32.5, vertical: 8.0)),
             ],
