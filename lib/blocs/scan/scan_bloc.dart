@@ -40,6 +40,10 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
           } catch (e) {
             currency = null;
           }
+          if (currency != null)
+            yield ScannedAddress(currency, result);
+          else
+            yield ErrorFormat();
         } else if (prefix.toLowerCase() == 'bitcoin') {
           try {
             currency = AccountCore().getAllCurrencies().firstWhere(
@@ -51,6 +55,10 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
           } catch (e) {
             currency = null;
           }
+          if (currency != null)
+            yield ScannedAddress(currency, result);
+          else
+            yield ErrorFormat();
         } else if (prefix.toLowerCase() == 'bitcointestnet') {
           try {
             currency = AccountCore().getAllCurrencies().firstWhere(
@@ -62,11 +70,11 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
           } catch (e) {
             currency = null;
           }
+          if (currency != null)
+            yield ScannedAddress(currency, result);
+          else
+            yield ErrorFormat();
         } else
-          yield ErrorFormat();
-        if (currency != null)
-          yield ScannedAddress(currency, result);
-        else
           yield ErrorFormat();
       } else {
         Currency currency = this._repo.getAddressType(result);
