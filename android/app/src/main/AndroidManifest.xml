@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.tidewallet3">
+    package="com.tideisun.tidewallet3">
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
          In most cases you can leave this as-is, but you if you want to provide
@@ -49,7 +49,7 @@
             android:value="2" />
         <!-- Set up the Sign in with Apple activity, such that it's callable from the browser-redirect -->
         <activity
-            android:name="com.example.tidewallet3.sign_in_with_apple.SignInWithAppleCallback"
+            android:name="com.tideisun.tidewallet3.sign_in_with_apple.SignInWithAppleCallback"
             android:exported="true"
         >
             <intent-filter>

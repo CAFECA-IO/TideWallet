@@ -1,4 +1,4 @@
-package com.example.tidewallet3
+package com.tideisun.tidewallet3
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterFragmentActivity
