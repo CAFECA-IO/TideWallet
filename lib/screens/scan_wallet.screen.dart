@@ -50,6 +50,7 @@ class _ScanWalletScreenState extends State<ScanWalletScreen> {
           children: [
             QRCodeView(
               scanCallback: this._scanResult,
+              debugLabel: 'scan_wallet',
             ),
             BlocBuilder<RestoreWalletBloc, RestoreWalletState>(
               bloc: _bloc,

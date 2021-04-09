@@ -37,6 +37,9 @@ class _ScanScreenState extends State<ScanScreen> {
   Widget build(BuildContext context) {
     return BlocListener<ScanBloc, ScanState>(
       bloc: _bloc,
+      listenWhen: (previous, current) =>
+          previous != current &&
+          (current is! ScannedWalletConnect || current is! ScannedAddress),
       listener: (context, state) {
         if (state is ScannedWalletConnect) {
           Navigator.of(context).pop();
@@ -59,6 +62,7 @@ class _ScanScreenState extends State<ScanScreen> {
           children: [
             QRCodeView(
               scanCallback: this._scanResult,
+              debugLabel: 'scan',
             ),
             BlocBuilder<ScanBloc, ScanState>(
               bloc: _bloc,

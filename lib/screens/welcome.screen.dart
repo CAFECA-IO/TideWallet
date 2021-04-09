@@ -48,7 +48,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           DialogController.show(context, ErrorDialog(t('cancel')));
         }
         if (state is SignedInWithThirdParty) {
-          Navigator.of(context).pop();
+          if (Platform.isAndroid) Navigator.of(context).pop();
           _userBloc.add(UserCreate(state.userIndentifier));
         }
         if (state is SigningInWithThirdParty) {
