@@ -1,9 +1,10 @@
 import 'dart:convert';
-import 'dart:math';
+// import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:web3dart/web3dart.dart';
-import 'package:uuid/uuid.dart';
+// import 'package:uuid/uuid.dart';
+import 'package:convert/convert.dart';
 
 import '../cores/paper_wallet.dart';
 import '../constants/endpoint.dart';
@@ -11,6 +12,8 @@ import '../helpers/logger.dart';
 import '../helpers/http_agent.dart';
 import '../helpers/cryptor.dart';
 import '../helpers/prefer_manager.dart';
+import '../helpers/utils.dart';
+import '../helpers/rlp.dart' as rlp;
 import '../database/db_operator.dart';
 import '../database/entity/user.dart';
 import '../models/auth.model.dart';
@@ -19,8 +22,9 @@ import '../models/api_response.mode.dart';
 class User {
   String _id;
   bool _isBackup = false;
-  String _passwordHash;
-  String _salt = Uuid().v4();
+  String _thirdPartyId;
+  String _installId;
+  int _timestamp;
 
   PrefManager _prefManager = PrefManager();
 
@@ -35,18 +39,101 @@ class User {
     return false;
   }
 
-  Future<bool> createUser(String pwd, String walletName) async {
-    Wallet wallet = await compute(PaperWallet.createWallet, pwd);
+  Uint8List _getNonce(Uint8List userIdentifierBuffer) {
+    const int cafeca = 0xcafeca;
+    int nonce = cafeca;
+    String getString(nonce) {
+      String result = hex
+          .encode(Cryptor.keccak256round(
+              (userIdentifierBuffer + rlp.toBuffer(nonce)),
+              round: 1))
+          .substring(0, 3)
+          .toLowerCase();
+      return result;
+    }
+
+    while (getString(nonce) != 'cfc') {
+      nonce++;
+    }
+    return rlp.toBuffer(nonce);
+  }
+
+  String getPassword(
+      {String userIdentifier, String userId, String installId, int timestamp}) {
+    // ++ store in DB or app or storage ? [Emily 04/01/2021]
+    Uint8List userIdentifierBuffer =
+        ascii.encode(userIdentifier ?? this._thirdPartyId);
+    Uint8List installIdBuffer = ascii.encode(installId ?? this._installId);
+    Log.warning('userId: ${this._id}');
+    List<int> pwseedBuffer = Cryptor.keccak256round(Cryptor.keccak256round(
+            Cryptor.keccak256round(userIdentifierBuffer, round: 1) +
+                Cryptor.keccak256round(hex.decode(userId ?? this._id),
+                    round: 1)) +
+        Cryptor.keccak256round(Cryptor.keccak256round(
+                rlp.toBuffer(hex
+                    .encode(rlp.toBuffer(timestamp ?? this._timestamp))
+                    .substring(3, 6)),
+                round: 1) +
+            Cryptor.keccak256round(installIdBuffer, round: 1)));
+    String password = hex.encode(Cryptor.keccak256round(pwseedBuffer));
+    return password;
+  }
+
+  Map<String, String> _generateCredentialData(String userIdentifier,
+      String userId, String userSecret, String installId, int timestamp) {
+    Uint8List userIdentifierBuffer = ascii.encode(userIdentifier);
+    Uint8List nonce = _getNonce(userIdentifierBuffer);
+    Log.debug('nonce: $nonce');
+
+    Uint8List mainBuffer =
+        Uint8List.fromList((userIdentifierBuffer + nonce).sublist(0, 8));
+    List<int> extendBuffer =
+        Cryptor.keccak256round(nonce, round: 1).sublist(0, 4);
+    List<int> seedBuffer = Cryptor.keccak256round(Cryptor.keccak256round(
+            Cryptor.keccak256round(mainBuffer, round: 1) +
+                Cryptor.keccak256round(extendBuffer, round: 1)) +
+        Cryptor.keccak256round(
+            Cryptor.keccak256round(hex.decode(userId), round: 1) +
+                Cryptor.keccak256round(hex.decode(userSecret), round: 1)));
+    String key = hex.encode(Cryptor.keccak256round(seedBuffer));
+    String password = getPassword(
+        userIdentifier: userIdentifier,
+        userId: userId,
+        installId: installId,
+        timestamp: timestamp);
+    String extend = hex.encode(extendBuffer);
+
+    return {"key": key, "password": password, "extend": extend};
+  }
+
+  Future<bool> createUser(String userIdentifier) async {
+    Log.debug('createUser: ${userIdentifier}');
+
+    String userId;
+    String userSecret;
+    APIResponse _res = await HTTPAgent()
+        .post(Endpoint.SUSANOO + '/user/id', {"id": userIdentifier});
+    if (_res.success) {
+      Log.debug('_res.data: ${_res.data}');
+      userId = _res.data['user_id'];
+      userSecret = _res.data['user_secret'];
+    }
+
+    String installId = await this._prefManager.getInstallationId();
+    Log.debug('installId: $installId');
+
+    int timestamp = DateTime.now().millisecondsSinceEpoch;
+    Map<String, String> credentialData = _generateCredentialData(
+        userIdentifier, userId, userSecret, installId, timestamp);
+
+    Wallet wallet = await compute(PaperWallet.createWallet, credentialData);
     List<int> seed =
         await compute(PaperWallet.magicSeed, wallet.privateKey.privateKey);
     String extPK = PaperWallet.getExtendedPublicKey(seed: seed);
 
-    String installId = await this._prefManager.getInstallationId();
-
-    this._passwordHash = _seasonedPassword(pwd);
-
     final Map payload = {
-      "wallet_name": walletName,
+      "wallet_name":
+          "TideWallet3", // ++ inform backend to update [Emily 04/01/2021]
       "extend_public_key": extPK,
       "install_id": installId,
       "app_uuid": installId
@@ -61,7 +148,13 @@ class User {
       String keystore = await compute(PaperWallet.walletToJson, wallet);
 
       UserEntity user = UserEntity(
-          res.data['user_id'], keystore, this._passwordHash, this._salt, false);
+          // res.data['user_id'], // ++ inform backend to update userId become radom hex[Emily 04/01/2021]
+          userId,
+          keystore,
+          userIdentifier,
+          installId,
+          timestamp,
+          false);
       await DBOperator().userDao.insertUser(user);
 
       await this._initUser(user);
@@ -71,40 +164,40 @@ class User {
   }
 
   bool verifyPassword(String password) {
-    return _seasonedPassword(password) == this._passwordHash;
+    // return _seasonedPassword(password) == this._passwordHash;
   }
 
   Future<bool> updatePassword(String oldPassword, String newpassword) async {
     UserEntity user = await DBOperator().userDao.findUser();
 
     final wallet = await this.restorePaperWallet(user.keystore, oldPassword);
-    final w = await compute(PaperWallet.updatePassword, [wallet, newpassword]);
+    // final w = await compute(PaperWallet.updatePassword, [wallet, newpassword]);
 
-    final originSalt = this._salt;
+    // final originSalt = this._salt;
 
-    this._salt = Random.secure().toString();
-    final passwordHash = _seasonedPassword(newpassword);
-    String keystore = await compute(PaperWallet.walletToJson, w);
+    // this._salt = Random.secure().toString();
+    // final passwordHash = _seasonedPassword(newpassword);
+    // String keystore = await compute(PaperWallet.walletToJson, w);
 
-    final userUpdated = user.copyWith(
-      keystore: keystore,
-      passwordHash: passwordHash,
-      passwordSalt: this._salt,
-      backupStatus: false,
-    );
+    // final userUpdated = user.copyWith(
+    //   keystore: keystore,
+    //   passwordHash: passwordHash,
+    //   passwordSalt: this._salt,
+    //   backupStatus: false,
+    // );
 
-    try {
-      await DBOperator().userDao.updateUser(userUpdated);
-      this._passwordHash = passwordHash;
-      this._isBackup = false;
+    // try {
+    //   await DBOperator().userDao.updateUser(userUpdated);
+    //   this._passwordHash = passwordHash;
+    //   this._isBackup = false;
 
-      return true;
-    } catch (e) {
-      Log.error(e);
-      this._salt = originSalt;
+    //   return true;
+    // } catch (e) {
+    //   Log.error(e);
+    //   this._salt = originSalt;
 
-      return false;
-    }
+    //   return false;
+    // }
   }
 
   bool validPaperWallet(String wallet) {
@@ -131,7 +224,7 @@ class User {
     String extPK = PaperWallet.getExtendedPublicKey(seed: seed);
 
     String installId = await this._prefManager.getInstallationId();
-    this._passwordHash = _seasonedPassword(pwd);
+    // this._passwordHash = _seasonedPassword(pwd);
 
     final Map payload = {
       "wallet_name": 'Recover Wallet',
@@ -146,11 +239,11 @@ class User {
     if (res.success) {
       this._prefManager.setAuthItem(AuthItem.fromJson(res.data));
 
-      UserEntity user = UserEntity(
-          res.data['user_id'], keystore, this._passwordHash, this._salt, false);
-      await DBOperator().userDao.insertUser(user);
+      // UserEntity user = UserEntity(
+      //     res.data['user_id'], keystore, this._passwordHash, this._salt, false);
+      // await DBOperator().userDao.insertUser(user);
 
-      await this._initUser(user);
+      // await this._initUser(user);
     }
 
     return res.success;
@@ -179,8 +272,9 @@ class User {
 
   Future<void> _initUser(UserEntity user) async {
     this._id = user.userId;
-    this._passwordHash = user.passwordHash;
-    this._salt = user.passwordSalt;
+    this._thirdPartyId = user.thirdPartyId;
+    this._installId = user.installId;
+    this._timestamp = user.timestamp;
     this._isBackup = user.backupStatus;
 
     AuthItem item = await _prefManager.getAuthItem();
@@ -191,8 +285,8 @@ class User {
 
   String _seasonedPassword(String password) {
     List<int> tmp = Cryptor.keccak256round(password.codeUnits, round: 3);
-    tmp += this._salt.codeUnits;
-    tmp = Cryptor.keccak256round(tmp, round: 1);
+    // tmp += this._salt.codeUnits;
+    // tmp = Cryptor.keccak256round(tmp, round: 1);
 
     Uint8List bytes = Uint8List.fromList(tmp);
     return String.fromCharCodes(bytes);

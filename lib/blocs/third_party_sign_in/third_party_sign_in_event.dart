@@ -10,3 +10,7 @@ abstract class ThirdPartySignInEvent extends Equatable {
 class SignInWithApple extends ThirdPartySignInEvent {
   SignInWithApple();
 }
+
+class SignInWithGoogle extends ThirdPartySignInEvent {
+  SignInWithGoogle();
+}

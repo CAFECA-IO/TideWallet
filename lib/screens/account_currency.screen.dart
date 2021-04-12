@@ -6,7 +6,6 @@ import '../blocs/backup/backup_bloc.dart';
 import '../blocs/account_currency/account_currency_bloc.dart';
 import '../blocs/fiat/fiat_bloc.dart';
 import '../widgets/header.dart';
-import '../widgets/backupThumb.dart';
 import '../widgets/account_item.dart';
 import '../models/account.model.dart';
 import '../repositories/trader_repository.dart';
@@ -90,21 +89,6 @@ class _AccountCurrencyScreenState extends State<AccountCurrencyScreen> {
                 })
               ]),
             );
-          },
-        ),
-        BlocBuilder<BackupBloc, BackupState>(
-          builder: (context, state) {
-            if (state is UnBackup) {
-              return Positioned(
-                child: BackupThumb(() {
-                  widget.jumpTo(3);
-                }),
-                bottom: 30.0,
-                left: 10.0,
-              );
-            } else {
-              return SizedBox();
-            }
           },
         ),
         Positioned(

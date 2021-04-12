@@ -9,18 +9,24 @@ abstract class ThirdPartySignInState extends Equatable {
 
 class ThirdPartySignInInitial extends ThirdPartySignInState {}
 
-class SignedInWithApple extends ThirdPartySignInState {
+class SignedInWithThirdParty extends ThirdPartySignInState {
   final String userIndentifier;
-  SignedInWithApple(this.userIndentifier);
+  SignedInWithThirdParty(this.userIndentifier);
   @override
   List<Object> get props => [userIndentifier];
 }
 
-class FailedSignInWithApple extends ThirdPartySignInState {
-  final String message;
-  FailedSignInWithApple(this.message);
+class SigningInWithThirdParty extends ThirdPartySignInState {
+  SigningInWithThirdParty();
+  @override
+  List<Object> get props => [];
 }
 
-class CancelledSignInWithApple extends ThirdPartySignInState {
-  CancelledSignInWithApple();
+class FailedSignInWithThirdParty extends ThirdPartySignInState {
+  final String message;
+  FailedSignInWithThirdParty(this.message);
+}
+
+class CancelledSignInWithThirdParty extends ThirdPartySignInState {
+  CancelledSignInWithThirdParty();
 }

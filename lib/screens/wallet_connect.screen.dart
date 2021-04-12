@@ -236,9 +236,9 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
               return Stack(
                 alignment: Alignment.center,
                 children: [
-                  QRCodeView(
-                    scanCallback: this._scanResult,
-                  ),
+                  Center(
+                    child: Text('Initializing'),
+                  )
                 ],
               );
             }

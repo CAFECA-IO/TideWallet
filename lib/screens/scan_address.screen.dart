@@ -48,6 +48,7 @@ class _ScanAddressScreenState extends State<ScanAddressScreen> {
           children: [
             QRCodeView(
               scanCallback: this._scanResult,
+              debugLabel: 'scan_address',
             ),
             BlocBuilder<TransactionBloc, TransactionState>(
               bloc: _bloc,

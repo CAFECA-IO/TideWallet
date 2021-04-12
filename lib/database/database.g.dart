@@ -94,7 +94,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `User` (`user_id` TEXT, `keystore` TEXT, `password_hash` TEXT, `password_salt` TEXT, `backup_status` INTEGER NOT NULL, PRIMARY KEY (`user_id`))');
+            'CREATE TABLE IF NOT EXISTS `User` (`user_id` TEXT, `keystore` TEXT, `third_party_id` TEXT, `install_id` TEXT, `timestamp` INTEGER, `backup_status` INTEGER NOT NULL, PRIMARY KEY (`user_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Account` (`account_id` TEXT, `user_id` TEXT, `network_id` TEXT, `account_index` INTEGER, FOREIGN KEY (`user_id`) REFERENCES `User` (`user_id`) ON UPDATE NO ACTION ON DELETE CASCADE, PRIMARY KEY (`account_id`))');
         await database.execute(
@@ -176,8 +176,9 @@ class _$UserDao extends UserDao {
             (UserEntity item) => <String, dynamic>{
                   'user_id': item.userId,
                   'keystore': item.keystore,
-                  'password_hash': item.passwordHash,
-                  'password_salt': item.passwordSalt,
+                  'third_party_id': item.thirdPartyId,
+                  'install_id': item.installId,
+                  'timestamp': item.timestamp,
                   'backup_status': item.backupStatus ? 1 : 0
                 }),
         _userEntityUpdateAdapter = UpdateAdapter(
@@ -187,8 +188,9 @@ class _$UserDao extends UserDao {
             (UserEntity item) => <String, dynamic>{
                   'user_id': item.userId,
                   'keystore': item.keystore,
-                  'password_hash': item.passwordHash,
-                  'password_salt': item.passwordSalt,
+                  'third_party_id': item.thirdPartyId,
+                  'install_id': item.installId,
+                  'timestamp': item.timestamp,
                   'backup_status': item.backupStatus ? 1 : 0
                 }),
         _userEntityDeletionAdapter = DeletionAdapter(
@@ -198,8 +200,9 @@ class _$UserDao extends UserDao {
             (UserEntity item) => <String, dynamic>{
                   'user_id': item.userId,
                   'keystore': item.keystore,
-                  'password_hash': item.passwordHash,
-                  'password_salt': item.passwordSalt,
+                  'third_party_id': item.thirdPartyId,
+                  'install_id': item.installId,
+                  'timestamp': item.timestamp,
                   'backup_status': item.backupStatus ? 1 : 0
                 });
 
@@ -221,8 +224,9 @@ class _$UserDao extends UserDao {
         mapper: (Map<String, dynamic> row) => UserEntity(
             row['user_id'] as String,
             row['keystore'] as String,
-            row['password_hash'] as String,
-            row['password_salt'] as String,
+            row['third_party_id'] as String,
+            row['install_id'] as String,
+            row['timestamp'] as int,
             (row['backup_status'] as int) != 0));
   }
 

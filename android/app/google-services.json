@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "833374719104",
+    "project_id": "tidewallet3",
+    "storage_bucket": "tidewallet3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:833374719104:android:c015b7b5958ee470e72a65",
+        "android_client_info": {
+          "package_name": "com.tideisun.tidewallet3"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "833374719104-pmk5nut83pomp98u6u9id9hhmc1ln49v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tideisun.tidewallet3",
+            "certificate_hash": "1aebb036e9864377f8992bfd3e2c88f98c68ee94"
+          }
+        },
+        {
+          "client_id": "833374719104-qoar3kid1qh3j8v6nliae9ra8bs3n8fn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDipwmnRV_sCkM7OuUPRIxfnROCdcT9_tc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "833374719104-qoar3kid1qh3j8v6nliae9ra8bs3n8fn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

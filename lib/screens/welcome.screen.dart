@@ -1,130 +1,135 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-import '../theme.dart';
-import './restore_wallet.screen.dart';
-import '../widgets/forms/create_wallet_form.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart' as lib;
+
+import '../repositories/third_party_sign_in_repository.dart';
+import '../blocs/third_party_sign_in/third_party_sign_in_bloc.dart';
+import '../blocs/user/user_bloc.dart';
 import '../widgets/buttons/primary_button.dart';
+import '../widgets/dialogs/dialog_controller.dart';
+import '../widgets/dialogs/error_dialog.dart';
+import '../widgets/dialogs/loading_dialog.dart';
+
 import '../helpers/i18n.dart';
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends StatefulWidget {
   static const routeName = '/landing';
 
+  @override
+  _WelcomeScreenState createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen> {
   final t = I18n.t;
+  ThirdPartySignInBloc _bloc =
+      ThirdPartySignInBloc(ThirdPartySignInRepository());
+
+  UserBloc _userBloc;
+
+  @override
+  void didChangeDependencies() {
+    _userBloc = BlocProvider.of<UserBloc>(context);
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/welcome_bg.png'),
-            fit: BoxFit.cover,
+    return BlocListener<ThirdPartySignInBloc, ThirdPartySignInState>(
+      bloc: this._bloc,
+      listener: (context, state) {
+        if (state is FailedSignInWithThirdParty) {
+          if (state.message != null)
+            DialogController.show(context, ErrorDialog(state.message));
+        }
+        if (state is CancelledSignInWithThirdParty) {
+          Navigator.of(context).pop();
+          DialogController.show(context, ErrorDialog(t('cancel')));
+        }
+        if (state is SignedInWithThirdParty) {
+          if (Platform.isAndroid) Navigator.of(context).pop();
+          _userBloc.add(UserCreate(state.userIndentifier));
+        }
+        if (state is SigningInWithThirdParty) {
+          DialogController.showUnDissmissible(context, LoadingDialog());
+        }
+      },
+      child: Scaffold(
+        body: Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/welcome_bg.png'),
+              fit: BoxFit.cover,
+            ),
+          ),
+          padding: EdgeInsets.fromLTRB(52.0, 100.0, 52.0, 60.0),
+          height: double.infinity,
+          child: Column(
+            children: [
+              Image.asset(
+                'assets/images/logo_type.png',
+                width: 107.0,
+              ),
+              Spacer(),
+              PrimaryButton(
+                  Platform.isIOS
+                      ? t('sign_in_with_apple_id')
+                      : t('sign_in_with_google_id'), () {
+                this._bloc.add(
+                    Platform.isIOS ? SignInWithApple() : SignInWithGoogle());
+              },
+                  icon: Platform.isIOS
+                      ? appleIcon
+                      : Row(
+                          children: [
+                            Center(
+                              child: Image(
+                                image: AssetImage(
+                                  "assets/graphics/google-logo.png",
+                                ),
+                                height: 18.0,
+                                width: 18.0,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 8,
+                            )
+                          ],
+                        ),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 32.5, vertical: 8.0)),
+            ],
           ),
         ),
-        padding: EdgeInsets.fromLTRB(52.0, 100.0, 52.0, 40.0),
-        height: double.infinity,
-        child: Column(
-          children: [
-            Image.asset(
-              'assets/images/logo_type.png',
-              width: 107.0,
-            ),
-            Spacer(),
-            PrimaryButton(
-              t('create_wallet'),
-              () {
-                showModalBottomSheet(
-                  isScrollControlled: true,
-                  shape: bottomSheetShape,
-                  context: context,
-                  builder: (context) => Container(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 22.0, horizontal: 16.0),
-                    child: CreateWalletForm(),
-                  ),
-                );
-              },
-              iconImg: AssetImage('assets/images/icons/ic_property_normal.png'),
-            ),
-            SizedBox(height: 16.0),
-            PrimaryButton(
-              'Restore Wallet',
-              () {
-                showModalBottomSheet(
-                  // isScrollControlled: true,
-                  shape: bottomSheetShape,
-                  context: context,
-                  builder: (context) => Container(
-                    padding:
-                        EdgeInsets.symmetric(vertical: 22.0, horizontal: 16.0),
-                    child: Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: 50.0),
-                          Text(
-                            t('select_import'),
-                            style: Theme.of(context).textTheme.headline1,
-                          ),
-                          SizedBox(height: 84.0),
-                          RestoreNav(),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-              backgroundColor: Colors.transparent.withOpacity(0.2),
-              borderColor: Colors.transparent,
-              iconImg: AssetImage('assets/images/icons/ic_import_wallet.png'),
-            )
-          ],
-        ),
       ),
     );
   }
 }
 
-class RestoreNav extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        Navigator.of(context).pushNamed(RestoreWalletScreen.routeName);
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 50.0),
-        decoration: BoxDecoration(
-          border: Border.all(color: Theme.of(context).dividerColor),
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ImageIcon(
-              AssetImage('assets/images/icons/ic_import_wallet.png'),
-              color: Colors.black,
-              size: 36.0,
-            ),
-            SizedBox(width: 20.0),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  t('import_paperwallet'),
-                  style: Theme.of(context).textTheme.headline1,
-                ),
-                Text(
-                  t('paperwallet_intro'),
-                  style: Theme.of(context).textTheme.subtitle2,
-                )
-              ],
-            )
-          ],
+double height = 44;
+double fontSize = height * 0.43;
+
+/// The scale based on the height of the button
+const _appleIconSizeScale = 28 / 44;
+
+final appleIcon = Container(
+  width: _appleIconSizeScale * height,
+  height: _appleIconSizeScale * height + 2,
+  padding: EdgeInsets.only(
+    // Properly aligns the Apple icon with the text of the button
+    bottom: (4 / 44) * height,
+  ),
+  child: Center(
+    child: Container(
+      width: fontSize * (25 / 31),
+      height: fontSize,
+      child: CustomPaint(
+        painter: lib.AppleLogoPainter(
+          color: Colors.white,
         ),
       ),
-    );
-  }
-}
+    ),
+  ),
+);

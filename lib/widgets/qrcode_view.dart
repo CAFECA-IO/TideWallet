@@ -4,17 +4,22 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class QRCodeView extends StatefulWidget {
   final Function scanCallback;
+  final String debugLabel;
 
-  QRCodeView({ this.scanCallback });
+  QRCodeView({this.scanCallback, this.debugLabel});
 
   @override
-  _QRCodeViewState createState() => _QRCodeViewState();
+  _QRCodeViewState createState() => _QRCodeViewState(this.debugLabel);
 }
 
 class _QRCodeViewState extends State<QRCodeView> {
-  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  final String debugLabel;
+  GlobalKey qrKey;
   Barcode result;
   QRViewController controller;
+
+  _QRCodeViewState(this.debugLabel)
+      : qrKey = GlobalKey(debugLabel: debugLabel ?? 'QR');
 
   // In order to get hot reload to work we need to pause the camera if the platform
   // is android, or resume the camera if the platform is iOS.
@@ -46,6 +51,7 @@ class _QRCodeViewState extends State<QRCodeView> {
         : 300.0;
     // To ensure the Scanner view is properly sizes after rotation
     // we need to listen for Flutter SizeChanged notification and update controller
+    print('qrKey: $qrKey');
     return QRView(
       key: qrKey,
       cameraFacing: CameraFacing.back,

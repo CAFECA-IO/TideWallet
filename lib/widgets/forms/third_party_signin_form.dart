@@ -10,10 +10,10 @@ import '../../blocs/user/user_bloc.dart';
 
 import '../../widgets/dialogs/dialog_controller.dart';
 import '../../widgets/dialogs/error_dialog.dart';
+import '../../widgets/dialogs/loading_dialog.dart';
 
 import '../../helpers/i18n.dart';
 
-final t = I18n.t;
 double height = 44;
 double fontSize = height * 0.43;
 
@@ -50,6 +50,7 @@ class _ThirdPartySignInFormState extends State<ThirdPartySignInForm> {
       ThirdPartySignInBloc(ThirdPartySignInRepository());
 
   UserBloc _userBloc;
+  final t = I18n.t;
   @override
   void didChangeDependencies() {
     _userBloc = BlocProvider.of<UserBloc>(context);
@@ -61,20 +62,19 @@ class _ThirdPartySignInFormState extends State<ThirdPartySignInForm> {
     return BlocListener<ThirdPartySignInBloc, ThirdPartySignInState>(
       bloc: this._bloc,
       listener: (context, state) {
-        if (state is FailedSignInWithApple) {
-          Navigator.of(context).pop();
-          DialogController.show(
-              context,
-              ErrorDialog(state.message != null
-                  ? state.message
-                  : 'Something went wrong...'));
+        if (state is FailedSignInWithThirdParty) {
+          if (state.message != null)
+            DialogController.show(context, ErrorDialog(state.message));
         }
-        if (state is CancelledSignInWithApple) {
+        if (state is CancelledSignInWithThirdParty) {
           Navigator.of(context).pop();
+          DialogController.show(context, ErrorDialog(t('cancel')));
         }
-        if (state is SignedInWithApple) {
-          Navigator.of(context).pop();
-          _userBloc.add(UserCreate(state.userIndentifier, 'tide'));
+        if (state is SignedInWithThirdParty) {
+          _userBloc.add(UserCreate(state.userIndentifier));
+        }
+        if (state is SigningInWithThirdParty) {
+          DialogController.showUnDissmissible(context, LoadingDialog());
         }
       },
       child: Container(

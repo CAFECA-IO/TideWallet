@@ -17,8 +17,8 @@ class UpdatePasswordBloc
   Validator _validator = new Validator();
 
   UpdateFormError validateState(UpdatePasswordStateCheck state) {
-    if (!_userRepo.verifyPassword(state.currentPassword))
-      return UpdateFormError.wrongPassword;
+    // if (!_userRepo.verifyPassword(state.currentPassword))
+    //   return UpdateFormError.wrongPassword;
     if (state.rules.contains(false)) return UpdateFormError.passwordInvalid;
     if (state.password != state.rePassword)
       return UpdateFormError.passwordNotMatch;
@@ -62,13 +62,13 @@ class UpdatePasswordBloc
     if (event is UpdatePassword) {
       yield PasswordUpdating();
 
-      final success = await _userRepo.updatePassword(_state.currentPassword, _state.password);
+      // final success = await _userRepo.updatePassword(_state.currentPassword, _state.password);
 
-      if (success) {
-        yield PasswordUpdated();
-      } else {
-        yield PasswordUpdateFail();
-      }
+      // if (success) {
+      //   yield PasswordUpdated();
+      // } else {
+      //   yield PasswordUpdateFail();
+      // }
     }
 
     if (event is CleanUpdatePassword) {

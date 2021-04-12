@@ -1,10 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.tidewallet3">
+    package="com.tideisun.tidewallet3">
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
          In most cases you can leave this as-is, but you if you want to provide
          additional functionality it is fine to subclass or reimplement
          FlutterApplication and put your custom class here. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -49,7 +51,7 @@
             android:value="2" />
         <!-- Set up the Sign in with Apple activity, such that it's callable from the browser-redirect -->
         <activity
-            android:name="com.example.tidewallet3.sign_in_with_apple.SignInWithAppleCallback"
+            android:name="com.tideisun.tidewallet3.sign_in_with_apple.SignInWithAppleCallback"
             android:exported="true"
         >
             <intent-filter>
