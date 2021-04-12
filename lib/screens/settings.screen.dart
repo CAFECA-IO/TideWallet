@@ -112,28 +112,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             shrinkWrap: true,
             children: [
               _section(t('setting_security'), [
-                _item(t('setting_reset_password'), () {
-                  Navigator.of(context)
-                      .pushNamed(UpdatePasswordScreen.routeName);
-                }),
-                BackupSetting(
-                  _item(
-                    t('setting_backup'),
-                    () {
-                      DialogController.showUnDissmissible(
-                        context,
-                        VerifyPasswordDialog(
-                          (String pwd) {
-                            _backupBloc.add(VerifyBackupPassword(pwd));
-                          },
-                          (String pwd) {
-                            DialogController.dismiss(context);
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ),
                 ResetSetting(_item(t('setting_reset'), null)),
               ]),
               _section(t('setting_normal'),
