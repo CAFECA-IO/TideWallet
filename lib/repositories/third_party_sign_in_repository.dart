@@ -75,6 +75,7 @@ class ThirdPartySignInRepository {
       }
     } catch (e) {
       Log.debug(e.code);
+      Log.debug(e);
       errorCode = e.code;
       errorMessage = e.message;
     }
