@@ -84,11 +84,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         );
       }), AccountCurrencyScreen.routeName, t('total_asset'),
           iconData: Icons.account_balance_wallet, bottomText: ''),
-      HomeScreenContent(
-          InvestmentScreen(), InvestmentScreen.routeName, t('total_value'),
-          iconData: Icons.assessment_outlined, bottomText: '', disable: true),
-      HomeScreenContent(SwapScreen(), SwapScreen.routeName, t('swap_title'),
-          iconData: Icons.swap_horiz, bottomText: '', disable: true),
+      // HomeScreenContent(
+      //     InvestmentScreen(), InvestmentScreen.routeName, t('total_value'),
+      //     iconData: Icons.assessment_outlined, bottomText: '', disable: true),
+      // HomeScreenContent(SwapScreen(), SwapScreen.routeName, t('swap_title'),
+      //     iconData: Icons.swap_horiz, bottomText: '', disable: true),
       HomeScreenContent(
           SettingsScreen(), SettingsScreen.routeName, t('setting'),
           iconData: Icons.settings, bottomText: ''),
