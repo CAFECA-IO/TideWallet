@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart' as lib;
+import 'package:tidewallet3/helpers/logger.dart';
 
 import '../repositories/third_party_sign_in_repository.dart';
 import '../blocs/third_party_sign_in/third_party_sign_in_bloc.dart';
@@ -39,9 +40,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     return BlocListener<ThirdPartySignInBloc, ThirdPartySignInState>(
       bloc: this._bloc,
       listener: (context, state) {
+        Log.debug(state);
         if (state is FailedSignInWithThirdParty) {
-          if (state.message != null)
-            DialogController.show(context, ErrorDialog(state.message));
+          if (Platform.isAndroid) Navigator.of(context).pop();
+          DialogController.show(context,
+              ErrorDialog(state.message != null ? state.message : t('cancel')));
         }
         if (state is CancelledSignInWithThirdParty) {
           Navigator.of(context).pop();

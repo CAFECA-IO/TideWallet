@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -36,48 +37,54 @@ class ThirdPartySignInRepository {
     FirebaseUser _user;
     final FirebaseAuth _auth = FirebaseAuth.instance;
     final GoogleSignIn _googleSignIn = GoogleSignIn();
+    GoogleSignInAccount googleSignInAccount;
+    GoogleSignInAuthentication googleSignInAuthentication;
+    AuthCredential credential;
     try {
-      GoogleSignInAccount googleSignInAccount = await _googleSignIn.signIn();
-      Log.debug('googleSignInAccount.id: ${googleSignInAccount.id}');
-      try {
-        GoogleSignInAuthentication googleSignInAuthentication =
-            await googleSignInAccount.authentication;
-        if (googleSignInAuthentication != null) {
-          Log.debug(
-              'googleSignInAuthentication.accessToken: ${googleSignInAuthentication.accessToken}');
-          Log.debug(
-              'googleSignInAuthentication.idToken: ${googleSignInAuthentication.idToken}');
-          AuthCredential credential = GoogleAuthProvider.getCredential(
-            accessToken: googleSignInAuthentication.accessToken,
-            idToken: googleSignInAuthentication.idToken,
-          );
-          try {
-            AuthResult authResult =
-                await _auth.signInWithCredential(credential);
-            _user = authResult.user;
-            assert(!_user.isAnonymous);
-            assert(await _user.getIdToken() != null);
-            FirebaseUser currentUser = await _auth.currentUser();
-            assert(_user.uid == currentUser.uid);
-            result = true;
-            userIdentifier = _user.uid;
-            Log.debug("User uid ${_user.uid}");
-          } catch (e) {
-            Log.debug(e.code);
-            errorCode = e.code;
-            errorMessage = e.message;
-          }
-        }
-      } catch (e) {
-        Log.debug(e.code);
-        errorCode = e.code;
-        errorMessage = e.message;
+      googleSignInAccount = await _googleSignIn.signIn();
+      Log.debug('googleSignInAccount.id: ${googleSignInAccount?.id}');
+    } on PlatformException catch (exception) {
+      Log.debug(exception.code);
+      errorCode = exception.code;
+      errorMessage = exception.message;
+    } catch (e) {
+      Log.debug(e.toString());
+    }
+    try {
+      googleSignInAuthentication = await googleSignInAccount?.authentication;
+      if (googleSignInAuthentication != null) {
+        Log.debug(
+            'googleSignInAuthentication.accessToken: ${googleSignInAuthentication.accessToken}');
+        Log.debug(
+            'googleSignInAuthentication.idToken: ${googleSignInAuthentication.idToken}');
+        credential = GoogleAuthProvider.getCredential(
+          accessToken: googleSignInAuthentication.accessToken,
+          idToken: googleSignInAuthentication.idToken,
+        );
       }
     } catch (e) {
       Log.debug(e.code);
       errorCode = e.code;
       errorMessage = e.message;
     }
+    if (credential != null) {
+      try {
+        AuthResult authResult = await _auth.signInWithCredential(credential);
+        _user = authResult.user;
+        assert(!_user.isAnonymous);
+        assert(await _user.getIdToken() != null);
+        FirebaseUser currentUser = await _auth.currentUser();
+        assert(_user.uid == currentUser.uid);
+        result = true;
+        userIdentifier = _user.uid;
+        Log.debug("User uid ${_user.uid}");
+      } catch (e) {
+        Log.debug(e.code);
+        errorCode = e.code;
+        errorMessage = e.message;
+      }
+    }
+
     return [
       result,
       result ? userIdentifier : errorCode,
