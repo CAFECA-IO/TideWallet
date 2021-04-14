@@ -9,7 +9,8 @@ import 'package:convert/convert.dart';
 import '../repositories/account_repository.dart';
 import '../repositories/transaction_repository.dart';
 import '../repositories/user_repository.dart';
-import '../blocs/verify_password/verify_password_bloc.dart';
+import '../repositories/local_auth_repository.dart';
+import '../blocs/local_auth/local_auth_bloc.dart';
 import '../blocs/walletconnect/walletconnect_bloc.dart';
 import '../helpers/i18n.dart';
 import '../helpers/formatter.dart';
@@ -17,12 +18,10 @@ import '../theme.dart';
 import '../widgets/walletconnect/personal_sign.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/error_dialog.dart';
-import '../widgets/dialogs/verify_password_dialog.dart';
 import '../widgets/buttons/secondary_button.dart';
 import '../widgets/buttons/primary_button.dart';
 import '../widgets/walletconnect/sign_transaction.dart';
 import '../widgets/appBar.dart';
-import '../widgets/qrcode_view.dart';
 import '../models/transaction.model.dart';
 
 class WalletConnectScreen extends StatefulWidget {
@@ -37,22 +36,17 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
   AccountRepository _accountRepo;
   TransactionRepository _txRepo;
   UserRepository _userRepo;
-  VerifyPasswordBloc _verifyPasswordBloc;
+  LocalAuthBloc _localBloc;
   String _uri;
   final t = I18n.t;
-
-  _scanResult(String v) {
-    _bloc.add(ScanWC(v));
-  }
 
   @override
   void didChangeDependencies() {
     _accountRepo = Provider.of<AccountRepository>(context);
     _txRepo = Provider.of<TransactionRepository>(context);
     _userRepo = Provider.of<UserRepository>(context);
-
     _bloc = WalletConnectBloc(_accountRepo, _txRepo);
-    _verifyPasswordBloc = VerifyPasswordBloc(_userRepo);
+    _localBloc = LocalAuthBloc(LocalAuthRepository());
     dynamic arg = ModalRoute.of(context).settings.arguments;
     if (arg != null) {
       _uri = arg;
@@ -111,15 +105,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
             bool approved = false;
 
             submit() {
-              DialogController.showUnDissmissible(
-                context,
-                VerifyPasswordDialog((String password) {
-                  _verifyPasswordBloc.add(VerifyPassword(password));
-                  DialogController.dismiss(context);
-                }, (String password) {
-                  DialogController.dismiss(context);
-                }),
-              );
+              this._localBloc.add(Authenticate());
             }
 
             cancel() {
@@ -180,29 +166,29 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
               context: context,
               isScrollControlled: isScrollControlled,
               shape: bottomSheetShape,
-              builder: (context) =>
-                  BlocListener<VerifyPasswordBloc, VerifyPasswordState>(
+              builder: (context) => BlocListener<LocalAuthBloc, LocalAuthState>(
                 listener: (context, verifyState) {
-                  if (verifyState is PasswordVerified) {
-                    approved = true;
-                    this._bloc.add(
-                          ApproveRequest(
-                            state.currentEvent,
-                            verifyState.password,
-                          ),
-                        );
-                    Navigator.of(context).pop();
-                  }
-                  if (verifyState is PasswordInvalid) {
-                    DialogController.show(
-                      context,
-                      ErrorDialog(
-                        t('error_password'),
-                      ),
-                    );
+                  if (verifyState is AuthenticationStatus) {
+                    if (verifyState.isAuthenicated) {
+                      approved = true;
+                      this._bloc.add(
+                            ApproveRequest(
+                              state.currentEvent,
+                              _userRepo.getPassword(),
+                            ),
+                          );
+                      Navigator.of(context).pop();
+                    } else {
+                      DialogController.show(
+                        context,
+                        ErrorDialog(
+                          t('error_password'),
+                        ),
+                      );
+                    }
                   }
                 },
-                bloc: _verifyPasswordBloc,
+                bloc: _localBloc,
                 child: content,
               ),
             ).then(
