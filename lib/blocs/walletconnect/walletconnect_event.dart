@@ -43,5 +43,5 @@ class CancelRequest extends WalletConnectEvent {
 class ApproveRequest extends WalletConnectEvent {
   final WCRequest request;
   final String password;
-  ApproveRequest(this.request, this.password);
+  ApproveRequest(this.request, {this.password});
 }
