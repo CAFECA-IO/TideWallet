@@ -18,12 +18,10 @@ import '../theme.dart';
 import '../widgets/walletconnect/personal_sign.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/error_dialog.dart';
-import '../widgets/dialogs/verify_password_dialog.dart';
 import '../widgets/buttons/secondary_button.dart';
 import '../widgets/buttons/primary_button.dart';
 import '../widgets/walletconnect/sign_transaction.dart';
 import '../widgets/appBar.dart';
-import '../widgets/qrcode_view.dart';
 import '../models/transaction.model.dart';
 
 class WalletConnectScreen extends StatefulWidget {
@@ -42,16 +40,11 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
   String _uri;
   final t = I18n.t;
 
-  _scanResult(String v) {
-    _bloc.add(ScanWC(v));
-  }
-
   @override
   void didChangeDependencies() {
     _accountRepo = Provider.of<AccountRepository>(context);
     _txRepo = Provider.of<TransactionRepository>(context);
     _userRepo = Provider.of<UserRepository>(context);
-
     _bloc = WalletConnectBloc(_accountRepo, _txRepo);
     _localBloc = LocalAuthBloc(LocalAuthRepository());
     dynamic arg = ModalRoute.of(context).settings.arguments;
@@ -181,6 +174,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                       this._bloc.add(
                             ApproveRequest(
                               state.currentEvent,
+                              _userRepo.getPassword(),
                             ),
                           );
                       Navigator.of(context).pop();
