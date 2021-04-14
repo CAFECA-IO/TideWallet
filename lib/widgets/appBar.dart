@@ -113,17 +113,17 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
       List<Widget> _actions = [];
 
       switch (routeName) {
-        case AccountCurrencyScreen.routeName:
-          _actions = [
-            actionItem(
-                ImageIcon(
-                  AssetImage('assets/images/icons/ic_notification_tip.png'),
-                  size: 44.0,
-                  color: Colors.white,
-                ),
-                () {})
-          ];
-          break;
+        // case AccountCurrencyScreen.routeName:
+        //   _actions = [
+        //     actionItem(
+        //         ImageIcon(
+        //           AssetImage('assets/images/icons/ic_notification_tip.png'),
+        //           size: 44.0,
+        //           color: Colors.white,
+        //         ),
+        //         () {})
+        //   ];
+        //   break;
         // case TransferScreen.routeName:
         // case ReceiveScreen.routeName:
         // case BuyCryptoScreen.routeName:

@@ -73,33 +73,33 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 width: 107.0,
               ),
               Spacer(),
-              PrimaryButton(
-                  Platform.isIOS
-                      ? t('sign_in_with_apple_id')
-                      : t('sign_in_with_google_id'), () {
-                this._bloc.add(
-                    Platform.isIOS ? SignInWithApple() : SignInWithGoogle());
-              },
-                  icon: Platform.isIOS
-                      ? appleIcon
-                      : Row(
-                          children: [
-                            Center(
-                              child: Image(
-                                image: AssetImage(
-                                  "assets/graphics/google-logo.png",
-                                ),
-                                height: 18.0,
-                                width: 18.0,
+              Platform.isIOS
+                  ? lib.SignInWithAppleButton(
+                      onPressed: () {
+                        this._bloc.add(SignInWithApple());
+                      },
+                    )
+                  : PrimaryButton(t('sign_in_with_google_id'), () {
+                      this._bloc.add(SignInWithGoogle());
+                    },
+                      icon: Row(
+                        children: [
+                          Center(
+                            child: Image(
+                              image: AssetImage(
+                                "assets/graphics/google-logo.png",
                               ),
+                              height: 18.0,
+                              width: 18.0,
                             ),
-                            SizedBox(
-                              width: 8,
-                            )
-                          ],
-                        ),
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 32.5, vertical: 8.0)),
+                          ),
+                          SizedBox(
+                            width: 8,
+                          )
+                        ],
+                      ),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 32.5, vertical: 8.0)),
             ],
           ),
         ),
@@ -107,29 +107,3 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
   }
 }
-
-double height = 44;
-double fontSize = height * 0.43;
-
-/// The scale based on the height of the button
-const _appleIconSizeScale = 28 / 44;
-
-final appleIcon = Container(
-  width: _appleIconSizeScale * height,
-  height: _appleIconSizeScale * height + 2,
-  padding: EdgeInsets.only(
-    // Properly aligns the Apple icon with the text of the button
-    bottom: (4 / 44) * height,
-  ),
-  child: Center(
-    child: Container(
-      width: fontSize * (25 / 31),
-      height: fontSize,
-      child: CustomPaint(
-        painter: lib.AppleLogoPainter(
-          color: Colors.white,
-        ),
-      ),
-    ),
-  ),
-);
