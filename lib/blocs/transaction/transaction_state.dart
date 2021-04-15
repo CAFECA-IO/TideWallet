@@ -67,8 +67,8 @@ class TransactionInitial extends TransactionState {
         feeToFiat: feeToFiat ?? this.feeToFiat,
         estimatedTime: estimatedTime ?? this.estimatedTime,
         rules: rules ?? this.rules,
-        error: error,
-        message: message);
+        error: error ?? this.error,
+        message: message ?? this.message);
   }
 
   @override
