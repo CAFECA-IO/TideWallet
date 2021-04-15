@@ -43,8 +43,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         Log.debug(state);
         if (state is FailedSignInWithThirdParty) {
           if (Platform.isAndroid) Navigator.of(context).pop();
-          DialogController.show(context,
-              ErrorDialog(state.message != null ? state.message : t('cancel')));
+          DialogController.show(
+              context,
+              ErrorDialog(
+                  state.message != null ? t(state.message) : t('cancel')));
         }
         if (state is CancelledSignInWithThirdParty) {
           Navigator.of(context).pop();
