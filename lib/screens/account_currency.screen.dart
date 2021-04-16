@@ -68,6 +68,7 @@ class _AccountCurrencyScreenState extends State<AccountCurrencyScreen> {
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
                           childAspectRatio: 1.0,
+                          mainAxisSpacing: 4.0,
                           crossAxisSpacing: 4.0),
                       children: state.currencies
                           .map(

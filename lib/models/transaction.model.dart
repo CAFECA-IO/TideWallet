@@ -87,7 +87,7 @@ class Transaction {
             : entity.direction == 'receive'
                 ? TransactionDirection.received
                 : TransactionDirection.unknown;
-    _address = (direction == TransactionDirection.sent)
+    _address = (direction == TransactionDirection.received)
         ? entity.sourceAddress
         : entity.destinctionAddress;
     confirmations = entity.confirmation;
@@ -193,7 +193,7 @@ extension TransactionDirectionExt on TransactionDirection {
         break;
       case TransactionDirection.received:
       case TransactionDirection.moved:
-        return "save_to";
+        return "receive_from";
         break;
       case TransactionDirection.unknown:
         return "Unknown";
