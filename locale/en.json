@@ -68,7 +68,7 @@
   "status": "Status",
   "time": "Time",
   "transfer_to": "Transfer to",
-  "save_to": "Save to",
+  "receive_from": "Receive from",
   "transaction_id": "Transaction ID",
   "pending": "Pending",
   "compeleted": "Completed",
