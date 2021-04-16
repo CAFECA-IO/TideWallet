@@ -44,7 +44,7 @@ class ThirdPartySignInRepository {
       googleSignInAccount = await _googleSignIn.signIn();
       Log.debug('googleSignInAccount.id: ${googleSignInAccount?.id}');
     } on PlatformException catch (exception) {
-      Log.debug(exception.code);
+      Log.debug(exception);
       errorCode = exception.code;
       errorMessage = exception.message;
     } catch (e) {

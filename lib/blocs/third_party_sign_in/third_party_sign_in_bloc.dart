@@ -56,7 +56,7 @@ class ThirdPartySignInBloc
           String userIndentifier = response[1];
           yield SignedInWithThirdParty(userIndentifier);
         } else {
-          String message = response[2];
+          String message = response[1];
           yield FailedSignInWithThirdParty(message);
         }
       } catch (e) {
