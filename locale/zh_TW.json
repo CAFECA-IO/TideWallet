@@ -56,7 +56,7 @@
   "status": "Status",
   "time": "Time",
   "transfer_to": "轉出至",
-  "receive_from": "接收至",
+  "receive_from": "接收自",
   "transaction_id": "Transaction ID",
   "pending": "Pending",
   "compeleted": "Completed",
