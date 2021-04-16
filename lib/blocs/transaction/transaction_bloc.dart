@@ -132,8 +132,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           gasPrice = result[0][TransactionPriority.standard];
           gasLimit = result[1];
           try {
-            print('message => ${result[2]}');
-            print('amount => $amount');
             message = result[2];
           } catch (e) {}
           if (gasLimit != null) {
