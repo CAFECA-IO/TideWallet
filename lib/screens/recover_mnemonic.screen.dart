@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tidewallet3/widgets/buttons/primary_button.dart';
 
 import '../widgets/appBar.dart';
+import '../widgets/inputs/password_input.dart';
+import '../blocs/mnemonic/mnemonic_bloc.dart';
+import '../helpers/i18n.dart';
 
 class RecoverMemonicScreen extends StatefulWidget {
   static const routeName = '/recover-mnemonic';
@@ -9,82 +14,129 @@ class RecoverMemonicScreen extends StatefulWidget {
 }
 
 class _RecoverMemonicScreenState extends State<RecoverMemonicScreen> {
+  final t = I18n.t;
+
+  TextEditingController _controller = new TextEditingController();
+  TextEditingController _pwdController = new TextEditingController();
+  TextEditingController _rePwdController = new TextEditingController();
+  MnemonicBloc _bloc;
+
+  @override
+  void didChangeDependencies() {
+    _bloc = MnemonicBloc();
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    _bloc.close();
+    _controller.dispose();
+    _pwdController.dispose();
+    _rePwdController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: GeneralAppbar(
         routeName: RecoverMemonicScreen.routeName,
       ),
-      body: Container(),
-      // body: BlocListener<RestoreWalletBloc, RestoreWalletState>(
-      //   listener: (context, state) async {
-      //     if (state is PaperWalletSuccess) {
-      //       // Wait for Navigator back from Scan Screen
-      //       await Future.delayed(Duration(milliseconds: 300));
-      //       DialogController.showUnDissmissible(
-      //         context,
-      //         VerifyPasswordDialog((String password) {
-      //           DialogController.dismiss(context);
-      //           _bloc.add(RestorePapaerWallet(password));
-      //         }, (String password) {
-      //           _bloc.add(CleanWalletResult());
-      //           DialogController.dismiss(context);
-      //         }),
-      //       );
-      //     }
+      body: BlocListener<MnemonicBloc, MnemonicState>(
+        listener: (context, state) {
+          // TODO: implement listener
+        },
+        bloc: _bloc,
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          child: BlocBuilder<MnemonicBloc, MnemonicState>(
+            bloc: _bloc,
+            builder: (context, state) {
+              var submit = null;
 
-      //     if (state is PaperWalletRestored) {
-      //       Navigator.of(context).popUntil(
-      //         (ModalRoute.withName('/')),
-      //       );
-      //       _userBloc.add(UserRestore());
-      //     }
+              if (state is MnemonicTyping) {
+                if (state.error == MNEMONIC_ERROR.NONE &&
+                    state.mnemonic.isNotEmpty) {
+                  submit = () => {};
+                }
+              }
 
-      //     if (state is PaperWallletRestoring) {
-      //       DialogController.showUnDissmissible(context, LoadingDialog());
-      //     }
-
-      //     if (state is PaperWalletRestoreFail) {
-      //       DialogController.dismiss(context);
-
-      //       if (state.error == RESTORE_ERROR.PASSWORD) {
-      //         DialogController.show(context, ErrorDialog(t('error_password')));
-      //       } else {
-      //         DialogController.show(context, ErrorDialog(t('error_restore')));
-      //       }
-      //     }
-      //   },
-      //   child: Container(
-      //     padding: const EdgeInsets.symmetric(vertical: 32.0, horizontal: 16.0),
-      //     child: Column(
-      //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //       children: [
-      //         Container(
-      //           padding: const EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 14.0),
-      //           decoration: BoxDecoration(
-      //             color: Color(0xFFBEEFF0),
-      //           ),
-      //           child: Text(
-      //             t('restore_message'),
-      //             style: Theme.of(context).textTheme.bodyText1,
-      //           ),
-      //         ),
-      //         Padding(
-      //           padding: const EdgeInsets.symmetric(
-      //               horizontal: 36.0, vertical: 12.0),
-      //           child: SecondaryButton(
-      //             t('scan'),
-      //             () {
-      //               Navigator.of(context).pushNamed(ScanWalletScreen.routeName);
-      //             },
-      //             textColor: _btnColor,
-      //             borderColor: _btnColor,
-      //           ),
-      //         )
-      //       ],
-      //     ),
-      //   ),
-      
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 10.0),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor.withOpacity(0.4)),
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(t('mnemonic_message')),
+                  ),
+                  Container(
+                      margin: const EdgeInsets.only(bottom: 30.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0, vertical: 8.0),
+                      decoration: BoxDecoration(
+                          border: Border.all(
+                              color: Theme.of(context).primaryColor)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            t('mnemonic_enter'),
+                            style:
+                                TextStyle(color: Theme.of(context).accentColor),
+                          ),
+                          TextField(
+                            controller: _controller,
+                            onChanged: (String v) {
+                              _bloc.add(InputMnemo(v));
+                            },
+                            minLines: 3,
+                            maxLines: 3,
+                            decoration: InputDecoration(
+                              // isDense: true,
+                              contentPadding: const EdgeInsets.all(4.0),
+                              // labelText: "labelText",
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ],
+                      )),
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 30.0),
+                    child: PasswordInput(
+                      label: t('password'),
+                      validator: null,
+                      onChanged: (v) {
+                        _bloc.add(InputMnemoPassword(v));
+                      },
+                      controller: this._pwdController,
+                    ),
+                  ),
+                  Container(
+                    child: PasswordInput(
+                      label: t('password-repeat'),
+                      validator: null,
+                      onChanged: (v) {
+                        _bloc.add(InputMnemoRePassword(v));
+                      },
+                      controller: this._rePwdController,
+                    ),
+                  ),
+                  Spacer(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20.0, vertical: 50.0),
+                    child: PrimaryButton('確認', submit, disableColor: Theme.of(context).disabledColor,  borderColor: Colors.transparent),
+                  )
+                ],
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 }
