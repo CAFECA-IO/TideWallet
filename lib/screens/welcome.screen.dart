@@ -12,6 +12,7 @@ import '../widgets/buttons/primary_button.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/error_dialog.dart';
 import '../widgets/dialogs/loading_dialog.dart';
+import '../screens/recover_mnemonic.screen.dart';
 
 import '../helpers/i18n.dart';
 
@@ -105,6 +106,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       ),
                       padding: EdgeInsets.symmetric(
                           horizontal: 32.5, vertical: 8.0)),
+              Container(
+                margin: const EdgeInsets.only(top: 30.0),
+                child: PrimaryButton(t('recover_mnemonic'), () {
+                  Navigator.of(context).pushNamed(RecoverMemonicScreen.routeName);
+                }),
+              ),
             ],
           ),
         ),
