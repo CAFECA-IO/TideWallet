@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
@@ -35,6 +36,18 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     if (event is UserCreate) {
       yield UserLoading();
       bool success = await _repo.createUser(event.userIndentifier);
+      if (success) {
+        await _accountRepo.coreInit();
+        yield UserSuccess();
+      } else {
+        yield UserFail();
+      }
+    }
+
+
+    if (event is UserCreateWithSeed) {
+      yield UserLoading();
+      bool success = await _repo.createUserWithSeed(event.userIndentifier, event.seed);
       if (success) {
         await _accountRepo.coreInit();
         yield UserSuccess();

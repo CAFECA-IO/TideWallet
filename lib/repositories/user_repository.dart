@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'package:web3dart/web3dart.dart';
 
 import '../cores/user.dart';
@@ -10,6 +11,9 @@ class UserRepository {
 
   Future<bool> createUser(String userIdentifier) =>
       _user.createUser(userIdentifier);
+
+  Future<bool> createUserWithSeed(String userIdentifier, Uint8List seed) =>
+      _user.createUserWithSeed(userIdentifier, seed);
 
   Future<bool> checkUser() => _user.checkUser();
 

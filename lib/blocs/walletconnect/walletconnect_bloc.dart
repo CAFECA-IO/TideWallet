@@ -183,7 +183,6 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
 
             break;
           case 'personal_sign':
-            // TODO: Not Sure
             final key = await _txRepo.getPrivKey(event.password, 0, 0);
 
             // TODO:

@@ -11,7 +11,8 @@
   "create_hot_wallet": "創建熱錢包",
   "create_wallet_message": "任何交易行為都將受到自訂密碼保護，請妥善保管密碼並請勿將您的密碼提供給他人，TideWallet 不存儲密碼，也無法幫您找回。",
   "wallet_name": "錢包名稱",
-  "password": "密碼",
+  "password": "password",
+  "password-repeat": "retype password",
   "re_password": "再次確認密碼",
   "confirm": "確認",
   "scan": "掃描",
@@ -192,5 +193,9 @@
   "or": "Or",
   "sign_in_with_apple_id": "Sign in with Apple",
   "sign_in_with_google_id": "Sign in with Google",
-  "sign_in_failed": "Sign in failed"
+  "sign_in_failed": "Sign in failed",
+  "recover_mnemonic": "Recover Wallet",
+  "mnemonic_enter": "Enter meomonic",
+  "mnemonic_message": "Please use spaces to separate different mnemonic words",
+  "error_mnemonic": "Mnemonic wrong"
 }
