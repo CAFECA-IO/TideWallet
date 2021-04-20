@@ -1,6 +1,6 @@
 part of 'mnemonic_bloc.dart';
 
-enum MNEMONIC_ERROR { NONE, MNEMONIC_INVALID, PASSWORD_NOT_MATCH }
+enum MNEMONIC_ERROR { NONE, MNEMONIC_INVALID, PASSWORD_NOT_MATCH, LOGIN }
 
 abstract class MnemonicState extends Equatable {
   const MnemonicState();
@@ -13,21 +13,21 @@ class MnemonicInitial extends MnemonicState {}
 
 class MnemonicTyping extends MnemonicState {
   final String mnemonic;
-  final String password;
-  final String rePassword;
+  final String passphrase;
+  final String rePassphrase;
   final MNEMONIC_ERROR error;
 
-  MnemonicTyping({this.mnemonic = '', this.password = '', this.rePassword = '', this.error = MNEMONIC_ERROR.NONE});
+  MnemonicTyping({this.mnemonic = '', this.passphrase = '', this.rePassphrase = '', this.error = MNEMONIC_ERROR.NONE});
 
-  copyWith({mnemonic, password, rePassword, error}) => MnemonicTyping(
+  copyWith({mnemonic, passphrase, rePassphrase, error}) => MnemonicTyping(
         mnemonic: mnemonic ?? this.mnemonic,
-        password: password ?? this.password,
-        rePassword: rePassword ?? this.rePassword,
+        passphrase: passphrase ?? this.passphrase,
+        rePassphrase: rePassphrase ?? this.rePassphrase,
         error: error ?? this.error,
       );
 
   @override
-  List<Object> get props => [mnemonic, password, rePassword, error];
+  List<Object> get props => [mnemonic, passphrase, rePassphrase, error];
 }
 
 class MnemonicLoading extends MnemonicState {}
