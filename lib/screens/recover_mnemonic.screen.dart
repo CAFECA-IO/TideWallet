@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tidewallet3/widgets/buttons/primary_button.dart';
 
 import '../widgets/appBar.dart';
 import '../widgets/inputs/password_input.dart';
+import '../widgets/buttons/primary_button.dart';
+import '../widgets/dialogs/dialog_controller.dart';
+import '../widgets/dialogs/error_dialog.dart';
 import '../blocs/mnemonic/mnemonic_bloc.dart';
+import '../repositories/third_party_sign_in_repository.dart';
 import '../helpers/i18n.dart';
 
 class RecoverMemonicScreen extends StatefulWidget {
@@ -19,13 +22,7 @@ class _RecoverMemonicScreenState extends State<RecoverMemonicScreen> {
   TextEditingController _controller = new TextEditingController();
   TextEditingController _pwdController = new TextEditingController();
   TextEditingController _rePwdController = new TextEditingController();
-  MnemonicBloc _bloc;
-
-  @override
-  void didChangeDependencies() {
-    _bloc = MnemonicBloc();
-    super.didChangeDependencies();
-  }
+  MnemonicBloc _bloc = MnemonicBloc(ThirdPartySignInRepository());
 
   @override
   void dispose() {
@@ -45,7 +42,15 @@ class _RecoverMemonicScreenState extends State<RecoverMemonicScreen> {
       ),
       body: BlocListener<MnemonicBloc, MnemonicState>(
         listener: (context, state) {
-          // TODO: implement listener
+          if (state is MnemonicSuccess) {}
+
+          if (state is MnemonicTyping) {
+            if (state.error == MNEMONIC_ERROR.MNEMONIC_INVALID) {
+              DialogController.show(context, ErrorDialog(t('error_password')));
+            } else if (state.error == MNEMONIC_ERROR.PASSWORD_NOT_MATCH) {
+              DialogController.show(context, ErrorDialog(t('error_restore')));
+            }
+          }
         },
         bloc: _bloc,
         child: Container(
@@ -53,12 +58,12 @@ class _RecoverMemonicScreenState extends State<RecoverMemonicScreen> {
           child: BlocBuilder<MnemonicBloc, MnemonicState>(
             bloc: _bloc,
             builder: (context, state) {
-              var submit = null;
+              var submit;
 
               if (state is MnemonicTyping) {
                 if (state.error == MNEMONIC_ERROR.NONE &&
                     state.mnemonic.isNotEmpty) {
-                  submit = () => {};
+                  submit = () => {_bloc.add(SubmitMnemonic())};
                 }
               }
 
@@ -129,7 +134,9 @@ class _RecoverMemonicScreenState extends State<RecoverMemonicScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20.0, vertical: 50.0),
-                    child: PrimaryButton('確認', submit, disableColor: Theme.of(context).disabledColor,  borderColor: Colors.transparent),
+                    child: PrimaryButton('確認', submit,
+                        disableColor: Theme.of(context).disabledColor,
+                        borderColor: Colors.transparent),
                   )
                 ],
               );
