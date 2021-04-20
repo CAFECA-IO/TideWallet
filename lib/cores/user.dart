@@ -109,19 +109,12 @@ class User {
   Future<bool> createUser(String userIdentifier) async {
     Log.debug('createUser: ${userIdentifier}');
 
-    String userId;
-    String userSecret;
-    APIResponse _res = await HTTPAgent()
-        .post(Endpoint.SUSANOO + '/user/id', {"id": userIdentifier});
-    if (_res.success) {
-      Log.debug('_res.data: ${_res.data}');
-      userId = _res.data['user_id'];
-      userSecret = _res.data['user_secret'];
-    }
-
     String installId = await this._prefManager.getInstallationId();
     Log.debug('installId: $installId');
 
+    final List<String> user = await _getUser(userIdentifier);
+    final String userId = user[0];
+    final String userSecret = user[1];
     int timestamp = DateTime.now().millisecondsSinceEpoch;
     Map<String, String> credentialData = _generateCredentialData(
         userIdentifier, userId, userSecret, installId, timestamp);
@@ -131,10 +124,47 @@ class User {
         await compute(PaperWallet.magicSeed, wallet.privateKey.privateKey);
     String extPK = PaperWallet.getExtendedPublicKey(seed: seed);
 
+    bool success = await this._registerUser(
+      extendPublicKey: extPK,
+      installId: installId,
+      wallet: wallet,
+      userId: userId,
+      userIdentifier: userIdentifier,
+      timestamp: timestamp,
+    );
+
+    return success;
+  }
+
+  Future<List<String>> _getUser(userIdentifier) async {
+    String userId;
+    String userSecret;
+
+    APIResponse _res = await HTTPAgent()
+        .post(Endpoint.SUSANOO + '/user/id', {"id": userIdentifier});
+    if (_res.success) {
+      Log.debug('_res.data: ${_res.data}');
+      userId = _res.data['user_id'];
+      userSecret = _res.data['user_secret'];
+
+      return [userId, userSecret];
+    } else {
+      return [];
+    }
+  }
+
+  Future<bool> _registerUser({
+    String extendPublicKey,
+    String installId,
+    Wallet wallet,
+    String userId,
+    String userIdentifier,
+    int timestamp,
+  }) async {
     final Map payload = {
       "wallet_name":
           "TideWallet3", // ++ inform backend to update [Emily 04/01/2021]
-      "extend_public_key": extPK,
+      "extend_public_key": extendPublicKey,
       "install_id": installId,
       "app_uuid": installId
     };
@@ -161,6 +191,38 @@ class User {
     }
 
     return res.success;
+  }
+
+  Future<bool> createUserWithSeed(String userIdentifier, Uint8List seed) async {
+    String installId = await this._prefManager.getInstallationId();
+
+    final List<String> user = await _getUser(userIdentifier);
+    final String userId = user[0];
+    int timestamp = DateTime.now().millisecondsSinceEpoch;
+
+    String password = getPassword(
+      userIdentifier: userIdentifier,
+      userId: userId,
+      installId: installId,
+      timestamp: timestamp,
+    );
+
+    String privateKey = hex.encode(PaperWallet.getPrivKey(seed, 0, 0));
+
+    Wallet wallet = await compute(
+        PaperWallet.createWallet, {'key': privateKey, 'password': password});
+    String extPK = PaperWallet.getExtendedPublicKey(seed: seed);
+
+    bool success = await this._registerUser(
+      extendPublicKey: extPK,
+      userIdentifier: userIdentifier,
+      userId: userId,
+      timestamp: timestamp,
+      wallet: wallet,
+      installId: installId
+    );
+
+    return success;
   }
 
   bool verifyPassword(String password) {

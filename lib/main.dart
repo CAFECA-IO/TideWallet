@@ -1,5 +1,4 @@
 // import 'dart:io';
-
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -34,6 +33,7 @@ import './screens/terms.screen.dart';
 import './screens/update_password.screen.dart';
 import './screens/add_investment.screen.dart';
 import './screens/scan.screen.dart';
+import './screens/recover_mnemonic.screen.dart';
 import './blocs/fiat/fiat_bloc.dart';
 import './blocs/account_currency/account_currency_bloc.dart';
 import './blocs/delegate.dart';
@@ -199,6 +199,7 @@ MaterialApp _material = MaterialApp(
     FeedbackScreen.routeName: (context) => FeedbackScreen(),
     TermsScreen.routeName: (context) => TermsScreen(),
     ScanScreen.routeName: (context) => ScanScreen(),
+    RecoverMemonicScreen.routeName: (context) => RecoverMemonicScreen()
   },
   localizationsDelegates: [
     const I18nDelegate(),

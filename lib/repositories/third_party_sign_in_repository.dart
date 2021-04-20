@@ -1,8 +1,11 @@
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../helpers/logger.dart';
+import '../helpers/mnemonic/core.dart';
 
 class ThirdPartySignInRepository {
   Future<List> signInWithAppleId() async {
@@ -90,5 +93,13 @@ class ThirdPartySignInRepository {
       result ? userIdentifier : errorCode,
       !result ? errorMessage : null
     ];
+  }
+
+  Future<bool> checkMnemonicVaildity(String mnemonic) async {
+    return compute(Mnemonic.checkMnemonicVaildity, mnemonic);
+  }
+
+  Future<Uint8List> mnemonicToSeed(String mnemonic, String passphrase) async {
+    return compute(Mnemonic.mnemonicToSeed, [mnemonic, passphrase]);
   }
 }

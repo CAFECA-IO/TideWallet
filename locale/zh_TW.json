@@ -12,6 +12,7 @@
   "create_wallet_message": "任何交易行為都將受到自訂密碼保護，請妥善保管密碼並請勿將您的密碼提供給他人，TideWallet 不存儲密碼，也無法幫您找回。",
   "wallet_name": "錢包名稱",
   "password": "密碼",
+  "password-repeat": "重複密碼",
   "re_password": "再次確認密碼",
   "confirm": "確認",
   "send_coin": "匯款",
@@ -56,7 +57,7 @@
   "status": "Status",
   "time": "Time",
   "transfer_to": "轉出至",
-  "save_to": "存入至",
+  "receive_from": "接收自",
   "transaction_id": "Transaction ID",
   "pending": "Pending",
   "compeleted": "Completed",
@@ -165,5 +166,9 @@
   "or": "或者",
   "sign_in_with_apple_id": "使用Apple帳號登入",
   "sign_in_with_google_id": "使用Google帳號登入",
-  "sign_in_failed": "Sign in failed"
+  "sign_in_failed": "Sign in failed",
+  "recover_mnemonic": "恢復錢包",
+  "mnemonic_enter": "輸入助記詞",
+  "mnemonic_message": "請用空格區隔不同助記詞",
+  "error_mnemonic": "助記詞錯誤"
 }
