@@ -60,10 +60,26 @@ class _RecoverMemonicScreenState extends State<RecoverMemonicScreen> {
 
           if (state is MnemonicTyping) {
             if (state.error == MNEMONIC_ERROR.MNEMONIC_INVALID) {
-              DialogController.show(context, ErrorDialog(t('')));
+              DialogController.show(
+                context,
+                ErrorDialog(
+                  t('error_mnemonic'),
+                ),
+              );
             } else if (state.error == MNEMONIC_ERROR.PASSWORD_NOT_MATCH) {
               DialogController.show(
-                  context, ErrorDialog(t('create_wallet_password_unmatch')));
+                context,
+                ErrorDialog(
+                  t('create_wallet_password_unmatch'),
+                ),
+              );
+            } else if (state.error == MNEMONIC_ERROR.LOGIN) {
+              DialogController.show(
+                context,
+                ErrorDialog(
+                  t('error_login'),
+                ),
+              );
             }
           }
         },

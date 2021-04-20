@@ -19,9 +19,6 @@ class MnemonicBloc extends Bloc<MnemonicEvent, MnemonicState> {
   ) async* {
     if (event is InputMnemo) {
       MnemonicTyping _state = state;
-      // MNEMONIC_ERROR error = _state.rePassword == _state.password
-      //     ? MNEMONIC_ERROR.NONE
-      //     : MNEMONIC_ERROR.PASSWORD_NOT_MATCH;
 
       yield _state.copyWith(mnemonic: event.text, error: MNEMONIC_ERROR.NONE);
     }
@@ -29,27 +26,19 @@ class MnemonicBloc extends Bloc<MnemonicEvent, MnemonicState> {
     if (event is InputMnemoPassword) {
       MnemonicTyping _state = state;
 
-      // MNEMONIC_ERROR error = _state.rePassword == event.password
-      //     ? MNEMONIC_ERROR.NONE
-      //     : MNEMONIC_ERROR.PASSWORD_NOT_MATCH;
-
-      yield _state.copyWith(password: event.password, error: MNEMONIC_ERROR.NONE);
+      yield _state.copyWith(passphrase: event.password, error: MNEMONIC_ERROR.NONE);
     }
 
     if (event is InputMnemoRePassword) {
       MnemonicTyping _state = state;
 
-      // MNEMONIC_ERROR error = _state.password == event.password
-      //     ? MNEMONIC_ERROR.NONE
-      //     : MNEMONIC_ERROR.PASSWORD_NOT_MATCH;
-
-      yield _state.copyWith(rePassword: event.password, error: MNEMONIC_ERROR.NONE);
+      yield _state.copyWith(rePassphrase: event.password, error: MNEMONIC_ERROR.NONE);
     }
 
     if (event is SubmitMnemonic) {
       MnemonicTyping _state = state;
 
-      if (_state.password != _state.rePassword) {
+      if (_state.passphrase != _state.rePassphrase) {
         yield (_state.copyWith(error: MNEMONIC_ERROR.PASSWORD_NOT_MATCH));
       } else {
         yield MnemonicLoading();
@@ -58,14 +47,19 @@ class MnemonicBloc extends Bloc<MnemonicEvent, MnemonicState> {
 
         if (valid) {
           Uint8List seed =
-              await _repo.mnemonicToSeed(_state.mnemonic, _state.password);
-      
-          List result = await _repo.signInWithAppleId();
+              await _repo.mnemonicToSeed(_state.mnemonic, _state.passphrase);
 
-          if (result[0]) {
-            yield MnemonicSuccess(result[1], seed);
-          } else {
-            yield _state;
+          try {
+            List result = await _repo.signInWithAppleId();
+
+            if (result[0]) {
+              yield MnemonicSuccess(result[1], seed);
+            } else {
+              yield _state;
+            }
+
+          } catch(e) {
+            yield _state.copyWith(error: MNEMONIC_ERROR.LOGIN);
           }
         } else {
           yield _state.copyWith(error: MNEMONIC_ERROR.MNEMONIC_INVALID);

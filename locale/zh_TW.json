@@ -170,5 +170,6 @@
   "recover_mnemonic": "恢復錢包",
   "mnemonic_enter": "輸入助記詞",
   "mnemonic_message": "請用空格區隔不同助記詞",
-  "error_mnemonic": "助記詞錯誤"
+  "error_mnemonic": "助記詞錯誤",
+  "error_login": "登入錯誤"
 }
