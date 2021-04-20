@@ -175,6 +175,7 @@ class MyApp extends StatelessWidget {
 }
 
 MaterialApp _material = MaterialApp(
+  debugShowCheckedModeBanner: false,
   title: 'TideWallet3',
   navigatorKey: navigatorKey,
   theme: myThemeData,
