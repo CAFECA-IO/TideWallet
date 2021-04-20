@@ -17,7 +17,7 @@ class PaperWallet {
   PaperWallet();
 
   static Wallet createWallet(Map<String, String> data) {
-    // data is String key, String password, String extend
+    // data is String key, String password
 
     Random rng = Random.secure(); // ++ general from extend [Emily 04/01/2021]
 

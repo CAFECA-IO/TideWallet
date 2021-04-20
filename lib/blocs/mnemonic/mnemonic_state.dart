@@ -33,7 +33,8 @@ class MnemonicTyping extends MnemonicState {
 class MnemonicLoading extends MnemonicState {}
 
 class MnemonicSuccess extends MnemonicState {
-  final String seed;
+  final String userIndentifier;
+  final Uint8List seed;
 
-  MnemonicSuccess(this.seed);
+  MnemonicSuccess(this.userIndentifier, this.seed);
 }

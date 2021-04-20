@@ -6,6 +6,7 @@ import '../widgets/inputs/password_input.dart';
 import '../widgets/buttons/primary_button.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/error_dialog.dart';
+import '../blocs/user/user_bloc.dart';
 import '../blocs/mnemonic/mnemonic_bloc.dart';
 import '../repositories/third_party_sign_in_repository.dart';
 import '../helpers/i18n.dart';
@@ -23,6 +24,13 @@ class _RecoverMemonicScreenState extends State<RecoverMemonicScreen> {
   TextEditingController _pwdController = new TextEditingController();
   TextEditingController _rePwdController = new TextEditingController();
   MnemonicBloc _bloc = MnemonicBloc(ThirdPartySignInRepository());
+  UserBloc _userBloc;
+
+  @override
+  void didChangeDependencies() {
+    _userBloc = BlocProvider.of<UserBloc>(context);
+    super.didChangeDependencies();
+  }
 
   @override
   void dispose() {
@@ -42,13 +50,20 @@ class _RecoverMemonicScreenState extends State<RecoverMemonicScreen> {
       ),
       body: BlocListener<MnemonicBloc, MnemonicState>(
         listener: (context, state) {
-          if (state is MnemonicSuccess) {}
+          if (state is MnemonicSuccess) {
+            Navigator.of(context).popUntil(
+              (ModalRoute.withName('/')),
+            );
+            _userBloc
+                .add(UserCreateWithSeed(state.userIndentifier, state.seed));
+          }
 
           if (state is MnemonicTyping) {
             if (state.error == MNEMONIC_ERROR.MNEMONIC_INVALID) {
-              DialogController.show(context, ErrorDialog(t('error_password')));
+              DialogController.show(context, ErrorDialog(t('')));
             } else if (state.error == MNEMONIC_ERROR.PASSWORD_NOT_MATCH) {
-              DialogController.show(context, ErrorDialog(t('error_restore')));
+              DialogController.show(
+                  context, ErrorDialog(t('create_wallet_password_unmatch')));
             }
           }
         },

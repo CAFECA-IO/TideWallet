@@ -55,17 +55,15 @@ class MnemonicBloc extends Bloc<MnemonicEvent, MnemonicState> {
         yield MnemonicLoading();
 
         bool valid = await _repo.checkMnemonicVaildity(_state.mnemonic);
-        print('Mnemonic valid? $valid');
 
         if (valid) {
           Uint8List seed =
               await _repo.mnemonicToSeed(_state.mnemonic, _state.password);
       
           List result = await _repo.signInWithAppleId();
-          print(result);
 
           if (result[0]) {
-            yield MnemonicSuccess('seed');
+            yield MnemonicSuccess(result[1], seed);
           } else {
             yield _state;
           }

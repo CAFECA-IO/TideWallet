@@ -196,5 +196,6 @@
   "sign_in_failed": "Sign in failed",
   "recover_mnemonic": "Recover Wallet",
   "mnemonic_enter": "Enter meomonic",
-  "mnemonic_message": "Please use spaces to separate different mnemonic words"
+  "mnemonic_message": "Please use spaces to separate different mnemonic words",
+  "error_mnemonic": "Mnemonic wrong"
 }

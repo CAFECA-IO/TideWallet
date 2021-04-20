@@ -50,7 +50,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   state.message != null ? t(state.message) : t('cancel')));
         }
         if (state is CancelledSignInWithThirdParty) {
-          Navigator.of(context).pop();
+          // Navigator.of(context).pop();
+          Navigator.of(context).popUntil(
+            (ModalRoute.withName('/')),
+          );
           DialogController.show(context, ErrorDialog(t('cancel')));
         }
         if (state is SignedInWithThirdParty) {
@@ -109,7 +112,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               Container(
                 margin: const EdgeInsets.only(top: 30.0),
                 child: PrimaryButton(t('recover_mnemonic'), () {
-                  Navigator.of(context).pushNamed(RecoverMemonicScreen.routeName);
+                  Navigator.of(context)
+                      .pushNamed(RecoverMemonicScreen.routeName);
                 }),
               ),
             ],
