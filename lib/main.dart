@@ -48,7 +48,7 @@ import './blocs/local_auth/local_auth_bloc.dart';
 import './blocs/invest/invest_bloc.dart';
 import './helpers/i18n.dart';
 import 'theme.dart';
-
+import './helpers/fcm.dart';
 // class MyHttpOverrides extends HttpOverrides {
 //   @override
 //   HttpClient createHttpClient(SecurityContext context) {
@@ -68,13 +68,29 @@ void main() async {
   runApp(MyApp());
   Bloc.observer = ObserverDelegate();
 
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   // This widget is the root of your application.
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    FCM.configure(navigatorKey);
+    FCM.getToken().then((value) {
+      print(value);
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
