@@ -211,4 +211,16 @@ class AccountServiceBase extends AccountService {
       String blockchainId, Transaction transaction) {
     throw UnimplementedError('Implement on decorator');
   }
+
+  updateTransaction() {
+      // AccountCore().currencies[this._accountId] = AccountCore().currencies[this._accountId];
+      // AccountMessage txMsg =
+      //     AccountMessage(evt: ACCOUNT_EVT.OnUpdateTransactions, value: {
+      //   "currency": currency,
+      //   "transactions": transactions
+      //       .map((tx) => Transaction.fromTransactionEntity(tx))
+      //       .toList()
+      // });
+      // AccountCore().messenger.add(txMsg);
+  }
 }

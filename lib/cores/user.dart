@@ -18,7 +18,7 @@ import '../database/db_operator.dart';
 import '../database/entity/user.dart';
 import '../models/auth.model.dart';
 import '../models/api_response.mode.dart';
-
+import '../services/fcm_service.dart';
 class User {
   String _id;
   bool _isBackup = false;
@@ -161,14 +161,18 @@ class User {
     String userIdentifier,
     int timestamp,
   }) async {
+    String fcmToken = await FCM().getToken();
+
+
     final Map payload = {
       "wallet_name":
           "TideWallet3", // ++ inform backend to update [Emily 04/01/2021]
       "extend_public_key": extendPublicKey,
       "install_id": installId,
-      "app_uuid": installId
+      "app_uuid": installId,
+      "fcm_token": fcmToken
     };
-
+    
     APIResponse res =
         await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
 
