@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import '../cores/account.dart';
+import 'account_service.dart';
 
 enum FCM_LOCAL_EVENT { UNLOCK_APP }
 
@@ -64,26 +66,28 @@ class FCM {
 
   handleNotification(Map message) {
     Map data = Platform.isIOS ? message : message['data'];
-    print('Here:: ${data['type']}, origin: $data');
+    print('Here:: ${data['type']}, origin: $data ${AccountCore().isInit}');
+
+    final body = json.decode(data['body']);
 
     if (AccountCore().isInit) {
-      this.applyEvent();
+      this.applyEvent(body);
     } else {
       _subscription?.cancel();
       _subscription = _controller.stream.listen((event) {
         if (event == FCM_LOCAL_EVENT.UNLOCK_APP) {
-          this.applyEvent();
+          this.applyEvent(body);
         }
       });
     }
   }
 
-  applyEvent() {
-    // TODO: 
-    // AccountCore().currencies['2432f094-1aae-4077-8fa1-518a0f9efb24'].forEach((v) {
-    //   print(v);
-    // });
+  applyEvent(Map payload) {
+    String event = payload['eventType'];
+
+    if (event == 'TRANSACTION') {
+      AccountService svc = AccountCore().getService(payload['accountId']);
+      svc.updateTransaction(payload);
+    }
   }
-
-
 }

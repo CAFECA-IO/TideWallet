@@ -66,11 +66,11 @@ class AccountServiceBase extends AccountService {
     APIResponse res = await HTTPAgent()
         .get(Endpoint.SUSANOO + '/wallet/account/${this._accountId}');
     final acc = res.data;
-    List<CurrencyEntity> _currs =
-        await DBOperator().currencyDao.findAllCurrencies();
 
     if (acc != null) {
       List<dynamic> tks = acc['tokens'];
+      List<CurrencyEntity> _currs =
+          await DBOperator().currencyDao.findAllCurrencies();
       tks.forEach((token) async {
         int index =
             _currs.indexWhere((_curr) => _curr.currencyId == token['token_id']);
@@ -212,15 +212,21 @@ class AccountServiceBase extends AccountService {
     throw UnimplementedError('Implement on decorator');
   }
 
-  updateTransaction() {
-      // AccountCore().currencies[this._accountId] = AccountCore().currencies[this._accountId];
-      // AccountMessage txMsg =
-      //     AccountMessage(evt: ACCOUNT_EVT.OnUpdateTransactions, value: {
-      //   "currency": currency,
-      //   "transactions": transactions
-      //       .map((tx) => Transaction.fromTransactionEntity(tx))
-      //       .toList()
-      // });
-      // AccountCore().messenger.add(txMsg);
+  Future updateTransaction(Map payload) async {
+    List<Currency> currencies = AccountCore().currencies[this.accountId];
+    TransactionEntity txEntity = TransactionEntity.fromJson(
+        payload['currencyId'], payload['transaction']);
+    await DBOperator().transactionDao.insertTransaction(txEntity);
+
+    Currency currency =
+        currencies.firstWhere((c) => c.id == payload['currencyId']);
+    AccountMessage txMsg = AccountMessage(
+      evt: ACCOUNT_EVT.OnUpdateTransactions,
+      value: {
+        "currency": currency,
+        "transaction": Transaction.fromTransactionEntity(txEntity)
+      },
+    );
+    AccountCore().messenger.add(txMsg);
   }
 }

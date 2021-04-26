@@ -218,4 +218,9 @@ class BitcoinService extends AccountServiceDecorator {
     await this.service.synchro();
     await this._syncUTXO();
   }
+
+  @override
+  Future updateTransaction(Map payload) {
+    return this.service.updateTransaction(payload);
+  }
 }

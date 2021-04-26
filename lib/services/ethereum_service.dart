@@ -262,4 +262,9 @@ class EthereumService extends AccountServiceDecorator {
   Future synchro() async {
     await this.service.synchro();
   }
+
+  @override
+  Future updateTransaction(Map payload) {
+    return this.service.updateTransaction(payload);
+  }
 }
