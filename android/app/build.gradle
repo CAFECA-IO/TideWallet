@@ -74,6 +74,9 @@ flutter {
 }
 
 dependencies {
+    def billing_version = "3.0.0"
+
+    implementation "com.android.billingclient:billing:$billing_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:multidex:1.0.3' //enter the latest version
     implementation platform('com.google.firebase:firebase-bom:27.0.0')
