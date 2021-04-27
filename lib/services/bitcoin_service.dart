@@ -223,4 +223,10 @@ class BitcoinService extends AccountServiceDecorator {
   Future updateTransaction(Map payload) {
     return this.service.updateTransaction(payload);
   }
+
+  Future<List<int>> updateUTXO(String currencyId, List data) {
+    List<UtxoEntity> utxos =
+        data.map((data) => UtxoEntity.fromJson(currencyId, data)).toList();
+    return DBOperator().utxoDao.insertUtxos(utxos);
+  }
 }

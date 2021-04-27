@@ -216,7 +216,6 @@ class AccountServiceBase extends AccountService {
     List<Currency> currencies = AccountCore().currencies[this.accountId];
     TransactionEntity txEntity = TransactionEntity.fromJson(
         payload['currencyId'], payload['transaction']);
-    await DBOperator().transactionDao.insertTransaction(txEntity);
 
     Currency currency =
         currencies.firstWhere((c) => c.id == payload['currencyId']);
@@ -228,5 +227,6 @@ class AccountServiceBase extends AccountService {
       },
     );
     AccountCore().messenger.add(txMsg);
+    await DBOperator().transactionDao.insertTransaction(txEntity);
   }
 }

@@ -1,10 +1,14 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import '../cores/account.dart';
+import 'package:tidewallet3/models/account.model.dart';
+
 import 'account_service.dart';
+import 'bitcoin_service.dart';
+import '../cores/account.dart';
+import '../models/fcm.modal.dart';
+import '../screens/transaction_list.screen.dart';
 
 enum FCM_LOCAL_EVENT { UNLOCK_APP }
 
@@ -68,26 +72,42 @@ class FCM {
     Map data = Platform.isIOS ? message : message['data'];
     print('Here:: ${data['type']}, origin: $data ${AccountCore().isInit}');
 
-    final body = json.decode(data['body']);
-
+    FCMMsg msg = FCMMsg.fromOriginData(data);
     if (AccountCore().isInit) {
-      this.applyEvent(body);
+      this.applyEvent(msg);
     } else {
       _subscription?.cancel();
       _subscription = _controller.stream.listen((event) {
         if (event == FCM_LOCAL_EVENT.UNLOCK_APP) {
-          this.applyEvent(body);
+          this.applyEvent(msg);
         }
       });
     }
   }
 
-  applyEvent(Map payload) {
-    String event = payload['eventType'];
+  applyEvent(FCMMsg msg) async {
+    print('EVENT $msg ${msg.event}');
 
-    if (event == 'TRANSACTION') {
-      AccountService svc = AccountCore().getService(payload['accountId']);
-      svc.updateTransaction(payload);
+    if (msg.event == FCM_EVENT.TRANSACTION) {
+      AccountService svc = AccountCore().getService(msg.accountId);
+      await svc.updateTransaction(msg.payload);
+
+      Currency account = AccountCore()
+          .currencies[msg.accountId]
+          .firstWhere((currency) => currency.currencyId == msg.currencyId);
+      this._navigator.currentState.pushNamed(TransactionListScreen.routeName,
+          arguments: {"account": account});
+    }
+
+    if (msg.event == FCM_EVENT.UTXO) {
+      AccountService svc = AccountCore().getService(msg.accountId);
+
+      if (svc is BitcoinService) {
+        // svc.updateUTXO(msg.currencyId, msg.payload);
+      } else {
+        // TODO: For Dash Or Litcoin?
+
+      }
     }
   }
 }
