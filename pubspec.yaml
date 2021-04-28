@@ -81,6 +81,8 @@ dependencies:
 
   alice: ^0.1.12
 
+  in_app_purchase: ^0.5.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

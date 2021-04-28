@@ -99,6 +99,8 @@ PODS:
   - GTMSessionFetcher/Core (1.5.0)
   - image_gallery_saver (1.5.0):
     - Flutter
+  - in_app_purchase (0.0.1):
+    - Flutter
   - KTVCocoaHTTPServer (1.0.0):
     - CocoaAsyncSocket
   - KTVHTTPCache (2.0.1):
@@ -149,6 +151,7 @@ DEPENDENCIES:
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - google_sign_in (from `.symlinks/plugins/google_sign_in/ios`)
   - image_gallery_saver (from `.symlinks/plugins/image_gallery_saver/ios`)
+  - in_app_purchase (from `.symlinks/plugins/in_app_purchase/ios`)
   - local_auth (from `.symlinks/plugins/local_auth/ios`)
   - open_file (from `.symlinks/plugins/open_file/ios`)
   - package_info (from `.symlinks/plugins/package_info/ios`)
@@ -204,6 +207,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/google_sign_in/ios"
   image_gallery_saver:
     :path: ".symlinks/plugins/image_gallery_saver/ios"
+  in_app_purchase:
+    :path: ".symlinks/plugins/in_app_purchase/ios"
   local_auth:
     :path: ".symlinks/plugins/local_auth/ios"
   open_file:
@@ -255,6 +260,7 @@ SPEC CHECKSUMS:
   GTMAppAuth: 5b53231ef6920f149ab84b2969cb0ab572da3077
   GTMSessionFetcher: b3503b20a988c4e20cc189aa798fd18220133f52
   image_gallery_saver: 259eab68fb271cfd57d599904f7acdc7832e7ef2
+  in_app_purchase: 3e2155afa9d03d4fa32d9e62d567885080ce97d6
   KTVCocoaHTTPServer: df8d7b861e603ff8037e9b2138aca2563a6b768d
   KTVHTTPCache: 588c3eb16f6bd1e6fde1e230dabfb7bd4e490a4d
   local_auth: 25938960984c3a7f6e3253e3f8d962fdd16852bd
