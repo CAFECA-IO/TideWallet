@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 
 enum FCM_EVENT {
   TRANSACTION,
+  TRANSACTION_NEW,
+  TRANSACTION_CONFIRM,
   UTXO
 }
 

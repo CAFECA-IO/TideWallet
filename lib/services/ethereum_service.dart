@@ -264,7 +264,12 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   @override
-  Future updateTransaction(Map payload) {
-    return this.service.updateTransaction(payload);
+  Future updateTransaction(String currencyId, Map payload) {
+    return this.service.updateTransaction(currencyId, payload);
+  }
+
+  @override
+  Future updateCurrency(String currencyId, Map payload) {
+    return this.service.updateTransaction(currencyId, payload);
   }
 }

@@ -22,41 +22,38 @@ class FCM {
   StreamController _controller = StreamController();
   StreamSubscription _subscription;
 
-  static Future<dynamic> myBackgroundMessageHandler(
-      Map<String, dynamic> message) {
-    if (message.containsKey('data')) {
-      // Handle data message
-      final dynamic data = message['data'];
-    }
+  // static Future<dynamic> myBackgroundMessageHandler(
+  //     Map<String, dynamic> message) {
+  //   if (message.containsKey('data')) {
+  //     // Handle data message
+  //     final dynamic data = message['data'];
+  //   }
 
-    if (message.containsKey('notification')) {
-      // Handle notification message
-      final dynamic notification = message['notification'];
-    }
+  //   if (message.containsKey('notification')) {
+  //     // Handle notification message
+  //     final dynamic notification = message['notification'];
+  //   }
 
-    print('onBackgroundMessage: $message');
-    // Or do other work.
-  }
+  //   print('onBackgroundMessage: $message');
+  //   // Or do other work.
+  // }
 
   configure(GlobalKey<NavigatorState> nav) {
     this._navigator = nav;
 
     this._firebaseMessaging.configure(
-          onMessage: (Map<String, dynamic> message) async {
-            print('on Message: ${message}');
-            this.handleNotification(message);
-          },
-          onLaunch: (Map<String, dynamic> message) async {
-            print('on Launch: $message');
-            this.handleNotification(message);
-          },
-          onResume: (Map<String, dynamic> message) async {
-            print('on Resume: $message');
-            this.handleNotification(message);
-          },
-          onBackgroundMessage:
-              Platform.isIOS ? null : FCM.myBackgroundMessageHandler,
-        );
+      onMessage: (Map<String, dynamic> message) async {
+        this.handleNotification(message);
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        this.handleNotification(message);
+      },
+      onResume: (Map<String, dynamic> message) async {
+        this.handleNotification(message);
+      },
+      // onBackgroundMessage:
+      //     Platform.isIOS ? null : FCM.myBackgroundMessageHandler,
+    );
 
     _firebaseMessaging.requestNotificationPermissions(
         const IosNotificationSettings(sound: true, badge: true, alert: true));
@@ -79,24 +76,30 @@ class FCM {
       _subscription?.cancel();
       _subscription = _controller.stream.listen((event) {
         if (event == FCM_LOCAL_EVENT.UNLOCK_APP) {
-          this.applyEvent(msg);
+          Future.delayed(Duration(seconds: 1)).then((value) {
+            this.applyEvent(msg, navigate: true);
+          });
         }
       });
     }
   }
 
-  applyEvent(FCMMsg msg) async {
+  applyEvent(FCMMsg msg, {bool navigate = false}) async {
     print('EVENT $msg ${msg.event}');
 
-    if (msg.event == FCM_EVENT.TRANSACTION) {
+    if (msg.event == FCM_EVENT.TRANSACTION_NEW) {
       AccountService svc = AccountCore().getService(msg.accountId);
-      await svc.updateTransaction(msg.payload);
+      await svc.updateTransaction(msg.currencyId, msg.payload);
+      await svc.updateTransaction(msg.currencyId, msg.payload);
 
       Currency account = AccountCore()
           .currencies[msg.accountId]
           .firstWhere((currency) => currency.currencyId == msg.currencyId);
-      this._navigator.currentState.pushNamed(TransactionListScreen.routeName,
-          arguments: {"account": account});
+
+      if (navigate) {
+        this._navigator.currentState.pushNamed(TransactionListScreen.routeName,
+            arguments: {"account": account});
+      }
     }
 
     if (msg.event == FCM_EVENT.UTXO) {
@@ -109,5 +112,9 @@ class FCM {
 
       }
     }
+  }
+
+  close() {
+    this._controller.close();
   }
 }

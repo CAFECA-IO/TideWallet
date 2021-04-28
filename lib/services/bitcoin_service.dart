@@ -220,13 +220,18 @@ class BitcoinService extends AccountServiceDecorator {
   }
 
   @override
-  Future updateTransaction(Map payload) {
-    return this.service.updateTransaction(payload);
+  Future updateTransaction(String currencyId, Map payload) {
+    return this.service.updateTransaction(currencyId, payload);
   }
 
   Future<List<int>> updateUTXO(String currencyId, List data) {
     List<UtxoEntity> utxos =
         data.map((data) => UtxoEntity.fromJson(currencyId, data)).toList();
     return DBOperator().utxoDao.insertUtxos(utxos);
+  }
+
+  @override
+  Future updateCurrency(String currencyId, Map payload) {
+    return this.service.updateTransaction(currencyId, payload);
   }
 }

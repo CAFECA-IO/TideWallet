@@ -163,6 +163,8 @@ class User {
   }) async {
     String fcmToken = await FCM().getToken();
 
+    print('FCMMMMMM ==>>>> $fcmToken');
+
 
     final Map payload = {
       "wallet_name":
@@ -172,6 +174,9 @@ class User {
       "app_uuid": installId,
       "fcm_token": fcmToken
     };
+
+
+
     
     APIResponse res =
         await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);

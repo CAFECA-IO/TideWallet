@@ -212,13 +212,13 @@ class AccountServiceBase extends AccountService {
     throw UnimplementedError('Implement on decorator');
   }
 
-  Future updateTransaction(Map payload) async {
+  Future updateTransaction(String currencyId, Map payload) async {
     List<Currency> currencies = AccountCore().currencies[this.accountId];
     TransactionEntity txEntity = TransactionEntity.fromJson(
-        payload['currencyId'], payload['transaction']);
+        currencyId, payload['data']);
 
     Currency currency =
-        currencies.firstWhere((c) => c.id == payload['currencyId']);
+        currencies.firstWhere((c) => c.id == currencyId);
     AccountMessage txMsg = AccountMessage(
       evt: ACCOUNT_EVT.OnUpdateTransactions,
       value: {
@@ -228,5 +228,20 @@ class AccountServiceBase extends AccountService {
     );
     AccountCore().messenger.add(txMsg);
     await DBOperator().transactionDao.insertTransaction(txEntity);
+  }
+
+  Future updateCurrency(String currencyId, Map payload) async {
+    //  DBOperator().accountCurrencyDao.findJoinedByAccountId(id)
+      Currency c = AccountCore().currencies[this._accountId].firstWhere((curr) => curr.currencyId == currencyId);
+      print('GGGEEEETTT ==>>>> ${c.id} ${currencyId}');
+
+      AccountCurrencyEntity ac = await DBOperator().accountCurrencyDao.findOneByAccountyId(c.id);
+
+      print(ac.accountcurrencyId);
+      print(ac.balance);
+      print(ac.currencyId);
+      // AccountCurrencyEntity(accountId: this._accountId, )
+      // await DBOperator().accountCurrencyDao.insertCurrencies(v);
+
   }
 }
