@@ -7,6 +7,7 @@ import '../screens/landing.screen.dart';
 import '../screens/update_password.screen.dart';
 import '../screens/feedback.screen.dart';
 import '../screens/terms.screen.dart';
+import '../screens/buy_tide_point.screen.dart';
 import '../widgets/header.dart';
 import '../widgets/settings/backup.dart';
 import '../widgets/dialogs/dialog_controller.dart';
@@ -133,6 +134,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   HTTPAgent().setAlice(alice);
                   Navigator.of(context).pushNamed(LandingScreen.routeName,
                       arguments: {"debugMode": true});
+                }),
+                _item('Buy TideWallet Point', () {
+                  Navigator.of(context).pushNamed(BuyTidePointScreen.routeName);
                 })
               ]),
             ],

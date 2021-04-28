@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:tidewallet3/blocs/invest_plan/invest_plan_bloc.dart';
 
 import './repositories/account_repository.dart';
 import './repositories/transaction_repository.dart';
@@ -15,6 +14,7 @@ import './repositories/trader_repository.dart';
 import './repositories/invest_repository.dart';
 import './repositories/swap_repository.dart';
 import './repositories/local_auth_repository.dart';
+import './repositories/buy_tide_point_repository.dart';
 import './screens/currency.screen.dart';
 import './screens/landing.screen.dart';
 import './screens/restore_wallet.screen.dart';
@@ -34,6 +34,7 @@ import './screens/update_password.screen.dart';
 import './screens/add_investment.screen.dart';
 import './screens/scan.screen.dart';
 import './screens/recover_mnemonic.screen.dart';
+import './screens/buy_tide_point.screen.dart';
 import './blocs/fiat/fiat_bloc.dart';
 import './blocs/account_currency/account_currency_bloc.dart';
 import './blocs/delegate.dart';
@@ -45,6 +46,7 @@ import './blocs/backup/backup_bloc.dart';
 import './blocs/receive/receive_bloc.dart';
 import './blocs/local_auth/local_auth_bloc.dart';
 // import './blocs/update_password/update_password_bloc.dart';
+import './blocs/invest_plan/invest_plan_bloc.dart';
 import './blocs/invest/invest_bloc.dart';
 import './helpers/i18n.dart';
 import 'theme.dart';
@@ -103,6 +105,9 @@ class MyApp extends StatelessWidget {
           ),
           Provider<LocalAuthRepository>(
             create: (_) => LocalAuthRepository(),
+          ),
+          Provider<BuyTidePointRepository>(
+            create: (_) => BuyTidePointRepository(),
           )
         ],
         child: MultiBlocProvider(
@@ -198,7 +203,8 @@ MaterialApp _material = MaterialApp(
     FeedbackScreen.routeName: (context) => FeedbackScreen(),
     TermsScreen.routeName: (context) => TermsScreen(),
     ScanScreen.routeName: (context) => ScanScreen(),
-    RecoverMemonicScreen.routeName: (context) => RecoverMemonicScreen()
+    RecoverMemonicScreen.routeName: (context) => RecoverMemonicScreen(),
+    BuyTidePointScreen.routeName: (context) => BuyTidePointScreen(),
   },
   localizationsDelegates: [
     const I18nDelegate(),
