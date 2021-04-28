@@ -232,6 +232,6 @@ class BitcoinService extends AccountServiceDecorator {
 
   @override
   Future updateCurrency(String currencyId, Map payload) {
-    return this.service.updateTransaction(currencyId, payload);
+    return this.service.updateCurrency(currencyId, payload);
   }
 }

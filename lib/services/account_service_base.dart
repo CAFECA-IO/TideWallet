@@ -214,13 +214,13 @@ class AccountServiceBase extends AccountService {
 
   Future updateTransaction(String currencyId, Map payload) async {
     List<Currency> currencies = AccountCore().currencies[this.accountId];
-    TransactionEntity txEntity = TransactionEntity.fromJson(
-        currencyId, payload['data']);
+    TransactionEntity txEntity =
+        TransactionEntity.fromJson(currencyId, payload);
 
     Currency currency =
-        currencies.firstWhere((c) => c.id == currencyId);
+        currencies.firstWhere((c) => c.currencyId == currencyId);
     AccountMessage txMsg = AccountMessage(
-      evt: ACCOUNT_EVT.OnUpdateTransactions,
+      evt: ACCOUNT_EVT.OnUpdateTransaction,
       value: {
         "currency": currency,
         "transaction": Transaction.fromTransactionEntity(txEntity)
@@ -231,17 +231,24 @@ class AccountServiceBase extends AccountService {
   }
 
   Future updateCurrency(String currencyId, Map payload) async {
-    //  DBOperator().accountCurrencyDao.findJoinedByAccountId(id)
-      Currency c = AccountCore().currencies[this._accountId].firstWhere((curr) => curr.currencyId == currencyId);
-      print('GGGEEEETTT ==>>>> ${c.id} ${currencyId}');
+    List<AccountCurrencyEntity> acs =
+        await DBOperator().accountCurrencyDao.findAllCurrencies();
 
-      AccountCurrencyEntity ac = await DBOperator().accountCurrencyDao.findOneByAccountyId(c.id);
+    AccountCurrencyEntity ac =
+        acs.firstWhere((a) => a.currencyId == currencyId);
 
-      print(ac.accountcurrencyId);
-      print(ac.balance);
-      print(ac.currencyId);
-      // AccountCurrencyEntity(accountId: this._accountId, )
-      // await DBOperator().accountCurrencyDao.insertCurrencies(v);
+    AccountCurrencyEntity updated = AccountCurrencyEntity(
+      accountcurrencyId: ac.accountcurrencyId,
+      accountId: this._accountId,
+      currencyId: ac.currencyId,
+      balance: '${payload['balance']}',
+      numberOfUsedExternalKey: ac.numberOfUsedExternalKey,
+      numberOfUsedInternalKey: ac.numberOfUsedInternalKey,
+      lastSyncTime: DateTime.now().millisecondsSinceEpoch,
+    );
 
+    await DBOperator().accountCurrencyDao.insertAccount(updated);
+
+    this._pushResult();
   }
 }

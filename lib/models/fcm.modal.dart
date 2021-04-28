@@ -29,7 +29,7 @@ class FCMMsg {
       event: event,
       accountId: body['accountId'],
       currencyId: body['currencyId'],
-      payload: body['payload']
+      payload: body['data']
     );
   }
 }

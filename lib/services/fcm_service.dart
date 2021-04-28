@@ -76,9 +76,8 @@ class FCM {
       _subscription?.cancel();
       _subscription = _controller.stream.listen((event) {
         if (event == FCM_LOCAL_EVENT.UNLOCK_APP) {
-          Future.delayed(Duration(seconds: 1)).then((value) {
-            this.applyEvent(msg, navigate: true);
-          });
+         
+          this.applyEvent(msg, navigate: true);
         }
       });
     }
@@ -90,13 +89,14 @@ class FCM {
     if (msg.event == FCM_EVENT.TRANSACTION_NEW) {
       AccountService svc = AccountCore().getService(msg.accountId);
       await svc.updateTransaction(msg.currencyId, msg.payload);
-      await svc.updateTransaction(msg.currencyId, msg.payload);
-
-      Currency account = AccountCore()
-          .currencies[msg.accountId]
-          .firstWhere((currency) => currency.currencyId == msg.currencyId);
+      await svc.updateCurrency(msg.currencyId, msg.payload);
+      // await svc.updateCurrency(msg.currencyId, {'balance': '100'});
 
       if (navigate) {
+        Currency account = AccountCore()
+            .currencies[msg.accountId]
+            .firstWhere((currency) => currency.currencyId == msg.currencyId);
+
         this._navigator.currentState.pushNamed(TransactionListScreen.routeName,
             arguments: {"account": account});
       }
