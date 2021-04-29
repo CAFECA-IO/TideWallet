@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 
 import './repositories/account_repository.dart';
 import './repositories/transaction_repository.dart';
@@ -66,7 +67,7 @@ void main() async {
   // TODO: for socket.io-client-dart
   // see: https://github.com/rikulo/socket.io-client-dart/issues/84
   // HttpOverrides.global = new MyHttpOverrides();
-
+  InAppPurchaseConnection.enablePendingPurchases();
   runApp(MyApp());
   Bloc.observer = ObserverDelegate();
 
