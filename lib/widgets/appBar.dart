@@ -23,6 +23,7 @@ import '../screens/investment.screen.dart';
 import '../screens/credit_card.screen.dart';
 import '../screens/scan.screen.dart';
 import '../screens/recover_mnemonic.screen.dart';
+import '../screens/buy_tide_point.screen.dart';
 
 class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
   final String title;
@@ -63,6 +64,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
         case FeedbackScreen.routeName:
         case TermsScreen.routeName:
         case RecoverMemonicScreen.routeName:
+        case BuyTidePointScreen.routeName:
           leading = GestureDetector(
             behavior: HitTestBehavior.translucent,
             child: ImageIcon(

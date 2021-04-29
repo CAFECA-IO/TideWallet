@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:in_app_purchase/in_app_purchase.dart';
 
 import './repositories/account_repository.dart';
 import './repositories/transaction_repository.dart';
@@ -53,7 +54,6 @@ import 'theme.dart';
 
 
 void main() async {
-
   runApp(MyApp());
   Bloc.observer = ObserverDelegate();
 
