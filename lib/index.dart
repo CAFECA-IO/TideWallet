@@ -44,35 +44,11 @@ import './blocs/restore_wallet/restore_wallet_bloc.dart';
 import './blocs/backup/backup_bloc.dart';
 import './blocs/receive/receive_bloc.dart';
 import './blocs/local_auth/local_auth_bloc.dart';
-// import './blocs/update_password/update_password_bloc.dart';
 import './blocs/invest/invest_bloc.dart';
 import './helpers/i18n.dart';
 import 'theme.dart';
-// class MyHttpOverrides extends HttpOverrides {
-//   @override
-//   HttpClient createHttpClient(SecurityContext context) {
-//     return super.createHttpClient(context)
-//       ..badCertificateCallback =
-//           (X509Certificate cert, String host, int port) => true;
-//   }
-// }
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
-void main() async {
-  // TODO: for socket.io-client-dart
-  // see: https://github.com/rikulo/socket.io-client-dart/issues/84
-  // HttpOverrides.global = new MyHttpOverrides();
-
-  runApp(MyApp());
-  Bloc.observer = ObserverDelegate();
-
-
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]);
-}
-
 
 class MyApp extends StatelessWidget {
 

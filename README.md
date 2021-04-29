@@ -1,6 +1,6 @@
 # Getting Started
-
-set [database config](#DB)
+1. Set [develop env](#Develop) (vscode)
+2. Set [database config](#DB)
 
 
 
@@ -8,7 +8,7 @@ set [database config](#DB)
 - version: 2.0.3
 
 
-#### Upgrade
+## Upgrade
 ```
 flutter upgrade
 flutter clean
@@ -20,6 +20,61 @@ rm -rf Flutter/Flutter.framework
 pod install
 
 ```
+
+## Develop
+`.vscode/launch.json`
+```
+{
+    "version": "0.2.0",
+    "configurations": [
+        {   
+            "name": "Development",  
+            "request": "launch", 
+            "type": "dart",       
+            "program": "lib/main_dev.dart", 
+            "args": [    
+                "--flavor",   
+                "dev"     
+            ]
+        },  
+        {  
+            "name": "Production",  
+            "request": "launch", 
+            "type": "dart", 
+            "program": "lib/main_prod.dart",  
+            "args": [       
+                "--flavor",   
+                "prod"  
+            ]     
+        }  
+    ]
+}
+```
+
+## Firebase
+
+**Android:**
+
+`Add google-services.json to:`
+
+1. android/app/src/debug
+2. android/app/src/release
+
+
+### FCM
+```
+//
+```
+### Google Sign In
+
+`Add sha1, sha256 to Firebase Console`
+
+        ```
+        // find your sha key
+        keytool -list -v \ -alias androiddebugkey -keystore ~/.android/debug.keystore
+        ```
+
+
 ### DB
 * If is using first time or changing ./lib/database run:
 

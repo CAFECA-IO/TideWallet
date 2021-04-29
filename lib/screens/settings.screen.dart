@@ -15,7 +15,7 @@ import '../widgets/settings/fiat.dart';
 import '../widgets/settings/reset.dart';
 import '../helpers/i18n.dart';
 import '../helpers/http_agent.dart';
-import '../main.dart';
+import '../index.dart';
 
 class SettingsScreen extends StatefulWidget {
   static const routeName = '/settings';
