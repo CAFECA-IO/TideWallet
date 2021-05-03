@@ -1,7 +1,7 @@
-// import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'blocs/delegate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -47,6 +47,17 @@ import './blocs/local_auth/local_auth_bloc.dart';
 import './blocs/invest/invest_bloc.dart';
 import './helpers/i18n.dart';
 import 'theme.dart';
+
+
+void main() async {
+
+  runApp(MyApp());
+  Bloc.observer = ObserverDelegate();
+
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
+}
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 

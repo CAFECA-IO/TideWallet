@@ -71,12 +71,14 @@ android {
     flavorDimensions "flavor-type"
 
     productFlavors {
-        dev {
+        development {
             dimension "flavor-type"
             applicationIdSuffix ".dev"
+            resValue "string", "app_name", "TideWallet 3 DEV"
         }
-        prod {
+        production {
             dimension "flavor-type"
+            resValue "string", "app_name", "TideWallet"
         }
     }
 }

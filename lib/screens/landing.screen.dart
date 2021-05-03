@@ -10,7 +10,7 @@ import '../widgets/dialogs/loading_dialog.dart';
 import '../blocs/account_currency/account_currency_bloc.dart';
 import '../blocs/fiat/fiat_bloc.dart';
 import '../blocs/user/user_bloc.dart';
-import '../index.dart';
+import '../main.dart';
 import '../services/fcm_service.dart';
 
 class LandingScreen extends StatefulWidget {
