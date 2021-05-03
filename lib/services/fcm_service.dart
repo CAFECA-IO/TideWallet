@@ -67,7 +67,6 @@ class FCM {
 
   handleNotification(Map message) {
     Map data = Platform.isIOS ? message : message['data'];
-    print('Here:: ${data['type']}, origin: $data ${AccountCore().isInit}');
 
     FCMMsg msg = FCMMsg.fromOriginData(data);
     if (AccountCore().isInit) {
@@ -84,8 +83,6 @@ class FCM {
   }
 
   applyEvent(FCMMsg msg, {bool navigate = false}) async {
-    print('EVENT $msg ${msg.event}');
-
     if (msg.event == FCM_EVENT.TRANSACTION_NEW) {
       AccountService svc = AccountCore().getService(msg.accountId);
       await svc.updateTransaction(msg.currencyId, msg.payload);

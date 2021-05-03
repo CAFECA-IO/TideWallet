@@ -163,9 +163,6 @@ class User {
   }) async {
     String fcmToken = await FCM().getToken();
 
-    print('FCMMMMMM ==>>>> $fcmToken');
-
-
     final Map payload = {
       "wallet_name":
           "TideWallet3", // ++ inform backend to update [Emily 04/01/2021]

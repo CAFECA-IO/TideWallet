@@ -34,7 +34,7 @@ pod install
             "program": "lib/main_dev.dart", 
             "args": [    
                 "--flavor",   
-                "dev"     
+                "development"     
             ]
         },  
         {  
@@ -44,7 +44,7 @@ pod install
             "program": "lib/main_prod.dart",  
             "args": [       
                 "--flavor",   
-                "prod"  
+                "production"  
             ]     
         }  
     ]
@@ -58,7 +58,11 @@ pod install
 `Add google-services.json to:`
 
 1. android/app/src/debug
+    - /development
+    - /production
 2. android/app/src/release
+    - /development
+    - /production
 
 
 ### FCM
