@@ -36,6 +36,13 @@ class TransactionStatusBloc
         List<Transaction> transactions = msg.value['transactions'];
         this.add(UpdateTransactionList(_addUSD(currency), transactions));
       }
+
+      if (msg.evt == ACCOUNT_EVT.OnUpdateTransaction) {
+        Currency currency = msg.value['currency'];
+        if (currency.id != this._repo.currency.id) return;
+        Transaction transaction = msg.value['transaction'];
+        this.add(UpdateTransaction(transaction));
+      }
     });
   }
 

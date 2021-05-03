@@ -48,7 +48,6 @@ import './blocs/local_auth/local_auth_bloc.dart';
 import './blocs/invest/invest_bloc.dart';
 import './helpers/i18n.dart';
 import 'theme.dart';
-
 // class MyHttpOverrides extends HttpOverrides {
 //   @override
 //   HttpClient createHttpClient(SecurityContext context) {
@@ -68,13 +67,15 @@ void main() async {
   runApp(MyApp());
   Bloc.observer = ObserverDelegate();
 
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
 }
 
+
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

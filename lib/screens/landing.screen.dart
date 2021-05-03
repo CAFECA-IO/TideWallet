@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import '../database/db_operator.dart';
 import './welcome.screen.dart';
@@ -9,7 +10,8 @@ import '../widgets/dialogs/loading_dialog.dart';
 import '../blocs/account_currency/account_currency_bloc.dart';
 import '../blocs/fiat/fiat_bloc.dart';
 import '../blocs/user/user_bloc.dart';
-
+import '../main.dart';
+import '../services/fcm_service.dart';
 
 class LandingScreen extends StatefulWidget {
   static const routeName = 'landing-screen';
@@ -22,9 +24,14 @@ class _LandingScreenState extends State<LandingScreen> {
   UserBloc _bloc;
   FiatBloc _fiatBloc;
   AccountCurrencyBloc _accountBloc;
+  FCM _fcm = FCM();
 
   @override
   void initState() {
+    _fcm.configure(navigatorKey);
+    _fcm.getToken().then((value) {
+      print(value);
+    });
     super.initState();
   }
 
@@ -32,15 +39,22 @@ class _LandingScreenState extends State<LandingScreen> {
   void didChangeDependencies() async {
     Map<String, bool> arg = ModalRoute.of(context).settings.arguments;
     bool debugMode = arg != null ? arg["debugMode"] : false;
+
+    if (_isInit) {
+      Firebase.initializeApp().whenComplete(() => {});
+    }
+    
     if (_isInit || debugMode) {
       await DBOperator().init();
       // force AccountCurrencyBloc call constructor
       _accountBloc = BlocProvider.of<AccountCurrencyBloc>(context);
+
       _bloc = BlocProvider.of<UserBloc>(context)
         ..add(UserCheck(debugMode: debugMode));
       _fiatBloc = BlocProvider.of<FiatBloc>(context);
       _isInit = false;
     }
+
     super.didChangeDependencies();
   }
 
