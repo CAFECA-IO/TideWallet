@@ -24,7 +24,7 @@ import '../database/entity/currency.dart';
 class EthereumService extends AccountServiceDecorator {
   EthereumService(AccountService service) : super(service) {
     this.base = ACCOUNT.ETH;
-    this.syncInterval = 60000;
+    this.syncInterval = 15000;
     // this.path = "m/44'/60'/0'";
   }
   String _address;
