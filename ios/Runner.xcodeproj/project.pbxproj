@@ -126,6 +126,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				A6567D38263FE58600A72030 /* Firebase */,
 				08F58B8426145F9D00EF22E7 /* Runner.entitlements */,
 				08F58B8326145F8200EF22E7 /* RunnerRelease.entitlements */,
 				08F58B8226145F5500EF22E7 /* RunnerDebug.entitlements */,
@@ -139,6 +140,29 @@
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 			);
 			path = Runner;
+			sourceTree = "<group>";
+		};
+		A6567D38263FE58600A72030 /* Firebase */ = {
+			isa = PBXGroup;
+			children = (
+				A6567D3A263FE5AD00A72030 /* Production */,
+				A6567D39263FE5A000A72030 /* Development */,
+			);
+			path = Firebase;
+			sourceTree = "<group>";
+		};
+		A6567D39263FE5A000A72030 /* Development */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Development;
+			sourceTree = "<group>";
+		};
+		A6567D3A263FE5AD00A72030 /* Production */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Production;
 			sourceTree = "<group>";
 		};
 		F1F8AAAFDD08ECD12FA259DE /* Pods */ = {
@@ -175,6 +199,7 @@
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				D62511A0AE0857563D8D3E36 /* [CP] Embed Pods Frameworks */,
 				BAB45AFA42B691DA995E0168 /* [CP] Copy Pods Resources */,
+				A6567D3B263FE84200A72030 /* Firebase Setup */,
 			);
 			buildRules = (
 			);
@@ -278,6 +303,7 @@
 			files = (
 			);
 			inputPaths = (
+				"",
 			);
 			name = "Run Script";
 			outputPaths = (
@@ -285,6 +311,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n";
+		};
+		A6567D3B263FE84200A72030 /* Firebase Setup */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Firebase Setup";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nexec > ${PROJECT_DIR}/prebuild.log 2>&1\necho \"FUCK\"\necho \"${CONFIGURATION}\"\n\nif [ \"${CONFIGURATION}\" == \"Debug-Development\" ] || [ \"${CONFIGURATION}\" == \"Release-Development\" ] || [ \"${CONFIGURATION}\" == \"Debug\" ]; then\ncp -r \"${PROJECT_DIR}/Runner/Firebase/Development/GoogleService-Info.plist\" \"${PROJECT_DIR}/Runner/GoogleService-Info.plist\"\necho \"Development plist copied\"\nelif [ \"${CONFIGURATION}\" == \"Debug-Production\" ] || [ \"${CONFIGURATION}\" == \"Release-Production\" ] || [ \"${CONFIGURATION}\" == \"Release\" ]; then\ncp -r \"${PROJECT_DIR}/Runner/Firebase/Production/GoogleService-Info.plist\" \"${PROJECT_DIR}/Runner/GoogleService-Info.plist\"\necho \"Production plist copied\"\nfi\n\n\n";
 		};
 		BAB45AFA42B691DA995E0168 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
