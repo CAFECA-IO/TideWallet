@@ -31,7 +31,7 @@ pod install
             "name": "Development",  
             "request": "launch", 
             "type": "dart",       
-            "program": "lib/main_dev.dart", 
+            "program": "lib/main.dart", 
             "args": [    
                 "--flavor",   
                 "development"     
@@ -41,7 +41,7 @@ pod install
             "name": "Production",  
             "request": "launch", 
             "type": "dart", 
-            "program": "lib/main_prod.dart",  
+            "program": "lib/main.dart",  
             "args": [       
                 "--flavor",   
                 "production"  
