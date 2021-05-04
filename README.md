@@ -1,6 +1,7 @@
 # Getting Started
 1. Set [develop env](#Develop) (vscode)
 2. Set [database config](#DB)
+3. [Release](#Release)
 
 
 
@@ -51,6 +52,16 @@ pod install
 }
 ```
 
+## Release
+- Android
+    ```sh
+    flutter build apk --falvor production
+    // or flutter build appbundle --falvor production
+    ```
+
+- iOS
+    1. XCode select Production scheme
+    2. Make sure Archive `Build Configureation` using `Release-Production`
 ## Firebase
 
 **Android:**
@@ -63,6 +74,14 @@ pod install
 2. android/app/src/release
     - /development
     - /production
+
+**iOS:**
+
+`Add google-services.json to:`
+
+1. ios/Runner/Firebase/Development
+2. ios/Runner/Firebase/Production
+  
 
 
 ### FCM
