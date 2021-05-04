@@ -69,6 +69,20 @@ android {
             shrinkResources false
         }
     }
+
+    flavorDimensions "flavor-type"
+
+    productFlavors {
+        development {
+            dimension "flavor-type"
+            applicationIdSuffix ".dev"
+            resValue "string", "app_name", "TideWallet 3 DEV"
+        }
+        production {
+            dimension "flavor-type"
+            resValue "string", "app_name", "TideWallet"
+        }
+    }
 }
 
 flutter {
