@@ -11,6 +11,7 @@ import '../widgets/header.dart';
 import '../widgets/settings/backup.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/verify_password_dialog.dart';
+import '../widgets/version.dart';
 import '../widgets/settings/fiat.dart';
 import '../widgets/settings/reset.dart';
 import '../helpers/i18n.dart';
@@ -133,8 +134,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   HTTPAgent().setAlice(alice);
                   Navigator.of(context).pushNamed(LandingScreen.routeName,
                       arguments: {"debugMode": true});
-                })
+                }),
               ]),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Version(),
+              )
             ],
           ),
         ),
