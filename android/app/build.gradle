@@ -80,7 +80,7 @@ android {
         }
         production {
             dimension "flavor-type"
-            resValue "string", "app_name", "TideWallet"
+            resValue "string", "app_name", "TideWallet 3"
         }
     }
 }
