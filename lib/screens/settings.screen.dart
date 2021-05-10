@@ -127,11 +127,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ]),
               _section(t('developer_option'), [
                 _item(t('debug_mode'), () {
-                  alice = Alice(
-                      showNotification: true,
-                      navigatorKey: navigatorKey,
-                      darkTheme: true);
-                  HTTPAgent().setAlice(alice);
+                  // alice = Alice(
+                  //     showNotification: true,
+                  //     navigatorKey: navigatorKey,
+                  //     darkTheme: true);
+                  // HTTPAgent().setAlice(alice);
                   Navigator.of(context).pushNamed(LandingScreen.routeName,
                       arguments: {"debugMode": true});
                 }),

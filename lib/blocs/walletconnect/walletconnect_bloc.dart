@@ -110,12 +110,15 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
       WalletConnectLoaded _state = state;
 
       if (event is RequestWC) {
-        final chainId = event.request.params[0]['chainId'];
+        int chainId = event.request.params[0]['chainId'];
+        if (chainId == null) chainId = 3;
         final currencies = this._accountRepo.getAllCurrencies();
         _selected = currencies.firstWhere(
             (c) => c.accountType == _accountType && c.chainId == chainId,
             orElse: () =>
                 currencies.firstWhere((c) => c.accountType == _accountType));
+
+        print('Connect Chain ID : ${_selected.chainId}');
         
         // check to use the right chain
         // Log.info('*** chainId $chainId ${_selected.network} __ ${_selected.chainId}');
