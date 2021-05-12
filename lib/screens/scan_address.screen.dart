@@ -38,6 +38,7 @@ class _ScanAddressScreenState extends State<ScanAddressScreen> {
         }
       },
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         extendBodyBehindAppBar: true,
         appBar: GeneralAppbar(
           routeName: ScanAddressScreen.routeName,
