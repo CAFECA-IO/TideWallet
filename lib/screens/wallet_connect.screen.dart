@@ -36,7 +36,6 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
   AccountRepository _accountRepo;
   TransactionRepository _txRepo;
   UserRepository _userRepo;
-  LocalAuthBloc _localBloc;
   String _uri;
   final t = I18n.t;
 
@@ -46,7 +45,6 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
     _txRepo = Provider.of<TransactionRepository>(context);
     _userRepo = Provider.of<UserRepository>(context);
     _bloc = WalletConnectBloc(_accountRepo, _txRepo);
-    _localBloc = LocalAuthBloc(LocalAuthRepository());
     dynamic arg = ModalRoute.of(context).settings.arguments;
     if (arg != null) {
       _uri = arg;
@@ -104,8 +102,11 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
             bool isScrollControlled = true;
             bool approved = false;
 
+            LocalAuthBloc _localBloc;
+            _localBloc = LocalAuthBloc(LocalAuthRepository());
+
             submit() {
-              this._localBloc.add(Authenticate());
+              _localBloc.add(Authenticate());
             }
 
             cancel() {
