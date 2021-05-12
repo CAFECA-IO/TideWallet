@@ -111,7 +111,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
 
       if (event is RequestWC) {
         int chainId = event.request.params[0]['chainId'];
-        if (chainId == null) chainId = 3;
+        if (chainId == null) chainId = 1;
         final currencies = this._accountRepo.getAllCurrencies();
         _selected = currencies.firstWhere(
             (c) => c.accountType == _accountType && c.chainId == chainId,
