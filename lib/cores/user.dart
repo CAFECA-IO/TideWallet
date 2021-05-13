@@ -173,8 +173,6 @@ class User {
     };
 
 
-
-    
     APIResponse res =
         await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
 
