@@ -1,6 +1,7 @@
 # Getting Started
-
-set [database config](#DB)
+1. Set [develop env](#Develop) (vscode)
+2. Set [database config](#DB)
+3. [Release](#Release)
 
 
 
@@ -8,7 +9,7 @@ set [database config](#DB)
 - version: 2.0.3
 
 
-#### Upgrade
+## Upgrade
 ```
 flutter upgrade
 flutter clean
@@ -20,6 +21,83 @@ rm -rf Flutter/Flutter.framework
 pod install
 
 ```
+
+## Develop
+`.vscode/launch.json`
+```
+{
+    "version": "0.2.0",
+    "configurations": [
+        {   
+            "name": "Development",  
+            "request": "launch", 
+            "type": "dart",       
+            "program": "lib/main.dart", 
+            "args": [    
+                "--flavor",   
+                "development"     
+            ]
+        },  
+        {  
+            "name": "Production",  
+            "request": "launch", 
+            "type": "dart", 
+            "program": "lib/main.dart",  
+            "args": [       
+                "--flavor",   
+                "production"  
+            ]     
+        }  
+    ]
+}
+```
+
+## Release
+- Android
+    ```sh
+    flutter build apk --falvor production
+    // or flutter build appbundle --falvor production
+    ```
+
+- iOS
+    1. XCode select Production scheme
+    2. Make sure Archive `Build Configureation` using `Release-Production`
+## Firebase
+
+**Android:**
+
+`Add google-services.json to:`
+
+1. android/app/src/debug
+    - /development
+    - /production
+2. android/app/src/release
+    - /development
+    - /production
+
+**iOS:**
+
+`Add google-services.json to:`
+
+1. ios/Runner/Firebase/Development
+2. ios/Runner/Firebase/Production
+  
+
+
+### FCM
+```
+//
+```
+### Google Sign In
+
+`Add sha1, sha256 to Firebase Console`
+
+        ```
+        // find your sha key
+        keytool -list -v \ -alias androiddebugkey -keystore ~/.android/debug.keystore
+        ```
+
+
 ### DB
 * If is using first time or changing ./lib/database run:
 

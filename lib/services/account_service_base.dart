@@ -66,11 +66,11 @@ class AccountServiceBase extends AccountService {
     APIResponse res = await HTTPAgent()
         .get(Endpoint.SUSANOO + '/wallet/account/${this._accountId}');
     final acc = res.data;
-    List<CurrencyEntity> _currs =
-        await DBOperator().currencyDao.findAllCurrencies();
 
     if (acc != null) {
       List<dynamic> tks = acc['tokens'];
+      List<CurrencyEntity> _currs =
+          await DBOperator().currencyDao.findAllCurrencies();
       tks.forEach((token) async {
         int index =
             _currs.indexWhere((_curr) => _curr.currencyId == token['token_id']);
@@ -210,5 +210,45 @@ class AccountServiceBase extends AccountService {
   Future<List> publishTransaction(
       String blockchainId, Transaction transaction) {
     throw UnimplementedError('Implement on decorator');
+  }
+
+  Future updateTransaction(String currencyId, Map payload) async {
+    List<Currency> currencies = AccountCore().currencies[this.accountId];
+    TransactionEntity txEntity =
+        TransactionEntity.fromJson(currencyId, payload);
+
+    Currency currency =
+        currencies.firstWhere((c) => c.currencyId == currencyId);
+    AccountMessage txMsg = AccountMessage(
+      evt: ACCOUNT_EVT.OnUpdateTransaction,
+      value: {
+        "currency": currency,
+        "transaction": Transaction.fromTransactionEntity(txEntity)
+      },
+    );
+    AccountCore().messenger.add(txMsg);
+    await DBOperator().transactionDao.insertTransaction(txEntity);
+  }
+
+  Future updateCurrency(String currencyId, Map payload) async {
+    List<AccountCurrencyEntity> acs =
+        await DBOperator().accountCurrencyDao.findAllCurrencies();
+
+    AccountCurrencyEntity ac =
+        acs.firstWhere((a) => a.currencyId == currencyId);
+
+    AccountCurrencyEntity updated = AccountCurrencyEntity(
+      accountcurrencyId: ac.accountcurrencyId,
+      accountId: this._accountId,
+      currencyId: ac.currencyId,
+      balance: '${payload['balance']}',
+      numberOfUsedExternalKey: ac.numberOfUsedExternalKey,
+      numberOfUsedInternalKey: ac.numberOfUsedInternalKey,
+      lastSyncTime: DateTime.now().millisecondsSinceEpoch,
+    );
+
+    await DBOperator().accountCurrencyDao.insertAccount(updated);
+
+    this._pushResult();
   }
 }

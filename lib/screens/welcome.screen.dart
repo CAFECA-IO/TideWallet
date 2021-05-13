@@ -3,17 +3,17 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart' as lib;
-import 'package:tidewallet3/helpers/logger.dart';
 
 import '../repositories/third_party_sign_in_repository.dart';
 import '../blocs/third_party_sign_in/third_party_sign_in_bloc.dart';
 import '../blocs/user/user_bloc.dart';
+import '../widgets/version.dart';
 import '../widgets/buttons/primary_button.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/error_dialog.dart';
 import '../widgets/dialogs/loading_dialog.dart';
 import '../screens/recover_mnemonic.screen.dart';
-
+import '../helpers/logger.dart';
 import '../helpers/i18n.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -80,6 +80,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               Image.asset(
                 'assets/images/logo_type.png',
                 width: 107.0,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 30.0),
+                child: Version(
+                  fontSize: 18.0,
+                  color: Colors.white70,
+                ),
               ),
               Spacer(),
               Platform.isIOS

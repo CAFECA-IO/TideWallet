@@ -3,23 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>833374719104-h25jjn2fs8pgjch9vslvds17badcgsf1.apps.googleusercontent.com</string>
+	<string>245743164556-0vekl7jheucvb0tknmanntdiil4rb1qd.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.833374719104-h25jjn2fs8pgjch9vslvds17badcgsf1</string>
+	<string>com.googleusercontent.apps.245743164556-0vekl7jheucvb0tknmanntdiil4rb1qd</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>833374719104-9p7sdgve4apvcis552sng2r00rkrdhb9.apps.googleusercontent.com</string>
+	<string>245743164556-gp385evdpnmsvikiim3ifmdi4boat7i0.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyAQcFNZEMDKklZM7B6RCFq58NY4jxl3cBU</string>
+	<string>AIzaSyBaJ8OVg5lTi8ifNd1z0xIPScXTuC2MB3w</string>
 	<key>GCM_SENDER_ID</key>
-	<string>833374719104</string>
+	<string>245743164556</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.tideisun.tidewallet3</string>
+	<string>com.tideisun.tidewallet3.dev</string>
 	<key>PROJECT_ID</key>
-	<string>tidewallet3</string>
+	<string>tidewallet3-dev</string>
 	<key>STORAGE_BUCKET</key>
-	<string>tidewallet3.appspot.com</string>
+	<string>tidewallet3-dev.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:833374719104:ios:cabdb142bcb53526e72a65</string>
+	<string>1:245743164556:ios:d7c507f55841eb004aafa9</string>
 </dict>
 </plist>

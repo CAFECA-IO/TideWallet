@@ -24,5 +24,9 @@ abstract class AccountService {
 
   Future<List> publishTransaction(String blockchainId, Transaction transaction);
 
+  Future updateTransaction(String currencyId, Map payload);
+
+  Future updateCurrency(String currencyId, Map payload);
+
   Future synchro();
 }
