@@ -64,7 +64,7 @@ class AccountServiceBase extends AccountService {
 
   Future<List> getData() async {
     APIResponse res = await HTTPAgent()
-        .get(Endpoint.SUSANOO + '/wallet/account/${this._accountId}');
+        .get(Endpoint.url + '/wallet/account/${this._accountId}');
     final acc = res.data;
 
     if (acc != null) {
@@ -76,7 +76,7 @@ class AccountServiceBase extends AccountService {
             _currs.indexWhere((_curr) => _curr.currencyId == token['token_id']);
 
         if (index < 0) {
-          APIResponse res = await HTTPAgent().get(Endpoint.SUSANOO +
+          APIResponse res = await HTTPAgent().get(Endpoint.url +
               '/blockchain/${token['blockchain_id']}/token/${token['token_id']}');
           if (res.data != null) {
             Map token = res.data;
@@ -142,7 +142,7 @@ class AccountServiceBase extends AccountService {
         await DBOperator().accountDao.findAccount(this._accountId);
 
     APIResponse res = await HTTPAgent()
-        .get(Endpoint.SUSANOO + '/blockchain/${acc.networkId}/token');
+        .get(Endpoint.url + '/blockchain/${acc.networkId}/token');
 
     if (res.data != null) {
       List tokens = res.data;
@@ -169,7 +169,7 @@ class AccountServiceBase extends AccountService {
 
   Future<List<TransactionEntity>> _getTransactions(Currency currency) async {
     APIResponse res = await HTTPAgent()
-        .get(Endpoint.SUSANOO + '/wallet/account/txs/${currency.id}');
+        .get(Endpoint.url + '/wallet/account/txs/${currency.id}');
 
     if (res.success) {
       List txs = res.data;
