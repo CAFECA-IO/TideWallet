@@ -15,6 +15,8 @@ class AccountRepository {
 
   Future coreInit({bool debugMode = false}) async {
     if (!AccountCore().isInit || debugMode) {
+      AccountCore().setMessenger();
+
       return await AccountCore().init(debugMode: debugMode);
     }
 

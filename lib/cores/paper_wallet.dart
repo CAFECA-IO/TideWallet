@@ -58,12 +58,16 @@ class PaperWallet {
 
   //
   static List<int> magicSeed(Uint8List pk) {
-    List<int> seed = Cryptor.keccak256round(pk, round: 2);
+    if (pk.length < 64) {
+      List<int> seed = Cryptor.keccak256round(pk, round: 2);
 
-    String string = hex.encode(seed);
-    Log.info('Seed: $string');
+      String string = hex.encode(seed);
+      Log.info('Seed: $string');
 
-    return seed;
+      return seed;
+
+    }
+    return pk;
   }
 
   static Uint8List getPubKey(

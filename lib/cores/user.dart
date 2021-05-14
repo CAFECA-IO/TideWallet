@@ -211,7 +211,7 @@ class User {
       timestamp: timestamp,
     );
 
-    String privateKey = hex.encode(PaperWallet.getPrivKey(seed, 0, 0));
+    String privateKey = hex.encode(seed);
 
     Wallet wallet = await compute(
         PaperWallet.createWallet, {'key': privateKey, 'password': password});
