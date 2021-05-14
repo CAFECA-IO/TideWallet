@@ -50,7 +50,7 @@ class MnemonicBloc extends Bloc<MnemonicEvent, MnemonicState> {
           Uint8List seed =
               await _repo.mnemonicToSeed(_state.mnemonic.trimRight(), _state.passphrase);
           try {
-            final signin = Platform.isIOS ?  _repo.signInWithAppleId : _repo.signInWithGoogleId;
+            final signin = Platform.isIOS ? _repo.signInWithAppleId : _repo.signInWithGoogleId;
             List result =  await signin();
 
             if (result[0]) {
