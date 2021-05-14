@@ -141,7 +141,7 @@ class User {
     String userSecret;
 
     APIResponse _res = await HTTPAgent()
-        .post(Endpoint.SUSANOO + '/user/id', {"id": userIdentifier});
+        .post(Endpoint.url + '/user/id', {"id": userIdentifier});
     if (_res.success) {
       Log.debug('_res.data: ${_res.data}');
       userId = _res.data['user_id'];
@@ -174,7 +174,7 @@ class User {
 
 
     APIResponse res =
-        await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
+        await HTTPAgent().post('${Endpoint.url}/user', payload);
 
     if (res.success) {
       this._prefManager.setAuthItem(AuthItem.fromJson(res.data));
@@ -300,7 +300,7 @@ class User {
     };
 
     APIResponse res =
-        await HTTPAgent().post('${Endpoint.SUSANOO}/user', payload);
+        await HTTPAgent().post('${Endpoint.url}/user', payload);
 
     if (res.success) {
       this._prefManager.setAuthItem(AuthItem.fromJson(res.data));
