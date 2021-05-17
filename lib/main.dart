@@ -46,6 +46,7 @@ import './blocs/receive/receive_bloc.dart';
 import './blocs/local_auth/local_auth_bloc.dart';
 import './blocs/invest/invest_bloc.dart';
 import './helpers/i18n.dart';
+import 'constants/endpoint.dart';
 import 'theme.dart';
 
 
@@ -53,6 +54,7 @@ void main() async {
 
   runApp(MyApp());
   Bloc.observer = ObserverDelegate();
+  await Endpoint.init();
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

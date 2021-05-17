@@ -22,7 +22,7 @@ class SwapCore {
       Map<String, String> result;
       // ++
       // APIResponse res =
-      //     await HTTPAgent().post(Endpoint.SUSANOO + '/swap-detail', payload);
+      //     await HTTPAgent().post(Endpoint.url + '/swap-detail', payload);
       // if (res.success) {
       //   result = res.data;
       // } else {
@@ -51,7 +51,7 @@ class SwapCore {
       Map<String, String> result;
       // ++
       // APIResponse res =
-      //     await HTTPAgent().post(Endpoint.SUSANOO + '/swap-detail', payload);
+      //     await HTTPAgent().post(Endpoint.url + '/swap-detail', payload);
       // if (res.success) {
       //   result = res.data;
       // } else {

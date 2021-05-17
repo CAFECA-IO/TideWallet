@@ -60,7 +60,7 @@ class EthereumService extends AccountServiceDecorator {
   static Future<Token> getTokeninfo(String blockchainId, String address) async {
     Future.delayed(Duration(milliseconds: 1000));
     APIResponse res = await HTTPAgent()
-        .get(Endpoint.SUSANOO + '/blockchain/$blockchainId/contract/$address');
+        .get(Endpoint.url + '/blockchain/$blockchainId/contract/$address');
 
     if (res.data != null && res.success) {
       Log.debug('Token res.data: ${res.data}');
@@ -80,7 +80,7 @@ class EthereumService extends AccountServiceDecorator {
 
   Future<bool> addToken(String blockchainId, Token tk) async {
     APIResponse res = await HTTPAgent().post(
-        Endpoint.SUSANOO +
+        Endpoint.url +
             '/wallet/blockchain/$blockchainId/contract/${tk.contract}',
         {});
     if (res.success == false) return false;
@@ -89,7 +89,7 @@ class EthereumService extends AccountServiceDecorator {
     try {
       String id = res.data['token_id'];
       APIResponse updateRes = await HTTPAgent()
-          .get(Endpoint.SUSANOO + '/wallet/account/${this.service.accountId}');
+          .get(Endpoint.url + '/wallet/account/${this.service.accountId}');
 
       if (updateRes.success) {
         final acc = updateRes.data;
@@ -160,7 +160,7 @@ class EthereumService extends AccountServiceDecorator {
         "data": message
       };
       APIResponse response = await HTTPAgent().post(
-          '${Endpoint.SUSANOO}/blockchain/$blockchainId/gas-limit', payload);
+          '${Endpoint.url}/blockchain/$blockchainId/gas-limit', payload);
       Log.debug(payload);
       if (response.success) {
         Map<String, dynamic> data = response.data;
@@ -183,7 +183,7 @@ class EthereumService extends AccountServiceDecorator {
         DateTime.now().millisecondsSinceEpoch - _feeTimestamp >
             this.AVERAGE_FETCH_FEE_TIME) {
       APIResponse response = await HTTPAgent()
-          .get('${Endpoint.SUSANOO}/blockchain/$blockchainId/fee');
+          .get('${Endpoint.url}/blockchain/$blockchainId/fee');
       if (response.success) {
         Map<String, dynamic> data = response.data; // FEE will return String
         _fee = {
@@ -203,7 +203,7 @@ class EthereumService extends AccountServiceDecorator {
   Future<List> getReceivingAddress(String currencyId) async {
     if (this._address == null) {
       APIResponse response = await HTTPAgent().get(
-          '${Endpoint.SUSANOO}/wallet/account/address/$currencyId/receive');
+          '${Endpoint.url}/wallet/account/address/$currencyId/receive');
       if (response.success) {
         Map data = response.data;
         String address = data['address'];
@@ -228,7 +228,7 @@ class EthereumService extends AccountServiceDecorator {
   @override
   Future<int> getNonce(String blockchainId, String address) async {
     APIResponse response = await HTTPAgent().get(
-        '${Endpoint.SUSANOO}/blockchain/$blockchainId/address/$address/nonce');
+        '${Endpoint.url}/blockchain/$blockchainId/address/$address/nonce');
     if (response.success) {
       Map data = response.data;
       int nonce = int.parse(data['nonce']);
@@ -248,7 +248,7 @@ class EthereumService extends AccountServiceDecorator {
     Log.debug(hex.encode(transaction.serializeTransaction));
 
     APIResponse response = await HTTPAgent().post(
-        '${Endpoint.SUSANOO}/blockchain/$blockchainId/push-tx',
+        '${Endpoint.url}/blockchain/$blockchainId/push-tx',
         {"hex": '0x' + hex.encode(transaction.serializeTransaction)});
     bool success = response.success;
     // transaction.id = response.data['txid'];
