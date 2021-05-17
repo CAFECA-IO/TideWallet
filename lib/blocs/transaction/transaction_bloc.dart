@@ -251,6 +251,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         else
           yield CreateTransactionFail();
       } catch (e) {
+        // TODO: Don't Use try catch,
+        // Transaction Bitcoin _signTransaction sometimes got error 
+        Log.error(e);
         yield CreateTransactionFail();
       }
     }

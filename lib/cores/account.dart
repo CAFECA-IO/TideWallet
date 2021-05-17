@@ -133,7 +133,7 @@ class AccountCore {
         await DBOperator().networkDao.findAllNetworks();
 
     if (networks.isEmpty) {
-      APIResponse res = await HTTPAgent().get(Endpoint.SUSANOO + '/blockchain');
+      APIResponse res = await HTTPAgent().get(Endpoint.url + '/blockchain');
       List l = res.data;
 
       networks = l.map((chain) => NetworkEntity.fromJson(chain)).toList();
@@ -163,7 +163,7 @@ class AccountCore {
 
   Future<List<AccountEntity>> _addAccount(List<AccountEntity> local) async {
     APIResponse res =
-        await HTTPAgent().get(Endpoint.SUSANOO + '/wallet/accounts');
+        await HTTPAgent().get(Endpoint.url + '/wallet/accounts');
 
     List l = res.data ?? [];
     final user = await DBOperator().userDao.findUser();
@@ -190,7 +190,7 @@ class AccountCore {
   }
 
   Future _addSupportedCurrencies(List<CurrencyEntity>local) async {
-    APIResponse res = await HTTPAgent().get(Endpoint.SUSANOO + '/currency');
+    APIResponse res = await HTTPAgent().get(Endpoint.url + '/currency');
 
     if (res.data != null) {
       List l = res.data;

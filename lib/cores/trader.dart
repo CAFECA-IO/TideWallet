@@ -19,8 +19,8 @@ class Trader {
 
     if (local.isEmpty || now - local[0].lastSyncTime > syncInterval) {
       final rates = await Future.wait([
-        HTTPAgent().get(Endpoint.SUSANOO + '/fiats/rate'),
-        HTTPAgent().get(Endpoint.SUSANOO + '/crypto/rate'),
+        HTTPAgent().get(Endpoint.url + '/fiats/rate'),
+        HTTPAgent().get(Endpoint.url + '/crypto/rate'),
       ]);
 
       List fiats = rates[0].data;
