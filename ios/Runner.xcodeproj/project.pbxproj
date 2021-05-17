@@ -189,6 +189,7 @@
 			buildConfigurationList = 97C147051CF9000F007C117D /* Build configuration list for PBXNativeTarget "Runner" */;
 			buildPhases = (
 				1EFA5D2F8FC6D756B5C24B47 /* [CP] Check Pods Manifest.lock */,
+				A6567D3B263FE84200A72030 /* Firebase Setup */,
 				9740EEB61CF901F6004384FC /* Run Script */,
 				97C146EA1CF9000F007C117D /* Sources */,
 				97C146EB1CF9000F007C117D /* Frameworks */,
@@ -197,7 +198,6 @@
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				D62511A0AE0857563D8D3E36 /* [CP] Embed Pods Frameworks */,
 				BAB45AFA42B691DA995E0168 /* [CP] Copy Pods Resources */,
-				A6567D3B263FE84200A72030 /* Firebase Setup */,
 			);
 			buildRules = (
 			);
@@ -324,7 +324,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nexec > ${PROJECT_DIR}/prebuild.log 2>&1\necho \"FUCK\"\necho \"${CONFIGURATION}\"\n\nif [ \"${CONFIGURATION}\" == \"Debug-Development\" ] || [ \"${CONFIGURATION}\" == \"Release-Development\" ] || [ \"${CONFIGURATION}\" == \"Debug\" ]; then\ncp -r \"${PROJECT_DIR}/Runner/Firebase/Development/GoogleService-Info.plist\" \"${PROJECT_DIR}/Runner/GoogleService-Info.plist\"\necho \"Development plist copied\"\nelif [ \"${CONFIGURATION}\" == \"Debug-Production\" ] || [ \"${CONFIGURATION}\" == \"Release-Production\" ] || [ \"${CONFIGURATION}\" == \"Release\" ]; then\ncp -r \"${PROJECT_DIR}/Runner/Firebase/Production/GoogleService-Info.plist\" \"${PROJECT_DIR}/Runner/GoogleService-Info.plist\"\necho \"Production plist copied\"\nfi\n\n\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nexec > ${PROJECT_DIR}/prebuild.log 2>&1\necho \"${CONFIGURATION}\"\n\nif [ \"${CONFIGURATION}\" == \"Debug-Development\" ] || [ \"${CONFIGURATION}\" == \"Release-Development\" ] || [ \"${CONFIGURATION}\" == \"Debug\" ]; then\ncp -r \"${PROJECT_DIR}/Runner/Firebase/Development/GoogleService-Info.plist\" \"${PROJECT_DIR}/Runner/GoogleService-Info.plist\"\necho \"Development plist copied\"\nelif [ \"${CONFIGURATION}\" == \"Debug-Production\" ] || [ \"${CONFIGURATION}\" == \"Release-Production\" ] || [ \"${CONFIGURATION}\" == \"Release\" ]; then\ncp -r \"${PROJECT_DIR}/Runner/Firebase/Production/GoogleService-Info.plist\" \"${PROJECT_DIR}/Runner/GoogleService-Info.plist\"\necho \"Production plist copied\"\nfi\n\n\n";
 		};
 		BAB45AFA42B691DA995E0168 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
