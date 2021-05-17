@@ -2,12 +2,13 @@ import 'dart:async';
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:tidewallet3/models/account.model.dart';
+import 'package:tidewallet3/helpers/logger.dart';
 
 import 'account_service.dart';
 import 'bitcoin_service.dart';
 import '../cores/account.dart';
 import '../models/fcm.modal.dart';
+import '../models/account.model.dart';
 import '../screens/transaction_list.screen.dart';
 
 enum FCM_LOCAL_EVENT { UNLOCK_APP }
@@ -66,6 +67,7 @@ class FCM {
   StreamController get emmiter => this._controller;
 
   handleNotification(Map message) {
+    Log.debug(message);
     Map data = Platform.isIOS ? message : message['data'];
 
     FCMMsg msg = FCMMsg.fromOriginData(data);
@@ -103,7 +105,7 @@ class FCM {
       AccountService svc = AccountCore().getService(msg.accountId);
 
       if (svc is BitcoinService) {
-        // svc.updateUTXO(msg.currencyId, msg.payload);
+        svc.updateUTXO(msg.currencyId, msg.payload['utxo']);
       } else {
         // TODO: For Dash Or Litcoin?
 
