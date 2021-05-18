@@ -55,8 +55,8 @@ pod install
 ## Release
 - Android
     ```sh
-    flutter build apk --falvor production
-    // or flutter build appbundle --falvor production
+    flutter build apk --flavor production
+    // or flutter build appbundle --flavor production
     ```
 
 - iOS

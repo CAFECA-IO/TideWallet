@@ -10,3 +10,5 @@ abstract class LocalAuthEvent extends Equatable {
 class Authenticate extends LocalAuthEvent {
   Authenticate();
 }
+
+class InitAuth extends LocalAuthEvent {}
