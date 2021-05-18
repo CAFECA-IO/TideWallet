@@ -22,6 +22,30 @@
           }
         },
         {
+          "client_id": "833374719104-c1leju6qdbetoasblfuqofjh9trbl7sm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tideisun.tidewallet3",
+            "certificate_hash": "ae541553b25cf594d405c0c385f002cf64a9f05c"
+          }
+        },
+        {
+          "client_id": "833374719104-cvlciqiac96l4life3nak7s5lmh98llr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tideisun.tidewallet3",
+            "certificate_hash": "359fe5b589ea5f4f885835b04c9b89b24685d761"
+          }
+        },
+        {
+          "client_id": "833374719104-ljbuocef832qfn3nj4t9q4a74hkakpob.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tideisun.tidewallet3",
+            "certificate_hash": "bcf296168418860bb0dafea7714796f4a8149e1a"
+          }
+        },
+        {
           "client_id": "833374719104-nko2vjcqfnosfhr78d7kr6gpa6m6r8cs.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
