@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../buttons/primary_button.dart';
 import '../buttons/secondary_button.dart';
+import '../../helpers/i18n.dart';
 
 class PersonalSign extends StatelessWidget {
+  final t = I18n.t;
+
   final Function submit;
   final Function cancel;
   final String message;
@@ -34,7 +37,7 @@ class PersonalSign extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: SecondaryButton(
-              '取消',
+              t('cnacel'),
               this.cancel,
             ),
           )

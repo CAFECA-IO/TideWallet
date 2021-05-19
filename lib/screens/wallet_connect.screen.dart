@@ -76,13 +76,13 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                   height: 140,
                   child: Column(
                     children: [
-                      PrimaryButton('連接', () {
+                      PrimaryButton(t('connect'), () {
                         _bloc.add(ApproveWC());
                         Navigator.of(context).pop();
                       }),
                       SizedBox(height: 20.0),
                       SecondaryButton(
-                        '取消',
+                        t('cancel'),
                         () {
                           _bloc.add(DisconnectWC(''));
                           Navigator.of(context).popUntil(
