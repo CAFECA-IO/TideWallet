@@ -157,6 +157,7 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
                   if (state is AuthenticationStatus) {
                     if (state.isAuthenicated) {
                       _bloc.add(PublishTransaction(_userRepo.getPassword()));
+                      _localBloc.add(InitAuth());
                     } else {
                       // ++ [Emily 4/1/2021]
                     }
