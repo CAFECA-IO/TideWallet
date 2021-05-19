@@ -198,5 +198,6 @@
   "mnemonic_enter": "Enter mnemonic",
   "mnemonic_message": "Please use spaces to separate different mnemonic words",
   "error_mnemonic": "Mnemonic wrong",
-  "error_login": "Login Error"
+  "error_login": "Login Error",
+  "copied": "Copied"
 }
