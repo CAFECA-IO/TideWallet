@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -58,7 +59,7 @@ class _ResetSettingState extends State<ResetSetting> {
       listener: (context, state) async {
         if (state is ResetError) {
           if (state.error == RESET_ERROR.password) {
-            DialogController.show(context, ErrorDialog(t('error_password')));
+            // DialogController.show(context, ErrorDialog(t('error_password')));
           } else if (state.error == RESET_ERROR.unknown) {
             DialogController.show(context, ErrorDialog(t('error_reset')));
           }
@@ -90,7 +91,27 @@ class _ResetSettingState extends State<ResetSetting> {
           //     },
           //   ),
           // );
-          this._bloc.add(ResetWallet());
+          DialogController.show(
+              context,
+              CupertinoAlertDialog(
+                title: Text(t('setting_reset')),
+                content: Text(t('reset_message')),
+                actions: [
+                  CupertinoDialogAction(
+                    child: Text(t('cancel')),
+                    onPressed: () {
+                      DialogController.dismiss(context);
+                    },
+                  ),
+                  CupertinoDialogAction(
+                    child: Text(t('confirm')),
+                    onPressed: () {
+                      DialogController.dismiss(context);
+                      this._bloc.add(ResetWallet());
+                    },
+                  ),
+                ],
+              ));
         },
       ),
     );

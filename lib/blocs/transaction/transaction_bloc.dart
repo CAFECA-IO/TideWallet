@@ -199,6 +199,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             gasPrice: gasPrice,
             message: message,
             rules: [_state.rules[0], rule2]);
+      } else {
+        yield _state.copyWith(priority: event.priority);
       }
     }
     if (event is InputGasLimit) {

@@ -15,6 +15,7 @@ import '../widgets/dash_line_divider.dart';
 import '../widgets/copy_tool_tip.dart';
 import '../repositories/transaction_repository.dart';
 import '../repositories/trader_repository.dart';
+import '../constants/account_config.dart';
 
 class TransactionDetailScreen extends StatefulWidget {
   // final Currency currency;
@@ -28,6 +29,7 @@ class TransactionDetailScreen extends StatefulWidget {
   _TransactionDetailScreenState createState() =>
       _TransactionDetailScreenState();
 }
+
 
 class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
   final t = I18n.t;
@@ -59,6 +61,31 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
   void dispose() {
     _bloc.close();
     super.dispose();
+  }
+
+  String getLaunchLink(Currency currency, transaction) {
+    const PROTOCAL = 'https://';
+    String network = _currency.network.toLowerCase();
+
+    switch (currency.accountType) {
+      case ACCOUNT.BTC:
+        if (network == 'bitcoin') {
+          network = 'mainnet';
+        }
+
+        if (network == 'bitcoin testnet') {
+          network = 'testnet';
+        }
+
+        return '$PROTOCAL${Explorer.BLOCK_EXPLORER}/${_currency.symbol.toLowerCase()}/$network/tx/${transaction.txId}';
+      case ACCOUNT.ETH:
+        return '$PROTOCAL${network == 'ethereum' ? '' : network + '.'}${Explorer.ETHERSCAN}/tx/${transaction.txId}';
+      case ACCOUNT.CFC:
+        return '$PROTOCAL${Explorer.TITAN_EXPLORER}/tx/${transaction.txId}';
+
+      default:
+        return null;
+    }
   }
 
   @override
@@ -218,19 +245,13 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            String network = _currency.network.toLowerCase();
-                            
-                            // TODO: CFC and use Titan Explorer
-                            if (network == 'bitcoin') {
-                              network = 'mainnet';
-                            } 
+                            String url =
+                                this.getLaunchLink(_currency, _transaction);
 
-                            if (network == 'bitcoin testnet') {
-                              network = 'testnet';
+                            // TODO: Handle Error
+                            if (url != null) {
+                              _launchURL(url);
                             }
-
-                             _launchURL(
-                              'https://blockexplorer.one/${_currency.symbol.toLowerCase()}/$network/tx/${_transaction.txId}');
                           },
                           child: Text(
                             Formatter.formatAdddress(_transaction.txId),
