@@ -113,6 +113,12 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
                   child: SecondaryButton(
                     t('copy_wallet_address'),
                     () {
+                      final snackBar = SnackBar(
+                        content: Text(t('copied')),
+                        duration: Duration(milliseconds: 1000),
+                      );
+
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
                       Clipboard.setData(ClipboardData(text: _address));
                     },
                     textColor: Theme.of(context).accentColor,

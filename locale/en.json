@@ -14,7 +14,7 @@
   "password": "password",
   "password-repeat": "retype password",
   "re_password": "再次確認密碼",
-  "confirm": "確認",
+  "confirm": "Confirm",
   "scan": "掃描",
   "scan_title": "Scan your Keystore",
   "restore_message": "Ethereum’s official wallet uses keystore format to store encrypted private key information, you can copy and paste the content into the input field, or with the help of QR code generate.",
@@ -198,5 +198,8 @@
   "mnemonic_enter": "Enter mnemonic",
   "mnemonic_message": "Please use spaces to separate different mnemonic words",
   "error_mnemonic": "Mnemonic wrong",
-  "error_login": "Login Error"
+  "error_login": "Login Error",
+  "copied": "Copied",
+  "reset_message": "確定重設錢包？",
+  "connect": "Connect"
 }

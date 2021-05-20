@@ -25,5 +25,9 @@ class LocalAuthBloc extends Bloc<LocalAuthEvent, LocalAuthState> {
 
       yield AuthenticationStatus(isAuthenticated);
     }
+
+    if (event is InitAuth) {
+      yield LocalAuthInitial(false);
+    }
   }
 }

@@ -11,8 +11,10 @@ import '../../helpers/utils.dart';
 import '../../blocs/fiat/fiat_bloc.dart';
 import '../../helpers/formatter.dart';
 import '../../widgets/buttons/primary_button.dart';
+import '../../helpers/i18n.dart';
 
 class SignTransaction extends StatefulWidget {
+  
   final BuildContext context;
   final String dapp;
   final Map param;
@@ -36,6 +38,7 @@ class SignTransaction extends StatefulWidget {
 class _SignTransactionState extends State<SignTransaction> {
   FiatBloc _fiatBloc;
   TraderRepository _traderRepo;
+  final t = I18n.t;
 
   @override
   void didChangeDependencies() {
@@ -86,7 +89,7 @@ class _SignTransactionState extends State<SignTransaction> {
                   child: Row(
                     children: [
                       InkWell(
-                        child: Text('取消',
+                        child: Text(t('cancel'),
                             style: Theme.of(context)
                                 .textTheme
                                 .headline4
