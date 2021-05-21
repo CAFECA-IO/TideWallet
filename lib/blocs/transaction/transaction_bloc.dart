@@ -31,7 +31,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
         if (index >= 0) {
           Currency currency = msg.value[index];
-          print('ON EVENT =>>> ${currency.amount} ${currency.network}');
           this.add(UpdateTransactionCreateCurrency(currency));
         }
       }
