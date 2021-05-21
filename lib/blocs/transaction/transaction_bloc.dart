@@ -27,7 +27,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     this._repo.listener.listen((msg) {
       if (msg.evt == ACCOUNT_EVT.OnUpdateCurrency) {
         int index = msg.value.indexWhere((Currency currency) =>
-            currency.accountType == this._repo.currency.accountType);
+            currency.id == this._repo.currency.id);
 
         if (index >= 0) {
           Currency currency = msg.value[index];
