@@ -1,4 +1,5 @@
 import 'package:decimal/decimal.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 import '../database/entity/exchage_rate.dart';
@@ -202,4 +203,27 @@ class Fiat {
       : currencyId = entity.exchangeRateId,
         name = entity.name,
         exchangeRate = Decimal.parse(entity.rate);
+}
+
+class DisplayCurrency extends Equatable{
+  final bool editable;
+  final bool opened;
+  final String symbol;
+  final String name;
+  final String icon;
+  final String currencyId;
+  final String accountId;
+
+  DisplayCurrency({
+    this.editable,
+    this.opened = false,
+    this.symbol,
+    this.name,
+    this.icon,
+    this.currencyId,
+    this.accountId
+  });
+
+  @override
+  List<Object> get props => [opened];
 }

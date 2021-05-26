@@ -23,7 +23,15 @@ class AccountCurrencyBloc
 
     this._repo.listener.listen((msg) {
       if (msg.evt == ACCOUNT_EVT.OnUpdateCurrency) {
-        this.add(UpdateAccountCurrencies(msg.value));
+        List<Currency> currencies = msg.value;
+
+        List<Currency> result = this._repo.preferDisplay == null ? [] : this._repo.preferDisplay[currencies[0].accountId].entries.map((entrie) {
+          int index = currencies.indexWhere((c) => c.currencyId == entrie.key);
+          if (index > -1) {
+            return currencies[index];
+          }
+        }).toList();
+        this.add(UpdateAccountCurrencies([currencies[0]] + result));
       }
 
       if (msg.evt == ACCOUNT_EVT.ClearAll) {

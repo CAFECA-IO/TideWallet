@@ -24,6 +24,9 @@ class AccountCore {
   Map<String, List<Currency>> _currencies = {};
   bool debugMode = false;
 
+  // 
+  Map<String, List<DisplayCurrency>> settingOptions = {};
+
   Map<String, List<Currency>> get currencies {
     return _currencies;
   }

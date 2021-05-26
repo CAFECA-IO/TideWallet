@@ -5,11 +5,22 @@ import '../cores/account.dart';
 import '../constants/account_config.dart';
 import '../services/ethereum_service.dart';
 import '../helpers/ethereum_based_utils.dart';
+import '../helpers/prefer_manager.dart';
 
 class AccountRepository {
   PublishSubject<AccountMessage> get listener => AccountCore().messenger;
+  PrefManager _prefManager = PrefManager();
+  Map<String, Map<String, String>> _preferDisplay = {};
+
+  Map<String, Map<String, String>> get preferDisplay => this._preferDisplay;
+  Map<String, List<DisplayCurrency>> get displayCurrencies => AccountCore().settingOptions;
 
   AccountRepository() {
+    this
+        ._prefManager
+        .getSeletedDisplay()
+        .then((value) => this._preferDisplay = value);
+
     AccountCore().setMessenger();
   }
 
@@ -52,6 +63,20 @@ class AccountRepository {
     AccountCore().messenger.add(
           AccountMessage(evt: ACCOUNT_EVT.ClearAll),
         );
-    AccountCore().close();
+    // AccountCore().close();
+  }
+
+  Future<Map> toggleDisplay(Currency currency, bool value) async {
+    Map result =
+        await this._prefManager.setSelectedDisplay(currency.accountId, currency.currencyId, value);
+    this._preferDisplay = result;
+
+    AccountMessage msg = AccountMessage(
+        evt: ACCOUNT_EVT.OnUpdateCurrency,
+        value: AccountCore().currencies[currency.accountId]);
+
+    AccountCore().messenger.add(msg);
+
+    return this._preferDisplay;
   }
 }
