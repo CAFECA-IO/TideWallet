@@ -18,5 +18,5 @@ class ToggleTokenLoaded extends ToggleTokenState {
       ToggleTokenLoaded(this.list);
 
   @override
-  List<Object> get props => [List];
+  List<Object> get props => [list];
 }

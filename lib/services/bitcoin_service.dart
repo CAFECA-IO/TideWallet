@@ -214,8 +214,8 @@ class BitcoinService extends AccountServiceDecorator {
   }
 
   @override
-  Future synchro() async {
-    await this.service.synchro();
+  Future synchro({bool force}) async {
+    await this.service.synchro(force: force);
     await this._syncUTXO();
   }
 

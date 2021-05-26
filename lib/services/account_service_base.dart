@@ -44,7 +44,7 @@ class AccountServiceBase extends AccountService {
 
     await this._pushResult();
     await this._getSupportedToken();
-    await this._getSettingTokens();
+    // await this._getSettingTokens();
 
     if (select != null) {
       this._lastSyncTimestamp = select.lastSyncTime;
@@ -95,10 +95,10 @@ class AccountServiceBase extends AccountService {
     return [];
   }
 
-  synchro() async {
+  synchro({bool force}) async {
     int now = DateTime.now().millisecondsSinceEpoch;
 
-    if (now - this._lastSyncTimestamp > this._syncInterval) {
+    if (now - this._lastSyncTimestamp > this._syncInterval || force == true) {
       List currs = await this.getData();
       final v = currs
           .map((c) => AccountCurrencyEntity.fromJson(c, this._accountId, now))
@@ -255,19 +255,24 @@ class AccountServiceBase extends AccountService {
     this._pushResult();
   }
 
-  _getSettingTokens() async {
-    APIResponse response = await HTTPAgent()
-        .get('${Endpoint.url}/blockchain/8000025B/token?type=TideWallet');
+  // _getSettingTokens() async {
+  //   AccountEntity acc =
+  //       await DBOperator().accountDao.findAccount(this._accountId);
+  //     Log.warning(acc.networkId);
+  //   APIResponse response = await HTTPAgent()
+  //       .get('${Endpoint.url}/blockchain/${acc.networkId}/token?type=TideWallet');
 
-    if (response.success) {
-      List<DisplayCurrency> ds = [...response.data].map((tk) {
-        return DisplayCurrency(
-            symbol: tk['symbol'],
-            name: tk['name'],
-            icon: tk['icon'],
-            currencyId: tk['currency_id']);
-      }).toList();
-      AccountCore().settingOptions[this._accountId] = ds;
-    }
-  }
+  //   if (response.success) {
+  //     List<DisplayCurrency> ds = [...response.data].map((tk) {
+  //       return DisplayCurrency(
+  //           symbol: tk['symbol'],
+  //           name: tk['name'],
+  //           icon: tk['icon'],
+  //           currencyId: tk['currency_id'],
+  //           contract: tk['contract']
+  //      );
+  //     }).toList();
+  //     AccountCore().settingOptions[this._accountId] = ds;
+  //   }
+  // }
 }

@@ -78,12 +78,12 @@ class EthereumService extends AccountServiceDecorator {
     }
   }
 
-  Future<bool> addToken(String blockchainId, Token tk) async {
+  Future<String> addToken(String blockchainId, Token tk) async {
     APIResponse res = await HTTPAgent().post(
         Endpoint.url +
             '/wallet/blockchain/$blockchainId/contract/${tk.contract}',
         {});
-    if (res.success == false) return false;
+    if (res.success == false) return null;
     Log.debug('Token res.data: ${res.data}');
 
     try {
@@ -137,14 +137,14 @@ class EthereumService extends AccountServiceDecorator {
 
         AccountCore().messenger.add(msg);
         AccountCore().messenger.add(currMsg);
-        return true;
+        return id;
       } else {
-        return false;
+        return null;
       }
     } catch (e) {
       Log.error(e);
 
-      return false;
+      return null;
     }
   }
 
@@ -259,8 +259,8 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   @override
-  Future synchro() async {
-    await this.service.synchro();
+  Future synchro({bool force}) async {
+    await this.service.synchro(force: force);
   }
 
   @override

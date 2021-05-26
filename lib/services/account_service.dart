@@ -28,5 +28,5 @@ abstract class AccountService {
 
   Future updateCurrency(String currencyId, Map payload);
 
-  Future synchro();
+  Future synchro({bool force});
 }

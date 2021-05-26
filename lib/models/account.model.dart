@@ -205,7 +205,7 @@ class Fiat {
         exchangeRate = Decimal.parse(entity.rate);
 }
 
-class DisplayCurrency extends Equatable{
+class DisplayCurrency extends Equatable {
   final bool editable;
   final bool opened;
   final String symbol;
@@ -213,6 +213,8 @@ class DisplayCurrency extends Equatable{
   final String icon;
   final String currencyId;
   final String accountId;
+  final String contract;
+  final String blockchainId;
 
   DisplayCurrency({
     this.editable,
@@ -221,8 +223,34 @@ class DisplayCurrency extends Equatable{
     this.name,
     this.icon,
     this.currencyId,
-    this.accountId
+    this.accountId,
+    this.contract,
+    this.blockchainId,
   });
+
+  DisplayCurrency copyWith({
+    bool opened,
+    bool editable,
+    String symbol,
+    String name,
+    String icon,
+    String currencyId,
+    String accountId,
+    String contract,
+    String blockchainId,
+  }) {
+    return DisplayCurrency(
+      opened: opened ?? this.opened,
+      editable: editable ?? this.editable,
+      symbol: symbol ?? this.symbol,
+      name: name ?? this.name,
+      icon: icon ?? this.icon,
+      currencyId: currencyId ?? this.currencyId,
+      accountId: accountId ?? this.accountId,
+      contract: contract ?? this.contract,
+      blockchainId: blockchainId ?? this.blockchainId
+    );
+  }
 
   @override
   List<Object> get props => [opened];

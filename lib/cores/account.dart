@@ -24,8 +24,9 @@ class AccountCore {
   Map<String, List<Currency>> _currencies = {};
   bool debugMode = false;
 
-  // 
-  Map<String, List<DisplayCurrency>> settingOptions = {};
+  //
+  // Map<String, List<DisplayCurrency>> settingOptions = {};
+  List<DisplayCurrency> settingOptions = [];
 
   Map<String, List<Currency>> get currencies {
     return _currencies;
@@ -51,6 +52,7 @@ class AccountCore {
     //
     this.debugMode = debugMode;
     _isInit = true;
+    await this._getSettingTokens(debugMode);
     await _initAccounts(debugMode: debugMode);
   }
 
@@ -130,6 +132,10 @@ class AccountCore {
     return _services.firstWhere((svc) => (svc.accountId == accountId));
   }
 
+  AccountService getServiceByType(ACCOUNT type) {
+        return _services.firstWhere((svc) => (svc.base == type));
+  }
+
   Future<List<NetworkEntity>> getNetworks(
       {bool publish = true, bool debugMode}) async {
     List<NetworkEntity> networks =
@@ -165,8 +171,7 @@ class AccountCore {
   }
 
   Future<List<AccountEntity>> _addAccount(List<AccountEntity> local) async {
-    APIResponse res =
-        await HTTPAgent().get(Endpoint.url + '/wallet/accounts');
+    APIResponse res = await HTTPAgent().get(Endpoint.url + '/wallet/accounts');
 
     List l = res.data ?? [];
     final user = await DBOperator().userDao.findUser();
@@ -192,12 +197,13 @@ class AccountCore {
     }
   }
 
-  Future _addSupportedCurrencies(List<CurrencyEntity>local) async {
+  Future _addSupportedCurrencies(List<CurrencyEntity> local) async {
     APIResponse res = await HTTPAgent().get(Endpoint.url + '/currency');
 
     if (res.data != null) {
       List l = res.data;
-      l.removeWhere((el) => local.indexWhere((c) => c.currencyId == el['currency_id']) > -1);
+      l.removeWhere((el) =>
+          local.indexWhere((c) => c.currencyId == el['currency_id']) > -1);
       l = l.map((c) => CurrencyEntity.fromJson(c)).toList();
       await DBOperator().currencyDao.insertCurrencies(l);
     }
@@ -211,4 +217,30 @@ class AccountCore {
 
   List<Currency> getAllCurrencies() =>
       this._currencies.values.reduce((currList, currs) => currList + currs);
+
+  _getSettingTokens(bool debugMode) async {
+    APIResponse response = await HTTPAgent().get(
+        '${Endpoint.url}/blockchain/80000000/token?type=TideWallet'); // FIXME: The 80000000 Should be Replace by neteowkId
+
+    if (response.success) {
+      List data = [...response.data];
+
+      if (debugMode != true) {
+        data = data.where((element) => element['publish'] == true).toList();
+      }
+
+      List<DisplayCurrency> ds = [...response.data].map((tk) {
+        return DisplayCurrency(
+            symbol: tk['symbol'],
+            name: tk['name'],
+            icon: tk['icon'],
+            currencyId: tk['currency_id'],
+            contract: tk['contract'],
+            );
+      }).toList();
+
+      // AccountCore().settingOptions[this._accountId] = ds;
+      AccountCore().settingOptions = ds;
+    }
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:rxdart/subjects.dart';
+import 'package:tidewallet3/services/account_service.dart';
 
 import '../models/account.model.dart';
 import '../cores/account.dart';
@@ -13,7 +14,8 @@ class AccountRepository {
   Map<String, Map<String, String>> _preferDisplay = {};
 
   Map<String, Map<String, String>> get preferDisplay => this._preferDisplay;
-  Map<String, List<DisplayCurrency>> get displayCurrencies => AccountCore().settingOptions;
+  // Map<String, List<DisplayCurrency>> get displayCurrencies => AccountCore().settingOptions;
+  List<DisplayCurrency> get displayCurrencies => AccountCore().settingOptions;
 
   AccountRepository() {
     this
@@ -50,10 +52,19 @@ class AccountRepository {
     return EthereumService.getTokeninfo(bkid, address);
   }
 
-  Future<bool> addToken(Currency currency, Token token) async {
-    EthereumService _ethService = AccountCore().getService(currency.accountId);
+  // Future<bool> addToken(Currency currency, Token token) async {
+  //   EthereumService _ethService = AccountCore().getService(currency.accountId);
 
-    return _ethService.addToken(currency.blockchainId, token);
+  //   return _ethService.addToken(currency.blockchainId, token);
+  // }
+
+
+  // FIXME: The Above Is Better
+  Future<String> addToken(String blockchainId, Token token) async {
+    // EthereumService _ethService = AccountCore().getService(currency.accountId);
+    EthereumService _ethService = AccountCore().getServiceByType(ACCOUNT.ETH);
+
+    return _ethService.addToken(blockchainId, token);
   }
 
   close() {
@@ -66,16 +77,24 @@ class AccountRepository {
     // AccountCore().close();
   }
 
+  Future<Map<String, Map>> getSeletedDisplay() {
+    return this._prefManager.getSeletedDisplay();
+  }
+
   Future<Map> toggleDisplay(Currency currency, bool value) async {
-    Map result =
-        await this._prefManager.setSelectedDisplay(currency.accountId, currency.currencyId, value);
+    Map result = await this
+        ._prefManager
+        .setSelectedDisplay(currency.accountId, currency.currencyId, value);
     this._preferDisplay = result;
 
-    AccountMessage msg = AccountMessage(
-        evt: ACCOUNT_EVT.OnUpdateCurrency,
-        value: AccountCore().currencies[currency.accountId]);
+    AccountService _service = AccountCore().getService(currency.accountId);
 
-    AccountCore().messenger.add(msg);
+    _service.synchro(force: true);
+    // AccountMessage msg = AccountMessage(
+    //     evt: ACCOUNT_EVT.OnUpdateCurrency,
+    //     value: AccountCore().currencies[currency.accountId]);
+
+    // AccountCore().messenger.add(msg);
 
     return this._preferDisplay;
   }

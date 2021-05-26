@@ -10,3 +10,10 @@ abstract class ToggletokenEvent extends Equatable {
 class InitTokens extends ToggletokenEvent {
   const InitTokens();
 }
+
+class ToggleToken extends ToggletokenEvent {
+  final DisplayCurrency currency;
+  final bool value;
+  
+  ToggleToken(this.currency, this.value);
+}

@@ -56,21 +56,21 @@ class AddCurrencyBloc extends Bloc<AddCurrencyEvent, AddCurrencyState> {
       }
     }
 
-    if (event is AddToken) {
-      GetToken _state = state;
-      yield Loading();
+    // if (event is AddToken) {
+    //   GetToken _state = state;
+    //   yield Loading();
 
-      bool result =
-          await _repo.addToken(_parentAccount, _state.result);
+    //   bool result =
+    //       await _repo.addToken(_parentAccount, _state.result);
 
-      if (result) {
-        yield AddSuccess();
-      } else {
-        yield AddFail();
+    //   if (result) {
+    //     yield AddSuccess();
+    //   } else {
+    //     yield AddFail();
 
-        await Future.delayed(Duration(milliseconds: 200));
-        yield BeforeAdd();
-      }
-    }
+    //     await Future.delayed(Duration(milliseconds: 200));
+    //     yield BeforeAdd();
+    //   }
+    // }
   }
 }
