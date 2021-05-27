@@ -44,7 +44,7 @@ class AccountServiceBase extends AccountService {
 
     await this._pushResult();
     await this._getSupportedToken();
-    // await this._getSettingTokens();
+    await this._getSettingTokens();
 
     if (select != null) {
       this._lastSyncTimestamp = select.lastSyncTime;
@@ -255,24 +255,25 @@ class AccountServiceBase extends AccountService {
     this._pushResult();
   }
 
-  // _getSettingTokens() async {
-  //   AccountEntity acc =
-  //       await DBOperator().accountDao.findAccount(this._accountId);
-  //     Log.warning(acc.networkId);
-  //   APIResponse response = await HTTPAgent()
-  //       .get('${Endpoint.url}/blockchain/${acc.networkId}/token?type=TideWallet');
+  _getSettingTokens() async {
+    AccountEntity acc =
+        await DBOperator().accountDao.findAccount(this._accountId);
+    APIResponse response = await HTTPAgent()
+        .get('${Endpoint.url}/blockchain/${acc.networkId}/token?type=TideWallet');
 
-  //   if (response.success) {
-  //     List<DisplayCurrency> ds = [...response.data].map((tk) {
-  //       return DisplayCurrency(
-  //           symbol: tk['symbol'],
-  //           name: tk['name'],
-  //           icon: tk['icon'],
-  //           currencyId: tk['currency_id'],
-  //           contract: tk['contract']
-  //      );
-  //     }).toList();
-  //     AccountCore().settingOptions[this._accountId] = ds;
-  //   }
-  // }
+    if (response.success) {
+      List<DisplayCurrency> ds = [...response.data].map((tk) {
+        return DisplayCurrency(
+            symbol: tk['symbol'],
+            name: tk['name'],
+            icon: tk['icon'],
+            currencyId: tk['currency_id'],
+            contract: tk['contract'],
+            accountId: this._accountId,
+            blockchainId: acc.networkId
+       );
+      }).toList();
+      AccountCore().settingOptions += ds;
+    }
+  }
 }

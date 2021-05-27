@@ -52,7 +52,6 @@ class AccountCore {
     //
     this.debugMode = debugMode;
     _isInit = true;
-    await this._getSettingTokens(debugMode);
     await _initAccounts(debugMode: debugMode);
   }
 
@@ -130,10 +129,6 @@ class AccountCore {
 
   AccountService getService(String accountId) {
     return _services.firstWhere((svc) => (svc.accountId == accountId));
-  }
-
-  AccountService getServiceByType(ACCOUNT type) {
-        return _services.firstWhere((svc) => (svc.base == type));
   }
 
   Future<List<NetworkEntity>> getNetworks(
@@ -218,29 +213,5 @@ class AccountCore {
   List<Currency> getAllCurrencies() =>
       this._currencies.values.reduce((currList, currs) => currList + currs);
 
-  _getSettingTokens(bool debugMode) async {
-    APIResponse response = await HTTPAgent().get(
-        '${Endpoint.url}/blockchain/80000000/token?type=TideWallet'); // FIXME: The 80000000 Should be Replace by neteowkId
-
-    if (response.success) {
-      List data = [...response.data];
-
-      if (debugMode != true) {
-        data = data.where((element) => element['publish'] == true).toList();
-      }
-
-      List<DisplayCurrency> ds = [...response.data].map((tk) {
-        return DisplayCurrency(
-            symbol: tk['symbol'],
-            name: tk['name'],
-            icon: tk['icon'],
-            currencyId: tk['currency_id'],
-            contract: tk['contract'],
-            );
-      }).toList();
-
-      // AccountCore().settingOptions[this._accountId] = ds;
-      AccountCore().settingOptions = ds;
-    }
-  }
+ 
 }

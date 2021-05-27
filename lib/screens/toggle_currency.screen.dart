@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tidewallet3/helpers/logger.dart';
 import 'package:tidewallet3/theme.dart';
 
 import '../models/account.model.dart';
 import '../blocs/toggle_token/toggle_token_bloc.dart';
 import '../widgets/appBar.dart';
+import '../helpers/i18n.dart';
 
 class ToggleCurrencyScreen extends StatefulWidget {
   @override
@@ -16,6 +16,7 @@ class ToggleCurrencyScreen extends StatefulWidget {
 
 class _ToggleCurrencyScreenState extends State<ToggleCurrencyScreen> {
   ToggleTokenBloc _bloc;
+  final t = I18n.t;
 
   @override
   void didChangeDependencies() {
@@ -33,7 +34,7 @@ class _ToggleCurrencyScreenState extends State<ToggleCurrencyScreen> {
         resizeToAvoidBottomInset: false,
         appBar: GeneralAppbar(
           routeName: ToggleCurrencyScreen.routeName,
-          title: '添加貨幣',
+          title: t('add_currency'),
         ),
         body: BlocBuilder<ToggleTokenBloc, ToggleTokenState>(
           bloc: _bloc,

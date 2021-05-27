@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../helpers/logger.dart';
+// import '../../helpers/logger.dart';
 import '../../models/account.model.dart';
 import '../../repositories/account_repository.dart';
 
@@ -16,7 +16,6 @@ class ToggleTokenBloc extends Bloc<ToggletokenEvent, ToggleTokenState> {
   List<DisplayCurrency> getOtions(Map options) {
     List<DisplayCurrency> reuslt = [];
     options.entries.forEach((element) {
-      Log.warning(element);
       reuslt += element.value;
     });
 
@@ -29,8 +28,18 @@ class ToggleTokenBloc extends Bloc<ToggletokenEvent, ToggleTokenState> {
   ) async* {
     if (event is InitTokens) {
       // Map options = _repo.displayCurrencies;
-      List options = _repo.displayCurrencies;
-      Log.debug(options);
+      var options = _repo.displayCurrencies;
+      final selected = await _repo.getSeletedDisplay();
+
+      if (selected != null) {
+        options = options.map((opt) {
+          if (selected[opt.currencyId] == true) {
+            return opt.copyWith(opened: true);
+          } else {
+            return opt;
+          }
+        }).toList();
+      }
       // yield ToggleTokenLoaded(this.getOtions(options));
       yield ToggleTokenLoaded(options);
     }
@@ -43,25 +52,18 @@ class ToggleTokenBloc extends Bloc<ToggletokenEvent, ToggleTokenState> {
           _list.indexWhere((el) => el.currencyId == event.currency.currencyId);
       _list[index] = _list[index].copyWith(opened: event.value);
 
-      if (event.value == true) {
-        Token token = Token(
-          contract: _list[index].contract
-        );
-        String accountId = await _repo.addToken(_list[index].blockchainId, token);
-
-        Currency cur = Currency(
-            accountId: accountId,
-            currencyId: _list[index].currencyId,
-            );
-        _repo.toggleDisplay(cur, event.value);
-
-      } else {
-        final data = _repo.getSeletedDisplay();
-        Log.warning(data);
-      }
-
-
       yield ToggleTokenLoaded(_list);
+      Currency cur = Currency(
+          accountId: _list[index].accountId,
+          currencyId: _list[index].currencyId,
+          blockchainId: _list[index].blockchainId);
+
+      if (event.value == true) {
+        Token token = Token(contract: _list[index].contract);
+
+        bool success = await _repo.addToken(cur, token);
+      }
+      await _repo.toggleDisplay(cur, event.value);
     }
   }
 }

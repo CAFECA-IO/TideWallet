@@ -3,6 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:decimal/decimal.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
+// import 'package:tidewallet3/helpers/logger.dart';
 
 import '../../repositories/account_repository.dart';
 import '../../repositories/trader_repository.dart';
@@ -25,17 +26,15 @@ class AccountCurrencyBloc
       if (msg.evt == ACCOUNT_EVT.OnUpdateCurrency) {
         List<Currency> currencies = msg.value;
 
-        List<Currency> result = this._repo.preferDisplay == null ? [] : this._repo.preferDisplay[currencies[0].accountId].entries.map((entrie) {
-          int index = currencies.indexWhere((c) => c.currencyId == entrie.key);
-          if (index > -1) {
-            return currencies[index];
-          }
-        }).toList();
-        this.add(UpdateAccountCurrencies([currencies[0]] + result));
+        this.add(UpdateAccountCurrencies(currencies));
       }
 
       if (msg.evt == ACCOUNT_EVT.ClearAll) {
         this.add(CleanAccountCurrencies());
+      }
+
+      if (msg.evt == ACCOUNT_EVT.ToggleDisplayCurrency) {
+        this.add(ToggleDisplay(msg.value));
       }
     });
   }
@@ -46,6 +45,25 @@ class AccountCurrencyBloc
     return super.close();
   }
 
+  List<Currency> displayFilter(List<Currency> currencies) {
+    final display = this._repo.preferDisplay;
+
+    return currencies
+        .map((cur) {
+          if (cur.type != 'token') {
+            return cur;
+          } else {
+            if (display != null && display[cur.currencyId] == true) {
+              return cur;
+            }
+
+            return null;
+          }
+        })
+        .where((el) => el != null)
+        .toList();
+  }
+
   @override
   Stream<AccountCurrencyState> mapEventToState(
     AccountCurrencyEvent event,
@@ -54,6 +72,8 @@ class AccountCurrencyBloc
       List<Currency> list = [];
 
       list = _repo.getAllCurrencies();
+
+      list = this.displayFilter(list);
 
       Decimal _total = Decimal.zero;
 
@@ -70,11 +90,14 @@ class AccountCurrencyBloc
     }
     if (event is UpdateAccountCurrencies) {
       List<Currency> _list = [...state.currencies];
-      final _currency = event.currencies.map((e) {
+      List<Currency> _filter = this.displayFilter(event.currencies);
+
+      final _currency = _filter.map((e) {
         Decimal v = _traderRepo.calculateToUSD(e);
 
         return e.copyWith(inUSD: v.toString());
       }).toList();
+
       _currency.forEach((newCurr) {
         int index = _list.indexWhere((oldCurr) => oldCurr.id == newCurr.id);
         if (index < 0) {
@@ -98,6 +121,30 @@ class AccountCurrencyBloc
     if (event is CleanAccountCurrencies) {
       List<Currency> empty = [];
       yield AccountCurrencyLoaded(empty, total: Decimal.zero);
+    }
+
+    if (event is ToggleDisplay) {
+      AccountCurrencyLoaded _state = state;
+      List<Currency> _list = [..._state.currencies];
+
+      int index = _state.currencies
+          .indexWhere((el) => el.currencyId == event.currencyId);
+
+      if (index > -1) {
+        _list.removeAt(index);
+      }
+      Decimal _total = Decimal.zero;
+
+      _list = _list.map((curr) {
+        Decimal v = _traderRepo.calculateToUSD(curr);
+        _total += v;
+
+        return curr.copyWith(inUSD: v.toString());
+      }).toList();
+
+      _list.sort((a, b) => a.accountType.index.compareTo(b.accountType.index));
+
+      yield AccountCurrencyLoaded(_list, total: _total);
     }
   }
 }

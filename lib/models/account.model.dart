@@ -11,7 +11,8 @@ enum ACCOUNT_EVT {
   OnUpdateCurrency,
   OnUpdateTransactions,
   OnUpdateTransaction,
-  ClearAll
+  ClearAll,
+  ToggleDisplayCurrency
 }
 
 class Currency {
@@ -83,29 +84,30 @@ class Currency {
       String type,
       String accountSymbol,
       int accountDecimals,
-      String accountAmount}) {
+      String accountAmount,
+      String}) {
     return Currency(
-      id: id ?? this.id,
-      accountId: accountId ?? this.accountId,
-      cointype: cointype ?? this.cointype,
-      purpose: purpose ?? this.purpose,
-      amount: amount ?? this.amount,
-      inUSD: inUSD ?? this.inUSD,
-      symbol: symbol ?? this.symbol,
-      imgPath: imgPath ?? this.imgPath,
-      name: name ?? this.name,
-      accountType: accountType ?? this.accountType,
-      blockchainId: blockchainId ?? this.blockchainId,
-      network: network ?? this.network,
-      chainId: chainId ?? this.chainId,
-      decimals: decimals ?? this.decimals,
-      publish: publish ?? this.publish,
-      contract: contract ?? this.contract,
-      type: type ?? this.type,
-      accountSymbol: accountSymbol ?? this.accountSymbol,
-      accountDecimals: accountDecimals ?? this.accountDecimals,
-      accountAmount: accountAmount ?? this.accountAmount,
-    );
+        id: id ?? this.id,
+        accountId: accountId ?? this.accountId,
+        cointype: cointype ?? this.cointype,
+        purpose: purpose ?? this.purpose,
+        amount: amount ?? this.amount,
+        inUSD: inUSD ?? this.inUSD,
+        symbol: symbol ?? this.symbol,
+        imgPath: imgPath ?? this.imgPath,
+        name: name ?? this.name,
+        accountType: accountType ?? this.accountType,
+        blockchainId: blockchainId ?? this.blockchainId,
+        network: network ?? this.network,
+        chainId: chainId ?? this.chainId,
+        decimals: decimals ?? this.decimals,
+        publish: publish ?? this.publish,
+        contract: contract ?? this.contract,
+        type: type ?? this.type,
+        accountSymbol: accountSymbol ?? this.accountSymbol,
+        accountDecimals: accountDecimals ?? this.accountDecimals,
+        accountAmount: accountAmount ?? this.accountAmount,
+        currencyId: currencyId ?? this.currencyId);
   }
 
   // Currency.fromMap(
@@ -240,16 +242,15 @@ class DisplayCurrency extends Equatable {
     String blockchainId,
   }) {
     return DisplayCurrency(
-      opened: opened ?? this.opened,
-      editable: editable ?? this.editable,
-      symbol: symbol ?? this.symbol,
-      name: name ?? this.name,
-      icon: icon ?? this.icon,
-      currencyId: currencyId ?? this.currencyId,
-      accountId: accountId ?? this.accountId,
-      contract: contract ?? this.contract,
-      blockchainId: blockchainId ?? this.blockchainId
-    );
+        opened: opened ?? this.opened,
+        editable: editable ?? this.editable,
+        symbol: symbol ?? this.symbol,
+        name: name ?? this.name,
+        icon: icon ?? this.icon,
+        currencyId: currencyId ?? this.currencyId,
+        accountId: accountId ?? this.accountId,
+        contract: contract ?? this.contract,
+        blockchainId: blockchainId ?? this.blockchainId);
   }
 
   @override
