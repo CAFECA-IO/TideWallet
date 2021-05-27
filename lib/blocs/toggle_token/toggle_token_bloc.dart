@@ -59,7 +59,8 @@ class ToggleTokenBloc extends Bloc<ToggletokenEvent, ToggleTokenState> {
           blockchainId: _list[index].blockchainId);
 
       if (event.value == true) {
-        Token token = Token(contract: _list[index].contract);
+        Token token =
+            Token(contract: _list[index].contract, imgUrl: _list[index].icon);
 
         bool success = await _repo.addToken(cur, token);
       }

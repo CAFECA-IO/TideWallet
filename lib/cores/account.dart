@@ -23,9 +23,6 @@ class AccountCore {
   List<Currency> accounts = [];
   Map<String, List<Currency>> _currencies = {};
   bool debugMode = false;
-
-  //
-  // Map<String, List<DisplayCurrency>> settingOptions = {};
   List<DisplayCurrency> settingOptions = [];
 
   Map<String, List<Currency>> get currencies {
@@ -212,6 +209,4 @@ class AccountCore {
 
   List<Currency> getAllCurrencies() =>
       this._currencies.values.reduce((currList, currs) => currList + currs);
-
- 
 }

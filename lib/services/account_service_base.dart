@@ -144,8 +144,8 @@ class AccountServiceBase extends AccountService {
     AccountEntity acc =
         await DBOperator().accountDao.findAccount(this._accountId);
 
-    APIResponse res = await HTTPAgent()
-        .get(Endpoint.url + '/blockchain/${acc.networkId}/token');
+    APIResponse res = await HTTPAgent().get(
+        Endpoint.url + '/blockchain/${acc.networkId}/token?type=TideWallet');
 
     if (res.data != null) {
       List tokens = res.data;
@@ -258,8 +258,8 @@ class AccountServiceBase extends AccountService {
   _getSettingTokens() async {
     AccountEntity acc =
         await DBOperator().accountDao.findAccount(this._accountId);
-    APIResponse response = await HTTPAgent()
-        .get('${Endpoint.url}/blockchain/${acc.networkId}/token?type=TideWallet');
+    APIResponse response = await HTTPAgent().get(
+        '${Endpoint.url}/blockchain/${acc.networkId}/token?type=TideWallet');
 
     if (response.success) {
       List<DisplayCurrency> ds = [...response.data].map((tk) {
@@ -270,8 +270,7 @@ class AccountServiceBase extends AccountService {
             currencyId: tk['currency_id'],
             contract: tk['contract'],
             accountId: this._accountId,
-            blockchainId: acc.networkId
-       );
+            blockchainId: acc.networkId);
       }).toList();
       AccountCore().settingOptions += ds;
     }

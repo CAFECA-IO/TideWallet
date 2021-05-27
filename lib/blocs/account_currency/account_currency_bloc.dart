@@ -72,7 +72,6 @@ class AccountCurrencyBloc
       List<Currency> list = [];
 
       list = _repo.getAllCurrencies();
-
       list = this.displayFilter(list);
 
       Decimal _total = Decimal.zero;

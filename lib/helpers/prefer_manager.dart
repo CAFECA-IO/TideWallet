@@ -73,7 +73,6 @@ class PrefManager {
     Map _map = json.decode(selected);
 
     _map[currencyId] = value;
-
     prefs.setString(SELECTED_DISPLAY, json.encode(_map));
 
     return _map;
