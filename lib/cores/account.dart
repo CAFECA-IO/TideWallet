@@ -23,6 +23,7 @@ class AccountCore {
   List<Currency> accounts = [];
   Map<String, List<Currency>> _currencies = {};
   bool debugMode = false;
+  List<DisplayCurrency> settingOptions = [];
 
   Map<String, List<Currency>> get currencies {
     return _currencies;
@@ -162,8 +163,7 @@ class AccountCore {
   }
 
   Future<List<AccountEntity>> _addAccount(List<AccountEntity> local) async {
-    APIResponse res =
-        await HTTPAgent().get(Endpoint.url + '/wallet/accounts');
+    APIResponse res = await HTTPAgent().get(Endpoint.url + '/wallet/accounts');
 
     List l = res.data ?? [];
     final user = await DBOperator().userDao.findUser();
@@ -189,12 +189,13 @@ class AccountCore {
     }
   }
 
-  Future _addSupportedCurrencies(List<CurrencyEntity>local) async {
+  Future _addSupportedCurrencies(List<CurrencyEntity> local) async {
     APIResponse res = await HTTPAgent().get(Endpoint.url + '/currency');
 
     if (res.data != null) {
       List l = res.data;
-      l.removeWhere((el) => local.indexWhere((c) => c.currencyId == el['currency_id']) > -1);
+      l.removeWhere((el) =>
+          local.indexWhere((c) => c.currencyId == el['currency_id']) > -1);
       l = l.map((c) => CurrencyEntity.fromJson(c)).toList();
       await DBOperator().currencyDao.insertCurrencies(l);
     }

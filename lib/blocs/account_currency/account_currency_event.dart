@@ -22,3 +22,9 @@ class CleanAccountCurrencies extends AccountCurrencyEvent {
   @override
   List<Object> get props => [];
 }
+
+class ToggleDisplay extends AccountCurrencyEvent {
+  final String currencyId;
+
+  ToggleDisplay(this.currencyId);
+}
