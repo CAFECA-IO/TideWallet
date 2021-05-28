@@ -81,7 +81,6 @@ class PrefManager {
   Future<Map> getSeletedDisplay() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String selected = prefs.getString(SELECTED_DISPLAY) ?? null;
-
     return selected != null ? json.decode(selected) : null;
   }
 
