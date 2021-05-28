@@ -112,6 +112,7 @@ class AccountCore {
     this._services = [];
     this.accounts = [];
     this._currencies = {};
+    this.settingOptions = [];
   }
 
   Future<bool> checkAccountExist() async {
