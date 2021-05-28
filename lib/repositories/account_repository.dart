@@ -18,17 +18,14 @@ class AccountRepository {
   List<DisplayCurrency> get displayCurrencies => AccountCore().settingOptions;
 
   AccountRepository() {
-    this
-        ._prefManager
-        .getSeletedDisplay()
-        .then((value) => this._preferDisplay = value);
-
     AccountCore().setMessenger();
   }
 
   Future coreInit({bool debugMode = false}) async {
     if (!AccountCore().isInit || debugMode) {
       AccountCore().setMessenger();
+
+      this._preferDisplay = await this._prefManager.getSeletedDisplay();
 
       return await AccountCore().init(debugMode: debugMode);
     }
@@ -65,7 +62,7 @@ class AccountRepository {
     AccountCore().messenger.add(
           AccountMessage(evt: ACCOUNT_EVT.ClearAll),
         );
-    // AccountCore().close();
+    AccountCore().close();
   }
 
   Future<Map> getSeletedDisplay() {
