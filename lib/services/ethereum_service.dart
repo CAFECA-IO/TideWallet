@@ -84,7 +84,6 @@ class EthereumService extends AccountServiceDecorator {
             '/wallet/blockchain/$blockchainId/contract/${tk.contract}',
         {});
     if (res.success == false) return false;
-    Log.debug('Token res.data: ${res.data}');
 
     try {
       String id = res.data['token_id'];
@@ -95,13 +94,7 @@ class EthereumService extends AccountServiceDecorator {
         final acc = updateRes.data;
         List tks = [acc] + acc['tokens'];
         final index = tks.indexWhere((token) => token['token_id'] == id);
-        var data = {
-          ...tks[index],
-          'icon': tk.imgUrl ?? acc['icon'],
-          'currency_id': id
-        };
-        Log.debug("Token data: $data");
-
+       
         await DBOperator().currencyDao.insertCurrency(
               CurrencyEntity.fromJson(
                 {
@@ -144,7 +137,7 @@ class EthereumService extends AccountServiceDecorator {
     } catch (e) {
       Log.error(e);
 
-      return false;
+      return null;
     }
   }
 
@@ -259,8 +252,8 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   @override
-  Future synchro() async {
-    await this.service.synchro();
+  Future synchro({bool force}) async {
+    await this.service.synchro(force: force);
   }
 
   @override
