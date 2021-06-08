@@ -10,10 +10,12 @@ import 'package:convert/convert.dart';
 void main() {
   String userIdentifier = 'test2ejknkjdniednwjq'; // utf
   String userId =
-      randomHex(64); // hex 我忘記長度多少,辦公室有寫,或是問路飛,或是看我的code有沒有寫筆記,我沒認真找
-  String userSecret = randomHex(64); // hex
-  String installId = randomHex(64); // hex
-  int timestamp = DateTime.now().millisecondsSinceEpoch;
+      '3fa33d09a46d4e31087a3b24dfe8dfb46750ce534641bd07fed54d2f23e97a0f'; //randomHex(64); // hex
+  String userSecret =
+      '971db42d2342f5e74a764e57e2d341103565f413a64f242d64b1f7024346a2e1'; //randomHex(64); // hex
+  String installId =
+      '11f6d3e524f367952cb838bf7ef24e0cfb5865d7b8a8fe5c699f748b2fada249'; //randomHex(64); // hex
+  int timestamp = 1623129204183; //DateTime.now().millisecondsSinceEpoch;
 
   ///
   int nonce;
@@ -22,6 +24,7 @@ void main() {
   Uint8List nonceBuffer;
   group('user function test', () {
     test('getUserIdentifierBuffer', () {
+      print(timestamp);
       Uint8List _userIdentifierBuffer = ascii.encode(userIdentifier);
       userIdentifierBuffer = _userIdentifierBuffer;
       print("userIdentifierBuffer: $userIdentifierBuffer");
