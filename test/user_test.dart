@@ -8,12 +8,12 @@ import 'package:tidewallet3/helpers/rlp.dart' as rlp;
 import 'package:convert/convert.dart';
 
 void main() {
-  String userIdentifier = 'test'; // utf
+  String userIdentifier = 'test2ejknkjdniednwjq'; // utf
   String userId =
-      randomHex(16); // hex 我忘記長度多少,辦公室有寫,或是問路飛,或是看我的code有沒有寫筆記,我沒認真找
-  String userSecret = randomHex(16); // hex
-  String installId = randomHex(16); // hex
-  int timestamp = DateTime.now().millisecond;
+      randomHex(64); // hex 我忘記長度多少,辦公室有寫,或是問路飛,或是看我的code有沒有寫筆記,我沒認真找
+  String userSecret = randomHex(64); // hex
+  String installId = randomHex(64); // hex
+  int timestamp = DateTime.now().millisecondsSinceEpoch;
 
   ///
   int nonce;
