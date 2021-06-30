@@ -14,6 +14,7 @@ import '../helpers/i18n.dart';
 import 'currency.screen.dart';
 import 'transaction_list.screen.dart';
 import 'add_currency.screen.dart';
+import '../screens/toggle_currency.screen.dart';
 
 final t = I18n.t;
 
@@ -92,24 +93,26 @@ class _AccountCurrencyScreenState extends State<AccountCurrencyScreen> {
             );
           },
         ),
-        // Positioned(
-        //   child: InkWell(
-        //     onTap: () {
-        //       Currency currency = _currencies[_currencies.indexWhere(
-        //           (curr) => curr.blockchainId.toUpperCase() == '8000025B')];
-        //       Navigator.of(context).pushNamed(AddCurrencyScreen.routeName,
-        //           arguments: {"account": currency});
-        //     },
-        //     child: Container(
-        //       child: Text(
-        //         '+ ${t('add_currency')}',
-        //         style: TextStyle(color: Colors.white),
-        //       ),
-        //     ),
-        //   ),
-        //   top: 170.0,
-        //   right: 12.0,
-        // ),
+        Positioned(
+          child: InkWell(
+            onTap: () {
+              // Currency currency = _currencies[_currencies.indexWhere(
+              //     (curr) => curr.blockchainId.toUpperCase() == '8000025B')];
+              // Navigator.of(context).pushNamed(AddCurrencyScreen.routeName,
+              //     arguments: {"account": currency});
+
+                Navigator.of(context).pushNamed(ToggleCurrencyScreen.routeName);
+            },
+            child: Container(
+              child: Text(
+                '+ ${t('add_currency')}',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ),
+          top: 170.0,
+          right: 12.0,
+        ),
       ],
     );
   }

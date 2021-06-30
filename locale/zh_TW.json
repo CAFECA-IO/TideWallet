@@ -171,5 +171,8 @@
   "mnemonic_enter": "輸入助記詞",
   "mnemonic_message": "請用空格區隔不同助記詞",
   "error_mnemonic": "助記詞錯誤",
-  "error_login": "登入錯誤"
+  "error_login": "登入錯誤",
+  "copied": "已複製",
+  "reset_message": "確定重設錢包？",
+  "connect": "連接"
 }

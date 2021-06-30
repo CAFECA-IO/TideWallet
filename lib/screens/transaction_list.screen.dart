@@ -141,7 +141,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                         () {
                           Navigator.of(context).pushNamed(
                               CreateTransactionScreen.routeName,
-                              arguments: {"account": _currency});
+                              arguments: {"account": state.currency});
                         },
                         textColor: MyColors.primary_04,
                         iconImg:

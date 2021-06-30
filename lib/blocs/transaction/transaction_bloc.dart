@@ -27,8 +27,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     this._repo.listener.listen((msg) {
       if (msg.evt == ACCOUNT_EVT.OnUpdateCurrency) {
         int index = msg.value.indexWhere((Currency currency) =>
-            currency.accountType == this._repo.currency.accountType);
-        if (index > 0) {
+            currency.id == this._repo.currency.id);
+
+        if (index >= 0) {
           Currency currency = msg.value[index];
           this.add(UpdateTransactionCreateCurrency(currency));
         }
@@ -52,10 +53,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             event is InputGasLimit)
         .debounceTime(Duration(milliseconds: 1000));
 
-    final debounceAddressStream = events.where((event) => event is ValidAddress).debounceTime(Duration(milliseconds: 1000));
+    final debounceAddressStream = events
+        .where((event) => event is ValidAddress)
+        .debounceTime(Duration(milliseconds: 1000));
 
     return super.transformEvents(
-        MergeStream([nonDebounceStream, debounceStream, debounceAddressStream]), transitionFn);
+        MergeStream([nonDebounceStream, debounceStream, debounceAddressStream]),
+        transitionFn);
   }
 
   @override
@@ -105,8 +109,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       );
     }
     if (event is VerifyAmount) {
-
-      
       bool rule2 = false;
       List<dynamic> result;
       List<bool> rules = [_state.rules[0], rule2];
@@ -120,7 +122,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       amount = Decimal.tryParse(event.amount);
       if (_state.rules[0] && amount != null) {
         result = await _repo.getTransactionFee(
-           amount: amount, address: _state.address);
+            amount: amount, address: _state.address);
         if (result.length == 1) {
           _gasPrice = result[0];
           fee = _gasPrice[TransactionPriority.standard];
@@ -197,6 +199,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             gasPrice: gasPrice,
             message: message,
             rules: [_state.rules[0], rule2]);
+      } else {
+        yield _state.copyWith(priority: event.priority);
       }
     }
     if (event is InputGasLimit) {
@@ -250,8 +254,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           yield TransactionSent();
         else
           yield CreateTransactionFail();
+        yield _state;
       } catch (e) {
+        // TODO: Don't Use try catch,
+        // Transaction Bitcoin _signTransaction sometimes got error
+        Log.error(e);
         yield CreateTransactionFail();
+        yield _state;
       }
     }
   }

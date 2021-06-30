@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:tidewallet3/blocs/toggle_token/toggle_token_bloc.dart';
 
 import '../database/db_operator.dart';
 import './welcome.screen.dart';
@@ -25,6 +26,7 @@ class _LandingScreenState extends State<LandingScreen> {
   FiatBloc _fiatBloc;
   AccountCurrencyBloc _accountBloc;
   FCM _fcm = FCM();
+  ToggleTokenBloc _ttBloc;
 
   @override
   void initState() {
@@ -39,11 +41,12 @@ class _LandingScreenState extends State<LandingScreen> {
   void didChangeDependencies() async {
     Map<String, bool> arg = ModalRoute.of(context).settings.arguments;
     bool debugMode = arg != null ? arg["debugMode"] : false;
+    _ttBloc = BlocProvider.of<ToggleTokenBloc>(context);
 
     if (_isInit) {
       Firebase.initializeApp().whenComplete(() => {});
     }
-    
+
     if (_isInit || debugMode) {
       await DBOperator().init();
       // force AccountCurrencyBloc call constructor
@@ -101,6 +104,8 @@ class _LandingScreenState extends State<LandingScreen> {
             );
           }
           if (state is UserSuccess) {
+            _ttBloc.add(InitTokens());
+
             return AuthenticateScreen();
           }
           return WelcomeScreen();

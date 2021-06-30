@@ -1,13 +1,21 @@
 import 'package:rxdart/subjects.dart';
+import 'package:tidewallet3/services/account_service.dart';
 
 import '../models/account.model.dart';
 import '../cores/account.dart';
 import '../constants/account_config.dart';
 import '../services/ethereum_service.dart';
 import '../helpers/ethereum_based_utils.dart';
+import '../helpers/prefer_manager.dart';
 
 class AccountRepository {
   PublishSubject<AccountMessage> get listener => AccountCore().messenger;
+  PrefManager _prefManager = PrefManager();
+  Map _preferDisplay = {};
+
+  Map get preferDisplay => this._preferDisplay;
+  // Map<String, List<DisplayCurrency>> get displayCurrencies => AccountCore().settingOptions;
+  List<DisplayCurrency> get displayCurrencies => AccountCore().settingOptions;
 
   AccountRepository() {
     AccountCore().setMessenger();
@@ -15,6 +23,10 @@ class AccountRepository {
 
   Future coreInit({bool debugMode = false}) async {
     if (!AccountCore().isInit || debugMode) {
+      AccountCore().setMessenger();
+
+      this._preferDisplay = await this._prefManager.getSeletedDisplay();
+
       return await AccountCore().init(debugMode: debugMode);
     }
 
@@ -51,5 +63,28 @@ class AccountRepository {
           AccountMessage(evt: ACCOUNT_EVT.ClearAll),
         );
     AccountCore().close();
+  }
+
+  Future<Map> getSeletedDisplay() {
+    return this._prefManager.getSeletedDisplay();
+  }
+
+  Future toggleDisplay(Currency currency, bool value) async {
+    final result = await this
+        ._prefManager
+        .setSelectedDisplay(currency.accountId, currency.currencyId, value);
+    this._preferDisplay = result;
+
+    if (value == true) {
+      AccountService _service = AccountCore().getService(currency.accountId);
+      _service.synchro(force: true);
+    } else {
+      AccountMessage msg = AccountMessage(
+          evt: ACCOUNT_EVT.ToggleDisplayCurrency, value: currency.currencyId);
+
+      AccountCore().messenger.add(msg);
+    }
+
+    return this._preferDisplay;
   }
 }

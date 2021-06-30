@@ -7,6 +7,7 @@ class PrefManager {
   static const String INSTALL_ID_KEY = "installation_id";
   static const String AUTH_ITEM_KEY = 'auth_item';
   static const String SELECTED_FIAT_KEY = 'selected_fiat';
+  static const String SELECTED_DISPLAY = 'selected_display';
 
   Future<void> clearAll() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -58,13 +59,31 @@ class PrefManager {
     prefs.setString(SELECTED_FIAT_KEY, symbol);
   }
 
-   Future<String> getSeletedFiat() async {
+  Future<String> getSeletedFiat() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String selected = prefs.getString(SELECTED_FIAT_KEY) ?? null;
 
     return selected;
   }
 
-  // Set Notification
-  // Set language
+  Future<Map> setSelectedDisplay(
+      String accountId, String currencyId, bool value) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String selected = prefs.getString(SELECTED_DISPLAY) ?? '{}';
+    Map _map = json.decode(selected);
+
+    _map[currencyId] = value;
+    prefs.setString(SELECTED_DISPLAY, json.encode(_map));
+
+    return _map;
+  }
+
+  Future<Map> getSeletedDisplay() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String selected = prefs.getString(SELECTED_DISPLAY) ?? null;
+    return selected != null ? json.decode(selected) : null;
+  }
+
+  // TODO: Set Notification
+  // TODO: Set language
 }

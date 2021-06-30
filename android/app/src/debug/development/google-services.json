@@ -30,6 +30,14 @@
           }
         },
         {
+          "client_id": "245743164556-pfsi9k7ojnad0raev1me16prnpnqht3k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tideisun.tidewallet3.dev",
+            "certificate_hash": "9cc9cbbb2c7bac5e399bf18ab5eedd8cce0cdd04"
+          }
+        },
+        {
           "client_id": "245743164556-2far7f3p2mpt4ndmp5dbufi4jjitnnag.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -45,6 +53,13 @@
             {
               "client_id": "245743164556-2far7f3p2mpt4ndmp5dbufi4jjitnnag.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "245743164556-0vekl7jheucvb0tknmanntdiil4rb1qd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.tideisun.tidewallet3.dev"
+              }
             }
           ]
         }

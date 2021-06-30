@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
@@ -47,10 +48,10 @@ class MnemonicBloc extends Bloc<MnemonicEvent, MnemonicState> {
 
         if (valid) {
           Uint8List seed =
-              await _repo.mnemonicToSeed(_state.mnemonic, _state.passphrase);
-
+              await _repo.mnemonicToSeed(_state.mnemonic.trimRight(), _state.passphrase);
           try {
-            List result = await _repo.signInWithAppleId();
+            final signin = Platform.isIOS ? _repo.signInWithAppleId : _repo.signInWithGoogleId;
+            List result =  await signin();
 
             if (result[0]) {
               yield MnemonicSuccess(result[1], seed);

@@ -60,7 +60,7 @@ class BitcoinService extends AccountServiceDecorator {
         DateTime.now().millisecondsSinceEpoch - _timestamp >
             this.AVERAGE_FETCH_FEE_TIME) {
       APIResponse response = await HTTPAgent()
-          .get('${Endpoint.SUSANOO}/blockchain/$blockchainId/fee');
+          .get('${Endpoint.url}/blockchain/$blockchainId/fee');
       if (response.success) {
         Map<String, dynamic> data = response.data; // FEE will return String
 
@@ -82,7 +82,7 @@ class BitcoinService extends AccountServiceDecorator {
   @override
   Future<List> getChangingAddress(String currencyId) async {
     APIResponse response = await HTTPAgent()
-        .get('${Endpoint.SUSANOO}/wallet/account/address/$currencyId/change');
+        .get('${Endpoint.url}/wallet/account/address/$currencyId/change');
     if (response.success) {
       Map data = response.data;
       String _address = data['address'];
@@ -97,7 +97,7 @@ class BitcoinService extends AccountServiceDecorator {
   @override
   Future<List> getReceivingAddress(String currencyId) async {
     APIResponse response = await HTTPAgent()
-        .get('${Endpoint.SUSANOO}/wallet/account/address/$currencyId/receive');
+        .get('${Endpoint.url}/wallet/account/address/$currencyId/receive');
     if (response.success) {
       Map data = response.data;
       String address = data['address'];
@@ -156,7 +156,7 @@ class BitcoinService extends AccountServiceDecorator {
   Future<List> publishTransaction(
       String blockchainId, Transaction transaction) async {
     APIResponse response = await HTTPAgent().post(
-        '${Endpoint.SUSANOO}/blockchain/$blockchainId/push-tx',
+        '${Endpoint.url}/blockchain/$blockchainId/push-tx',
         {"hex": hex.encode(transaction.serializeTransaction)});
     bool success = response.success;
     BitcoinTransaction _transaction;
@@ -201,7 +201,7 @@ class BitcoinService extends AccountServiceDecorator {
       Log.btc('_syncUTXO currencyId: $currencyId');
 
       APIResponse response = await HTTPAgent()
-          .get('${Endpoint.SUSANOO}/wallet/account/txs/uxto/$currencyId');
+          .get('${Endpoint.url}/wallet/account/txs/uxto/$currencyId');
       if (response.success) {
         List<dynamic> datas = response.data;
         List<UtxoEntity> utxos =
@@ -214,8 +214,8 @@ class BitcoinService extends AccountServiceDecorator {
   }
 
   @override
-  Future synchro() async {
-    await this.service.synchro();
+  Future synchro({bool force}) async {
+    await this.service.synchro(force: force);
     await this._syncUTXO();
   }
 

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,7 +8,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
-import 'package:tidewallet3/blocs/invest_plan/invest_plan_bloc.dart';
 
 import './repositories/account_repository.dart';
 import './repositories/transaction_repository.dart';
@@ -34,25 +35,28 @@ import './screens/update_password.screen.dart';
 import './screens/add_investment.screen.dart';
 import './screens/scan.screen.dart';
 import './screens/recover_mnemonic.screen.dart';
+import './screens/toggle_currency.screen.dart';
 import './blocs/fiat/fiat_bloc.dart';
 import './blocs/account_currency/account_currency_bloc.dart';
 import './blocs/delegate.dart';
 import './blocs/user/user_bloc.dart';
+import './blocs/toggle_token/toggle_token_bloc.dart';
 import './blocs/transaction/transaction_bloc.dart';
 // import './blocs/transaction_status/transaction_status_bloc.dart';
 import './blocs/restore_wallet/restore_wallet_bloc.dart';
 import './blocs/backup/backup_bloc.dart';
 import './blocs/receive/receive_bloc.dart';
+import './blocs/invest_plan/invest_plan_bloc.dart';
 import './blocs/local_auth/local_auth_bloc.dart';
 import './blocs/invest/invest_bloc.dart';
 import './helpers/i18n.dart';
+import 'constants/endpoint.dart';
 import 'theme.dart';
 
-
 void main() async {
-
   runApp(MyApp());
   Bloc.observer = ObserverDelegate();
+  await Endpoint.init();
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -62,7 +66,6 @@ void main() async {
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class MyApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -144,6 +147,11 @@ class MyApp extends StatelessWidget {
                 Provider.of<LocalAuthRepository>(context, listen: false),
               )..add(Authenticate()),
             ),
+            BlocProvider<ToggleTokenBloc>(
+              create: (BuildContext context) => ToggleTokenBloc(
+                Provider.of<AccountRepository>(context, listen: false),
+              ),
+            )
             // BlocProvider<ReceiveBloc>(
             //   create: (BuildContext context) => ReceiveBloc(
             //     Provider.of<AccountRepository>(context, listen: false),
@@ -187,7 +195,8 @@ MaterialApp _material = MaterialApp(
     FeedbackScreen.routeName: (context) => FeedbackScreen(),
     TermsScreen.routeName: (context) => TermsScreen(),
     ScanScreen.routeName: (context) => ScanScreen(),
-    RecoverMemonicScreen.routeName: (context) => RecoverMemonicScreen()
+    RecoverMemonicScreen.routeName: (context) => RecoverMemonicScreen(),
+    ToggleCurrencyScreen.routeName: (context) => ToggleCurrencyScreen(),
   },
   localizationsDelegates: [
     const I18nDelegate(),

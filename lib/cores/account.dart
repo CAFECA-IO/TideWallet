@@ -23,6 +23,7 @@ class AccountCore {
   List<Currency> accounts = [];
   Map<String, List<Currency>> _currencies = {};
   bool debugMode = false;
+  List<DisplayCurrency> settingOptions = [];
 
   Map<String, List<Currency>> get currencies {
     return _currencies;
@@ -111,6 +112,7 @@ class AccountCore {
     this._services = [];
     this.accounts = [];
     this._currencies = {};
+    this.settingOptions = [];
   }
 
   Future<bool> checkAccountExist() async {
@@ -133,7 +135,7 @@ class AccountCore {
         await DBOperator().networkDao.findAllNetworks();
 
     if (networks.isEmpty) {
-      APIResponse res = await HTTPAgent().get(Endpoint.SUSANOO + '/blockchain');
+      APIResponse res = await HTTPAgent().get(Endpoint.url + '/blockchain');
       List l = res.data;
 
       networks = l.map((chain) => NetworkEntity.fromJson(chain)).toList();
@@ -162,8 +164,7 @@ class AccountCore {
   }
 
   Future<List<AccountEntity>> _addAccount(List<AccountEntity> local) async {
-    APIResponse res =
-        await HTTPAgent().get(Endpoint.SUSANOO + '/wallet/accounts');
+    APIResponse res = await HTTPAgent().get(Endpoint.url + '/wallet/accounts');
 
     List l = res.data ?? [];
     final user = await DBOperator().userDao.findUser();
@@ -189,12 +190,13 @@ class AccountCore {
     }
   }
 
-  Future _addSupportedCurrencies(List<CurrencyEntity>local) async {
-    APIResponse res = await HTTPAgent().get(Endpoint.SUSANOO + '/currency');
+  Future _addSupportedCurrencies(List<CurrencyEntity> local) async {
+    APIResponse res = await HTTPAgent().get(Endpoint.url + '/currency');
 
     if (res.data != null) {
       List l = res.data;
-      l.removeWhere((el) => local.indexWhere((c) => c.currencyId == el['currency_id']) > -1);
+      l.removeWhere((el) =>
+          local.indexWhere((c) => c.currencyId == el['currency_id']) > -1);
       l = l.map((c) => CurrencyEntity.fromJson(c)).toList();
       await DBOperator().currencyDao.insertCurrencies(l);
     }

@@ -79,7 +79,7 @@ class HTTPAgent {
     _dio.interceptors.responseLock.lock();
 
     APIResponse res = await this.post(
-        Endpoint.SUSANOO, {'token': tk.token, 'tokenSecret': tk.tokenSecret});
+        Endpoint.url, {'token': tk.token, 'tokenSecret': tk.tokenSecret});
     _dio.interceptors.requestLock.unlock();
     _dio.interceptors.responseLock.unlock();
 

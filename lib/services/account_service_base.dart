@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:decimal/decimal.dart';
+import 'package:tidewallet3/helpers/logger.dart';
 
 import '../constants/endpoint.dart';
 import '../constants/account_config.dart';
@@ -43,6 +44,7 @@ class AccountServiceBase extends AccountService {
 
     await this._pushResult();
     await this._getSupportedToken();
+    await this._getSettingTokens();
 
     if (select != null) {
       this._lastSyncTimestamp = select.lastSyncTime;
@@ -64,7 +66,7 @@ class AccountServiceBase extends AccountService {
 
   Future<List> getData() async {
     APIResponse res = await HTTPAgent()
-        .get(Endpoint.SUSANOO + '/wallet/account/${this._accountId}');
+        .get(Endpoint.url + '/wallet/account/${this._accountId}');
     final acc = res.data;
 
     if (acc != null) {
@@ -76,7 +78,7 @@ class AccountServiceBase extends AccountService {
             _currs.indexWhere((_curr) => _curr.currencyId == token['token_id']);
 
         if (index < 0) {
-          APIResponse res = await HTTPAgent().get(Endpoint.SUSANOO +
+          APIResponse res = await HTTPAgent().get(Endpoint.url +
               '/blockchain/${token['blockchain_id']}/token/${token['token_id']}');
           if (res.data != null) {
             Map token = res.data;
@@ -93,10 +95,10 @@ class AccountServiceBase extends AccountService {
     return [];
   }
 
-  synchro() async {
+  synchro({bool force}) async {
     int now = DateTime.now().millisecondsSinceEpoch;
 
-    if (now - this._lastSyncTimestamp > this._syncInterval) {
+    if (now - this._lastSyncTimestamp > this._syncInterval || force == true) {
       List currs = await this.getData();
       final v = currs
           .map((c) => AccountCurrencyEntity.fromJson(c, this._accountId, now))
@@ -121,15 +123,15 @@ class AccountServiceBase extends AccountService {
         )
         .toList();
 
-    AccountMessage msg =
-        AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: cs[0]);
+    // AccountMessage msg =
+    //     AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: cs[0]);
     AccountCore().currencies[this._accountId] = cs;
 
     AccountMessage currMsg = AccountMessage(
         evt: ACCOUNT_EVT.OnUpdateCurrency,
         value: AccountCore().currencies[this._accountId]);
 
-    AccountCore().messenger.add(msg);
+    // AccountCore().messenger.add(msg);
     AccountCore().messenger.add(currMsg);
   }
 
@@ -137,12 +139,13 @@ class AccountServiceBase extends AccountService {
     final tokens = await DBOperator()
         .currencyDao
         .findAllCurrenciesByAccountId(this._accountId);
+
     if (tokens.isNotEmpty) return;
     AccountEntity acc =
         await DBOperator().accountDao.findAccount(this._accountId);
 
-    APIResponse res = await HTTPAgent()
-        .get(Endpoint.SUSANOO + '/blockchain/${acc.networkId}/token');
+    APIResponse res = await HTTPAgent().get(
+        Endpoint.url + '/blockchain/${acc.networkId}/token?type=TideWallet');
 
     if (res.data != null) {
       List tokens = res.data;
@@ -169,7 +172,7 @@ class AccountServiceBase extends AccountService {
 
   Future<List<TransactionEntity>> _getTransactions(Currency currency) async {
     APIResponse res = await HTTPAgent()
-        .get(Endpoint.SUSANOO + '/wallet/account/txs/${currency.id}');
+        .get(Endpoint.url + '/wallet/account/txs/${currency.id}');
 
     if (res.success) {
       List txs = res.data;
@@ -250,5 +253,26 @@ class AccountServiceBase extends AccountService {
     await DBOperator().accountCurrencyDao.insertAccount(updated);
 
     this._pushResult();
+  }
+
+  _getSettingTokens() async {
+    AccountEntity acc =
+        await DBOperator().accountDao.findAccount(this._accountId);
+    APIResponse response = await HTTPAgent().get(
+        '${Endpoint.url}/blockchain/${acc.networkId}/token?type=TideWallet');
+
+    if (response.success) {
+      List<DisplayCurrency> ds = [...response.data].map((tk) {
+        return DisplayCurrency(
+            symbol: tk['symbol'],
+            name: tk['name'],
+            icon: tk['icon'],
+            currencyId: tk['currency_id'],
+            contract: tk['contract'],
+            accountId: this._accountId,
+            blockchainId: acc.networkId);
+      }).toList();
+      AccountCore().settingOptions += ds;
+    }
   }
 }
