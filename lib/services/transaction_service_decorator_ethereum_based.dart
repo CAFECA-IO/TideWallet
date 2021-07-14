@@ -18,6 +18,23 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
   EthereumTransaction _signTransaction(
       EthereumTransaction transaction, Uint8List privKey) {
     Log.debug('ETH from privKey: $privKey');
+    Log.debug('_signTransaction nonce: ${transaction.nonce}');
+    Log.debug('_signTransaction gasPrice: ${transaction.gasPrice}');
+    Log.debug(
+        '_signTransaction BigInt.parse(gasPrice): ${BigInt.parse(transaction.gasPrice.toString())}');
+    Log.debug('_signTransaction gasUsed: ${transaction.gasUsed}');
+    Log.debug('_signTransaction gasUsedToInt: ${transaction.gasUsed.toInt()}');
+    Log.debug('_signTransaction amount: ${transaction.amount}');
+    Log.debug(
+        '_signTransaction BigInt.parse(amount): ${BigInt.parse(transaction.amount.toString())}');
+    Log.debug('_signTransaction message: ${transaction.message}');
+    Log.debug('_signTransaction to: ${transaction.to}');
+    Log.debug(
+        '_signTransaction getEthereumAddressBytes(transaction.to): ${getEthereumAddressBytes(transaction.to)}');
+    Log.debug('_signTransaction signature.v: ${transaction.signature.v}');
+    Log.debug('_signTransaction signature.r: ${transaction.signature.r}');
+    Log.debug('_signTransaction signature.s: ${transaction.signature.s}');
+
     Uint8List payload = encodeToRlp(transaction);
     Uint8List rawDataHash =
         Uint8List.fromList(Cryptor.keccak256round(payload, round: 1));
