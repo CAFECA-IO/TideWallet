@@ -8,6 +8,7 @@ import '../models/ethereum_transaction.model.dart';
 import '../helpers/ethereum_based_utils.dart';
 import '../helpers/cryptor.dart';
 import '../helpers/logger.dart';
+import 'package:convert/convert.dart';
 
 class EthereumBasedTransactionServiceDecorator extends TransactionService {
   final TransactionService service;
@@ -17,33 +18,19 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
 
   EthereumTransaction _signTransaction(
       EthereumTransaction transaction, Uint8List privKey) {
-    Log.debug('ETH from privKey: $privKey');
-    Log.debug('_signTransaction nonce: ${transaction.nonce}');
-    Log.debug('_signTransaction gasPrice: ${transaction.gasPrice}');
-    Log.debug(
-        '_signTransaction BigInt.parse(gasPrice): ${BigInt.parse(transaction.gasPrice.toString())}');
-    Log.debug('_signTransaction gasUsed: ${transaction.gasUsed}');
-    Log.debug('_signTransaction gasUsedToInt: ${transaction.gasUsed.toInt()}');
-    Log.debug('_signTransaction amount: ${transaction.amount}');
-    Log.debug(
-        '_signTransaction BigInt.parse(amount): ${BigInt.parse(transaction.amount.toString())}');
-    Log.debug('_signTransaction message: ${transaction.message}');
-    Log.debug('_signTransaction to: ${transaction.to}');
-    Log.debug(
-        '_signTransaction getEthereumAddressBytes(transaction.to): ${getEthereumAddressBytes(transaction.to)}');
-    Log.debug('_signTransaction signature.v: ${transaction.signature.v}');
-    Log.debug('_signTransaction signature.r: ${transaction.signature.r}');
-    Log.debug('_signTransaction signature.s: ${transaction.signature.s}');
-
     Uint8List payload = encodeToRlp(transaction);
     Uint8List rawDataHash =
         Uint8List.fromList(Cryptor.keccak256round(payload, round: 1));
     MsgSignature signature = Signer().sign(rawDataHash, privKey);
     Log.debug('ETH signature: $signature');
+    Log.debug('ETH signature.v: ${signature.v}');
+    Log.debug('ETH signature.v: ${transaction.chainId}');
 
     final chainIdV = transaction.chainId != null
         ? (signature.v - 27 + (transaction.chainId * 2 + 35))
         : signature.v;
+    Log.debug('ETH chainIdV $chainIdV');
+
     signature = MsgSignature(signature.r, signature.s, chainIdV);
     transaction.signature = signature;
     return transaction;
@@ -78,6 +65,7 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
       signature: MsgSignature(BigInt.zero, BigInt.zero, chainId),
       fee: gasLimit * gasPrice, // in wei
     );
+    Log.debug(hex.encode(transaction.serializeTransaction));
     return _signTransaction(transaction, privKey);
   }
 

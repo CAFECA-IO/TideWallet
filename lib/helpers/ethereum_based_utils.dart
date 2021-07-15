@@ -104,7 +104,7 @@ Uint8List encodeToRlp(EthereumTransaction transaction) {
   ];
 
   if (transaction.to != null) {
-    list.add(getEthereumAddressBytes(transaction.to));
+    list.add(transaction.to);
   } else {
     list.add('');
   }
