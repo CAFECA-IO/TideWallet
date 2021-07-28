@@ -26,8 +26,10 @@ String eip55Address(String address) {
   }
 
   final String addr = stripHexPrefix(address).toLowerCase();
+  Log.debug(hex.encode(Cryptor.keccak256round(hex.decode(address), round: 1)));
   final Uint8List hash = ascii
       .encode(hex.encode(Cryptor.keccak256round(ascii.encode(addr), round: 1)));
+  Log.debug(hex.encode(hash));
 
   var newAddr = "0x";
 
@@ -70,7 +72,8 @@ bool verifyEthereumAddress(String address) {
   } catch (err) {
     return false;
   }
-
+  Log.debug(checksumAddress.substring(2));
+  Log.debug(address);
   return address == checksumAddress.substring(2);
 }
 
