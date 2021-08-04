@@ -99,6 +99,8 @@ dependencies {
 
 android {
     defaultConfig {
+        minSdkVersion 20
+        targetSdkVersion 28
         multiDexEnabled true
     }
 }
