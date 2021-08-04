@@ -42,7 +42,7 @@ Uint8List _randomBytes(int size) {
 String _deriveChecksumBits(Uint8List entropy) {
   final ent = entropy.length * 8;
   final cs = ent ~/ 32;
-  final hash = sha256.newInstance().convert(entropy);
+  final hash = sha256.convert(entropy);
   return _bytesToBinary(Uint8List.fromList(hash.bytes)).substring(0, cs);
 }
 

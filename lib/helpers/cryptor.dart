@@ -7,7 +7,6 @@ import 'package:bs58check/bs58check.dart';
 import 'package:sha3/sha3.dart';
 // import 'package:bird_cryptography/bird_cryptography.dart' as bird;
 // ignore: implementation_imports
-import 'package:crypto/src/sha256.dart' as SHA256;
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart' as crypto;
 
@@ -53,7 +52,7 @@ class Cryptor {
   static List<int> sha256round(List<int> buffer, {int round = 2}) {
     List<int> result = buffer;
     if (round > 0) {
-      List<int> hash = SHA256.sha256.newInstance().convert(buffer).bytes;
+      List<int> hash = crypto.sha256.convert(buffer).bytes;
 
       result = hash;
 

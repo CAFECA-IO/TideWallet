@@ -41,7 +41,7 @@ class TransactionEntity {
 
   // final int locktime;
 
-  @ColumnInfo(nullable: false)
+  // @ColumnInfo(nullable: false)
   final String fee;
 
   final String note;

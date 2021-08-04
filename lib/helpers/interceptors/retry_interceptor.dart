@@ -7,32 +7,34 @@ class RetryInterceptor extends Interceptor {
   final Dio dio;
   final RetryOptions options;
   RetryInterceptor(
-    this.dio,
-    {
+    this.dio, {
     this.options = const RetryOptions(),
   });
 
   @override
-  Future onError(DioError err) async {
-    var extra = RetryOptions.fromExtra(err.request) ?? this.options;
+  Future onError(DioError err, ErrorInterceptorHandler handler) async {
+    var extra = RetryOptions.fromExtra(err.requestOptions) ?? this.options;
 
     if (_shouldRetry(err, extra)) {
       await Future.delayed(extra.sleepTime);
-      Log.warning('Retry::${err.request.path}');
+      Log.warning('Retry::${err.requestOptions.path}');
       extra = extra.copyWith(retryCount: extra.retryCount - 1);
-      err.request.extra = err.request.extra..addAll(extra.toExtra());
+      err.requestOptions.extra = err.requestOptions.extra
+        ..addAll(extra.toExtra());
 
       return await this.dio.request(
-            err.request.path,
-            cancelToken: err.request.cancelToken,
-            data: err.request.data,
-            onReceiveProgress: err.request.onReceiveProgress,
-            onSendProgress: err.request.onSendProgress,
-            queryParameters: err.request.queryParameters,
-            options: err.request,
+            err.requestOptions.path,
+            cancelToken: err.requestOptions.cancelToken,
+            data: err.requestOptions.data,
+            onReceiveProgress: err.requestOptions.onReceiveProgress,
+            onSendProgress: err.requestOptions.onSendProgress,
+            queryParameters: err.requestOptions.queryParameters,
+            options: Options(
+                method: err.requestOptions.method,
+                headers: err.requestOptions.headers),
           );
     }
-    return super.onError(err);
+    return super.onError(err, handler);
   }
 
   bool _shouldRetry(DioError err, RetryOptions extra) {
@@ -40,7 +42,7 @@ class RetryInterceptor extends Interceptor {
       Log.error('Error::exceed retryCount but not reach endpoint');
     }
     return extra.retryCount > 0 &&
-        err.type == DioErrorType.DEFAULT &&
+        err.type == DioErrorType.other &&
         err.error != null &&
         err.error is SocketException;
   }
@@ -85,10 +87,11 @@ class RetryOptions {
     return Options(extra: this.toExtra());
   }
 
+// ++ merge is no longer supported
   Options mergeIn(Options options) {
-    return options.merge(
-        extra: <String, dynamic>{}
-          ..addAll(options.extra ?? {})
-          ..addAll(this.toExtra()));
+    //   return options.merge(
+    //       extra: <String, dynamic>{}
+    //         ..addAll(options.extra ?? {})
+    //         ..addAll(this.toExtra()));
   }
 }

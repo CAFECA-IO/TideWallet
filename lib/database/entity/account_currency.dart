@@ -22,7 +22,7 @@ import 'currency.dart';
 )
 class AccountCurrencyEntity {
   @primaryKey
-  @ColumnInfo(name: 'accountcurrency_id', nullable: false)
+  @ColumnInfo(name: 'accountcurrency_id') // --  nullable: false
   final String accountcurrencyId;
 
   @ColumnInfo(name: 'account_id')
@@ -84,7 +84,7 @@ class AccountCurrencyEntity {
     'SELECT * FROM AccountCurrency INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id INNER JOIN Account ON AccountCurrency.account_id = Account.account_id INNER JOIN Network ON Account.network_id = Network.network_id',
     viewName: 'JoinCurrency')
 class JoinCurrency {
-  @ColumnInfo(name: 'accountcurrency_id', nullable: false)
+  @ColumnInfo(name: 'accountcurrency_id') // --  nullable: false
   final String accountcurrencyId;
 
   final String symbol;

@@ -16,7 +16,7 @@ class UserEntity {
 
   final int timestamp;
 
-  @ColumnInfo(name: 'backup_status', nullable: false)
+  @ColumnInfo(name: 'backup_status') // --  nullable: false
   final bool backupStatus;
 
   UserEntity(
