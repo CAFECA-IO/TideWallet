@@ -6,7 +6,9 @@
 
 
 ## Flutter
-- version: 2.0.3
+- version: 2.2.3
+## Dart
+- version: 2.13.4
 
 
 ## Upgrade

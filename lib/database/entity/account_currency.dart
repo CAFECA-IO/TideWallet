@@ -73,8 +73,10 @@ class AccountCurrencyEntity {
       : accountcurrencyId = json['account_id'] ??
             json['account_token_id'], // TODO = Change name
         accountId = accountId,
-        numberOfUsedExternalKey = json['number_of_external_key'],
-        numberOfUsedInternalKey = json['number_of_internal_key'],
+        numberOfUsedExternalKey =
+            json['number_of_external_key'] ?? 0, // ++ debug 0806
+        numberOfUsedInternalKey =
+            json['number_of_internal_key'] ?? 0, // ++ debug 0806
         balance = json['balance'],
         currencyId = json['currency_id'] ?? json['token_id'],
         lastSyncTime = timestamp;
