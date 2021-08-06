@@ -18,7 +18,7 @@ import '../../models/bitcoin_transaction.model.dart';
 )
 class UtxoEntity {
   @primaryKey
-  @ColumnInfo(name: 'utxo_id', nullable: false)
+  @ColumnInfo(name: 'utxo_id') // --  nullable: false
   final String utxoId;
 
   @ColumnInfo(name: 'accountcurrency_id')
@@ -118,7 +118,7 @@ class UtxoEntity {
     'SELECT * FROM Utxo INNER JOIN AccountCurrency ON Utxo.accountcurrency_id = AccountCurrency.accountcurrency_id INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id',
     viewName: 'JoinUtxo')
 class JoinUtxo {
-  @ColumnInfo(name: 'utxo_id', nullable: false)
+  @ColumnInfo(name: 'utxo_id') // --  nullable: false
   final String utxoId;
 
   @ColumnInfo(name: 'accountcurrency_id')

@@ -22,7 +22,7 @@ import 'currency.dart';
 )
 class AccountCurrencyEntity {
   @primaryKey
-  @ColumnInfo(name: 'accountcurrency_id', nullable: false)
+  @ColumnInfo(name: 'accountcurrency_id') // --  nullable: false
   final String accountcurrencyId;
 
   @ColumnInfo(name: 'account_id')
@@ -73,8 +73,10 @@ class AccountCurrencyEntity {
       : accountcurrencyId = json['account_id'] ??
             json['account_token_id'], // TODO = Change name
         accountId = accountId,
-        numberOfUsedExternalKey = json['number_of_external_key'],
-        numberOfUsedInternalKey = json['number_of_internal_key'],
+        numberOfUsedExternalKey =
+            json['number_of_external_key'] ?? 0, // ++ debug 0806
+        numberOfUsedInternalKey =
+            json['number_of_internal_key'] ?? 0, // ++ debug 0806
         balance = json['balance'],
         currencyId = json['currency_id'] ?? json['token_id'],
         lastSyncTime = timestamp;
@@ -84,7 +86,7 @@ class AccountCurrencyEntity {
     'SELECT * FROM AccountCurrency INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id INNER JOIN Account ON AccountCurrency.account_id = Account.account_id INNER JOIN Network ON Account.network_id = Network.network_id',
     viewName: 'JoinCurrency')
 class JoinCurrency {
-  @ColumnInfo(name: 'accountcurrency_id', nullable: false)
+  @ColumnInfo(name: 'accountcurrency_id') // --  nullable: false
   final String accountcurrencyId;
 
   final String symbol;

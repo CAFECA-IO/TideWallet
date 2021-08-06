@@ -6,7 +6,7 @@ class NetworkEntity {
   @ColumnInfo(name: 'network_id')
   final String networkId;
 
-  @ColumnInfo(nullable: false)
+  // @ColumnInfo(nullable: false)
   final String network;
 
   @ColumnInfo(name: 'coin_type')
@@ -17,13 +17,12 @@ class NetworkEntity {
   @ColumnInfo(name: 'chain_id')
   final int chainId;
 
-  NetworkEntity({
-    this.networkId,
-    this.network,
-    this.coinType,
-    this.publish,
-    this.chainId
-  });
+  NetworkEntity(
+      {this.networkId,
+      this.network,
+      this.coinType,
+      this.publish,
+      this.chainId});
 
   @override
   bool operator ==(Object other) =>
@@ -41,6 +40,7 @@ class NetworkEntity {
       : this.networkId = json['blockchain_id'],
         this.network = json['name'],
         this.coinType = json['coin_type'],
-        this.chainId = json['network_id'], // TODO: Change 'network_id' to 'chain_id'
+        this.chainId =
+            json['network_id'], // TODO: Change 'network_id' to 'chain_id'
         this.publish = json['publish'];
 }

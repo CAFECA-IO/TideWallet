@@ -25,7 +25,8 @@ class ErrorInterceptor extends Interceptor {
 
   ErrorInterceptor(this.dio, this._refreshToken);
   @override
-  Future onResponse(Response response) async {
+  Future onResponse(
+      Response response, ResponseInterceptorHandler handler) async {
     if (response.data[KEY] != NO_ERROR) {
       Log.error(response.data[KEY]);
 
@@ -35,19 +36,21 @@ class ErrorInterceptor extends Interceptor {
 
           if (success) {
             return await this.dio.request(
-                  response.request.path,
-                  cancelToken: response.request.cancelToken,
-                  data: response.request.data,
-                  onReceiveProgress: response.request.onReceiveProgress,
-                  onSendProgress: response.request.onSendProgress,
-                  queryParameters: response.request.queryParameters,
-                  options: response.request,
+                  response.requestOptions.path,
+                  cancelToken: response.requestOptions.cancelToken,
+                  data: response.requestOptions.data,
+                  onReceiveProgress: response.requestOptions.onReceiveProgress,
+                  onSendProgress: response.requestOptions.onSendProgress,
+                  queryParameters: response.requestOptions.queryParameters,
+                  options: Options(
+                      method: response.requestOptions.method,
+                      headers: response.requestOptions.headers),
                 );
           }
           break;
         default:
       }
     }
-    return super.onResponse(response);
+    return super.onResponse(response, handler);
   }
 }

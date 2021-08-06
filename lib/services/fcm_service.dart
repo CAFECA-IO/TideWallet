@@ -13,8 +13,10 @@ import '../screens/transaction_list.screen.dart';
 enum FCM_LOCAL_EVENT { UNLOCK_APP }
 
 class FCM {
-  FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   static final FCM _instance = FCM._internal();
+  NotificationSettings settings;
+
   factory FCM() => _instance;
   FCM._internal();
 
@@ -38,25 +40,50 @@ class FCM {
   //   // Or do other work.
   // }
 
-  configure(GlobalKey<NavigatorState> nav) {
+  configure(GlobalKey<NavigatorState> nav) async {
     this._navigator = nav;
 
-    this._firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        this.handleNotification(message);
-      },
-      onLaunch: (Map<String, dynamic> message) async {
-        this.handleNotification(message);
-      },
-      onResume: (Map<String, dynamic> message) async {
-        this.handleNotification(message);
-      },
-      // onBackgroundMessage:
-      //     Platform.isIOS ? null : FCM.myBackgroundMessageHandler,
-    );
+/**
+ * -- 
+ * debugInfo: FirebaseMessaging.configure() is removed by firebase team
+ * solution: https://stackoverflow.com/questions/65056272/how-to-configure-firebase-messaging-with-latest-version-in-flutter */
+    // this._firebaseMessaging.configure(
+    //   onMessage: (Map<String, dynamic> message) async {
+    //     this.handleNotification(message);
+    //   },
+    //   onLaunch: (Map<String, dynamic> message) async {
+    //     this.handleNotification(message);
+    //   },
+    //   onResume: (Map<String, dynamic> message) async {
+    //     this.handleNotification(message);
+    //   },
+    //   // onBackgroundMessage:
+    //   //     Platform.isIOS ? null : FCM.myBackgroundMessageHandler,
+    // );
 
-    _firebaseMessaging.requestNotificationPermissions(
-        const IosNotificationSettings(sound: true, badge: true, alert: true));
+    // Use FirebaseMessaging.onMessage  method to get messages
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      this.handleNotification(message.data);
+    });
+
+    // Use FirebaseMessaging.onMessageOpenedApp as a replacement for onLaunch and onResume handlers.
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print('A new onMessageOpenedApp event was published!');
+      this.handleNotification(message.data);
+    });
+
+    this.settings = await this._firebaseMessaging.requestPermission(
+          alert: true,
+          announcement: false,
+          badge: true,
+          carPlay: false,
+          criticalAlert: false,
+          provisional: false,
+          sound: true,
+        );
+
+    print(
+        'User granted permission: ${this.settings.authorizationStatus}'); // -- debugInfo
   }
 
   Future<String> getToken() {
@@ -75,7 +102,6 @@ class FCM {
       _subscription?.cancel();
       _subscription = _controller.stream.listen((event) {
         if (event == FCM_LOCAL_EVENT.UNLOCK_APP) {
-         
           this.applyEvent(msg, navigate: true);
         }
       });

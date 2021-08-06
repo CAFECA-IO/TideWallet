@@ -19,11 +19,11 @@ class TokenInterceptor extends Interceptor {
     _token = null;
   }
 
-  Future onRequest(RequestOptions options) {
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     if (_token != null) {
       options.headers['token'] = _token;
     }
 
-    return super.onRequest(options);
+    super.onRequest(options, handler);
   }
 }

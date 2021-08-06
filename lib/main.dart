@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'blocs/delegate.dart';
@@ -55,9 +56,9 @@ import 'theme.dart';
 
 void main() async {
   runApp(MyApp());
+  await Firebase.initializeApp();
   Bloc.observer = ObserverDelegate();
   await Endpoint.init();
-
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
