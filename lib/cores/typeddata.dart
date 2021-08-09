@@ -7,7 +7,7 @@ import 'package:convert/convert.dart';
 import 'package:tidewallet3/helpers/cryptor.dart';
 
 class TypedData {
-  static const TYPED_MESSAGE_SCHEMA = {
+  static const Map<String, dynamic> TYPED_MESSAGE_SCHEMA = {
     'type': 'object',
     'properties': {
       'types': {
@@ -44,13 +44,11 @@ class TypedData {
                 ? '0x0000000000000000000000000000000000000000000000000000000000000000'
                 : sha3(encodeData(type, value, types, useV4)) // ++
           ];
-        } else {
-        }
+        } else {}
         // if (value == null) {
         //     throw new Error("missing value for field " + name + " of type " + type);
         // }
         if (type == 'bytes') {
-
           return ['bytes32', sha3(value)];
         }
         if (type == 'string') {
@@ -58,8 +56,7 @@ class TypedData {
           // if (typeof value === 'string') {
           //     value = Buffer.from(value, 'utf8');
           // }
-          
-          
+
           var str = hex.encode(utf8.encode(value));
 
           return ['bytes32', sha3(str)];
@@ -81,7 +78,8 @@ class TypedData {
 
       for (var i = 0, args = types[primaryType]; i < args.length; i++) {
         final field = args[i];
-        var _b = encodeField(field['name'], field['type'], value: data[field['name']]);
+        var _b = encodeField(field['name'], field['type'],
+            value: data[field['name']]);
 
         encodedTypes.add(_b[0]);
         encodedValues.add(_b[1]);
@@ -118,11 +116,10 @@ class TypedData {
 
     String result = '';
 
-
-    for (int i = 0; i < encodedTypes.length; i ++) {
+    for (int i = 0; i < encodedTypes.length; i++) {
       result += simpleRawEncode(encodedTypes[i], encodedValues[i]);
     }
-    
+
     return result.toLowerCase();
   }
 
@@ -162,7 +159,7 @@ class TypedData {
   }
 
   static List<String> findTypeDependencies(String primaryType, types,
-      {List<String> results}) {
+      {List<String>? results}) {
     if (results == null) {
       results = [];
     }
@@ -237,7 +234,8 @@ class TypedData {
     return sha3(hex.encode(parts));
   }
 
-  static String signTypedData_v4(Uint8List privateKey, data) {
+  // ignore: non_constant_identifier_names
+  static String? signTypedData_v4(Uint8List privateKey, data) {
     final d = Uint8List.fromList(sign(data));
 
     final signature = Signer().sign(d, privateKey);
@@ -250,19 +248,17 @@ class TypedData {
   }
 
   static simpleRawEncode(String type, value) {
-
     if (value is String) {
-        value = value.replaceAll('0x', '');
+      value = value.replaceAll('0x', '');
 
-        if (type == 'address') {
-          return value.padLeft(64, '0');
-
-        }
-
-        if (type == 'uint256') {
-          return int.tryParse(value).toRadixString(16).padLeft(64, '0');
-        }
+      if (type == 'address') {
+        return value.padLeft(64, '0');
       }
-      return hex.encode(value).padLeft(64, '0');
+
+      if (type == 'uint256') {
+        return int.tryParse(value)!.toRadixString(16).padLeft(64, '0');
+      }
+    }
+    return hex.encode(value).padLeft(64, '0');
   }
 }

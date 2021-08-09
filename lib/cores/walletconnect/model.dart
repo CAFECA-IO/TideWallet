@@ -6,7 +6,11 @@ class ConnectionEl {
   final String bridge;
   final String key;
 
-  ConnectionEl({this.topic, this.version, this.bridge, this.key});
+  ConnectionEl(
+      {required this.topic,
+      required this.version,
+      required this.bridge,
+      required this.key});
 }
 
 class PeerMeta {
@@ -16,10 +20,10 @@ class PeerMeta {
   final String url;
 
   PeerMeta({
-    this.name,
-    this.description,
-    this.icons,
-    this.url,
+    required this.name,
+    required this.description,
+    required this.icons,
+    required this.url,
   });
 
   PeerMeta.fromJson(Map json)
@@ -31,37 +35,37 @@ class PeerMeta {
 
 class ConnectorOpts {
   final WCSession session;
-  final PeerMeta clientMeta;
+  final PeerMeta? clientMeta;
 
   ConnectorOpts({
-    this.session,
+    required this.session,
     this.clientMeta,
   });
 }
 
 class WCSession {
-  bool connected;
-  List<String> accounts;
-  int chainId;
+  bool? connected;
+  List<String>? accounts;
+  int? chainId;
   String bridge;
   String key;
-  String clientId;
-  PeerMeta clientMeta;
+  String? clientId;
+  PeerMeta? clientMeta;
   String peerId;
-  PeerMeta peerMeta;
-  int handshakeId;
-  String handshakeTopic;
-  int networkId;
+  PeerMeta? peerMeta;
+  int? handshakeId;
+  String? handshakeTopic;
+  int? networkId;
 
   WCSession({
     this.connected,
     this.accounts,
     this.chainId,
-    this.bridge,
-    this.key,
+    required this.bridge,
+    required this.key,
     this.clientId,
     this.clientMeta,
-    this.peerId,
+    required this.peerId,
     this.peerMeta,
     this.handshakeId,
     this.handshakeTopic,
@@ -70,13 +74,12 @@ class WCSession {
 }
 
 class WCRequest {
-  final int id;
+  final int? id;
   final String method;
-  final String jsonrpc;
-  final List<dynamic> params;
+  final String? jsonrpc;
+  final List<dynamic>? params;
 
-  WCRequest({this.id, this.method, this.jsonrpc, this.params})
-      : assert(method != null);
+  WCRequest({this.id, required this.method, this.jsonrpc, this.params});
 
   WCRequest.fromJson(Map json)
       : this.id = json['id'],
@@ -85,10 +88,10 @@ class WCRequest {
         this.params = json['params'];
 
   WCRequest copyWith({
-    int id,
-    String method,
-    String jsonrpc,
-    List<dynamic> params,
+    int? id,
+    String? method,
+    String? jsonrpc,
+    List<dynamic>? params,
   }) {
     return WCRequest(
       id: id ?? this.id,
@@ -100,9 +103,9 @@ class WCRequest {
 }
 
 class WCApprove {
-  final String result;
-  final String jsonrpc;
-  final int id;
+  final String? result;
+  final String? jsonrpc;
+  final int? id;
 
   WCApprove({
     this.id,
@@ -110,7 +113,7 @@ class WCApprove {
     this.result,
   });
 
-  WCApprove.fromRequest(WCRequest req, {String result})
+  WCApprove.fromRequest(WCRequest req, {String? result})
       : this.id = req.id,
         this.jsonrpc = req.jsonrpc,
         this.result = result;
@@ -120,12 +123,12 @@ class WCApprove {
 }
 
 class WCReject {
-  final int id;
-  final String jsonrpc;
-  final String message;
+  final int? id;
+  final String? jsonrpc;
+  final String? message;
   final int code;
 
-  WCReject.fromRequest(WCRequest req, {String message})
+  WCReject.fromRequest(WCRequest req, {String? message})
       : this.id = req.id,
         this.jsonrpc = req.jsonrpc,
         this.code = -32000,
@@ -136,12 +139,12 @@ class WCReject {
 }
 
 class WCMessage {
-  final String topic;
-  final String type;
+  final String? topic;
+  final String? type;
   final String payload;
-  final bool silent;
+  final bool? silent;
 
-  WCMessage({this.topic, this.type, this.payload, this.silent});
+  WCMessage({this.topic, this.type, required this.payload, this.silent});
 
   WCMessage.fromJson(Map json)
       : this.topic = json['topic'],

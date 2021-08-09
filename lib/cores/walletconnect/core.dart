@@ -19,19 +19,19 @@ part 'utils.dart';
 
 class Connector {
   String protocol = 'wc';
-  String _key;
+  late String _key;
   int version = 1;
   String _bridge = '';
-  String _clientId;
-  PeerMeta _clientMeta;
+  String _clientId = Uuid().v4();
+  late PeerMeta _clientMeta;
   bool _connected = false;
   // WCSession session;
-  EventManager _eventManager;
-  Transport _transport;
-  String _handshakeTopic;
-  int _handshakeId;
-  String _peerId;
-  PeerMeta _peerMeta;
+  late EventManager _eventManager;
+  late Transport _transport;
+  String? _handshakeTopic;
+  int? _handshakeId;
+  late String _peerId;
+  late PeerMeta _peerMeta;
   int _chainId = 0;
   int _networkId = 0;
   String _rpcUrl = '';
@@ -83,15 +83,15 @@ class Connector {
 
   set session(WCSession value) {
     this._connected = value.connected ?? this._connected;
-    this.accounts = value.accounts;
-    this.chainId = value.chainId;
+    this.accounts = value.accounts ?? [];
+    this.chainId = value.chainId ?? 1;
     this.bridge = value.bridge;
     this.key = value.key;
-    this.clientId = value.clientId;
-    this.clientMeta = value.clientMeta;
+    if (value.clientId != null) this.clientId = value.clientId!;
+    this.clientMeta = value.clientMeta!;
     this.peerId = value.peerId;
-    this.handshakeId = value.handshakeId;
-    this.handshakeTopic = value.handshakeTopic;
+    this.handshakeId = value.handshakeId!;
+    this.handshakeTopic = value.handshakeTopic!;
   }
 
   bool get connected => this._connected;
@@ -101,7 +101,6 @@ class Connector {
   String get key => this._key;
 
   String get clientId {
-    if (this._clientId == null) this._clientId = Uuid().v4();
     return this._clientId;
   }
 
@@ -122,7 +121,7 @@ class Connector {
     this.bridge = opt.session.bridge;
     this._transport = Transport(url: this._bridge);
 
-    this.session = opt.session ?? this._getStorageSession();
+    this.session = opt.session;
 
     this._transport.subscribe(opt.session.peerId);
     this._transport.subscribe(this.clientId);
@@ -150,18 +149,18 @@ class Connector {
   // }
 
   approveSession(WCSession session) {
-    this.chainId = session.chainId;
-    this.networkId = session.networkId;
-    this.accounts = session.accounts;
+    this.chainId = session.chainId ?? 1;
+    this.networkId = session.networkId ?? 1;
+    this.accounts = session.accounts ?? [];
 
     final req = {
       'id': this._handshakeId,
       'jsonrpc': '2.0',
       'result': {
         "approved": true,
-        "chainId": this.chainId ?? 1,
-        "networkId": this.networkId ?? 1,
-        "accounts": this.accounts ?? [],
+        "chainId": this.chainId,
+        "networkId": this.networkId,
+        "accounts": this.accounts,
         "rpcUrl": "",
         'peerId': this.clientId,
         'peerMeta': this.clientMeta
@@ -222,16 +221,16 @@ class Connector {
 
   _subscribeToInternalEvents() {
     this.onEvt('wc_sessionRequest', (WCRequest req) {
-      this.handshakeId = req.id;
-      this.peerId = req.params[0]['peerId'];
-      this.peerMeta = PeerMeta.fromJson(req.params[0]['peerMeta']);
+      this.handshakeId = req.id!;
+      this.peerId = req.params![0]['peerId'];
+      this.peerMeta = PeerMeta.fromJson(req.params![0]['peerMeta']);
 
       this._eventManager.trigger('session_request',
           value: req.copyWith(method: 'session_request'));
     });
 
     this.onEvt('wc_sessionUpdate', (WCRequest req) {
-      if (req.params[0]['approved'] == false) {
+      if (req.params![0]['approved'] == false) {
         this._handleSessionDisconnect('');
       }
     });
@@ -246,7 +245,7 @@ class Connector {
     this._transport.send(json.encode(payload), topic);
   }
 
-  WCSession _getStorageSession() {
+  WCSession? _getStorageSession() {
     // TODO:
   }
 
@@ -294,11 +293,10 @@ class Connector {
       tmp = d.split('&key=');
       final url = tmp[0].replaceAll('https%3A%2F%2F', 'wss://');
       final key = tmp[1];
-
       return ConnectionEl(
-          topic: topic, version: int.tryParse(version), bridge: url, key: key);
+          topic: topic, version: int.tryParse(version)!, bridge: url, key: key);
     } catch (e) {
-      return null;
+      throw e;
     }
   }
 }

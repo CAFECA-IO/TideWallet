@@ -16,14 +16,14 @@ class WalletConnectInitial extends WalletConnectState {
 }
 
 class WalletConnectLoaded extends WalletConnectState {
-  final WC_STATUS status;
-  final PeerMeta peer;
-  final List<String> accounts;
-  final WCRequest currentEvent;
+  final WC_STATUS? status;
+  final PeerMeta? peer;
+  final List<String>? accounts;
+  final WCRequest? currentEvent;
   // TODO
-  final List<dynamic> records;
-  final bool loading;
-  final WC_ERROR error;
+  final List<dynamic>? records;
+  final bool? loading;
+  final WC_ERROR? error;
 
   WalletConnectLoaded({
     this.status,
@@ -36,17 +36,18 @@ class WalletConnectLoaded extends WalletConnectState {
   });
 
   @override
-  List<Object> get props => [status, peer, accounts, records, currentEvent, error];
+  List<dynamic> get props =>
+      [status, peer, accounts, records, currentEvent, error];
 
   WalletConnectLoaded copyWith({
-    WC_STATUS status,
-    PeerMeta peer,
-    List<String> peers,
-    List<dynamic> records,
-    List<String> accounts,
-    WCRequest currentEvent,
-    bool loading,
-    WC_ERROR error,
+    WC_STATUS? status,
+    PeerMeta? peer,
+    List<String>? peers,
+    List<dynamic>? records,
+    List<String>? accounts,
+    WCRequest? currentEvent,
+    bool? loading,
+    WC_ERROR? error,
   }) {
     return WalletConnectLoaded(
         status: status ?? this.status,

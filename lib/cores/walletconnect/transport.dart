@@ -13,12 +13,12 @@ class TransportEvent {
 
 class Transport {
   // IO.Socket _socket;
-  IOWebSocketChannel _channel;
-  String _url;
   final List queus = [];
-  StreamController<TransportEvent> _controller;
+  late IOWebSocketChannel _channel;
+  late String _url;
+  late StreamController<TransportEvent> _controller;
 
-  Transport({String url}) {
+  Transport({required String url}) {
     this._url = url;
     this._controller = StreamController<TransportEvent>();
     this._createSocket();
@@ -36,7 +36,6 @@ class Transport {
   }
 
   subscribe(topic) {
-    
     this._socketSend({
       'topic': topic,
       'type': "sub",

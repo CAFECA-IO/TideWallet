@@ -23,13 +23,13 @@ part 'walletconnect_event.dart';
 part 'walletconnect_state.dart';
 
 class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
-  Connector _connector;
-  WCSession _session;
-  TransactionRepository _txRepo;
-  AccountRepository _accountRepo;
+  late Connector _connector;
+  late WCSession _session;
+  late TransactionRepository _txRepo;
+  late AccountRepository _accountRepo;
   static const ACCOUNT _accountType = ACCOUNT.ETH;
-  Currency _selected;
-  Map<TransactionPriority, Decimal> _gasPrice;
+  late Currency _selected;
+  late Map<TransactionPriority, Decimal> _gasPrice;
 
   WalletConnectBloc(this._accountRepo, this._txRepo)
       : super(WalletConnectInitial());
@@ -54,7 +54,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
 
   @override
   Future<void> close() {
-    _connector?.killSession();
+    _connector.killSession();
     return super.close();
   }
 
@@ -88,29 +88,30 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
   ) async* {
     if (event is ScanWC) {
       if (state is WalletConnectInitial || state is WalletConnectError) {
-        final connection = Connector.parseUri(event.uri);
+        late ConnectionEl connection;
+        try {
+          connection = Connector.parseUri(event.uri);
+        } catch (e) {
+          yield WalletConnectError(WC_ERROR.URI);
+        }
         _session = WCSession(
           key: connection.key,
           bridge: connection.bridge,
           peerId: connection.topic,
         );
 
-        if (connection == null) {
-          yield WalletConnectError(WC_ERROR.URI);
-        } else {
-          _connector = Connector(ConnectorOpts(session: _session));
-          this.subscribeToEvents();
+        _connector = Connector(ConnectorOpts(session: _session));
+        this.subscribeToEvents();
 
-          yield WalletConnectLoaded(status: WC_STATUS.CONNECTING);
-        }
+        yield WalletConnectLoaded(status: WC_STATUS.CONNECTING);
       }
     }
 
     if (state is WalletConnectLoaded) {
-      WalletConnectLoaded _state = state;
+      WalletConnectLoaded _state = state as WalletConnectLoaded;
 
       if (event is RequestWC) {
-        int chainId = event.request.params[0]['chainId'];
+        int? chainId = event.request.params?[0]['chainId'];
         if (chainId == null) chainId = 1;
         final currencies = this._accountRepo.getAllCurrencies();
         _selected = currencies.firstWhere(
@@ -119,7 +120,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
                 currencies.firstWhere((c) => c.accountType == _accountType));
 
         print('Connect Chain ID : ${_selected.chainId}');
-        
+
         // check to use the right chain
         // Log.info('*** chainId $chainId ${_selected.network} __ ${_selected.chainId}');
 
@@ -129,7 +130,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
         String address = await getReceivingAddress();
 
         _session.accounts = [address];
-        _connector.accounts = _session.accounts;
+        _connector.accounts = _session.accounts!;
         yield _state.copyWith(
           status: WC_STATUS.WAITING,
           peer: _connector.peerMeta,
@@ -157,15 +158,17 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
         yield _state.copyWith(currentEvent: null);
       }
       if (event is ApproveRequest) {
-        String result;
+        String? result;
         yield _state.copyWith(loading: true);
 
         switch (event.request.method) {
           case 'eth_sendTransaction':
-            final param = event.request.params[0];
+            final param = event.request.params![0];
 
-            Decimal amount = hexStringToDecimal(param['value']) / Decimal.fromInt(pow(10, 18));
-            Decimal gasPrice = hexStringToDecimal(param['gasPrice']) / Decimal.fromInt(pow(10, 18));
+            Decimal amount = hexStringToDecimal(param['value']) /
+                Decimal.fromInt(pow(10, 18) as int);
+            Decimal gasPrice = hexStringToDecimal(param['gasPrice']) /
+                Decimal.fromInt(pow(10, 18) as int);
             Decimal gasLimit = hexStringToDecimal(param['gas']);
 
             final txRes = await _txRepo.prepareTransaction(
@@ -191,7 +194,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
             // TODO:
             // final addressRequested = event.request.params[1];
             final lst =
-                hex.decode(event.request.params[0].replaceAll('0x', ''));
+                hex.decode(event.request.params![0].replaceAll('0x', ''));
             final data =
                 Uint8List.fromList(Cryptor.keccak256round(lst, round: 1));
             final signature = Signer().sign(data, key);
@@ -203,7 +206,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
 
           case 'eth_signTypedData':
             final key = await _txRepo.getPrivKey(event.password, 0, 0);
-            final data = json.decode(event.request.params[1]);
+            final data = json.decode(event.request.params![1]);
             result = TypedData.signTypedData_v4(key, data);
             break;
           default:

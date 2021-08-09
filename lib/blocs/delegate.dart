@@ -6,7 +6,7 @@ import 'transaction_status/transaction_status_bloc.dart';
 
 class ObserverDelegate extends BlocObserver {
   @override
-  void onEvent(Bloc bloc, Object event) {
+  void onEvent(Bloc bloc, Object? event) {
     if (bloc is! AccountCurrencyBloc && bloc is! TransactionStatusBloc) {
       Log.debug('BLOC onEvent $event');
     }

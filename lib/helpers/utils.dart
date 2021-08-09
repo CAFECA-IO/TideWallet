@@ -97,8 +97,8 @@ Uint8List toDER(Uint8List x) {
 }
 
 Uint8List bip66encode(r, s) {
-  var lenR = r.length;
-  var lenS = s.length;
+  int lenR = r.length;
+  int lenS = s.length;
   if (lenR == 0) throw new ArgumentError('R length is zero');
   if (lenS == 0) throw new ArgumentError('S length is zero');
   if (lenR > 33) throw new ArgumentError('R length is too long');
@@ -136,6 +136,5 @@ bool isHash256bit(Uint8List value) {
   return value.length == 32;
 }
 
-
 Decimal hexStringToDecimal(String str) =>
-      Decimal.fromInt(int.tryParse(str.replaceAll('0x', ''), radix: 16));
+    Decimal.fromInt(int.tryParse(str.replaceAll('0x', ''), radix: 16)!);

@@ -1,7 +1,7 @@
 // Paul Huang 2021/3/18
 import 'dart:convert';
 
-/// Do not use 
+/// Do not use
 class ABI {
   /// Encode a method/event with arguments
   /// @types an array of string type names
@@ -17,7 +17,7 @@ class ABI {
         var size = parseTypeArray(type);
 
         if (size != 'dynamic') {
-          headLength += 32 * size;
+          headLength += 32 * size as int;
         } else {
           headLength += 32;
         }
@@ -35,7 +35,7 @@ class ABI {
       if (isDynamic(type)) {
         output.add(encodeSingle('uint256', headLength));
         data.add(cur);
-        headLength += cur.length;
+        headLength += cur.length as int;
       } else {
         output.add(cur);
       }
@@ -52,9 +52,11 @@ class ABI {
     final regex = RegExp('(.*)\[(.*?)\]');
     var tmp = regex.allMatches(type).toList();
     if (tmp.isNotEmpty) {
-      return tmp[2].group(0) == '' ? 'dynamic' : int.tryParse(tmp[2].group(0));
+      return tmp[2].group(0) == ''
+          ? 'dynamic'
+          : int.tryParse(tmp[2].group(0) as String)!;
     }
-    return null;
+    throw Error(); // ++ debugInfo, null-safety
   }
 
   // Convert from short to canonical names
