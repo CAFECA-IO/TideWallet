@@ -9,7 +9,7 @@ class CopyToolTip extends StatelessWidget {
   final Widget child;
   final String text;
 
-  CopyToolTip({this.child, this.text});
+  CopyToolTip({required this.child, required this.text});
 
   @override
   Widget build(BuildContext context) {

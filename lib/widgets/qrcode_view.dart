@@ -4,19 +4,19 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class QRCodeView extends StatefulWidget {
   final Function scanCallback;
-  final String debugLabel;
+  final String? debugLabel;
 
-  QRCodeView({this.scanCallback, this.debugLabel});
+  QRCodeView({required this.scanCallback, this.debugLabel});
 
   @override
   _QRCodeViewState createState() => _QRCodeViewState(this.debugLabel);
 }
 
 class _QRCodeViewState extends State<QRCodeView> {
-  final String debugLabel;
-  GlobalKey qrKey;
-  Barcode result;
-  QRViewController controller;
+  final String? debugLabel;
+  late GlobalKey qrKey;
+  late Barcode result;
+  late QRViewController controller;
 
   _QRCodeViewState(this.debugLabel)
       : qrKey = GlobalKey(debugLabel: debugLabel ?? 'QR');

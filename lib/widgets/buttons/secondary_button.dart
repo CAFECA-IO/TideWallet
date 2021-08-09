@@ -6,14 +6,14 @@ import './base_button.dart';
 class SecondaryButton extends BaseButton {
   SecondaryButton(
     String _text,
-    Function _onPressed, {
-    Color backgroundColor,
-    Color disableColor,
-    Color disabledTextColor,
-    bool isEnabled,
-    Color borderColor,
-    AssetImage iconImg,
-    Color textColor,
+    Function()? _onPressed, {
+    Color? backgroundColor,
+    Color? disableColor,
+    Color? disabledTextColor,
+    bool? isEnabled,
+    Color? borderColor,
+    AssetImage? iconImg,
+    Color? textColor,
   }) : super(_text, _onPressed,
             backgroundColor: Colors.transparent,
             disableColor: disableColor,

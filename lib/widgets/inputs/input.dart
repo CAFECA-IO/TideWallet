@@ -2,36 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class Input extends StatelessWidget {
-  final TextEditingController controller;
-  final String labelText;
-  final String suffixText;
-  final Function validator;
+  final TextEditingController? controller;
+  final String? labelText;
+  final String? suffixText;
+  final String? Function(String?)? validator;
   final bool readOnly;
-  final Function onTap;
-  final Widget suffix;
-  final Widget suffixIcon;
-  final Function onChanged;
-  final FocusNode focusNode;
-  final String hintText;
-  final AutovalidateMode autovalidate;
-  final TextInputType keyboardType;
-  final List<TextInputFormatter> inputFormatter;
+  final Function()? onTap;
+  final Widget? suffix;
+  final Widget? suffixIcon;
+  final Function(String)? onChanged;
+  final FocusNode? focusNode;
+  final String? hintText;
+  final AutovalidateMode? autovalidate;
+  final TextInputType? keyboardType;
+  final List<TextInputFormatter>? inputFormatter;
 
-  Input(
-      {this.controller,
-      this.labelText,
-      this.suffixText,
-      this.validator,
-      this.readOnly: false,
-      this.onTap,
-      this.suffix,
-      this.suffixIcon,
-      this.onChanged,
-      this.focusNode,
-      this.hintText,
-      this.autovalidate: AutovalidateMode.always,
-      this.keyboardType: TextInputType.text,
-      this.inputFormatter: const []});
+  Input({
+    this.controller,
+    this.labelText,
+    this.suffixText,
+    this.validator,
+    this.readOnly: false,
+    this.onTap,
+    this.suffix,
+    this.suffixIcon,
+    this.onChanged,
+    this.focusNode,
+    this.hintText,
+    this.autovalidate: AutovalidateMode.always,
+    this.keyboardType: TextInputType.text,
+    this.inputFormatter: const [],
+  });
 
   @override
   Widget build(BuildContext context) {

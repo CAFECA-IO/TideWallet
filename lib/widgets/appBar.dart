@@ -28,15 +28,15 @@ import '../screens/recover_mnemonic.screen.dart';
 class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
   final String title;
   final String routeName;
-  final Function leadingFunc;
-  final Map actions;
+  final Function()? leadingFunc;
+  final Map? actions;
 
   // For Appbar actions
   final bool disable;
 
   GeneralAppbar(
       {this.title: '',
-      this.routeName,
+      required this.routeName,
       this.leadingFunc,
       this.actions,
       this.disable: false});
@@ -102,7 +102,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
       return leading;
     }
 
-    Widget actionItem(Widget content, Function func) {
+    Widget actionItem(Widget content, Function()? func) {
       return GestureDetector(
         behavior: HitTestBehavior.translucent,
         child: Container(

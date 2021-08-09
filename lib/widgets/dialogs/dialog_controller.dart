@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class DialogController {
   static const Color _barrierColor = Colors.transparent;
 
-  static show(BuildContext ctx, Widget dialog, {Function onDismiss}) {
+  static show(BuildContext ctx, Widget dialog, {Function? onDismiss}) {
     showDialog(
         barrierColor: _barrierColor,
         context: ctx,

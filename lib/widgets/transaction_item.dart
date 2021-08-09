@@ -12,7 +12,8 @@ class TransactionItem extends StatelessWidget {
   final Currency currency;
   final Transaction transaction;
 
-  const TransactionItem({Key key, this.currency, this.transaction})
+  const TransactionItem(
+      {Key? key, required this.currency, required this.transaction})
       : super(key: key);
 
   final t = I18n.t;
@@ -58,7 +59,7 @@ class TransactionItem extends StatelessWidget {
                       style: transaction.status == TransactionStatus.fail
                           ? Theme.of(context)
                               .textTheme
-                              .bodyText1
+                              .bodyText1!
                               .copyWith(color: Theme.of(context).cursorColor)
                           : Theme.of(context).textTheme.bodyText1,
                     ),
@@ -66,7 +67,7 @@ class TransactionItem extends StatelessWidget {
                 ),
                 Text(
                   '${transaction.direction == TransactionDirection.received ? "+" : "-"} ${transaction.amount} ${currency.symbol.toUpperCase()}',
-                  style: Theme.of(context).textTheme.bodyText1.copyWith(
+                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
                       color: transaction.status == TransactionStatus.fail
                           ? Theme.of(context).cursorColor
                           : transaction.direction.color),
@@ -87,7 +88,7 @@ class TransactionItem extends StatelessWidget {
                       style: transaction.status == TransactionStatus.fail
                           ? Theme.of(context)
                               .textTheme
-                              .subtitle2
+                              .subtitle2!
                               .copyWith(color: Theme.of(context).cursorColor)
                           : Theme.of(context).textTheme.subtitle2,
                     ),
@@ -98,7 +99,7 @@ class TransactionItem extends StatelessWidget {
                   style: transaction.status == TransactionStatus.fail
                       ? Theme.of(context)
                           .textTheme
-                          .subtitle2
+                          .subtitle2!
                           .copyWith(color: Theme.of(context).cursorColor)
                       : Theme.of(context).textTheme.subtitle2,
                 )

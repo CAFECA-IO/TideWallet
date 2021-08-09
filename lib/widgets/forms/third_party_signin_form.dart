@@ -49,7 +49,7 @@ class _ThirdPartySignInFormState extends State<ThirdPartySignInForm> {
   ThirdPartySignInBloc _bloc =
       ThirdPartySignInBloc(ThirdPartySignInRepository());
 
-  UserBloc _userBloc;
+  late UserBloc _userBloc;
   final t = I18n.t;
   @override
   void didChangeDependencies() {

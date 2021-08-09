@@ -41,18 +41,20 @@ class _RadioGroupButtonState extends State<RadioGroupButton> {
 }
 
 class RadioButton extends BaseButton {
-  RadioButton(String _text, Function _onPressed,
-      {Color backgroundColor,
-      Color disableColor,
-      Color disabledTextColor,
-      Color borderColor,
-      AssetImage iconImg,
-      Color textColor,
-      bool isEnabled,
-      TextStyle textStyle,
-      Padding padding,
-      double minWidth})
-      : super(_text, _onPressed,
+  RadioButton(
+    String _text,
+    Function()? _onPressed, {
+    Color? backgroundColor,
+    Color? disableColor,
+    Color? disabledTextColor,
+    Color? borderColor,
+    AssetImage? iconImg,
+    Color? textColor,
+    bool? isEnabled,
+    TextStyle? textStyle,
+    EdgeInsets? padding,
+    double? minWidth,
+  }) : super(_text, _onPressed,
             backgroundColor: backgroundColor ?? MyColors.primary_01,
             disabledTextColor: disabledTextColor ?? MyColors.secondary_02,
             disableColor: disableColor ?? MyColors.secondary_05,

@@ -18,13 +18,13 @@ import '../widgets/buttons/secondary_button.dart';
 import '../helpers/i18n.dart';
 import 'dialogs/dialog_controller.dart';
 import 'dialogs/error_dialog.dart';
-import 'dialogs/verify_password_dialog.dart';
 
 class InvestPlanPreview extends StatefulWidget {
   final Currency currency;
   final Investment investment;
 
-  const InvestPlanPreview({Key key, this.currency, this.investment})
+  const InvestPlanPreview(
+      {Key? key, required this.currency, required this.investment})
       : super(key: key);
   @override
   _InvestPlanPreviewState createState() => _InvestPlanPreviewState();
@@ -33,9 +33,9 @@ class InvestPlanPreview extends StatefulWidget {
 class _InvestPlanPreviewState extends State<InvestPlanPreview> {
   final t = I18n.t;
 
-  InvestPlanBloc _bloc;
-  LocalAuthBloc _localBloc;
-  UserRepository _userRepo;
+  late InvestPlanBloc _bloc;
+  late LocalAuthBloc _localBloc;
+  late UserRepository _userRepo;
 
   @override
   void didChangeDependencies() {

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class NormalInput extends StatelessWidget {
-  final String label;
-  final TextEditingController controller;
-  final Function validator;
-  final Function onChange;
-  final Function onTap;
-  final double fontSize;
+  final String? label;
+  final TextEditingController? controller;
+  final String? Function(String?)? validator;
+  final Function(String)? onChange;
+  final Function()? onTap;
+  final double? fontSize;
   final bool readOnly;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
 
   NormalInput({
     this.focusNode,
@@ -19,7 +19,7 @@ class NormalInput extends StatelessWidget {
     this.onChange,
     this.onTap,
     this.fontSize,
-    this.readOnly,
+    this.readOnly: false,
   });
 
   @override

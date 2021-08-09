@@ -45,7 +45,6 @@ import './blocs/toggle_token/toggle_token_bloc.dart';
 import './blocs/transaction/transaction_bloc.dart';
 // import './blocs/transaction_status/transaction_status_bloc.dart';
 import './blocs/restore_wallet/restore_wallet_bloc.dart';
-import './blocs/backup/backup_bloc.dart';
 import './blocs/receive/receive_bloc.dart';
 import './blocs/invest_plan/invest_plan_bloc.dart';
 import './blocs/local_auth/local_auth_bloc.dart';
@@ -137,11 +136,6 @@ class MyApp extends StatelessWidget {
               create: (BuildContext context) => FiatBloc(
                 Provider.of<TraderRepository>(context, listen: false),
               )..add(GetFiatList()),
-            ),
-            BlocProvider<BackupBloc>(
-              create: (BuildContext context) => BackupBloc(
-                Provider.of<UserRepository>(context, listen: false),
-              )..add(CheckBackup()),
             ),
             BlocProvider<LocalAuthBloc>(
               create: (BuildContext context) => LocalAuthBloc(

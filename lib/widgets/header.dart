@@ -11,7 +11,7 @@ class Header extends StatelessWidget {
     return BlocBuilder<AccountCurrencyBloc, AccountCurrencyState>(
         builder: (ctx, state) {
       return BlocBuilder<FiatBloc, FiatState>(builder: (context, fiatState) {
-        FiatLoaded _state;
+        late FiatLoaded _state;
         bool fiatReady = false;
 
         if (fiatState is FiatLoaded) {
@@ -44,7 +44,7 @@ class Header extends StatelessWidget {
                               ' ${Formatter.formatDecimal((state.total / _state.fiat.exchangeRate).toString(), decimalLength: 2)} ',
                           style: Theme.of(context)
                               .textTheme
-                              .headline5
+                              .headline5!
                               .copyWith(fontSize: 36.0),
                         ),
                         TextSpan(text: _state.fiat.name)
@@ -52,7 +52,7 @@ class Header extends StatelessWidget {
                     : [],
                 style: Theme.of(context)
                     .textTheme
-                    .bodyText1
+                    .bodyText1!
                     .copyWith(color: Colors.white)),
           ),
         );

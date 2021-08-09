@@ -36,12 +36,12 @@ class AddInvestmentScreen extends StatefulWidget {
 class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
   bool _isSelected = false;
   TextEditingController _controller = TextEditingController();
-  InvestPlanBloc _bloc;
+  late InvestPlanBloc _bloc;
   int index = 1;
-  Currency _currency;
-  InvestStrategy _strategy;
-  InvestAmplitude _amplitude;
-  InvestPercentage _percentage;
+  late Currency? _currency;
+  late InvestStrategy? _strategy;
+  late InvestAmplitude? _amplitude;
+  late InvestPercentage? _percentage;
 
   @override
   void didChangeDependencies() {
@@ -107,7 +107,7 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
                             vertical: 22.0, horizontal: 16.0),
                         child: InvestPlanPreview(
                             currency: state.currency,
-                            investment: state.investment),
+                            investment: state.investment!),
                       ),
                     );
                   }
@@ -131,7 +131,7 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
                       selectedItem:
                           _currency ?? AccountCore().getAllCurrencies()[0],
                       onTap: () {},
-                      notifyParent: ({int index, dynamic value}) {
+                      notifyParent: ({required int index, dynamic value}) {
                         _bloc.add(CurrencySelected(value));
                       },
                     ),
@@ -152,7 +152,7 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
                       selectedItem:
                           t(_strategy?.value ?? InvestStrategy.values[0].value),
                       onTap: () {},
-                      notifyParent: ({int index, dynamic value}) {
+                      notifyParent: ({required int index, dynamic value}) {
                         _bloc.add(
                             StrategySetected(InvestStrategy.values[index]));
                       },
@@ -246,7 +246,7 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
                                     () {
                                       _bloc.add(PercentageSelected(percentage));
                                       _controller.text =
-                                          (Decimal.tryParse(percentage.value) /
+                                          (Decimal.tryParse(percentage.value)! /
                                                   Decimal.fromInt(100))
                                               .toString();
                                       Log.debug(percentage.value);

@@ -2,35 +2,38 @@ import 'package:flutter/material.dart';
 
 abstract class BaseButton extends StatelessWidget {
   final String _text;
-  final Function _onPressed;
-  final Color backgroundColor;
+  final Function()? _onPressed;
+  final Color? backgroundColor;
   final Color borderColor;
-  final Color disableColor;
-  final Color disabledTextColor;
-  final Color textColor;
-  final AssetImage iconImg;
-  final EdgeInsetsGeometry padding;
-  final double fontSize;
+  final Color? disableColor;
+  final Color? disabledTextColor;
+  final Color? textColor;
+  final AssetImage? iconImg;
+  final EdgeInsetsGeometry? padding;
+  final double? fontSize;
   final bool isEnabled;
-  final TextStyle textStyle;
-  final double minWidth;
-  final double borderRadius;
-  final Widget icon;
+  final TextStyle? textStyle;
+  final double? minWidth;
+  final double? borderRadius;
+  final Widget? icon;
 
-  BaseButton(this._text, this._onPressed,
-      {this.iconImg,
-      this.backgroundColor,
-      this.disableColor,
-      this.disabledTextColor,
-      this.borderColor,
-      this.textColor,
-      this.padding,
-      this.isEnabled = true,
-      this.textStyle,
-      this.minWidth,
-      this.fontSize,
-      this.borderRadius,
-      this.icon});
+  BaseButton(
+    this._text,
+    this._onPressed, {
+    this.iconImg,
+    this.backgroundColor,
+    this.disableColor,
+    this.disabledTextColor,
+    required this.borderColor,
+    this.textColor,
+    this.padding,
+    this.isEnabled = true,
+    this.textStyle,
+    this.minWidth,
+    this.fontSize,
+    this.borderRadius,
+    this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -46,28 +49,28 @@ abstract class BaseButton extends StatelessWidget {
           side: BorderSide(
             color: isEnabled
                 ? this.borderColor
-                : this.disableColor ?? this.disabledTextColor,
+                : (this.disableColor ?? this.disabledTextColor) as Color,
             width: 1,
             style: BorderStyle.solid,
           ),
         ),
         textColor: isEnabled
-            ? Theme.of(context).textTheme.button.color
+            ? Theme.of(context).textTheme.button!.color
             : this.disabledTextColor,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            this.iconImg != null
+            (this.iconImg != null
                 ? ImageIcon(
                     this.iconImg,
                     color: this.textColor ??
                         this.disabledTextColor ??
-                        Theme.of(context).textTheme.button.color,
+                        Theme.of(context).textTheme.button!.color,
                     size: 20.0,
                   )
                 : this.icon != null
                     ? this.icon
-                    : SizedBox(width: 0),
+                    : SizedBox(width: 0)) as Widget,
             SizedBox(
               width: this.iconImg != null ? 14.0 : 0,
             ),

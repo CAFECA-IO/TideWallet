@@ -48,7 +48,7 @@ class BackupThumb extends StatelessWidget {
                 Text(t('backup_message_2'),
                     style: Theme.of(context)
                         .textTheme
-                        .subtitle2
+                        .subtitle2!
                         .copyWith(color: Colors.white))
               ]),
           Spacer(),

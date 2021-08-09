@@ -7,30 +7,26 @@ import '../theme.dart';
 
 class SwapCard extends StatelessWidget {
   final Currency _currency;
-  final Function onChanged;
+  final Function(String)? onChanged;
   final TextEditingController amountController;
   final FocusNode focusNode;
   final bool readOnly;
-  final List<Currency> currencies;
-  final Function onSelect;
+  final List<Currency>? currencies;
+  final Function? onSelect;
   final String label;
-  final Function onTap;
+  final Function()? onTap;
 
-  SwapCard(this._currency,
-      {this.label,
-      this.currencies,
-      this.onChanged,
-      this.amountController,
-      this.focusNode,
-      this.onSelect,
-      this.readOnly: true,
-      this.onTap})
-      : assert(
-          (onChanged != null &&
-              amountController != null &&
-              focusNode != null &&
-              label != null),
-        );
+  SwapCard(
+    this._currency, {
+    required this.label,
+    this.currencies,
+    required this.onChanged,
+    required this.amountController,
+    required this.focusNode,
+    this.onSelect,
+    this.readOnly: true,
+    this.onTap,
+  });
 
   _openList(BuildContext context) {
     showModalBottomSheet(
@@ -78,39 +74,41 @@ class SwapCard extends StatelessWidget {
                         ]),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: currencies
-                          .map(
-                            (e) => InkWell(
-                              child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 16.0, horizontal: 20.0),
-                                  child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: <Widget>[
-                                        Image.network(e.imgPath,
-                                            width: 30.0, height: 30.0),
-                                        SizedBox(width: 10.0),
-                                        Text(
-                                          e.name,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyText2,
-                                        ),
-                                        Spacer(),
-                                        Text(
-                                            '${Formatter.formatDecimal(e.amount)} ${e.symbol.toUpperCase()}',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .caption)
-                                      ])),
-                              onTap: () {
-                                onSelect(e);
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          )
-                          .toList(),
+                      children: currencies == null
+                          ? []
+                          : currencies!
+                              .map(
+                                (e) => InkWell(
+                                  child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 16.0, horizontal: 20.0),
+                                      child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: <Widget>[
+                                            Image.network(e.imgPath,
+                                                width: 30.0, height: 30.0),
+                                            SizedBox(width: 10.0),
+                                            Text(
+                                              e.name,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyText2,
+                                            ),
+                                            Spacer(),
+                                            Text(
+                                                '${Formatter.formatDecimal(e.amount)} ${e.symbol.toUpperCase()}',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .caption)
+                                          ])),
+                                  onTap: () {
+                                    onSelect!(e);
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              )
+                              .toList(),
                     ),
                   ),
                 ),
@@ -153,7 +151,7 @@ class SwapCard extends StatelessWidget {
                         _currency.symbol.toUpperCase(),
                         style: Theme.of(context)
                             .textTheme
-                            .headline1
+                            .headline1!
                             .copyWith(fontWeight: FontWeight.w400),
                       ),
                     ),
@@ -190,7 +188,7 @@ class SwapCard extends StatelessWidget {
                   onTap: onTap,
                   focusNode: focusNode,
                   readOnly: readOnly,
-                  fontSize: Theme.of(context).textTheme.headline3.fontSize,
+                  fontSize: Theme.of(context).textTheme.headline3!.fontSize!,
                   controller: amountController,
                   onChange: onChanged,
                 ),
@@ -206,7 +204,7 @@ class SwapCard extends StatelessWidget {
 // Deprecated
 class OutputRateBtn extends StatelessWidget {
   final String _text;
-  final Function _onPressed;
+  final Function()? _onPressed;
 
   OutputRateBtn(this._text, this._onPressed);
   @override
@@ -224,7 +222,7 @@ class OutputRateBtn extends StatelessWidget {
             _text,
             style: Theme.of(context)
                 .textTheme
-                .subtitle2
+                .subtitle2!
                 .copyWith(color: Theme.of(context).primaryColor),
           ),
           onPressed: _onPressed),

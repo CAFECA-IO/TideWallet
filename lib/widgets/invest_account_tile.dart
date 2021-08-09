@@ -9,7 +9,7 @@ final t = I18n.t;
 class InvestAccountTile extends StatelessWidget {
   final Currency currency;
   final Investment investment;
-  final Function onClick;
+  final Function()? onClick;
 
   InvestAccountTile(this.currency, this.investment, this.onClick);
   @override
@@ -45,7 +45,7 @@ class InvestAccountTile extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     investment.iRR.toString() + '%',
-                    style: Theme.of(context).textTheme.subtitle1.copyWith(
+                    style: Theme.of(context).textTheme.subtitle1!.copyWith(
                           color: Theme.of(context).primaryColor,
                         ),
                   ),

@@ -59,9 +59,9 @@ class SwapSuccess extends StatelessWidget {
                     children: <Widget>[
                       Column(
                         children: [
-                          SwapItem(from['icon'], from['amount']),
+                          SwapItem(from['icon']!, from['amount']!),
                           SizedBox(height: 8.0),
-                          SwapItem(to['icon'], to['amount']),
+                          SwapItem(to['icon']!, to['amount']!),
                         ],
                       ),
                       Positioned.fill(

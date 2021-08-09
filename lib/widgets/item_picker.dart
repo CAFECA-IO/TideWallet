@@ -7,9 +7,9 @@ final t = I18n.t;
 
 class ItemPicker extends StatefulWidget {
   ItemPicker({
-    @required this.items,
-    @required this.onTap,
-    @required this.notifyParent,
+    required this.items,
+    required this.onTap,
+    required this.notifyParent,
     this.selectedItem,
     this.constraints,
     this.dialogConstraints,
@@ -17,20 +17,20 @@ class ItemPicker extends StatefulWidget {
     this.barrierDismissible,
     this.title,
     this.initialItem,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   // String hintText;
-  final BoxConstraints constraints;
-  final BoxConstraints dialogConstraints;
+  final BoxConstraints? constraints;
+  final BoxConstraints? dialogConstraints;
   final List<dynamic> items;
   final Function onTap;
   final Function notifyParent;
-  int initialItem;
-  String title;
-  bool barrierDismissible;
+  int? initialItem;
+  String? title;
+  bool? barrierDismissible;
   dynamic selectedItem;
-  Widget child;
+  Widget? child;
 
   @override
   _ItemPickerState createState() => _ItemPickerState();
@@ -57,7 +57,7 @@ class _ItemPickerState extends State<ItemPicker> {
             title: widget.title != null
                 ? Center(
                     child: Text(
-                      widget.title,
+                      widget.title!,
                     ),
                   )
                 : null,
@@ -88,7 +88,7 @@ class _ItemPickerState extends State<ItemPicker> {
                       },
                       itemExtent: 50,
                       children: widget.items
-                          ?.map(
+                          .map(
                             (item) => FlatButton(
                               child: Text(
                                   item.runtimeType != String ? item.name : item,
@@ -96,7 +96,7 @@ class _ItemPickerState extends State<ItemPicker> {
                               onPressed: () {},
                             ),
                           )
-                          ?.toList(),
+                          .toList(),
                     ),
                   ),
                   SizedBox(height: 15),
@@ -112,7 +112,7 @@ class _ItemPickerState extends State<ItemPicker> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
                         if (widget.barrierDismissible != null &&
-                            !widget.barrierDismissible)
+                            !widget.barrierDismissible!)
                           Flexible(
                             flex: 1,
                             child: GestureDetector(
@@ -129,7 +129,7 @@ class _ItemPickerState extends State<ItemPicker> {
                                   t('cancel'),
                                   style: Theme.of(context)
                                       .textTheme
-                                      .button
+                                      .button!
                                       .copyWith(
                                           color: Colors.blue, fontSize: 16),
                                 ),
@@ -150,7 +150,7 @@ class _ItemPickerState extends State<ItemPicker> {
                                 t('ok'),
                                 style: Theme.of(context)
                                     .textTheme
-                                    .button
+                                    .button!
                                     .copyWith(
                                         color: Colors.blue,
                                         fontSize: 16,
@@ -200,7 +200,8 @@ class _ItemPickerState extends State<ItemPicker> {
               widget.selectedItem.runtimeType != String
                   ? widget.selectedItem.name
                   : widget.selectedItem, //'Select initializing method',
-              style: Theme.of(context).textTheme.caption.copyWith(fontSize: 16),
+              style:
+                  Theme.of(context).textTheme.caption!.copyWith(fontSize: 16),
             ),
           ),
       onTap: () {

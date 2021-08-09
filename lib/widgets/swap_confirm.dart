@@ -12,7 +12,6 @@ import '../theme.dart';
 import 'buttons/primary_button.dart';
 import 'dialogs/dialog_controller.dart';
 import 'dialogs/error_dialog.dart';
-import 'dialogs/verify_password_dialog.dart';
 
 final t = I18n.t;
 
@@ -23,18 +22,18 @@ class SwapConfirm extends StatefulWidget {
   final Function confirmFunc;
 
   SwapConfirm(
-      {this.sellCurrency,
-      this.buyCurrency,
-      this.confirmFunc,
-      this.exchangeRate});
+      {required this.sellCurrency,
+      required this.buyCurrency,
+      required this.confirmFunc,
+      required this.exchangeRate});
 
   @override
   _SwapConfirmState createState() => _SwapConfirmState();
 }
 
 class _SwapConfirmState extends State<SwapConfirm> {
-  LocalAuthBloc _localBloc;
-  UserRepository _userRepo;
+  late LocalAuthBloc _localBloc;
+  late UserRepository _userRepo;
 
   @override
   void didChangeDependencies() {
@@ -67,7 +66,7 @@ class _SwapConfirmState extends State<SwapConfirm> {
                 title,
                 style: Theme.of(context)
                     .textTheme
-                    .subtitle1
+                    .subtitle1!
                     .copyWith(color: MyColors.primary_06),
               ),
               Text(

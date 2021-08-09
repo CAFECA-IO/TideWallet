@@ -29,22 +29,22 @@ class InvestPlanStatus extends InvestPlanState {
   final InvestAmplitude amplitude;
   final InvestPercentage percentage;
   final Decimal investAmount;
-  final Investment investment;
+  final Investment? investment;
   InvestPlanStatus(
-      {this.currency,
-      this.strategy,
-      this.amplitude,
-      this.percentage,
-      this.investAmount,
+      {required this.currency,
+      required this.strategy,
+      required this.amplitude,
+      required this.percentage,
+      required this.investAmount,
       this.investment});
 
   InvestPlanState copyWith(
-      {Currency currency,
-      InvestStrategy strategy,
-      InvestAmplitude amplitude,
-      InvestPercentage percentage,
-      Decimal investAmount,
-      Investment investment}) {
+      {Currency? currency,
+      InvestStrategy? strategy,
+      InvestAmplitude? amplitude,
+      InvestPercentage? percentage,
+      Decimal? investAmount,
+      Investment? investment}) {
     return InvestPlanStatus(
         currency: currency ?? this.currency,
         strategy: strategy ?? this.strategy,
@@ -56,5 +56,5 @@ class InvestPlanStatus extends InvestPlanState {
 
   @override
   List<Object> get props =>
-      [currency, strategy, amplitude, percentage, investAmount, investment];
+      [currency, strategy, amplitude, percentage, investAmount, investment!];
 }

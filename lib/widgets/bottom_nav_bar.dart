@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CBottomAppBarItem {
-  CBottomAppBarItem({this.iconData, this.text, this.disable});
+  CBottomAppBarItem(
+      {required this.iconData, required this.text, required this.disable});
   IconData iconData;
   String text;
   bool disable;
@@ -9,16 +10,16 @@ class CBottomAppBarItem {
 
 class CBottomAppBar extends StatefulWidget {
   CBottomAppBar({
-    this.items,
-    this.centerItemText,
+    required this.items,
+    this.centerItemText: '',
     this.height: 50.0,
     this.iconSize: 20.0,
-    this.backgroundColor,
+    required this.backgroundColor,
     this.color,
-    this.selectedColor,
-    this.notchedShape,
-    this.onTabSelected,
-    this.selectedIndex,
+    required this.selectedColor,
+    required this.notchedShape,
+    required this.onTabSelected,
+    required this.selectedIndex,
   }) {
     // assert(this.items.length == 2 || this.items.length == 4);
   }
@@ -27,7 +28,7 @@ class CBottomAppBar extends StatefulWidget {
   final double height;
   final double iconSize;
   final Color backgroundColor;
-  final Color color;
+  final Color? color;
   final Color selectedColor;
   final NotchedShape notchedShape;
   final ValueChanged<int> onTabSelected;
@@ -74,7 +75,7 @@ class CBottomAppBarState extends State<CBottomAppBar> {
           children: <Widget>[
             SizedBox(height: widget.iconSize),
             Text(
-              widget.centerItemText ?? '',
+              widget.centerItemText,
               style: TextStyle(color: widget.color),
             ),
           ],
@@ -84,12 +85,12 @@ class CBottomAppBarState extends State<CBottomAppBar> {
   }
 
   Widget _buildTabItem({
-    CBottomAppBarItem item,
-    int index,
-    ValueChanged<int> onPressed,
+    required CBottomAppBarItem item,
+    required int index,
+    required ValueChanged<int> onPressed,
   }) {
     bool _isSelected = widget.selectedIndex == index;
-    Color color = _isSelected ? widget.selectedColor : widget.color;
+    Color color = _isSelected ? widget.selectedColor : widget.color!;
     return Expanded(
       child: SizedBox(
         height: widget.height,
@@ -107,8 +108,8 @@ class CBottomAppBarState extends State<CBottomAppBar> {
                 if (_isSelected)
                   Text(
                     item.text,
-                    style: Theme.of(context).textTheme.subtitle2.copyWith(
-                        color: Theme.of(context).textTheme.bodyText2.color),
+                    style: Theme.of(context).textTheme.subtitle2?.copyWith(
+                        color: Theme.of(context).textTheme.bodyText2?.color),
                   )
               ],
             ),

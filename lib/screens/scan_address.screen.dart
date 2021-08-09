@@ -15,7 +15,7 @@ class ScanAddressScreen extends StatefulWidget {
 }
 
 class _ScanAddressScreenState extends State<ScanAddressScreen> {
-  TransactionBloc _bloc;
+  late TransactionBloc _bloc;
 
   @override
   void didChangeDependencies() {

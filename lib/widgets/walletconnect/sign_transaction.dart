@@ -14,7 +14,6 @@ import '../../widgets/buttons/primary_button.dart';
 import '../../helpers/i18n.dart';
 
 class SignTransaction extends StatefulWidget {
-  
   final BuildContext context;
   final String dapp;
   final Map param;
@@ -23,12 +22,12 @@ class SignTransaction extends StatefulWidget {
   final Currency currency;
 
   SignTransaction({
-    @required this.context,
-    @required this.dapp,
-    @required this.param,
-    @required this.submit,
-    @required this.cancel,
-    @required this.currency,
+    required this.context,
+    required this.dapp,
+    required this.param,
+    required this.submit,
+    required this.cancel,
+    required this.currency,
   });
 
   @override
@@ -36,8 +35,8 @@ class SignTransaction extends StatefulWidget {
 }
 
 class _SignTransactionState extends State<SignTransaction> {
-  FiatBloc _fiatBloc;
-  TraderRepository _traderRepo;
+  late FiatBloc _fiatBloc;
+  late TraderRepository _traderRepo;
   final t = I18n.t;
 
   @override
@@ -54,13 +53,14 @@ class _SignTransactionState extends State<SignTransaction> {
     String gasPrice = widget.param['gasPrice'];
     Decimal fee = hexStringToDecimal(gasPrice) *
         hexStringToDecimal(widget.param['gas']) /
-        Decimal.fromInt(pow(10, 18));
+        Decimal.fromInt(pow(10, 18) as int);
     Decimal amountInFiat =
-        _traderRepo.calculateAmountToFiat(widget.currency, amount) / Decimal.fromInt(pow(10, 18));
+        _traderRepo.calculateAmountToFiat(widget.currency, amount) /
+            Decimal.fromInt(pow(10, 18) as int);
     Decimal feeInFiat = _traderRepo.calculateAmountToFiat(widget.currency, fee);
 
-    bool able = (Decimal.tryParse(widget.currency.amount) *
-                Decimal.fromInt(pow(10, 18)) -
+    bool able = (Decimal.tryParse(widget.currency.amount)! *
+                Decimal.fromInt(pow(10, 18) as int) -
             amount -
             fee) >
         Decimal.zero;
@@ -92,7 +92,7 @@ class _SignTransactionState extends State<SignTransaction> {
                         child: Text(t('cancel'),
                             style: Theme.of(context)
                                 .textTheme
-                                .headline4
+                                .headline4!
                                 .copyWith(fontSize: 18.0)),
                         onTap: () {
                           this.widget.cancel();
@@ -109,16 +109,17 @@ class _SignTransactionState extends State<SignTransaction> {
                       Image.asset(
                         'assets/images/icons/ic_send_black.png',
                         width: 40.0,
-                        color: Theme.of(context).textTheme.caption.color,
+                        color: Theme.of(context).textTheme.caption!.color,
                       ),
                       SizedBox(
                         width: 4.0,
                       ),
                       Text(
-                        '- ${amount / Decimal.fromInt(pow(10, 18))} ETH',
+                        '- ${amount / Decimal.fromInt(pow(10, 18) as int)} ETH',
                         style: Theme.of(context).textTheme.headline1,
                       ),
-                      Text('(\$ ${Formatter.formatDecimal(amountInFiat.toString())} $fiat)')
+                      Text(
+                          '(\$ ${Formatter.formatDecimal(amountInFiat.toString())} $fiat)')
                     ],
                   ),
                 ),
@@ -134,7 +135,7 @@ class _SignTransactionState extends State<SignTransaction> {
                         '網路費用',
                         style: Theme.of(context)
                             .textTheme
-                            .headline1
+                            .headline1!
                             .copyWith(fontSize: 16),
                       ),
                       Spacer(),
@@ -155,10 +156,11 @@ class _SignTransactionState extends State<SignTransaction> {
                         '最大總計',
                         style: Theme.of(context)
                             .textTheme
-                            .headline1
+                            .headline1!
                             .copyWith(fontSize: 18),
                       ),
-                      Text('\$ ${Formatter.formatDecimal((amountInFiat + feeInFiat).toString())} $fiat')
+                      Text(
+                          '\$ ${Formatter.formatDecimal((amountInFiat + feeInFiat).toString())} $fiat')
                     ],
                   ),
                 ),
@@ -186,11 +188,9 @@ class _SignTransactionState extends State<SignTransaction> {
                   padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 50.0),
                   child: PrimaryButton(
                     '發送',
-                    able
-                        ? () {
-                            this.widget.submit();
-                          }
-                        : null,
+                    () {
+                      if (able) this.widget.submit();
+                    },
                     disableColor: Theme.of(context).disabledColor,
                     borderColor: able
                         ? Theme.of(context).primaryColor
@@ -219,8 +219,10 @@ class TxItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(_title,
-              style:
-                  Theme.of(context).textTheme.headline1.copyWith(fontSize: 16)),
+              style: Theme.of(context)
+                  .textTheme
+                  .headline1!
+                  .copyWith(fontSize: 16)),
           SizedBox(
             height: 6.0,
           ),
