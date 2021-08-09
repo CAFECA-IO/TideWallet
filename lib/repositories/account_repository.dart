@@ -49,7 +49,7 @@ class AccountRepository {
     return verifyEthereumAddress(address);
   }
 
-  Future<Token> getTokenInfo(String bkid, String address) {
+  Future<Token?> getTokenInfo(String bkid, String address) {
     return EthereumService.getTokeninfo(bkid, address);
   }
 

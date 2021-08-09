@@ -6,7 +6,6 @@ import './transaction_list.screen.dart';
 import '../models/transaction.model.dart';
 import '../models/account.model.dart';
 import '../repositories/user_repository.dart';
-import '../blocs/verify_password/verify_password_bloc.dart';
 import '../repositories/local_auth_repository.dart';
 import '../blocs/local_auth/local_auth_bloc.dart';
 import '../blocs/transaction/transaction_bloc.dart';
@@ -15,7 +14,6 @@ import '../widgets/buttons/secondary_button.dart';
 import '../widgets/dialogs/error_dialog.dart';
 import '../widgets/dialogs/loading_dialog.dart';
 import '../widgets/dialogs/dialog_controller.dart';
-import '../widgets/dialogs/verify_password_dialog.dart';
 import '../helpers/i18n.dart';
 
 class TransactionPreviewScreen extends StatefulWidget {
@@ -27,17 +25,18 @@ class TransactionPreviewScreen extends StatefulWidget {
 }
 
 class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
-  TransactionBloc _bloc;
-  LocalAuthBloc _localBloc;
-  Currency _currency;
-  Transaction _transaction;
-  String _feeToFiat;
-  UserRepository _userRepo;
+  late TransactionBloc _bloc;
+  late LocalAuthBloc _localBloc;
+  late Currency _currency;
+  late Transaction _transaction;
+  late String _feeToFiat;
+  late UserRepository _userRepo;
   final t = I18n.t;
 
   @override
   void didChangeDependencies() {
-    Map<String, dynamic> arg = ModalRoute.of(context).settings.arguments;
+    Map<String, dynamic> arg =
+        ModalRoute.of(context)!.settings.arguments! as Map<String, dynamic>;
     _currency = arg["currency"];
     _transaction = arg["transaction"];
     _feeToFiat = arg["feeToFiat"];

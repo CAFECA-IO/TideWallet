@@ -22,16 +22,17 @@ class AddCurrencyScreen extends StatefulWidget {
 }
 
 class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
-  AddCurrencyBloc _bloc;
-  AccountRepository _repo;
+  late AddCurrencyBloc _bloc;
+  late AccountRepository _repo;
   TextEditingController _controller = TextEditingController();
 
   @override
   void didChangeDependencies() {
-    Map<String, Currency> arg = ModalRoute.of(context).settings.arguments;
+    Map<String, Currency> arg =
+        ModalRoute.of(context)!.settings.arguments as Map<String, Currency>;
 
     _repo = Provider.of<AccountRepository>(context);
-    _bloc = AddCurrencyBloc(_repo, currency: arg['account']);
+    _bloc = AddCurrencyBloc(_repo, currency: arg['account']!);
     super.didChangeDependencies();
   }
 
@@ -68,7 +69,7 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
                     ],
                     style: Theme.of(context)
                         .textTheme
-                        .subtitle2
+                        .subtitle2!
                         .copyWith(height: 1.5),
                   ),
                 ),
@@ -83,18 +84,18 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
                     Container(
                       alignment: Alignment.center,
                       child: Image.network(
-                        state.result.imgUrl,
+                        state.result!.imgUrl,
                         width: 80.0,
                         height: 80.0,
                       ),
                     ),
-                    item(t('symbol'), state.result.symbol),
-                    item(t('name'), state.result.name),
-                    item(t('contract'), state.result.contract),
-                    item(t('decimal'), state.result.decimal.toString()),
-                    item(
-                        t('total_supply'), state.result.totalSupply.toString()),
-                    item(t('description'), state.result.description),
+                    item(t('symbol'), state.result!.symbol),
+                    item(t('name'), state.result!.name),
+                    item(t('contract'), state.result!.contract),
+                    item(t('decimal'), state.result!.decimal.toString()),
+                    item(t('total_supply'),
+                        state.result!.totalSupply.toString()),
+                    item(t('description'), state.result!.description),
                   ],
                 ),
               );
@@ -156,12 +157,12 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
                   labelText: t('enter_address'),
                   controller: _controller,
                   autovalidate: AutovalidateMode.always,
-                  validator: (String v) {
-                    if (!_repo.validateETHAddress(v) &&
+                  validator: (String? v) {
+                    if (v != null &&
+                        !_repo.validateETHAddress(v) &&
                         _controller.text.isNotEmpty) {
                       return t('error_address');
                     }
-
                     return null;
                   },
                   onChanged: (String v) {

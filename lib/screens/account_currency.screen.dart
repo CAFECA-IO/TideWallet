@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
-import '../blocs/backup/backup_bloc.dart';
 import '../blocs/account_currency/account_currency_bloc.dart';
 import '../blocs/fiat/fiat_bloc.dart';
 import '../widgets/header.dart';
@@ -11,7 +10,6 @@ import '../models/account.model.dart';
 import '../repositories/trader_repository.dart';
 import '../repositories/account_repository.dart';
 import '../helpers/i18n.dart';
-import 'currency.screen.dart';
 import 'transaction_list.screen.dart';
 import 'add_currency.screen.dart';
 import '../screens/toggle_currency.screen.dart';
@@ -29,10 +27,10 @@ class AccountCurrencyScreen extends StatefulWidget {
 }
 
 class _AccountCurrencyScreenState extends State<AccountCurrencyScreen> {
-  AccountCurrencyBloc _bloc;
-  AccountRepository _repo;
-  TraderRepository _traderRepo;
-  List<Currency> _currencies;
+  late AccountCurrencyBloc _bloc;
+  late AccountRepository _repo;
+  late TraderRepository _traderRepo;
+  late List<Currency> _currencies;
 
   @override
   didChangeDependencies() {
@@ -56,7 +54,7 @@ class _AccountCurrencyScreenState extends State<AccountCurrencyScreen> {
               child: Column(children: [
                 Header(),
                 BlocBuilder<FiatBloc, FiatState>(builder: (context, fiatState) {
-                  FiatLoaded _state;
+                  late FiatLoaded _state;
 
                   if (fiatState is FiatLoaded) {
                     _state = fiatState;
@@ -80,9 +78,7 @@ class _AccountCurrencyScreenState extends State<AccountCurrencyScreen> {
                                     TransactionListScreen.routeName,
                                     arguments: {"account": acc});
                               },
-                              fiat: (fiatState is FiatLoaded)
-                                  ? _state.fiat
-                                  : null,
+                              fiat: _state.fiat,
                             ),
                           )
                           .toList(),
@@ -101,7 +97,7 @@ class _AccountCurrencyScreenState extends State<AccountCurrencyScreen> {
               // Navigator.of(context).pushNamed(AddCurrencyScreen.routeName,
               //     arguments: {"account": currency});
 
-                Navigator.of(context).pushNamed(ToggleCurrencyScreen.routeName);
+              Navigator.of(context).pushNamed(ToggleCurrencyScreen.routeName);
             },
             child: Container(
               child: Text(

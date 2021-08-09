@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import '../screens/toggle_currency.screen.dart';
 
-import '../screens/account.screen.dart';
 import '../screens/account_currency.screen.dart';
-import '../screens/restore_wallet.screen.dart';
 import '../screens/scan_wallet.screen.dart';
 import '../screens/scan_address.screen.dart';
 import '../screens/wallet_connect.screen.dart';
@@ -11,17 +9,14 @@ import '../screens/transaction_list.screen.dart';
 import '../screens/transaction_preview.screen.dart';
 import '../screens/create_transaction.screen.dart';
 import '../screens/transaction_detail.screen.dart';
-import '../screens/currency.screen.dart';
 import '../screens/settings.screen.dart';
 import '../screens/add_currency.screen.dart';
 import '../screens/add_investment.screen.dart';
 import '../screens/receive.screen.dart';
 import '../screens/setting_fiat.screen.dart';
-import '../screens/update_password.screen.dart';
 import '../screens/feedback.screen.dart';
 import '../screens/terms.screen.dart';
 import '../screens/investment.screen.dart';
-import '../screens/credit_card.screen.dart';
 import '../screens/scan.screen.dart';
 import '../screens/recover_mnemonic.screen.dart';
 
@@ -52,15 +47,12 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
         case ScanWalletScreen.routeName:
         case ScanAddressScreen.routeName:
         case ScanScreen.routeName:
-        case RestoreWalletScreen.routeName:
         case TransactionListScreen.routeName:
         case TransactionDetailScreen.routeName:
-        case CurrencyScreen.routeName:
         case AddCurrencyScreen.routeName:
         case AddInvestmentScreen.routeName:
         case ReceiveScreen.routeName:
         case SettingFiatScreen.routeName:
-        case UpdatePasswordScreen.routeName:
         case FeedbackScreen.routeName:
         case TermsScreen.routeName:
         case RecoverMemonicScreen.routeName:
@@ -208,8 +200,6 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
       if (routeName == ScanScreen.routeName) return false;
       if (routeName == TransactionListScreen.routeName) return false;
       if (routeName == AccountCurrencyScreen.routeName) return false;
-      // if (routeName == AccountScreen.routeName) return false;
-      if (routeName == CurrencyScreen.routeName) return false;
       if (routeName == SettingsScreen.routeName) return false;
       if (routeName == InvestmentScreen.routeName) return false;
       // if (routeName == CreditCardScreen.routeName) return false;

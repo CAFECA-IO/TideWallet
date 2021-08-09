@@ -22,11 +22,11 @@ class LandingScreen extends StatefulWidget {
 
 class _LandingScreenState extends State<LandingScreen> {
   bool _isInit = true;
-  UserBloc _bloc;
-  FiatBloc _fiatBloc;
-  AccountCurrencyBloc _accountBloc;
+  late UserBloc _bloc;
+  late FiatBloc _fiatBloc;
+  late AccountCurrencyBloc _accountBloc;
   FCM _fcm = FCM();
-  ToggleTokenBloc _ttBloc;
+  late ToggleTokenBloc _ttBloc;
   bool _debugMode = false;
 
   @override
@@ -40,9 +40,10 @@ class _LandingScreenState extends State<LandingScreen> {
 
   @override
   void didChangeDependencies() async {
-    Map<String, bool> arg = ModalRoute.of(context).settings.arguments;
+    Map<String, bool>? arg =
+        ModalRoute.of(context)!.settings.arguments as Map<String, bool>?;
     if (arg != null && arg["debugMode"] != null) {
-      this._debugMode = arg["debugMode"];
+      this._debugMode = arg["debugMode"]!;
     }
     _ttBloc = BlocProvider.of<ToggleTokenBloc>(context);
 

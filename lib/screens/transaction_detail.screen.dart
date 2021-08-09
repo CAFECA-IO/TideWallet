@@ -23,25 +23,25 @@ class TransactionDetailScreen extends StatefulWidget {
 
   static const routeName = '/transaction-detail';
 
-  const TransactionDetailScreen({Key key}) : super(key: key);
+  const TransactionDetailScreen({Key? key}) : super(key: key);
 
   @override
   _TransactionDetailScreenState createState() =>
       _TransactionDetailScreenState();
 }
 
-
 class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
   final t = I18n.t;
-  TransactionStatusBloc _bloc;
-  TransactionRepository _repo;
-  TraderRepository _traderRepo;
-  Currency _currency;
-  Transaction _transaction;
+  late TransactionStatusBloc _bloc;
+  late TransactionRepository _repo;
+  late TraderRepository _traderRepo;
+  late Currency _currency;
+  late Transaction _transaction;
 
   @override
   void didChangeDependencies() {
-    Map<String, dynamic> arg = ModalRoute.of(context).settings.arguments;
+    Map<String, dynamic> arg =
+        ModalRoute.of(context)!.settings.arguments! as Map<String, dynamic>;
     _currency = arg["currency"];
     _transaction = arg["transaction"];
     _repo = Provider.of<TransactionRepository>(context);
@@ -84,7 +84,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
         return '$PROTOCAL${Explorer.TITAN_EXPLORER}/tx/${transaction.txId}';
 
       default:
-        return null;
+        throw Error(); // -- debugInfo, null-safety
     }
   }
 
@@ -111,7 +111,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                     children: [
                       Text(
                         '${_transaction.direction == TransactionDirection.sent ? "-" : "+"} ${Formatter.formatDecimal(_transaction.amount.toString(), decimalLength: 12)}',
-                        style: Theme.of(context).textTheme.headline1.copyWith(
+                        style: Theme.of(context).textTheme.headline1!.copyWith(
                             color:
                                 _transaction.status != TransactionStatus.success
                                     ? MyColors.secondary_03
@@ -123,7 +123,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                       ),
                       Text(
                         _currency.symbol,
-                        style: Theme.of(context).textTheme.headline1.copyWith(
+                        style: Theme.of(context).textTheme.headline1!.copyWith(
                               color: _transaction.status !=
                                       TransactionStatus.success
                                   ? MyColors.secondary_03
@@ -153,7 +153,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                             '${t(_transaction.status.title)} (${_transaction.confirmations} ${t('confirmation')})',
                             style: Theme.of(context)
                                 .textTheme
-                                .bodyText1
+                                .bodyText1!
                                 .copyWith(color: _transaction.status.color),
                           ),
                           SizedBox(width: 8),
@@ -245,19 +245,19 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            String url =
-                                this.getLaunchLink(_currency, _transaction);
-
-                            // TODO: Handle Error
-                            if (url != null) {
+                            try {
+                              String url =
+                                  this.getLaunchLink(_currency, _transaction);
                               _launchURL(url);
+                            } catch (error) {
+                              Log.debug(error); // ++ errorhandle, null-safety
                             }
                           },
                           child: Text(
                             Formatter.formatAdddress(_transaction.txId),
                             style: Theme.of(context)
                                 .textTheme
-                                .bodyText1
+                                .bodyText1!
                                 .copyWith(
                                     color: Theme.of(context).primaryColor,
                                     decoration: TextDecoration.underline),

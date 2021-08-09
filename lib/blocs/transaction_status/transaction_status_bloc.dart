@@ -14,9 +14,9 @@ part 'transaction_status_state.dart';
 
 class TransactionStatusBloc
     extends Bloc<TransactionStatusEvent, TransactionStatusState> {
-  TransactionRepository _repo;
-  TraderRepository _traderRepo;
-  StreamSubscription _subscription;
+  late TransactionRepository _repo;
+  late TraderRepository _traderRepo;
+  late StreamSubscription? _subscription;
 
   TransactionStatusBloc(this._repo, this._traderRepo)
       : super(TransactionStatusInitial(null, [], null)) {
@@ -63,16 +63,16 @@ class TransactionStatusBloc
         Log.debug('transactions: $transactions');
 
         yield TransactionStatusLoaded(event.currency, transactions, null);
-      } else if (state.currency.symbol == event.currency.symbol) {
+      } else if (state.currency!.symbol == event.currency.symbol) {
         yield TransactionStatusLoaded(
             event.currency, state.transactions, state.transaction);
       }
     }
     if (event is UpdateTransactionList) {
-      if (state.currency != null && state.currency.id == event.currency.id) {
+      if (state.currency != null && state.currency!.id == event.currency.id) {
         if (state.transaction != null) {
           int index = event.transactions.indexWhere(
-              (Transaction tx) => tx.txId == state.transaction.txId);
+              (Transaction tx) => tx.txId == state.transaction!.txId);
           yield TransactionStatusLoaded(
               event.currency, event.transactions, event.transactions[index]);
         }
@@ -82,7 +82,7 @@ class TransactionStatusBloc
     if (event is UpdateTransaction) {
       Log.debug('event.transaction: ${event.transaction}');
       yield TransactionStatusLoaded(
-          state.currency, state.transactions, event.transaction);
+          state.currency!, state.transactions, event.transaction);
     }
   }
 }

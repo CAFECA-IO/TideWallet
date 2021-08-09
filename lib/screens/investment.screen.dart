@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:decimal/decimal.dart';
 import 'package:provider/provider.dart';
 
 import '../blocs/invest/invest_bloc.dart';
@@ -8,9 +7,8 @@ import '../models/account.model.dart';
 import '../models/investment.model.dart';
 import '../widgets/header.dart';
 import '../widgets/invest_account_tile.dart';
-import '../widgets/invest_plan_preview.dart';
 import '../helpers/i18n.dart';
-import '../theme.dart';
+
 import 'add_investment.screen.dart';
 
 final t = I18n.t;
@@ -24,7 +22,7 @@ class InvestmentScreen extends StatefulWidget {
 
 class _InvestmentScreenState extends State<InvestmentScreen>
     with TickerProviderStateMixin {
-  InvestBloc _ivtBloc;
+  late InvestBloc _ivtBloc;
 
   @override
   void didChangeDependencies() {

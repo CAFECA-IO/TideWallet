@@ -18,7 +18,7 @@ class AuthenticateScreen extends StatefulWidget {
 class _AuthenticateScreenState extends State<AuthenticateScreen> {
   bool isAuthenticated = false;
   final t = I18n.t;
-  LocalAuthBloc _bloc;
+  late LocalAuthBloc _bloc;
 
   @override
   void didChangeDependencies() {
@@ -27,7 +27,7 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
     super.didChangeDependencies();
   }
 
-  Widget _unAuthLayout({List<Widget> widgets}) {
+  Widget _unAuthLayout({List<Widget>? widgets}) {
     List<Widget> column = [
       Image.asset(
         'assets/images/logo_type.png',
@@ -35,7 +35,10 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
       ),
       Padding(
         padding: const EdgeInsets.symmetric(vertical: 30.0),
-        child: Version(fontSize: 18.0, color: Colors.white70,),
+        child: Version(
+          fontSize: 18.0,
+          color: Colors.white70,
+        ),
       ),
       Spacer(),
     ];

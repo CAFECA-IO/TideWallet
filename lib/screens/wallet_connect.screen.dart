@@ -32,11 +32,11 @@ class WalletConnectScreen extends StatefulWidget {
 }
 
 class _WalletConnectScreenState extends State<WalletConnectScreen> {
-  WalletConnectBloc _bloc;
-  AccountRepository _accountRepo;
-  TransactionRepository _txRepo;
-  UserRepository _userRepo;
-  String _uri;
+  late WalletConnectBloc _bloc;
+  late AccountRepository _accountRepo;
+  late TransactionRepository _txRepo;
+  late UserRepository _userRepo;
+  late String _uri;
   final t = I18n.t;
 
   @override
@@ -45,7 +45,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
     _txRepo = Provider.of<TransactionRepository>(context);
     _userRepo = Provider.of<UserRepository>(context);
     _bloc = WalletConnectBloc(_accountRepo, _txRepo);
-    dynamic arg = ModalRoute.of(context).settings.arguments;
+    dynamic arg = ModalRoute.of(context)?.settings.arguments;
     if (arg != null) {
       _uri = arg;
       this._bloc.add(ScanWC(_uri));
@@ -98,7 +98,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
           }
 
           if (state.currentEvent != null) {
-            Widget content;
+            Widget? content;
             bool isScrollControlled = true;
             bool approved = false;
 
@@ -113,30 +113,30 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
               Navigator.of(context).pop();
             }
 
-            switch (state.currentEvent.method) {
+            switch (state.currentEvent!.method) {
               case 'eth_sendTransaction':
-                final tx = state.currentEvent.params[0];
+                final tx = state.currentEvent!.params![0];
 
                 if (tx['gasPrice'] == null) {
                   tx['gasPrice'] =
-                      (_bloc.gasPrice[TransactionPriority.standard] *
-                              Decimal.fromInt(pow(10, 18)))
+                      (_bloc.gasPrice[TransactionPriority.standard]! *
+                              Decimal.fromInt(pow(10, 18) as int))
                           .toInt()
                           .toRadixString(16);
                 }
                 content = SignTransaction(
                     context: context,
-                    dapp: state.peer.url,
+                    dapp: state.peer!.url,
                     param: tx,
                     currency: _bloc.currency,
                     submit: submit,
                     cancel: cancel);
                 break;
               case 'personal_sign':
-                final lst = hex
-                    .decode(state.currentEvent.params[0].replaceAll('0x', ''));
+                final lst = hex.decode(
+                    state.currentEvent!.params![0].replaceAll('0x', ''));
 
-                String msg;
+                late String msg;
                 try {
                   msg = utf8.decode(lst, allowMalformed: true);
                 } catch (e) {
@@ -154,7 +154,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                 content = PersonalSign(
                   submit: submit,
                   cancel: cancel,
-                  message: state.currentEvent.params[1],
+                  message: state.currentEvent!.params![1],
                 );
                 break;
               default:
@@ -174,7 +174,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                       approved = true;
                       this._bloc.add(
                             ApproveRequest(
-                              state.currentEvent,
+                              state.currentEvent!,
                               _userRepo.getPassword(),
                             ),
                           );
@@ -195,7 +195,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
             ).then(
               (_) {
                 if (state.currentEvent != null && approved == false) {
-                  this._bloc.add(CancelRequest(state.currentEvent));
+                  this._bloc.add(CancelRequest(state.currentEvent!));
                 }
               },
             );
@@ -228,13 +228,11 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                   )
                 ],
               );
-            }
-
-            if (state is WalletConnectLoaded) {
+            } else if (state is WalletConnectLoaded) {
               Widget status;
               TextStyle style = Theme.of(context)
                   .textTheme
-                  .headline3
+                  .headline3!
                   .copyWith(fontSize: 16.0);
 
               if (state.status == WC_STATUS.CONNECTED ||
@@ -270,18 +268,18 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                       Container(
                         child: Column(
                           children: [
-                            state.peer.icons.isNotEmpty
+                            state.peer!.icons.isNotEmpty
                                 ? Padding(
                                     padding: const EdgeInsets.all(20.0),
                                     child: Image.network(
-                                      state.peer.icons[0],
+                                      state.peer!.icons[0],
                                       width: 60.0,
                                       height: 60.0,
                                     ),
                                   )
                                 : SizedBox(),
                             Text(
-                              state.peer.name,
+                              state.peer!.name,
                               style: Theme.of(context).textTheme.headline1,
                             )
                           ],
@@ -292,7 +290,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                       StatusItem(
                         '已連線到',
                         Text(
-                          state.peer.url.replaceAll('https://', ''),
+                          state.peer!.url.replaceAll('https://', ''),
                           style: style,
                           textAlign: TextAlign.right,
                           maxLines: 1,
@@ -303,7 +301,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                       StatusItem(
                         '地址',
                         Text(
-                          Formatter.formatAdddress(state.accounts[0],
+                          Formatter.formatAdddress(state.accounts![0],
                               showLength: 14),
                           style: style,
                           textAlign: TextAlign.right,
@@ -323,6 +321,8 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                   ),
                 ),
               );
+            } else {
+              return SizedBox();
             }
           },
         ),
@@ -352,7 +352,7 @@ class StatusItem extends StatelessWidget {
           Text(
             _title,
             style:
-                Theme.of(context).textTheme.headline1.copyWith(fontSize: 17.0),
+                Theme.of(context).textTheme.headline1!.copyWith(fontSize: 17.0),
           ),
           SizedBox(
             width: 4.0,

@@ -31,18 +31,18 @@ class SwapScreen extends StatefulWidget {
 }
 
 class _SwapScreenState extends State<SwapScreen> {
-  SwapRepository _swapRepo;
-  TransactionRepository _traderRepo;
-  SwapBloc _swapBloc;
+  late SwapRepository _swapRepo;
+  late TransactionRepository _traderRepo;
+  late SwapBloc _swapBloc;
   TextEditingController _sellAmountController = TextEditingController();
   TextEditingController _buyAmountController = TextEditingController();
-  Map<String, String> _sellCurrency;
-  Map<String, String> _buyCurrency;
+  late Map<String, String> _sellCurrency;
+  late Map<String, String> _buyCurrency;
   bool _isInit = true;
   FocusNode _sellAmountFocusNode = FocusNode();
   FocusNode _buyAmountFocusNode = FocusNode();
-  TextEditingController _currentController;
-  FocusNode _currentFocusNode;
+  late TextEditingController _currentController;
+  late FocusNode _currentFocusNode;
 
   @override
   void didChangeDependencies() {
@@ -52,7 +52,7 @@ class _SwapScreenState extends State<SwapScreen> {
       _swapBloc = SwapBloc(_swapRepo, _traderRepo);
       _currentController = _sellAmountController;
       _currentFocusNode = _sellAmountFocusNode;
-      Map argument = ModalRoute.of(context).settings.arguments;
+      Map? argument = ModalRoute.of(context)?.settings.arguments as Map?;
 
       if (argument != null) {
         Currency currency = argument['currency'];
@@ -62,7 +62,7 @@ class _SwapScreenState extends State<SwapScreen> {
         Currency _curr = _currencies.firstWhere(
             (curr) =>
                 Decimal.tryParse(curr.amount) != null &&
-                Decimal.tryParse(curr.amount) > Decimal.zero,
+                Decimal.tryParse(curr.amount)! > Decimal.zero,
             orElse: () => _currencies.first);
         _swapBloc.add(InitSwap(_curr));
       }

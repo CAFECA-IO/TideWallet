@@ -17,9 +17,7 @@ import './repositories/trader_repository.dart';
 import './repositories/invest_repository.dart';
 import './repositories/swap_repository.dart';
 import './repositories/local_auth_repository.dart';
-import './screens/currency.screen.dart';
 import './screens/landing.screen.dart';
-import './screens/restore_wallet.screen.dart';
 import './screens/wallet_connect.screen.dart';
 import './screens/create_transaction.screen.dart';
 import './screens/transaction_preview.screen.dart';
@@ -32,7 +30,6 @@ import './screens/receive.screen.dart';
 import './screens/setting_fiat.screen.dart';
 import './screens/feedback.screen.dart';
 import './screens/terms.screen.dart';
-import './screens/update_password.screen.dart';
 import './screens/add_investment.screen.dart';
 import './screens/scan.screen.dart';
 import './screens/recover_mnemonic.screen.dart';
@@ -175,18 +172,15 @@ MaterialApp _material = MaterialApp(
     LandingScreen.routeName: (context) => LandingScreen(),
     CreateTransactionScreen.routeName: (context) => CreateTransactionScreen(),
     TransactionPreviewScreen.routeName: (context) => TransactionPreviewScreen(),
-    RestoreWalletScreen.routeName: (context) => RestoreWalletScreen(),
     ScanWalletScreen.routeName: (conte) => ScanWalletScreen(),
     ScanAddressScreen.routeName: (conte) => ScanAddressScreen(),
     TransactionListScreen.routeName: (context) => TransactionListScreen(),
     TransactionDetailScreen.routeName: (context) => TransactionDetailScreen(),
-    CurrencyScreen.routeName: (context) => CurrencyScreen(),
     AddCurrencyScreen.routeName: (context) => AddCurrencyScreen(),
     AddInvestmentScreen.routeName: (context) => AddInvestmentScreen(),
     ReceiveScreen.routeName: (context) => ReceiveScreen(),
     SettingFiatScreen.routeName: (context) => SettingFiatScreen(),
     WalletConnectScreen.routeName: (context) => WalletConnectScreen(),
-    UpdatePasswordScreen.routeName: (context) => UpdatePasswordScreen(),
     FeedbackScreen.routeName: (context) => FeedbackScreen(),
     TermsScreen.routeName: (context) => TermsScreen(),
     ScanScreen.routeName: (context) => ScanScreen(),

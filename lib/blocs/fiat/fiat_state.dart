@@ -10,12 +10,12 @@ abstract class FiatState extends Equatable {
 class FiatInitial extends FiatState {}
 
 class FiatLoaded extends FiatState {
-  final List<Fiat> list;
+  final List<Fiat?> list;
   final Fiat fiat;
 
-  FiatLoaded({this.list, this.fiat});
+  FiatLoaded({required this.list, required this.fiat});
 
-  copyWith({List<Fiat> list, Fiat fiat}) => FiatLoaded(
+  copyWith({List<Fiat?>? list, Fiat? fiat}) => FiatLoaded(
         fiat: fiat ?? this.fiat,
         list: list ?? this.list,
       );

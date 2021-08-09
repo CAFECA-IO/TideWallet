@@ -55,7 +55,7 @@ class _ScanAddressScreenState extends State<ScanAddressScreen> {
               bloc: _bloc,
               builder: (context, state) {
                 if (state is TransactionInitial &&
-                    (state.address != null && state.address.isNotEmpty) &&
+                    (state.address != null && state.address!.isNotEmpty) &&
                     !state.rules[0]) {
                   return Positioned(
                     child: Container(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
-import '../blocs/verify_password/verify_password_bloc.dart';
 import '../repositories/user_repository.dart';
 import '../repositories/local_auth_repository.dart';
 import '../blocs/local_auth/local_auth_bloc.dart';

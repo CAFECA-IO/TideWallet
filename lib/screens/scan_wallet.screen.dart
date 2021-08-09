@@ -16,7 +16,7 @@ class ScanWalletScreen extends StatefulWidget {
 }
 
 class _ScanWalletScreenState extends State<ScanWalletScreen> {
-  RestoreWalletBloc _bloc;
+  late RestoreWalletBloc _bloc;
 
   @override
   void didChangeDependencies() {

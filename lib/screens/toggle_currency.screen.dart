@@ -15,7 +15,7 @@ class ToggleCurrencyScreen extends StatefulWidget {
 }
 
 class _ToggleCurrencyScreenState extends State<ToggleCurrencyScreen> {
-  ToggleTokenBloc _bloc;
+  late ToggleTokenBloc _bloc;
   final t = I18n.t;
 
   @override
@@ -90,7 +90,7 @@ class ToggleItem extends StatelessWidget {
                 _dc.name,
                 style: Theme.of(context)
                     .textTheme
-                    .headline3
+                    .headline3!
                     .copyWith(fontSize: 12.0),
               ),
             ],

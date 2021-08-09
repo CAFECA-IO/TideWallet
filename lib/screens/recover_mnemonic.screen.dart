@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../widgets/appBar.dart';
-import '../widgets/inputs/password_input.dart';
 import '../widgets/buttons/primary_button.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/error_dialog.dart';
@@ -24,7 +23,7 @@ class _RecoverMemonicScreenState extends State<RecoverMemonicScreen> {
   TextEditingController _pwdController = new TextEditingController();
   TextEditingController _rePwdController = new TextEditingController();
   MnemonicBloc _bloc = MnemonicBloc(ThirdPartySignInRepository());
-  UserBloc _userBloc;
+  late UserBloc _userBloc;
 
   @override
   void didChangeDependencies() {
@@ -140,27 +139,6 @@ class _RecoverMemonicScreenState extends State<RecoverMemonicScreen> {
                           ),
                         ],
                       )),
-                  Container(
-                    margin: const EdgeInsets.only(bottom: 30.0),
-                    child: PasswordInput(
-                      label: t('password'),
-                      validator: null,
-                      onChanged: (v) {
-                        _bloc.add(InputMnemoPassword(v));
-                      },
-                      controller: this._pwdController,
-                    ),
-                  ),
-                  Container(
-                    child: PasswordInput(
-                      label: t('password-repeat'),
-                      validator: null,
-                      onChanged: (v) {
-                        _bloc.add(InputMnemoRePassword(v));
-                      },
-                      controller: this._rePwdController,
-                    ),
-                  ),
                   Spacer(),
                   Padding(
                     padding: const EdgeInsets.symmetric(

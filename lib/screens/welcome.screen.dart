@@ -28,7 +28,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   ThirdPartySignInBloc _bloc =
       ThirdPartySignInBloc(ThirdPartySignInRepository());
 
-  UserBloc _userBloc;
+  late UserBloc _userBloc;
 
   @override
   void didChangeDependencies() {

@@ -13,12 +13,11 @@ class BeforeAdd extends AddCurrencyState {
   final String address;
   final bool valid;
 
-  BeforeAdd({this.address, this.valid});
+  BeforeAdd({required this.address, required this.valid});
 
   copyWith({
-    String address,
-    bool valid,
-    Token result,
+    String? address,
+    bool? valid,
   }) =>
       BeforeAdd(
         address: address ?? this.address,
@@ -32,12 +31,12 @@ class BeforeAdd extends AddCurrencyState {
 class Loading extends AddCurrencyState {}
 
 class GetToken extends AddCurrencyState {
-  final Token result;
+  final Token? result;
 
   GetToken(this.result);
 
   @override
-  List<Object> get props => [result];
+  List<Object> get props => [result!];
 }
 
 class AddSuccess extends AddCurrencyState {}

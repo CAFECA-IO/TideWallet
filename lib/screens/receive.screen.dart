@@ -23,16 +23,17 @@ class ReceiveScreen extends StatefulWidget {
 
 class _ReceiveScreenState extends State<ReceiveScreen> {
   final t = I18n.t;
-  TransactionRepository _repo;
-  ReceiveBloc _bloc;
-  Currency _currency;
+  late TransactionRepository _repo;
+  late ReceiveBloc _bloc;
+  late Currency _currency;
   String _address = '';
   bool _isCalled = false;
 
   @override
   void didChangeDependencies() {
-    Map<String, Currency> arg = ModalRoute.of(context).settings.arguments;
-    _currency = arg["currency"];
+    Map<String, Currency> arg =
+        ModalRoute.of(context)!.settings.arguments as Map<String, Currency>;
+    _currency = arg["currency"]!;
     _repo = Provider.of<TransactionRepository>(context);
     if (!_isCalled) {
       _bloc = ReceiveBloc(_repo)..add(GetReceivingAddress(_currency));

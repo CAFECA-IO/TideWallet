@@ -1,9 +1,9 @@
 part of 'transaction_status_bloc.dart';
 
 abstract class TransactionStatusState extends Equatable {
-  final Currency currency;
+  final Currency? currency;
   final List<Transaction> transactions;
-  final Transaction transaction;
+  final Transaction? transaction;
 
   const TransactionStatusState(
       this.currency, this.transactions, this.transaction);
@@ -13,8 +13,8 @@ abstract class TransactionStatusState extends Equatable {
 }
 
 class TransactionStatusInitial extends TransactionStatusState {
-  TransactionStatusInitial(Currency currency, List<Transaction> transactions,
-      Transaction transaction)
+  TransactionStatusInitial(Currency? currency, List<Transaction> transactions,
+      Transaction? transaction)
       : super(currency, transactions, transaction);
 
   @override
@@ -23,9 +23,9 @@ class TransactionStatusInitial extends TransactionStatusState {
 
 class TransactionStatusLoaded extends TransactionStatusState {
   TransactionStatusLoaded(Currency currency, List<Transaction> transactions,
-      Transaction transaction)
+      Transaction? transaction)
       : super(currency, transactions, transaction);
 
   @override
-  List<Object> get props => [currency, transactions, transaction];
+  List<Object> get props => [currency!, transactions, transaction!];
 }

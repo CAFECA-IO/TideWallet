@@ -18,8 +18,8 @@ class ScanScreen extends StatefulWidget {
 }
 
 class _ScanScreenState extends State<ScanScreen> {
-  ScanBloc _bloc;
-  ScanRepository _repo;
+  late ScanBloc _bloc;
+  late ScanRepository _repo;
 
   @override
   void didChangeDependencies() {

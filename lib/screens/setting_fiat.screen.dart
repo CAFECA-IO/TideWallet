@@ -16,9 +16,9 @@ class SettingFiatScreen extends StatefulWidget {
 class _SettingFiatScreenState extends State<SettingFiatScreen> {
   final t = I18n.t;
 
-  FiatBloc _bloc;
+  late FiatBloc _bloc;
 
-  Widget _fiatField(Fiat _fiat, {bool selected = false}) {
+  Widget _fiatField(Fiat? _fiat, {bool selected = false}) {
     return InkWell(
       onTap: _fiat != null
           ? () {
@@ -42,7 +42,7 @@ class _SettingFiatScreenState extends State<SettingFiatScreen> {
                 style: TextStyle(
                   color: selected
                       ? Theme.of(context).primaryColor
-                      : Theme.of(context).textTheme.bodyText1.color,
+                      : Theme.of(context).textTheme.bodyText1!.color,
                 ),
               ),
               selected
@@ -75,8 +75,9 @@ class _SettingFiatScreenState extends State<SettingFiatScreen> {
           final int len = 20;
 
           if (state is FiatLoaded) {
-            final l = List<Fiat>(len - state.list.length);
-            List<Fiat> ls = state.list + l;
+            final List<Fiat?> l =
+                List<Fiat?>.filled(len - state.list.length, null);
+            List<Fiat?> ls = state.list + l;
 
             return Container(
               padding: const EdgeInsets.only(left: 20.0),
@@ -84,13 +85,12 @@ class _SettingFiatScreenState extends State<SettingFiatScreen> {
                 itemCount: ls.length,
                 itemBuilder: (BuildContext ctx, int index) {
                   bool _selected =
-                      ls[index] != null && ls[index].name == state.fiat.name;
+                      ls[index] != null && ls[index]!.name == state.fiat.name;
                   return _fiatField(ls[index], selected: _selected);
                 },
               ),
             );
           }
-
           return SizedBox();
         },
       ),

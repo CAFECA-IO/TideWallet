@@ -2,21 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:alice/alice.dart';
 
-import '../blocs/backup/backup_bloc.dart';
 import '../screens/landing.screen.dart';
-import '../screens/update_password.screen.dart';
 import '../screens/feedback.screen.dart';
 import '../screens/terms.screen.dart';
 import '../widgets/header.dart';
-import '../widgets/settings/backup.dart';
-import '../widgets/dialogs/dialog_controller.dart';
-import '../widgets/dialogs/verify_password_dialog.dart';
+
 import '../widgets/version.dart';
 import '../widgets/settings/fiat.dart';
 import '../widgets/settings/reset.dart';
 import '../helpers/i18n.dart';
-import '../helpers/http_agent.dart';
-import '../main.dart';
 
 class SettingsScreen extends StatefulWidget {
   static const routeName = '/settings';
@@ -26,12 +20,11 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  BackupBloc _backupBloc;
-  Alice alice;
+  Alice? alice;
 
   final t = I18n.t;
 
-  Widget _item(String _title, Function _onTap) {
+  Widget _item(String _title, Function()? _onTap) {
     return InkWell(
       onTap: _onTap,
       child: Container(
@@ -52,7 +45,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Text(_title),
             ImageIcon(
               AssetImage('assets/images/icons/ic_arrow_right_normal.png'),
-              color: Theme.of(context).textTheme.subtitle2.color,
+              color: Theme.of(context).textTheme.subtitle2!.color,
             )
           ],
         ),
@@ -93,7 +86,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   void didChangeDependencies() {
-    _backupBloc = BlocProvider.of<BackupBloc>(context);
     super.didChangeDependencies();
   }
 

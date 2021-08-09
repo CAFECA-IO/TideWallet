@@ -28,15 +28,16 @@ class TransactionListScreen extends StatefulWidget {
 
 class _TransactionListScreenState extends State<TransactionListScreen> {
   final t = I18n.t;
-  TransactionStatusBloc _bloc;
-  TransactionRepository _repo;
-  TraderRepository _traderRepo;
-  Currency _currency;
+  late TransactionStatusBloc _bloc;
+  late TransactionRepository _repo;
+  late TraderRepository _traderRepo;
+  late Currency _currency;
 
   @override
   void didChangeDependencies() {
-    Map<String, Currency> arg = ModalRoute.of(context).settings.arguments;
-    _currency = arg["account"];
+    Map<String, Currency> arg =
+        ModalRoute.of(context)!.settings.arguments! as Map<String, Currency>;
+    _currency = arg["account"]!;
     _repo = Provider.of<TransactionRepository>(context);
     _traderRepo = Provider.of<TraderRepository>(context);
     _bloc = TransactionStatusBloc(_repo, _traderRepo)
@@ -108,14 +109,14 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                     ),
                     BlocBuilder<FiatBloc, FiatState>(
                         builder: (context, fiatState) {
-                      FiatLoaded _state;
+                      late FiatLoaded _state;
                       String value = '';
 
                       if (fiatState is FiatLoaded) {
                         _state = fiatState;
                         String num = state.currency?.inUSD ?? _currency.inUSD;
                         value = Formatter.formatDecimal(
-                            (Decimal.tryParse(num) / _state.fiat.exchangeRate)
+                            (Decimal.tryParse(num)! / _state.fiat.exchangeRate)
                                 .toString());
                       }
                       return Text(
@@ -169,10 +170,10 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                       context: context,
                       removeTop: true,
                       child: ListView.builder(
-                        itemCount: state?.transactions?.length ?? 0,
+                        itemCount: state.transactions.length,
                         itemBuilder: (context, index) {
                           Transaction transaction = state.transactions[index];
-                          Currency currency = state.currency;
+                          Currency currency = state.currency!;
                           return TransactionItem(
                               currency: currency, transaction: transaction);
                         },

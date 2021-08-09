@@ -7,7 +7,6 @@ import '../models/investment.model.dart';
 import '../models/account.model.dart';
 
 import '../blocs/invest_plan/invest_plan_bloc.dart';
-import '../blocs/verify_password/verify_password_bloc.dart';
 import '../blocs/local_auth/local_auth_bloc.dart';
 
 import '../repositories/local_auth_repository.dart';

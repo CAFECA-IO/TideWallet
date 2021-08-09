@@ -34,7 +34,7 @@ class TermsScreen extends StatelessWidget {
               : SizedBox(),
           subtite.isNotEmpty
               ? Text(subtite,
-                  style: Theme.of(context).textTheme.headline5.copyWith(
+                  style: Theme.of(context).textTheme.headline5!.copyWith(
                       color: MyColors.secondary_01,
                       fontWeight: FontWeight.w400))
               : SizedBox(),
@@ -54,7 +54,7 @@ class TermsScreen extends StatelessWidget {
                                     Text('${index + 1}.',
                                         style: Theme.of(context)
                                             .textTheme
-                                            .bodyText2
+                                            .bodyText2!
                                             .copyWith(
                                                 fontSize: 16,
                                                 letterSpacing: 1)),
@@ -67,7 +67,7 @@ class TermsScreen extends StatelessWidget {
                               content[1],
                               style: Theme.of(context)
                                   .textTheme
-                                  .bodyText2
+                                  .bodyText2!
                                   .copyWith(
                                       fontSize: 16,
                                       letterSpacing: 1,
@@ -96,7 +96,7 @@ class TermsScreen extends StatelessWidget {
                                                 Text(content[0],
                                                     style: Theme.of(context)
                                                         .textTheme
-                                                        .bodyText2
+                                                        .bodyText2!
                                                         .copyWith(
                                                             fontSize: 16,
                                                             letterSpacing: 1)),
@@ -108,7 +108,7 @@ class TermsScreen extends StatelessWidget {
                                                 content[1],
                                                 style: Theme.of(context)
                                                     .textTheme
-                                                    .bodyText2
+                                                    .bodyText2!
                                                     .copyWith(
                                                         fontSize: 16,
                                                         letterSpacing: 1),
@@ -209,11 +209,11 @@ class TermsScreen extends StatelessWidget {
                         text: t('have_any_questions_please_contact_us'),
                         style: Theme.of(context)
                             .textTheme
-                            .bodyText2
+                            .bodyText2!
                             .copyWith(fontSize: 16, letterSpacing: 1)),
                     TextSpan(
                         text: emailAddress,
-                        style: Theme.of(context).textTheme.bodyText1.copyWith(
+                        style: Theme.of(context).textTheme.bodyText1!.copyWith(
                             fontSize: 16,
                             color: Theme.of(context).accentColor,
                             decoration: TextDecoration.underline),
@@ -229,7 +229,7 @@ class TermsScreen extends StatelessWidget {
                         }),
                         style: Theme.of(context)
                             .textTheme
-                            .bodyText2
+                            .bodyText2!
                             .copyWith(fontSize: 16, letterSpacing: 1)),
                   ]),
                 ),

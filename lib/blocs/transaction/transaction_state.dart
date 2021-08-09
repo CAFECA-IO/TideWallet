@@ -1,9 +1,6 @@
 part of 'transaction_bloc.dart';
 
-enum TransactionFormError {
-  addressInvalid,
-  amountInsufficient,
-}
+enum TransactionFormError { addressInvalid, amountInsufficient, none }
 
 abstract class TransactionState extends Equatable {
   const TransactionState();
@@ -13,18 +10,18 @@ abstract class TransactionState extends Equatable {
 }
 
 class TransactionInitial extends TransactionState {
-  final String address;
-  final Decimal amount;
-  final Decimal spandable;
+  final String? address;
+  final Decimal? amount;
+  final Decimal? spandable;
   final TransactionPriority priority;
-  final Decimal gasLimit;
-  final Decimal gasPrice;
-  final Decimal fee;
+  final Decimal? gasLimit;
+  final Decimal? gasPrice;
+  final Decimal? fee;
   final String feeToFiat;
   final String estimatedTime;
   final List<bool> rules;
   final TransactionFormError error;
-  final String message;
+  final String? message;
 
   static const defaultValid = [false, false];
 
@@ -36,25 +33,25 @@ class TransactionInitial extends TransactionState {
       this.gasLimit,
       this.gasPrice,
       this.fee,
-      this.feeToFiat = "",
+      this.feeToFiat = "loading...",
       this.estimatedTime = "10~30",
       this.rules = defaultValid,
-      this.error,
+      this.error = TransactionFormError.none,
       this.message});
 
   TransactionState copyWith({
-    String address,
-    Decimal amount,
-    Decimal spandable,
-    TransactionPriority priority,
-    Decimal gasLimit,
-    Decimal gasPrice,
-    Decimal fee,
-    String feeToFiat,
-    String estimatedTime,
-    List<bool> rules,
-    TransactionFormError error,
-    String message,
+    String? address,
+    Decimal? amount,
+    Decimal? spandable,
+    TransactionPriority? priority,
+    Decimal? gasLimit,
+    Decimal? gasPrice,
+    Decimal? fee,
+    String? feeToFiat,
+    String? estimatedTime,
+    List<bool>? rules,
+    TransactionFormError? error,
+    String? message,
   }) {
     return TransactionInitial(
         address: address ?? this.address,
@@ -73,18 +70,18 @@ class TransactionInitial extends TransactionState {
 
   @override
   List<Object> get props => [
-        address,
-        amount,
-        spandable,
+        address!,
+        amount!,
+        spandable!,
         priority,
-        gasLimit,
-        gasPrice,
-        fee,
+        gasLimit!,
+        gasPrice!,
+        fee!,
         feeToFiat,
         estimatedTime,
         rules,
         error,
-        message
+        message!
       ];
 }
 

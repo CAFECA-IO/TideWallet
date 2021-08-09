@@ -19,12 +19,12 @@ class Currency {
   final String id; // AccountCurrencyEntity id for Backend
   final String accountId;
   final int cointype;
-  final int purpose;
-  final int accountIndex;
+  final int? purpose;
+  final int? accountIndex; // ++ ??, null-safety
   final String symbol;
   final String imgPath;
   String amount;
-  final String inUSD;
+  final String? inUSD;
   final String name;
   final ACCOUNT accountType;
   final String blockchainId;
@@ -33,59 +33,60 @@ class Currency {
   final int decimals;
   final bool publish;
   final String currencyId; // CurrencyEntity currency_id for APP
-  final String contract;
+  final String? contract;
   final String type;
-  final String accountSymbol;
-  final int accountDecimals;
-  final String accountAmount;
+  final String? accountSymbol;
+  final int? accountDecimals;
+  final String? accountAmount;
 
   Currency({
-    this.id,
-    this.accountId,
-    this.cointype,
+    required this.id,
+    required this.accountId,
+    required this.cointype,
     this.purpose,
-    this.amount,
+    required this.amount,
     this.inUSD,
-    this.imgPath,
-    this.symbol,
-    this.name,
+    required this.imgPath,
+    required this.symbol,
+    required this.name,
     this.accountIndex,
-    this.accountType,
-    this.chainId,
-    this.blockchainId,
-    this.network,
-    this.decimals,
-    this.publish,
-    this.currencyId,
+    required this.accountType,
+    required this.chainId,
+    required this.blockchainId,
+    required this.network,
+    required this.decimals,
+    required this.publish,
+    required this.currencyId,
     this.contract,
-    this.type,
+    required this.type,
     this.accountSymbol,
     this.accountDecimals,
     this.accountAmount,
   });
 
-  Currency copyWith(
-      {String id,
-      String accountId,
-      int cointype,
-      int purpose,
-      String symbol,
-      String imgPath,
-      String amount,
-      String inUSD,
-      String name,
-      ACCOUNT accountType,
-      String blockchainId,
-      String network,
-      int chainId,
-      int decimals,
-      bool publish,
-      String contract,
-      String type,
-      String accountSymbol,
-      int accountDecimals,
-      String accountAmount,
-      String}) {
+  Currency copyWith({
+    String? id,
+    String? accountId,
+    String? currencyId,
+    int? cointype,
+    int? purpose,
+    String? symbol,
+    String? imgPath,
+    String? amount,
+    String? inUSD,
+    String? name,
+    ACCOUNT? accountType,
+    String? blockchainId,
+    String? network,
+    int? chainId,
+    int? decimals,
+    bool? publish,
+    String? contract,
+    String? type,
+    String? accountSymbol,
+    int? accountDecimals,
+    String? accountAmount,
+  }) {
     return Currency(
         id: id ?? this.id,
         accountId: accountId ?? this.accountId,
@@ -162,7 +163,7 @@ class AccountMessage {
   final ACCOUNT_EVT evt;
   final value;
 
-  AccountMessage({@required this.evt, this.value});
+  AccountMessage({required this.evt, this.value});
 }
 
 class Token {
@@ -175,13 +176,13 @@ class Token {
   final String description;
 
   Token({
-    this.symbol,
-    this.name,
-    this.decimal,
-    this.imgUrl,
-    this.totalSupply,
-    this.contract,
-    this.description,
+    required this.symbol,
+    required this.name,
+    required this.decimal,
+    required this.imgUrl,
+    required this.totalSupply,
+    required this.contract,
+    required this.description,
   });
 }
 
@@ -190,12 +191,15 @@ class Fiat {
   final String name;
   final Decimal exchangeRate;
 
-  Fiat({this.currencyId, this.name, this.exchangeRate});
+  Fiat(
+      {required this.currencyId,
+      required this.name,
+      required this.exchangeRate});
 
   Fiat.fromMap(Map map)
       : currencyId = map['currency_id'],
         name = map['name'],
-        exchangeRate = Decimal.tryParse(map['rate']);
+        exchangeRate = Decimal.tryParse(map['rate'])!;
 
   // Fiat.fromExChangeRateCurrencyEntity(ExchageRateCurrency entity)
   //     : name = entity.symbol,
@@ -219,27 +223,27 @@ class DisplayCurrency extends Equatable {
   final String blockchainId;
 
   DisplayCurrency({
-    this.editable,
+    required this.editable,
     this.opened = false,
-    this.symbol,
-    this.name,
-    this.icon,
-    this.currencyId,
-    this.accountId,
-    this.contract,
-    this.blockchainId,
+    required this.symbol,
+    required this.name,
+    required this.icon,
+    required this.currencyId,
+    required this.accountId,
+    required this.contract,
+    required this.blockchainId,
   });
 
   DisplayCurrency copyWith({
-    bool opened,
-    bool editable,
-    String symbol,
-    String name,
-    String icon,
-    String currencyId,
-    String accountId,
-    String contract,
-    String blockchainId,
+    bool? opened,
+    bool? editable,
+    String? symbol,
+    String? name,
+    String? icon,
+    String? currencyId,
+    String? accountId,
+    String? contract,
+    String? blockchainId,
   }) {
     return DisplayCurrency(
         opened: opened ?? this.opened,

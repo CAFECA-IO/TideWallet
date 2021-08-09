@@ -47,7 +47,7 @@ class FeedbackScreen extends StatelessWidget {
       );
     }
 
-    Widget _item(String _title, Function _onTap) {
+    Widget _item(String _title, Function()? _onTap) {
       return InkWell(
         onTap: _onTap,
         child: Container(
@@ -68,7 +68,7 @@ class FeedbackScreen extends StatelessWidget {
               Text(_title),
               ImageIcon(
                 AssetImage('assets/images/icons/ic_arrow_right_normal.png'),
-                color: Theme.of(context).textTheme.subtitle2.color,
+                color: Theme.of(context).textTheme.subtitle2!.color,
               )
             ],
           ),

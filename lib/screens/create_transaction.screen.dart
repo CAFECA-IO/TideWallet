@@ -29,23 +29,24 @@ class CreateTransactionScreen extends StatefulWidget {
 }
 
 class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
-  TransactionBloc _bloc;
-  FiatBloc _fiatBloc;
+  late TransactionBloc _bloc;
+  late FiatBloc _fiatBloc;
   final t = I18n.t;
 
-  TextEditingController _addressController;
-  TextEditingController _amountController;
-  TextEditingController _gasController;
-  TextEditingController _gasPriceController;
-  TransactionRepository _repo;
-  Currency _currency;
-  String _address;
+  late TextEditingController _addressController;
+  late TextEditingController _amountController;
+  late TextEditingController _gasController;
+  late TextEditingController _gasPriceController;
+  late TransactionRepository _repo;
+  late Currency _currency;
+  late String? _address;
   final _form = GlobalKey<FormState>();
   bool _isSelected = false;
 
   @override
   void didChangeDependencies() {
-    Map<String, dynamic> arg = ModalRoute.of(context).settings.arguments;
+    Map<String, dynamic> arg =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     Log.debug(arg);
     _currency = arg["account"];
     _address = arg["address"];
@@ -59,7 +60,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
     _bloc = BlocProvider.of<TransactionBloc>(context)
       ..add(UpdateTransactionCreateCurrency(this._currency));
     if (_address != null) {
-      _addressController.text = _address;
+      _addressController.text = _address!;
       _bloc.add(ValidAddress(_addressController.text));
     }
     super.didChangeDependencies();
@@ -78,7 +79,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    FiatLoaded _state = _fiatBloc.state;
+    FiatLoaded _state = _fiatBloc.state as FiatLoaded;
     return Scaffold(
       appBar: GeneralAppbar(
         title: t('send_coin'),
@@ -94,8 +95,8 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
           builder: (context, state) {
             if (state is TransactionInitial) {
               Log.debug(state.props);
-              if (state.address != null && state.address.isNotEmpty) {
-                _addressController.text = state.address;
+              if (state.address != null && state.address!.isNotEmpty) {
+                _addressController.text = state.address!;
                 _bloc.add(ValidAddress(_addressController.text));
               }
 
@@ -122,7 +123,9 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                                 'assets/images/icons/ic_qrcode.png'))),
                       ),
                       state.rules[0] ||
-                              (state.address == null || state.address.isEmpty)
+                              (state.address == null ||
+                                  (state.address != null &&
+                                      state.address!.isEmpty))
                           ? SizedBox(height: 20)
                           : Align(
                               child: Container(
@@ -133,7 +136,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                                   t('invalid_address'),
                                   style: Theme.of(context)
                                       .textTheme
-                                      .bodyText2
+                                      .bodyText2!
                                       .copyWith(
                                           color: Theme.of(context).errorColor),
                                 ),
@@ -167,7 +170,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                                   t('invalid_amount'),
                                   style: Theme.of(context)
                                       .textTheme
-                                      .bodyText2
+                                      .bodyText2!
                                       .copyWith(
                                           color: Theme.of(context).errorColor),
                                 ),
@@ -338,7 +341,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                                       direction: TransactionDirection.sent,
                                       amount:
                                           Decimal.parse(_amountController.text),
-                                      fee: state.fee,
+                                      fee: state.fee!,
                                     ),
                                     "feeToFiat":
                                         state.feeToFiat + " ${_state.fiat.name}"
