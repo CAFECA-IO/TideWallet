@@ -21,13 +21,12 @@ class AccountRepository {
     AccountCore().setMessenger();
   }
 
-  Future coreInit({bool debugMode}) async {
+  Future coreInit({bool? debugMode}) async {
     bool isInit = debugMode != null && this._debugMode != debugMode;
-    if (debugMode != null) {
+    if (isInit) {
+      this._debugMode = debugMode;
       this._prefManager.setDebugMode(debugMode);
     }
-
-    this._debugMode = debugMode ?? await this._prefManager.getDebugMode();
 
     if (!AccountCore().isInit || isInit) {
       AccountCore().setMessenger();
@@ -42,7 +41,7 @@ class AccountRepository {
     return AccountCore().getAllCurrencies();
   }
 
-  List<Currency> getCurrencies(String accountId) {
+  List<Currency>? getCurrencies(String accountId) {
     return AccountCore().getCurrencies(accountId);
   }
 
@@ -55,9 +54,10 @@ class AccountRepository {
   }
 
   Future<bool> addToken(Currency currency, Token token) async {
-    EthereumService _ethService = AccountCore().getService(currency.accountId);
+    AccountService _ethService = AccountCore().getService(currency.accountId);
 
-    return _ethService.addToken(currency.blockchainId, token);
+    return (_ethService as EthereumService)
+        .addToken(currency.blockchainId, token);
   }
 
   close() {

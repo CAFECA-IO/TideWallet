@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:bip32/bip32.dart' as bip32;
@@ -21,15 +22,16 @@ class PaperWallet {
 
     Random rng = Random.secure(); // ++ general from extend [Emily 04/01/2021]
 
-    Credentials credentials = EthPrivateKey.fromHex(data['key']);
-    Wallet wallet = Wallet.createNew(credentials, data['password'], rng);
+    EthPrivateKey credentials = EthPrivateKey.fromHex(data['key'] as String);
+    Wallet wallet =
+        Wallet.createNew(credentials, data['password'] as String, rng);
     Log.info(wallet.toJson());
 
     return wallet;
   }
 
-  static Wallet recoverFromJson(String content, String pwd) {
-    Wallet wallet;
+  static Wallet? recoverFromJson(String content, String pwd) {
+    Wallet? wallet;
     try {
       wallet = Wallet.fromJson(content, pwd);
     } catch (e) {
@@ -46,7 +48,7 @@ class PaperWallet {
   static Wallet updatePassword(List param) {
     Wallet wallet = param[0];
     String password = param[1];
-    Credentials fromHex =
+    EthPrivateKey fromHex =
         EthPrivateKey.fromHex(hex.encode(wallet.privateKey.privateKey));
 
     var rng = new Random.secure();
@@ -83,17 +85,17 @@ class PaperWallet {
     Log.debug('compressed publicKey: ${hex.encode(publicKey)}');
 
     if (!compressed) {
-        // bip32.BIP32 child = root.derivePath("$path");
-        // publicKey = child.publicKey;
-        // bitcoins.ExtendedKey bitcoinKey = bitcoins.ExtendedKey(
-        //     key: publicKey,
-        //     chainCode: Uint8List.fromList(child.chainCode),
-        //     parentFP: encodeBigInt(BigInt.from(child.parentFingerprint)),
-        //     depth: child.depth,
-        //     index: keyIndex != null ? keyIndex : 0,
-        //     isPrivate: false);
-        // publicKey = bitcoinKey.child(chainIndex).child(keyIndex).ECPubKey(false);
-        // Log.debug('uncompressed publicKey: ${hex.encode(publicKey)}');
+      // bip32.BIP32 child = root.derivePath("$path");
+      // publicKey = child.publicKey;
+      // bitcoins.ExtendedKey bitcoinKey = bitcoins.ExtendedKey(
+      //     key: publicKey,
+      //     chainCode: Uint8List.fromList(child.chainCode),
+      //     parentFP: encodeBigInt(BigInt.from(child.parentFingerprint)),
+      //     depth: child.depth,
+      //     index: keyIndex != null ? keyIndex : 0,
+      //     isPrivate: false);
+      // publicKey = bitcoinKey.child(chainIndex).child(keyIndex).ECPubKey(false);
+      // Log.debug('uncompressed publicKey: ${hex.encode(publicKey)}');
 
       // TODO: Maybe we don't need uncompressed public key
       throw UnimplementedError('Implement on decorator');
@@ -101,7 +103,7 @@ class PaperWallet {
     return publicKey;
   }
 
-  static Uint8List getPrivKey(
+  static Uint8List? getPrivKey(
     Uint8List seed,
     int chainIndex,
     int keyIndex, {
@@ -117,7 +119,7 @@ class PaperWallet {
   // see: https://iancoleman.io/bip39
   // see: https://learnmeabitcoin.com/technical/extended-keys
   static String getExtendedPublicKey({
-    List<int> seed,
+    required List<int> seed,
     String path = EXT_PATH,
   }) {
     // const publicPrefix = [0x04, 0x88, 0xb2, 0x1e];
@@ -138,7 +140,9 @@ class PaperWallet {
     return pub.toBase58();
   }
 
-  static String walletToJson(Wallet wallet) {
+  // static String walletToJson(Wallet wallet) {
+  static FutureOr<String> walletToJson(dynamic wallet) {
+    // ++ update null-safety
     return wallet.toJson();
   }
 
@@ -146,11 +150,7 @@ class PaperWallet {
     final json = decode[0];
     final password = decode[1];
     Wallet wallet;
-    try {
-      wallet = Wallet.fromJson(json, password);
-    } catch (e) {
-      Log.error(e);
-    }
+    wallet = Wallet.fromJson(json, password);
     return wallet;
   }
 }

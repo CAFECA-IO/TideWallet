@@ -11,8 +11,8 @@ abstract class CurrencyDao {
   Future<List<int>> insertCurrencies(List<CurrencyEntity> currencies);
 
   @Query('SELECT * FROM Currency')
-  Future<List<CurrencyEntity>> findAllCurrencies();
+  Future<List<CurrencyEntity>?> findAllCurrencies();
 
   @Query('SELECT * FROM CurrencyWithAccountId where account_id = :id')
-  Future<List<CurrencyWithAccountId>> findAllCurrenciesByAccountId(String id);
+  Future<List<CurrencyWithAccountId>?> findAllCurrenciesByAccountId(String id);
 }

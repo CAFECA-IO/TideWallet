@@ -9,7 +9,7 @@ import 'dao/network_dao.dart';
 import 'dao/exchange_rate_dao.dart';
 
 class DBOperator {
-  AppDatabase database;
+  late AppDatabase database;
   bool _isInit = false;
   static const DB_NAME = 'tidewallet.db';
 

@@ -16,8 +16,8 @@ class UserEntity {
 
   final int timestamp;
 
-  @ColumnInfo(name: 'backup_status') // --  nullable: false
-  final bool backupStatus;
+  @ColumnInfo(name: 'last_sync_time:') // --  nullable: false
+  final int lastSyncTime;
 
   UserEntity(
     this.userId,
@@ -25,7 +25,7 @@ class UserEntity {
     this.thirdPartyId,
     this.installId,
     this.timestamp,
-    this.backupStatus,
+    this.lastSyncTime,
   );
 
   @override
@@ -40,12 +40,12 @@ class UserEntity {
   int get hashCode => userId.hashCode ^ keystore.hashCode;
 
   UserEntity copyWith({
-    String userId,
-    String keystore,
-    String thirdPartyId,
-    String installId,
-    int timestamp,
-    bool backupStatus,
+    String? userId,
+    String? keystore,
+    String? thirdPartyId,
+    String? installId,
+    int? timestamp,
+    int? lastSyncTime,
   }) {
     return UserEntity(
       userId ?? this.userId,
@@ -53,7 +53,7 @@ class UserEntity {
       thirdPartyId ?? this.thirdPartyId,
       installId ?? this.installId,
       timestamp ?? this.timestamp,
-      backupStatus ?? this.backupStatus,
+      lastSyncTime ?? this.lastSyncTime,
     );
   }
 }

@@ -18,11 +18,11 @@ class NetworkEntity {
   final int chainId;
 
   NetworkEntity(
-      {this.networkId,
-      this.network,
-      this.coinType,
-      this.publish,
-      this.chainId});
+      {required this.networkId,
+      required this.network,
+      required this.coinType,
+      required this.publish,
+      required this.chainId});
 
   @override
   bool operator ==(Object other) =>

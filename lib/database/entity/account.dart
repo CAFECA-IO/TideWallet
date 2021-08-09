@@ -38,11 +38,11 @@ class AccountEntity {
   // final bool curveType;
 
   AccountEntity({
-    this.accountId,
-    this.userId,
-    this.networkId,
+    required this.accountId,
+    required this.userId,
+    required this.networkId,
     // this.purpose,
-    this.accountIndex,
+    required this.accountIndex,
     // this.curveType,
   });
 

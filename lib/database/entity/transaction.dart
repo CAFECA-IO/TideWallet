@@ -32,10 +32,10 @@ class TransactionEntity {
   final int confirmation;
 
   @ColumnInfo(name: 'gas_price')
-  final String gasPrice;
+  final String? gasPrice;
 
   @ColumnInfo(name: 'gas_used')
-  final int gasUsed;
+  final int? gasUsed;
 
   // final int block;
 
@@ -44,7 +44,7 @@ class TransactionEntity {
   // @ColumnInfo(nullable: false)
   final String fee;
 
-  final String note;
+  final String? note;
 
   final String status; // success/pending/fail
 
@@ -52,23 +52,24 @@ class TransactionEntity {
 
   final String amount;
 
-  TransactionEntity(
-      {this.transactionId,
-      this.accountcurrencyId,
-      this.txId,
-      this.confirmation,
-      this.sourceAddress,
-      this.destinctionAddress,
-      this.gasPrice,
-      this.gasUsed,
-      this.note,
-      // this.block,
-      // this.locktime,
-      this.fee,
-      this.status,
-      this.timestamp,
-      this.direction,
-      this.amount});
+  TransactionEntity({
+    required this.transactionId,
+    required this.accountcurrencyId,
+    required this.txId,
+    required this.confirmation,
+    required this.sourceAddress,
+    required this.destinctionAddress,
+    this.gasPrice,
+    this.gasUsed,
+    this.note,
+    // this.block,
+    // this.locktime,
+    required this.fee,
+    required this.status,
+    required this.timestamp,
+    required this.direction,
+    required this.amount,
+  });
 
   TransactionEntity.fromJson(
       String accountcurrencyId, Map<String, dynamic> data)
@@ -88,7 +89,7 @@ class TransactionEntity {
         this.note = data['note'];
 
   TransactionEntity.fromTransaction(Currency currency, Transaction transaction,
-      String amount, String fee, String gasPrice, String destinationAddresses)
+      String amount, String fee, String gasPrice, String? destinationAddresses)
       : this.accountcurrencyId = currency.id,
         this.transactionId = currency.id + transaction.txId,
         this.amount = amount, // in smallest coin unit
@@ -98,7 +99,7 @@ class TransactionEntity {
             destinationAddresses ?? transaction.destinationAddresses,
         this.confirmation = transaction.confirmations,
         this.gasPrice = gasPrice, // in smallest parentCoin unit
-        this.gasUsed = transaction?.gasUsed?.toInt(),
+        this.gasUsed = transaction.gasUsed?.toInt(),
         this.fee = fee, // in smallest parentCoin unit
         this.direction = transaction.direction.title,
         this.status = transaction.status.title,

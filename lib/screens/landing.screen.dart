@@ -27,6 +27,7 @@ class _LandingScreenState extends State<LandingScreen> {
   AccountCurrencyBloc _accountBloc;
   FCM _fcm = FCM();
   ToggleTokenBloc _ttBloc;
+  bool _debugMode = false;
 
   @override
   void initState() {
@@ -40,23 +41,20 @@ class _LandingScreenState extends State<LandingScreen> {
   @override
   void didChangeDependencies() async {
     Map<String, bool> arg = ModalRoute.of(context).settings.arguments;
-    bool debugMode = arg != null ? arg["debugMode"] : false;
+    if (arg != null && arg["debugMode"] != null) {
+      this._debugMode = arg["debugMode"];
+    }
     _ttBloc = BlocProvider.of<ToggleTokenBloc>(context);
 
     if (_isInit) {
-      Firebase.initializeApp().whenComplete(() => {});
-    }
-
-    if (_isInit || debugMode) {
       await DBOperator().init();
       // force AccountCurrencyBloc call constructor
       _accountBloc = BlocProvider.of<AccountCurrencyBloc>(context);
-
-      _bloc = BlocProvider.of<UserBloc>(context)
-        ..add(UserCheck(debugMode: debugMode));
       _fiatBloc = BlocProvider.of<FiatBloc>(context);
       _isInit = false;
     }
+    _bloc = BlocProvider.of<UserBloc>(context)
+      ..add(UserCheck(debugMode: this._debugMode));
 
     super.didChangeDependencies();
   }

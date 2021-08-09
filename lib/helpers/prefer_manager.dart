@@ -17,15 +17,18 @@ class PrefManager {
   }
 
   /// Installation ID
-  Future<void> setInstallationId(String installationId) async {
+  Future<void> setInstallationId(String? installationId) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString(INSTALL_ID_KEY, installationId);
+    if (installationId != null)
+      prefs.setString(INSTALL_ID_KEY, installationId);
+    else
+      prefs.remove(INSTALL_ID_KEY);
   }
 
   Future<String> getInstallationId() async {
     final SharedPreferences pref = await SharedPreferences.getInstance();
-    String installationId;
-    installationId = pref.getString(INSTALL_ID_KEY) ?? null;
+    String? installationId;
+    installationId = pref.getString(INSTALL_ID_KEY);
 
     if (installationId == null) {
       installationId = Uuid().v4();
@@ -44,9 +47,9 @@ class PrefManager {
     prefs.setString(AUTH_ITEM_KEY, json.encode(authItem.toJson()));
   }
 
-  Future<AuthItem> getAuthItem() async {
+  Future<AuthItem?> getAuthItem() async {
     final SharedPreferences pref = await SharedPreferences.getInstance();
-    String authItemString = pref.getString(AUTH_ITEM_KEY) ?? null;
+    String? authItemString = pref.getString(AUTH_ITEM_KEY);
 
     if (authItemString == null) {
       return null;
@@ -60,9 +63,9 @@ class PrefManager {
     prefs.setString(SELECTED_FIAT_KEY, symbol);
   }
 
-  Future<String> getSeletedFiat() async {
+  Future<String?> getSeletedFiat() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String selected = prefs.getString(SELECTED_FIAT_KEY) ?? null;
+    String? selected = prefs.getString(SELECTED_FIAT_KEY);
 
     return selected;
   }
@@ -93,7 +96,7 @@ class PrefManager {
 
   Future<Map> getSeletedDisplay() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String selected = prefs.getString(SELECTED_DISPLAY) ?? null;
+    String? selected = prefs.getString(SELECTED_DISPLAY);
     return selected != null ? json.decode(selected) : null;
   }
 

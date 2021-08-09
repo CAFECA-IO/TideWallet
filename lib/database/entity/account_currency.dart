@@ -43,13 +43,13 @@ class AccountCurrencyEntity {
   final int lastSyncTime;
 
   AccountCurrencyEntity(
-      {this.accountcurrencyId,
-      this.accountId,
-      this.currencyId,
-      this.balance,
-      this.numberOfUsedExternalKey,
-      this.numberOfUsedInternalKey,
-      this.lastSyncTime});
+      {required this.accountcurrencyId,
+      required this.accountId,
+      required this.currencyId,
+      required this.balance,
+      required this.numberOfUsedExternalKey,
+      required this.numberOfUsedInternalKey,
+      required this.lastSyncTime});
 
   @override
   bool operator ==(Object other) =>
@@ -118,7 +118,7 @@ class JoinCurrency {
 
   final bool publish;
 
-  final String contract;
+  final String? contract;
 
   final int decimals;
 
@@ -128,21 +128,21 @@ class JoinCurrency {
   final String accountId;
 
   JoinCurrency({
-    this.accountcurrencyId,
-    this.currencyId,
-    this.symbol,
-    this.name,
-    this.balance,
-    this.accountIndex,
-    this.coinType,
-    this.image,
-    this.blockchainId,
-    this.network,
-    this.chainId,
-    this.publish,
+    required this.accountcurrencyId,
+    required this.currencyId,
+    required this.symbol,
+    required this.name,
+    required this.balance,
+    required this.accountIndex,
+    required this.coinType,
+    required this.image,
+    required this.blockchainId,
+    required this.network,
+    required this.chainId,
+    required this.publish,
     this.contract,
-    this.decimals,
-    this.type,
-    this.accountId,
+    required this.decimals,
+    required this.type,
+    required this.accountId,
   });
 }

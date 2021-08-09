@@ -24,17 +24,17 @@ class ExchangeRateEntity {
   final String type;
 
   ExchangeRateEntity({
-    this.exchangeRateId,
-    this.name,
-    this.rate,
-    this.lastSyncTime,
-    this.type,
+    required this.exchangeRateId,
+    required this.name,
+    required this.rate,
+    required this.lastSyncTime,
+    required this.type,
   });
 
-  ExchangeRateEntity.fromJson(Map json):
-    this.exchangeRateId = json['currency_id'],
-    this.name = json['name'],
-    this.rate = json['rate'],
-    this.lastSyncTime = json['timestamp'],
-    this.type = json['type'];
+  ExchangeRateEntity.fromJson(Map json)
+      : this.exchangeRateId = json['currency_id'],
+        this.name = json['name'],
+        this.rate = json['rate'],
+        this.lastSyncTime = json['timestamp'],
+        this.type = json['type'];
 }

@@ -71,7 +71,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        WidgetsBinding.instance.focusManager.primaryFocus?.unfocus();
+        WidgetsBinding.instance?.focusManager.primaryFocus?.unfocus();
       },
       child: MultiProvider(
         providers: [
@@ -211,12 +211,13 @@ MaterialApp _material = MaterialApp(
   ],
   localeListResolutionCallback: (deviceLocales, supportedLocales) {
     Locale locale = supportedLocales.toList()[0];
-    for (Locale deviceLocale in deviceLocales) {
-      if (I18nDelegate().isSupported(deviceLocale)) {
-        locale = deviceLocale;
-        break;
+    if (deviceLocales != null)
+      for (Locale deviceLocale in deviceLocales) {
+        if (I18nDelegate().isSupported(deviceLocale)) {
+          locale = deviceLocale;
+          break;
+        }
       }
-    }
     Intl.defaultLocale = locale.languageCode;
     return locale;
   },

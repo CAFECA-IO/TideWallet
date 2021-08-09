@@ -12,26 +12,26 @@ import '../helpers/logger.dart';
 import '../helpers/http_agent.dart';
 import '../helpers/cryptor.dart';
 import '../helpers/prefer_manager.dart';
-import '../helpers/utils.dart';
 import '../helpers/rlp.dart' as rlp;
 import '../database/db_operator.dart';
 import '../database/entity/user.dart';
 import '../models/auth.model.dart';
 import '../models/api_response.mode.dart';
 import '../services/fcm_service.dart';
+
 class User {
-  String _id;
+  late String _id;
   bool _isBackup = false;
-  String _thirdPartyId;
-  String _installId;
-  int _timestamp;
+  late String _thirdPartyId;
+  late String _installId;
+  late int _timestamp;
 
   PrefManager _prefManager = PrefManager();
 
   String get id => _id;
 
   Future<bool> checkUser() async {
-    UserEntity user = await DBOperator().userDao.findUser();
+    UserEntity? user = await DBOperator().userDao.findUser();
     if (user != null) {
       this._initUser(user);
       return true;
@@ -59,8 +59,10 @@ class User {
   }
 
   String getPassword(
-      {String userIdentifier, String userId, String installId, int timestamp}) {
-    // ++ store in DB or app or storage ? [Emily 04/01/2021]
+      {String? userIdentifier,
+      String? userId,
+      String? installId,
+      int? timestamp}) {
     Uint8List userIdentifierBuffer =
         ascii.encode(userIdentifier ?? this._thirdPartyId);
     Uint8List installIdBuffer = ascii.encode(installId ?? this._installId);
@@ -154,12 +156,12 @@ class User {
   }
 
   Future<bool> _registerUser({
-    String extendPublicKey,
-    String installId,
-    Wallet wallet,
-    String userId,
-    String userIdentifier,
-    int timestamp,
+    required String extendPublicKey,
+    required String installId,
+    required wallet,
+    required String userId,
+    required String userIdentifier,
+    required int timestamp,
   }) async {
     String fcmToken = await FCM().getToken();
 
@@ -172,9 +174,7 @@ class User {
       "fcm_token": fcmToken
     };
 
-
-    APIResponse res =
-        await HTTPAgent().post('${Endpoint.url}/user', payload);
+    APIResponse res = await HTTPAgent().post('${Endpoint.url}/user', payload);
 
     if (res.success) {
       this._prefManager.setAuthItem(AuthItem.fromJson(res.data));
@@ -188,7 +188,7 @@ class User {
           userIdentifier,
           installId,
           timestamp,
-          false);
+          timestamp);
       await DBOperator().userDao.insertUser(user);
 
       await this._initUser(user);
@@ -218,52 +218,14 @@ class User {
     String extPK = PaperWallet.getExtendedPublicKey(seed: seed);
 
     bool success = await this._registerUser(
-      extendPublicKey: extPK,
-      userIdentifier: userIdentifier,
-      userId: userId,
-      timestamp: timestamp,
-      wallet: wallet,
-      installId: installId
-    );
+        extendPublicKey: extPK,
+        userIdentifier: userIdentifier,
+        userId: userId,
+        timestamp: timestamp,
+        wallet: wallet,
+        installId: installId);
 
     return success;
-  }
-
-  bool verifyPassword(String password) {
-    // return _seasonedPassword(password) == this._passwordHash;
-  }
-
-  Future<bool> updatePassword(String oldPassword, String newpassword) async {
-    UserEntity user = await DBOperator().userDao.findUser();
-
-    final wallet = await this.restorePaperWallet(user.keystore, oldPassword);
-    // final w = await compute(PaperWallet.updatePassword, [wallet, newpassword]);
-
-    // final originSalt = this._salt;
-
-    // this._salt = Random.secure().toString();
-    // final passwordHash = _seasonedPassword(newpassword);
-    // String keystore = await compute(PaperWallet.walletToJson, w);
-
-    // final userUpdated = user.copyWith(
-    //   keystore: keystore,
-    //   passwordHash: passwordHash,
-    //   passwordSalt: this._salt,
-    //   backupStatus: false,
-    // );
-
-    // try {
-    //   await DBOperator().userDao.updateUser(userUpdated);
-    //   this._passwordHash = passwordHash;
-    //   this._isBackup = false;
-
-    //   return true;
-    // } catch (e) {
-    //   Log.error(e);
-    //   this._salt = originSalt;
-
-    //   return false;
-    // }
   }
 
   bool validPaperWallet(String wallet) {
@@ -299,8 +261,7 @@ class User {
       "app_uuid": installId
     };
 
-    APIResponse res =
-        await HTTPAgent().post('${Endpoint.url}/user', payload);
+    APIResponse res = await HTTPAgent().post('${Endpoint.url}/user', payload);
 
     if (res.success) {
       this._prefManager.setAuthItem(AuthItem.fromJson(res.data));
@@ -315,59 +276,33 @@ class User {
     return res.success;
   }
 
-  Future<bool> checkWalletBackup() async {
-    UserEntity _user = await DBOperator().userDao.findUser();
-    if (_user != null) {
-      return _user.backupStatus;
-    }
-    return false;
-  }
-
-  Future<bool> backupWallet() async {
-    try {
-      UserEntity _user = await DBOperator().userDao.findUser();
-
-      await DBOperator().userDao.updateUser(_user.copyWith(backupStatus: true));
-      _isBackup = true;
-    } catch (e) {
-      Log.error(e);
-    }
-
-    return _isBackup;
-  }
-
   Future<void> _initUser(UserEntity user) async {
     this._id = user.userId;
     this._thirdPartyId = user.thirdPartyId;
     this._installId = user.installId;
     this._timestamp = user.timestamp;
-    this._isBackup = user.backupStatus;
 
-    AuthItem item = await _prefManager.getAuthItem();
+    AuthItem? item = await _prefManager.getAuthItem();
     if (item != null) {
       HTTPAgent().setToken(item.token);
     }
   }
 
-  String _seasonedPassword(String password) {
-    List<int> tmp = Cryptor.keccak256round(password.codeUnits, round: 3);
-    // tmp += this._salt.codeUnits;
-    // tmp = Cryptor.keccak256round(tmp, round: 1);
-
-    Uint8List bytes = Uint8List.fromList(tmp);
-    return String.fromCharCodes(bytes);
-  }
-
-  Future<String> getKeystore() async {
-    final user = await DBOperator().userDao.findUser();
-
-    return user?.keystore;
+  Future<String?> getKeystore() async {
+    UserEntity? user = await DBOperator().userDao.findUser();
+    if (user != null)
+      return user.keystore;
+    else
+      return null;
   }
 
   Future<bool> deleteUser() async {
-    UserEntity user = await DBOperator().userDao.findUser();
-    final item = await DBOperator().userDao.deleteUser(user);
-
+    UserEntity? user = await DBOperator().userDao.findUser();
+    int item;
+    if (user != null)
+      item = await DBOperator().userDao.deleteUser(user);
+    else
+      return true;
     if (item < 0) return false;
 
     await this._prefManager.clearAll();

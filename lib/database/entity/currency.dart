@@ -8,7 +8,7 @@ class CurrencyEntity {
 
   final String name;
 
-  final String description;
+  final String? description;
 
   final String symbol;
 
@@ -19,23 +19,23 @@ class CurrencyEntity {
   final String type;
 
   @ColumnInfo(name: 'total_supply')
-  final String totalSupply;
+  final String? totalSupply;
 
-  final String contract;
+  final String? contract;
 
   final String image;
 
   CurrencyEntity({
-    this.currencyId,
-    this.name,
-    this.symbol,
-    this.description,
-    this.address,
-    this.contract,
-    this.decimals,
-    this.totalSupply,
-    this.type,
-    this.image,
+    required this.currencyId,
+    required this.name,
+    required this.symbol,
+    required this.description,
+    required this.address,
+    required this.contract,
+    required this.decimals,
+    required this.totalSupply,
+    required this.type,
+    required this.image,
   });
 
   CurrencyEntity.fromJson(Map json)
@@ -102,8 +102,8 @@ class CurrencyWithAccountId {
   final String symbol;
 
   CurrencyWithAccountId({
-    this.currencyId,
-    this.accountId,
-    this.symbol,
+    required this.currencyId,
+    required this.accountId,
+    required this.symbol,
   });
 }

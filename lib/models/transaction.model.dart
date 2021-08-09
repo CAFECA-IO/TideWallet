@@ -24,7 +24,7 @@ class Transaction {
   String sourceAddresses;
   String destinationAddresses;
   Decimal gasPrice; // in Wei
-  Decimal gasUsed;
+  Decimal? gasUsed;
 
   DateTime get dateTime => timestamp != null
       ? DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: false)
