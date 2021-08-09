@@ -8,5 +8,5 @@ abstract class ExchangeRateDao {
   Future<List<int>> insertExchangeRates(List<ExchangeRateEntity> rates);
 
   @Query('SELECT * FROM ExchangeRate')
-  Future<List<ExchangeRateEntity>?> findAllExchageRates();
+  Future<List<ExchangeRateEntity>> findAllExchageRates();
 }

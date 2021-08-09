@@ -7,7 +7,7 @@ import '../models/account.model.dart';
 import '../helpers/utils.dart';
 
 class InvestmentCore {
-  PublishSubject<InvestmentMessage> messenger;
+  late PublishSubject<InvestmentMessage>? messenger;
   List<InvestAccount> _investAccount = []; // --
 
   static final InvestmentCore _instance = InvestmentCore._internal();

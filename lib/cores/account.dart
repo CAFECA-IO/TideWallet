@@ -198,7 +198,10 @@ class AccountCore {
 
       if (!exist) {
         AccountEntity acc = AccountEntity(
-            accountId: id, userId: user.userId, networkId: d['blockchain_id']);
+            accountId: id,
+            userId: user.userId,
+            networkId: d['blockchain_id'],
+            accountIndex: d['account_index']);
         await createAccount(acc);
         local.add(acc);
       }

@@ -5,16 +5,16 @@ import '../entity/utxo.dart';
 @dao
 abstract class UtxoDao {
   @Query('SELECT * FROM JoinUtxo WHERE JoinUtxo.accountcurrency_id = :id')
-  Future<List<JoinUtxo>?> findAllJoinedUtxosById(String id);
+  Future<List<JoinUtxo>> findAllJoinedUtxosById(String id);
 
   @Query('SELECT * FROM JoinUtxo')
-  Future<List<JoinUtxo>?> findAllJoinedUtxos();
+  Future<List<JoinUtxo>> findAllJoinedUtxos();
 
   @Query('SELECT * FROM Utxo')
-  Future<List<UtxoEntity>?> findAllUtxos();
+  Future<List<UtxoEntity>> findAllUtxos();
 
   @Query('SELECT * FROM Utxo WHERE Utxo.accountcurrency_id = :id')
-  Future<List<UtxoEntity>?> findAllUtxosById(String id);
+  Future<List<UtxoEntity>> findAllUtxosById(String id);
 
   @Query('SELECT * FROM JoinUtxo WHERE JoinUtxo.utxo_id = :id limit 1')
   Future<JoinUtxo?> findJoinedUtxoById(String id);

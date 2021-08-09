@@ -269,7 +269,7 @@ class _$AccountDao extends AccountDao {
   final InsertionAdapter<AccountEntity> _accountEntityInsertionAdapter;
 
   @override
-  Future<List<AccountEntity>?> findAllAccounts() async {
+  Future<List<AccountEntity>> findAllAccounts() async {
     return _queryAdapter.queryList('SELECT * FROM Account',
         mapper: (Map<String, Object?> row) => AccountEntity(
             accountId: row['account_id'] as String,
@@ -331,7 +331,7 @@ class _$CurrencyDao extends CurrencyDao {
   final InsertionAdapter<CurrencyEntity> _currencyEntityInsertionAdapter;
 
   @override
-  Future<List<CurrencyEntity>?> findAllCurrencies() async {
+  Future<List<CurrencyEntity>> findAllCurrencies() async {
     return _queryAdapter.queryList('SELECT * FROM Currency',
         mapper: (Map<String, Object?> row) => CurrencyEntity(
             currencyId: row['currency_id'] as String,
@@ -347,7 +347,7 @@ class _$CurrencyDao extends CurrencyDao {
   }
 
   @override
-  Future<List<CurrencyWithAccountId>?> findAllCurrenciesByAccountId(
+  Future<List<CurrencyWithAccountId>> findAllCurrenciesByAccountId(
       String id) async {
     return _queryAdapter.queryList(
         'SELECT * FROM CurrencyWithAccountId where account_id = ?1',
@@ -447,7 +447,7 @@ class _$TransactionDao extends TransactionDao {
   final DeletionAdapter<TransactionEntity> _transactionEntityDeletionAdapter;
 
   @override
-  Future<List<TransactionEntity>?> findAllTransactions() async {
+  Future<List<TransactionEntity>> findAllTransactions() async {
     return _queryAdapter.queryList('SELECT * FROM _Transaction',
         mapper: (Map<String, Object?> row) => TransactionEntity(
             transactionId: row['transaction_id'] as String,
@@ -467,7 +467,7 @@ class _$TransactionDao extends TransactionDao {
   }
 
   @override
-  Future<List<TransactionEntity>?> findAllTransactionsById(String id) async {
+  Future<List<TransactionEntity>> findAllTransactionsById(String id) async {
     return _queryAdapter.queryList(
         'SELECT * FROM _Transaction WHERE _Transaction.accountcurrency_id = ?1',
         mapper: (Map<String, Object?> row) => TransactionEntity(
@@ -556,7 +556,7 @@ class _$NetworkDao extends NetworkDao {
   final InsertionAdapter<NetworkEntity> _networkEntityInsertionAdapter;
 
   @override
-  Future<List<NetworkEntity>?> findAllNetworks() async {
+  Future<List<NetworkEntity>> findAllNetworks() async {
     return _queryAdapter.queryList('SELECT * FROM Network',
         mapper: (Map<String, Object?> row) => NetworkEntity(
             networkId: row['network_id'] as String,
@@ -599,7 +599,7 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
       _accountCurrencyEntityInsertionAdapter;
 
   @override
-  Future<List<AccountCurrencyEntity>?> findAllCurrencies() async {
+  Future<List<AccountCurrencyEntity>> findAllCurrencies() async {
     return _queryAdapter.queryList('SELECT * FROM AccountCurrency',
         mapper: (Map<String, Object?> row) => AccountCurrencyEntity(
             accountcurrencyId: row['accountcurrency_id'] as String,
@@ -644,7 +644,7 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
   }
 
   @override
-  Future<List<JoinCurrency>?> findAllJoinedCurrency() async {
+  Future<List<JoinCurrency>> findAllJoinedCurrency() async {
     return _queryAdapter.queryList('SELECT * FROM JoinCurrency',
         mapper: (Map<String, Object?> row) => JoinCurrency(
             accountcurrencyId: row['accountcurrency_id'] as String,
@@ -730,7 +730,7 @@ class _$UtxoDao extends UtxoDao {
   final UpdateAdapter<UtxoEntity> _utxoEntityUpdateAdapter;
 
   @override
-  Future<List<JoinUtxo>?> findAllJoinedUtxosById(String id) async {
+  Future<List<JoinUtxo>> findAllJoinedUtxosById(String id) async {
     return _queryAdapter.queryList(
         'SELECT * FROM JoinUtxo WHERE JoinUtxo.accountcurrency_id = ?1',
         mapper: (Map<String, Object?> row) => JoinUtxo(
@@ -752,7 +752,7 @@ class _$UtxoDao extends UtxoDao {
   }
 
   @override
-  Future<List<JoinUtxo>?> findAllJoinedUtxos() async {
+  Future<List<JoinUtxo>> findAllJoinedUtxos() async {
     return _queryAdapter.queryList('SELECT * FROM JoinUtxo',
         mapper: (Map<String, Object?> row) => JoinUtxo(
             row['utxo_id'] as String,
@@ -772,7 +772,7 @@ class _$UtxoDao extends UtxoDao {
   }
 
   @override
-  Future<List<UtxoEntity>?> findAllUtxos() async {
+  Future<List<UtxoEntity>> findAllUtxos() async {
     return _queryAdapter.queryList('SELECT * FROM Utxo',
         mapper: (Map<String, Object?> row) => UtxoEntity(
             row['utxo_id'] as String,
@@ -791,7 +791,7 @@ class _$UtxoDao extends UtxoDao {
   }
 
   @override
-  Future<List<UtxoEntity>?> findAllUtxosById(String id) async {
+  Future<List<UtxoEntity>> findAllUtxosById(String id) async {
     return _queryAdapter.queryList(
         'SELECT * FROM Utxo WHERE Utxo.accountcurrency_id = ?1',
         mapper: (Map<String, Object?> row) => UtxoEntity(
@@ -874,7 +874,7 @@ class _$ExchangeRateDao extends ExchangeRateDao {
       _exchangeRateEntityInsertionAdapter;
 
   @override
-  Future<List<ExchangeRateEntity>?> findAllExchageRates() async {
+  Future<List<ExchangeRateEntity>> findAllExchageRates() async {
     return _queryAdapter.queryList('SELECT * FROM ExchangeRate',
         mapper: (Map<String, Object?> row) => ExchangeRateEntity(
             exchangeRateId: row['exchange_rate_id'] as String,

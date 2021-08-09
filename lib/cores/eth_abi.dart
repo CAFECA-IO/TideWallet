@@ -56,7 +56,7 @@ class ABI {
           ? 'dynamic'
           : int.tryParse(tmp[2].group(0) as String)!;
     }
-    throw Error(); // ++ debugInfo, null-safety
+    throw Error(); // -- debugInfo, null-safety
   }
 
   // Convert from short to canonical names

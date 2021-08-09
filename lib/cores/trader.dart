@@ -61,7 +61,7 @@ class Trader {
       this._prefManager.setSelectedFiat(fiat.name);
 
   Future<Fiat> getSelectedFiat() async {
-    String symbol = await this._prefManager.getSeletedFiat();
+    String? symbol = await this._prefManager.getSeletedFiat();
 
     if (symbol == null) return this._fiats[0];
 
@@ -76,7 +76,7 @@ class Trader {
     if (index < 0) return Decimal.zero;
 
     return this._cryptos[index].exchangeRate *
-        Decimal.tryParse(_currency.amount);
+        Decimal.tryParse(_currency.amount)!;
   }
 
   Decimal calculateUSDToCurrency(Currency _currency, Decimal amountInUSD) {

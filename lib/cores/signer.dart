@@ -1,18 +1,21 @@
 import 'dart:typed_data';
 import "package:pointycastle/ecc/curves/secp256k1.dart";
 import 'package:pointycastle/ecc/api.dart'
-    show ECPrivateKey, ECPublicKey, ECSignature, ECPoint;
+    show ECPrivateKey, ECSignature, ECPoint;
 import 'package:pointycastle/export.dart';
 import 'package:convert/convert.dart';
 
 import '../helpers/logger.dart';
 import '../helpers/utils.dart';
 
-final ZERO32 = Uint8List.fromList(List.generate(32, (index) => 0));
-final EC_GROUP_ORDER = hex
-    .decode("fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141");
-final EC_P = hex
-    .decode("fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f");
+// ignore: non_constant_identifier_names
+final Uint8List ZERO32 = Uint8List.fromList(List.generate(32, (index) => 0));
+// ignore: non_constant_identifier_names
+final Uint8List EC_GROUP_ORDER = Uint8List.fromList(hex.decode(
+    "fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141"));
+// ignore: non_constant_identifier_names
+final Uint8List EC_P = Uint8List.fromList(hex.decode(
+    "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f"));
 final secp256k1 = new ECCurve_secp256k1();
 final n = secp256k1.n;
 final G = secp256k1.G;
@@ -60,7 +63,7 @@ class Signer {
         new PrivateKeyParameter(new ECPrivateKey(decodeBigInt(x), secp256k1));
     signer.init(true, pkp);
     //  signer.init(false, new PublicKeyParameter(new ECPublicKey(secp256k1.curve.decodePoint(x), secp256k1)));
-    return signer.generateSignature(hash);
+    return signer.generateSignature(hash) as ECSignature;
   }
 
   /// Generates a public key for the given private key using the ecdsa curve which
@@ -69,7 +72,7 @@ class Signer {
     final p = secp256k1.G * privateKey;
 
     //skip the type flag, https://github.com/ethereumjs/ethereumjs-util/blob/master/index.js#L319
-    return Uint8List.view(p.getEncoded(false).buffer, 1);
+    return Uint8List.view(p!.getEncoded(false).buffer, 1);
   }
 
   ECPoint _decompressKey(BigInt xBN, bool yBit, ECCurve c) {
@@ -95,7 +98,7 @@ class Signer {
 
     final compEnc = x9IntegerToBytes(xBN, 1 + ((c.fieldSize + 7) ~/ 8));
     compEnc[0] = yBit ? 0x03 : 0x02;
-    return c.decodePoint(compEnc);
+    return c.decodePoint(compEnc)!;
   }
 
   BigInt _recoverFromSignature(
@@ -106,10 +109,10 @@ class Signer {
 
     //Parameter q of curve
     final prime = decodeBigInt(EC_P);
-    if (x.compareTo(prime) >= 0) return null;
+    if (x.compareTo(prime) >= 0) throw Error();
 
     final R = _decompressKey(x, (recId & 1) == 1, params.curve);
-    if (!(R * n).isInfinity) return null;
+    if (!(R * n)!.isInfinity) throw Error();
 
     final e = decodeBigInt(msg);
 
@@ -118,9 +121,9 @@ class Signer {
     final srInv = (rInv * sig.s) % n;
     final eInvrInv = (rInv * eInv) % n;
 
-    final q = (params.G * eInvrInv) + (R * srInv);
+    final q = (params.G * eInvrInv)! + (R * srInv);
 
-    final bytes = q.getEncoded(false);
+    final bytes = q!.getEncoded(false);
     return decodeBigInt(bytes.sublist(1));
   }
 
