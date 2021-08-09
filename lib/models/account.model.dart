@@ -35,7 +35,7 @@ class Currency {
   final String currencyId; // CurrencyEntity currency_id for APP
   final String? contract;
   final String type;
-  final String? accountSymbol;
+  final String accountSymbol;
   final int? accountDecimals;
   final String? accountAmount;
 
@@ -59,7 +59,7 @@ class Currency {
     required this.currencyId,
     this.contract,
     required this.type,
-    this.accountSymbol,
+    required this.accountSymbol,
     this.accountDecimals,
     this.accountAmount,
   });
