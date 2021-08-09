@@ -19,10 +19,10 @@ class AccountCore {
   // ignore: close_sinks
   PublishSubject<AccountMessage> messenger;
   bool _isInit = false;
+  bool _debugMode = false;
   List<AccountService> _services = [];
   List<Currency> accounts = [];
   Map<String, List<Currency>> _currencies = {};
-  bool debugMode = false;
   List<DisplayCurrency> settingOptions = [];
 
   Map<String, List<Currency>> get currencies {
@@ -36,7 +36,6 @@ class AccountCore {
 
   bool get isInit => _isInit;
 
-  // TODO TEST
   setBitcoinAccountService() {
     this._services.add(BitcoinService(AccountServiceBase()));
   }
@@ -46,15 +45,14 @@ class AccountCore {
   }
 
   Future init({bool debugMode}) async {
-    //
-    this.debugMode = debugMode;
-    _isInit = true;
-    await _initAccounts(debugMode: debugMode);
+    this._isInit = true;
+    this._debugMode = debugMode;
+    await _initAccounts();
   }
 
-  _initAccounts({bool debugMode}) async {
-    final chains = await this.getNetworks(
-        publish: USE_NETWORK == NETWORK.MAINNET, debugMode: debugMode);
+  _initAccounts() async {
+    Log.debug('_initAccounts this._debugMode: ${this._debugMode}');
+    final chains = await this.getNetworks();
 
     final accounts = await this.getAccounts();
 
@@ -129,8 +127,7 @@ class AccountCore {
     return _services.firstWhere((svc) => (svc.accountId == accountId));
   }
 
-  Future<List<NetworkEntity>> getNetworks(
-      {bool publish = true, bool debugMode}) async {
+  Future<List<NetworkEntity>> getNetworks() async {
     List<NetworkEntity> networks =
         await DBOperator().networkDao.findAllNetworks();
 
@@ -143,13 +140,9 @@ class AccountCore {
       await DBOperator().networkDao.insertNetworks(networks);
     }
 
-    if (debugMode) return networks;
-
-    if (publish)
-      networks.removeWhere((NetworkEntity n) => !n.publish);
-    else if (!publish) networks.removeWhere((NetworkEntity n) => n.publish);
-
-    return networks;
+    return networks
+        .where((network) => this._debugMode ? true : network.publish)
+        .toList();
   }
 
   Future<List<AccountEntity>> getAccounts() async {

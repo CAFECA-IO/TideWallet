@@ -8,6 +8,7 @@ class PrefManager {
   static const String AUTH_ITEM_KEY = 'auth_item';
   static const String SELECTED_FIAT_KEY = 'selected_fiat';
   static const String SELECTED_DISPLAY = 'selected_display';
+  static const String DEBUG_MODE = 'debug_mode';
 
   Future<void> clearAll() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -62,6 +63,18 @@ class PrefManager {
   Future<String> getSeletedFiat() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String selected = prefs.getString(SELECTED_FIAT_KEY) ?? null;
+
+    return selected;
+  }
+
+  Future<void> setDebugMode(bool mode) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool(DEBUG_MODE, mode);
+  }
+
+  Future<bool> getDebugMode() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool selected = prefs.getBool(DEBUG_MODE) ?? false;
 
     return selected;
   }

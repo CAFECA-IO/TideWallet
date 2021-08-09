@@ -3,7 +3,6 @@ import 'package:bloc/bloc.dart';
 import 'package:decimal/decimal.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
-// import 'package:tidewallet3/helpers/logger.dart';
 
 import '../../repositories/account_repository.dart';
 import '../../repositories/trader_repository.dart';
@@ -47,20 +46,10 @@ class AccountCurrencyBloc
 
   List<Currency> displayFilter(List<Currency> currencies) {
     final display = this._repo.preferDisplay;
-
+    if (this._repo.debugMode) return currencies;
     return currencies
-        .map((cur) {
-          if (cur.type != 'token') {
-            return cur;
-          } else {
-            if (display != null && display[cur.currencyId] == true) {
-              return cur;
-            }
-
-            return null;
-          }
-        })
-        .where((el) => el != null)
+        .where((cur) =>
+            cur.publish || (display != null && display[cur.currencyId] == true))
         .toList();
   }
 

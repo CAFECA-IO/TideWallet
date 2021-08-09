@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import '../models/account.model.dart';
 import '../helpers/formatter.dart';
-import '../cores/account.dart';
 
 class AccountItem extends StatelessWidget {
   final Currency _account;
@@ -11,7 +10,7 @@ class AccountItem extends StatelessWidget {
   final Fiat fiat;
   Color _testnetColor;
   AccountItem(this._account, this._onClick, {this.fiat}) {
-    if (AccountCore().debugMode) {
+    if (!_account.publish) {
       _testnetColor = Colors.black26;
     }
   }

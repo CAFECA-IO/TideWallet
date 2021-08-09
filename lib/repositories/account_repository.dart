@@ -1,9 +1,8 @@
 import 'package:rxdart/subjects.dart';
 import 'package:tidewallet3/services/account_service.dart';
 
-import '../models/account.model.dart';
 import '../cores/account.dart';
-import '../constants/account_config.dart';
+import '../models/account.model.dart';
 import '../services/ethereum_service.dart';
 import '../helpers/ethereum_based_utils.dart';
 import '../helpers/prefer_manager.dart';
@@ -12,22 +11,28 @@ class AccountRepository {
   PublishSubject<AccountMessage> get listener => AccountCore().messenger;
   PrefManager _prefManager = PrefManager();
   Map _preferDisplay = {};
+  bool _debugMode = false;
 
   Map get preferDisplay => this._preferDisplay;
-  // Map<String, List<DisplayCurrency>> get displayCurrencies => AccountCore().settingOptions;
+  bool get debugMode => this._debugMode;
   List<DisplayCurrency> get displayCurrencies => AccountCore().settingOptions;
 
   AccountRepository() {
     AccountCore().setMessenger();
   }
 
-  Future coreInit({bool debugMode = false}) async {
-    if (!AccountCore().isInit || debugMode) {
+  Future coreInit({bool debugMode}) async {
+    bool isInit = debugMode != null && this._debugMode != debugMode;
+    if (debugMode != null) {
+      this._prefManager.setDebugMode(debugMode);
+    }
+
+    this._debugMode = debugMode ?? await this._prefManager.getDebugMode();
+
+    if (!AccountCore().isInit || isInit) {
       AccountCore().setMessenger();
-
       this._preferDisplay = await this._prefManager.getSeletedDisplay();
-
-      return await AccountCore().init(debugMode: debugMode);
+      return await AccountCore().init(debugMode: this.debugMode);
     }
 
     return Future.delayed(Duration(seconds: 0));
