@@ -2,7 +2,7 @@ class AuthItem {
   final String token;
   final String tokenSecret;
 
-  AuthItem({this.token, this.tokenSecret});
+  AuthItem({required this.token, required this.tokenSecret});
 
   AuthItem.fromJson(Map<String, dynamic> json):
    this.token = json['token'],

@@ -21,7 +21,7 @@ class UnspentTxOut {
   final int timestamp;
   final int decimals;
   bool locked;
-  final int sequence;
+  final int? sequence;
 
   //TEST
   // String scriptPubKey;

@@ -83,3 +83,51 @@ class InvalidPadding implements Exception {
 
   String toString() => "Invalid padding: $reason";
 }
+
+class InvalidBitcoinTransactionType implements Exception {
+  InvalidBitcoinTransactionType(this.reason);
+
+  final String reason;
+
+  String toString() => "Bitcoin transaction type is invalid: $reason";
+}
+
+class InvalidSegwitType implements Exception {
+  String toString() => "Segwit type type is invalid";
+}
+
+class InvalidHashType implements Exception {
+  String toString() => "Hash type type is invalid";
+}
+
+class InvalidUtxo implements Exception {
+  InvalidUtxo(this.reason);
+
+  final String reason;
+
+  String toString() => "Utxo is invalid: $reason";
+}
+
+class InsufficientUtxo implements Exception {
+  InsufficientUtxo(this.reason);
+
+  final String reason;
+
+  String toString() => "Insufficient Utxo: $reason";
+}
+
+class InvalidMessageData implements Exception {
+  InvalidMessageData(this.reason);
+
+  final String reason;
+
+  String toString() => "Invalid msg data: $reason";
+}
+
+class InvaliAddress implements Exception {
+  InvaliAddress(this.reason);
+
+  final String reason;
+
+  String toString() => "Invalid address: $reason";
+}

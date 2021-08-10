@@ -23,7 +23,7 @@ class SigningInWithThirdParty extends ThirdPartySignInState {
 }
 
 class FailedSignInWithThirdParty extends ThirdPartySignInState {
-  final String message;
+  final String? message;
   FailedSignInWithThirdParty(this.message);
 }
 

@@ -150,17 +150,17 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                       child: Row(
                         children: [
                           Text(
-                            '${t(_transaction.status.title)} (${_transaction.confirmations} ${t('confirmation')})',
+                            '${t(_transaction.status!.title)} (${_transaction.confirmations} ${t('confirmation')})',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyText1!
-                                .copyWith(color: _transaction.status.color),
+                                .copyWith(color: _transaction.status!.color),
                           ),
                           SizedBox(width: 8),
                           ImageIcon(
-                            AssetImage(_transaction.status.iconPath),
+                            AssetImage(_transaction.status!.iconPath),
                             size: 20.0,
-                            color: _transaction.status.color,
+                            color: _transaction.status!.color,
                           ),
                         ],
                       ),
@@ -179,7 +179,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Align(
                       child: Text(
-                        '(${Formatter.dateTime(_transaction.dateTime)})',
+                        '(${Formatter.dateTime(_transaction.dateTime!)})',
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                       alignment: Alignment.centerLeft,
@@ -254,7 +254,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                             }
                           },
                           child: Text(
-                            Formatter.formatAdddress(_transaction.txId),
+                            Formatter.formatAdddress(_transaction.txId!),
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyText1!

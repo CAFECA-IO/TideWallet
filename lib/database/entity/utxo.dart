@@ -76,7 +76,7 @@ class UtxoEntity {
         this.script = hex.encode(_utxo.data),
         this.timestamp = _utxo.timestamp,
         this.locked = _utxo.locked,
-        this.sequence = _utxo.sequence,
+        this.sequence = _utxo.sequence!,
         this.address = _utxo.address;
 
   UtxoEntity.fromJson(String accountId, Map<String, dynamic> data)
@@ -179,7 +179,7 @@ class JoinUtxo {
         this.script = hex.encode(_utxo.script),
         this.timestamp = _utxo.timestamp,
         this.locked = _utxo.locked,
-        this.sequence = _utxo.sequence,
+        this.sequence = _utxo.sequence!,
         this.decimals = _utxo.decimals,
         this.address = _utxo.address;
 }

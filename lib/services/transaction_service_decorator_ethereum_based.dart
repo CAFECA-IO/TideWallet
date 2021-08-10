@@ -11,7 +11,7 @@ import '../helpers/logger.dart';
 
 class EthereumBasedTransactionServiceDecorator extends TransactionService {
   final TransactionService service;
-  int chainId;
+  late int chainId;
 
   EthereumBasedTransactionServiceDecorator(this.service);
 
@@ -25,7 +25,7 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
     Log.debug('ETH signature: $signature');
 
     final chainIdV = transaction.chainId != null
-        ? (signature.v - 27 + (transaction.chainId * 2 + 35))
+        ? (signature.v - 27 + (transaction.chainId! * 2 + 35))
         : signature.v;
     signature = MsgSignature(signature.r, signature.s, chainIdV);
     transaction.signature = signature;
@@ -38,30 +38,30 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
     String to,
     Decimal amount,
     Uint8List message, {
-    Uint8List privKey, //ETH
-    Decimal gasPrice, //ETH
-    Decimal gasLimit, //ETH
-    int nonce, //ETH
-    int chainId, //ETH
-    String accountcurrencyId,
-    Decimal fee,
-    List<UnspentTxOut> unspentTxOuts = const [],
-    String changeAddress,
-    int keyIndex,
+    Uint8List? privKey, //ETH
+    Decimal? gasPrice, //ETH
+    Decimal? gasLimit, //ETH
+    int? nonce, //ETH
+    int? chainId, //ETH
+    String? accountcurrencyId,
+    Decimal? fee,
+    List<UnspentTxOut>? unspentTxOuts = const [],
+    String? changeAddress,
+    int? keyIndex,
   }) {
     EthereumTransaction transaction = EthereumTransaction.prepareTransaction(
-      from: changeAddress,
+      from: changeAddress!,
       to: to.contains(':') ? to.split(':')[1] : to,
-      nonce: nonce,
+      nonce: nonce!,
       amount: amount, // in wei
-      gasPrice: gasPrice, // in wei
-      gasUsed: gasLimit,
+      gasPrice: gasPrice!, // in wei
+      gasUsed: gasLimit!,
       message: message,
-      chainId: chainId,
+      chainId: chainId!,
       signature: MsgSignature(BigInt.zero, BigInt.zero, chainId),
       fee: gasLimit * gasPrice, // in wei
     );
-    return _signTransaction(transaction, privKey);
+    return _signTransaction(transaction, privKey!);
   }
 
   @override
@@ -72,10 +72,10 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
 
   @override
   Decimal calculateTransactionVSize(
-      {List<UnspentTxOut> unspentTxOuts,
-      Decimal feePerByte,
-      Decimal amount,
-      Uint8List message}) {
+      {required List<UnspentTxOut> unspentTxOuts,
+      required Decimal feePerByte,
+      required Decimal amount,
+      Uint8List? message}) {
     // TODO: implement calculateTransactionVSize
     throw UnimplementedError();
   }

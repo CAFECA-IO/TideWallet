@@ -8,7 +8,7 @@ abstract class UserEvent extends Equatable {
 }
 
 class UserCheck extends UserEvent {
-  final bool debugMode;
+  final bool? debugMode;
 
   UserCheck({this.debugMode});
 }

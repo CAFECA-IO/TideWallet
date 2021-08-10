@@ -70,7 +70,7 @@ class AccountRepository {
     AccountCore().close();
   }
 
-  Future<Map> getSeletedDisplay() {
+  Future<Map?> getSeletedDisplay() {
     return this._prefManager.getSeletedDisplay();
   }
 

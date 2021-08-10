@@ -95,7 +95,7 @@ class TransactionItem extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  Formatter.dateTime(transaction.dateTime),
+                  Formatter.dateTime(transaction.dateTime!),
                   style: transaction.status == TransactionStatus.fail
                       ? Theme.of(context)
                           .textTheme
@@ -105,7 +105,7 @@ class TransactionItem extends StatelessWidget {
                 )
               ],
             ),
-            transaction.confirmations > 6 ||
+            transaction.confirmations! > 6 ||
                     transaction.status == TransactionStatus.fail
                 ? SizedBox(
                     height: 32,
@@ -126,7 +126,7 @@ class TransactionItem extends StatelessWidget {
                         child: LinearProgressIndicator(
                           valueColor: AlwaysStoppedAnimation<Color>(
                               Theme.of(context).primaryColor),
-                          value: transaction.confirmations / 6,
+                          value: transaction.confirmations! / 6,
                           backgroundColor: MyColors.secondary_05,
                         ),
                       ),

@@ -336,7 +336,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                                   TransactionPreviewScreen.routeName,
                                   arguments: {
                                     "currency": _currency,
-                                    "transaction": Transaction(
+                                    "transaction": Transaction.base(
                                       address: _addressController.text,
                                       direction: TransactionDirection.sent,
                                       amount:

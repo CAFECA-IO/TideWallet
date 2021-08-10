@@ -4,6 +4,7 @@ import 'package:decimal/decimal.dart';
 
 import '../helpers/bitcoin_based_utils.dart';
 import '../helpers/logger.dart';
+import '../helpers/exceptions.dart';
 
 import '../helpers/cryptor.dart';
 
@@ -28,10 +29,8 @@ extension BitcoinTransactionTypeExt on BitcoinTransactionType {
         return "witness_v0_keyhash";
       case BitcoinTransactionType.PUBKEY:
         return "pubkey";
-        break;
       default:
-        return null;
-        break;
+        throw InvalidBitcoinTransactionType('did not support');
     }
   }
 }
@@ -48,8 +47,7 @@ extension SegwitTypeExt on SegwitType {
       case SegwitType.nativeSegWit:
         return 3;
       default:
-        return null;
-        break;
+        throw InvalidSegwitType();
     }
   }
 
@@ -62,8 +60,7 @@ extension SegwitTypeExt on SegwitType {
       case SegwitType.nativeSegWit:
         return (0x80000000 | 84);
       default:
-        return null;
-        break;
+        throw InvalidSegwitType();
     }
   }
 
@@ -76,8 +73,7 @@ extension SegwitTypeExt on SegwitType {
       case SegwitType.nativeSegWit:
         return "Native SegWit";
       default:
-        return null;
-        break;
+        throw InvalidSegwitType();
     }
   }
 }
@@ -94,19 +90,14 @@ extension HashTypeExt on HashType {
     switch (this) {
       case HashType.SIGHASH_ALL:
         return 0x01;
-        break;
       case HashType.SIGHASH_NONE:
         return 0x02;
-        break;
       case HashType.SIGHASH_SINGLE:
         return 0x03;
-        break;
       case HashType.SIGHASH_ANYONECANPAY:
         return 0x80;
-        break;
       default:
-        return null;
-        break;
+        throw InvalidHashType();
     }
   }
 }
@@ -118,8 +109,8 @@ class Input {
   // int vout;
   /* the signature produced to check validity */
   final UnspentTxOut utxo;
-  Uint8List scriptSig;
-  int sequence;
+  late Uint8List? scriptSig;
+  late int sequence;
   final Uint8List publicKey;
   final String address;
   final HashType hashType;
@@ -158,14 +149,13 @@ class Input {
     } else if (this.utxo.type == BitcoinTransactionType.PUBKEY) {
       // do nothing
     } else {
-      Log.warning('Unusable this.utxo: ${this.utxo.txId}');
-      return null;
+      throw InvalidUtxo("${this.utxo.txId} type[${this.utxo.type}] is invaild");
     }
     this.segwit = segwit;
     return segwit;
   }
 
-  void addSignature(Uint8List signature) {
+  void addSignature(Uint8List? signature) {
     if (signature == null)
       scriptSig = null;
     else {
@@ -204,6 +194,9 @@ class Input {
             ...signature,
           ]);
           break;
+        default:
+          throw InvalidUtxo(
+              "${this.utxo.txId} type[${this.utxo.type}] is invaild");
       }
     }
   }
@@ -227,56 +220,56 @@ class BitcoinTransaction extends Transaction {
   static const int ADVANCED_TRANSACTION_FLAG = 0x01;
   static const int DEFAULT_SEQUENCE = 0xffffffff;
 
-  String id;
-  String currencyId;
-  String txId;
-  int locktime;
-  int timestamp;
-  int confirmations;
-  TransactionDirection direction;
-  TransactionStatus status;
-  String sourceAddresses = '';
-  String destinationAddresses = '';
-  Decimal amount;
-  Decimal fee;
-  Uint8List note;
+  late String? id;
+  late String currencyId;
+  late TransactionDirection direction;
+  late Decimal amount;
+  late TransactionStatus? status;
+  late int? timestamp;
+  late int? confirmations;
+  // late String _address;
+  late Decimal fee;
+  late String? txId;
+  late Uint8List? message;
+  late String sourceAddresses;
+  late String destinationAddresses;
 
-  List<Input> _inputs;
-  List<Output> _outputs;
-  Uint8List _version;
-  Uint8List _lockTime;
-  SegwitType _segwitType;
-  UnspentTxOut _changeUtxo;
-  // bool _publish; //TODO get publish property from currency
+  late int? locktime;
+  late List<Input> _inputs;
+  late List<Output> _outputs;
+  late Uint8List _version;
+  late Uint8List _lockTime;
+  late SegwitType _segwitType;
+  late UnspentTxOut _changeUtxo;
 
   List<Input> get inputs => this._inputs;
   List<Output> get outputs => this._outputs;
   UnspentTxOut get changeUtxo => this._changeUtxo;
 
-  BitcoinTransaction(
-      {this.id,
-      this.currencyId,
-      this.txId,
-      this.locktime,
-      this.timestamp,
-      this.confirmations,
-      this.direction,
-      this.status,
-      this.sourceAddresses,
-      this.destinationAddresses,
-      this.amount,
-      this.fee,
-      this.note});
+  BitcoinTransaction({
+    this.id,
+    required this.currencyId,
+    this.txId,
+    this.locktime,
+    this.timestamp,
+    this.confirmations,
+    required this.direction,
+    this.status,
+    this.sourceAddresses: "",
+    this.destinationAddresses: "",
+    required this.amount,
+    required this.fee,
+    this.message,
+  });
 
-  BitcoinTransaction.prepareTransaction(bool publish, SegwitType segwitType,
-      this.amount, this.fee, Uint8List note,
-      {int lockTime}) // in Satoshi
-      : _segwitType = segwitType,
-        this.note = note ?? Uint8List(0) {
+  BitcoinTransaction.prepareTransaction(bool isMainnet, SegwitType? segwitType,
+      this.amount, this.fee, Uint8List? message,
+      {int? lockTime}) // in Satoshi
+      : _segwitType = segwitType ?? SegwitType.nativeSegWit,
+        this.message = message ?? Uint8List(0) {
     _inputs = [];
     _outputs = [];
-    _segwitType = segwitType ?? SegwitType.nativeSegWit;
-    setVersion(publish ? 1 : 2);
+    setVersion(isMainnet ? 1 : 2);
     setlockTime(lockTime ?? 0);
   }
 
@@ -301,7 +294,7 @@ class BitcoinTransaction extends Transaction {
     Input input = Input(utxo, hashType);
     _inputs.add(input);
     try {
-      this.sourceAddresses = this.sourceAddresses.isEmpty
+      this.sourceAddresses = this.sourceAddresses!.isEmpty
           ? this.sourceAddresses += utxo.address
           : this.sourceAddresses += '${", " + utxo.address}';
     } catch (e) {
@@ -312,7 +305,7 @@ class BitcoinTransaction extends Transaction {
   void addOutput(
     Decimal amount, // in smallest uint
     String address,
-    List<int> script,
+    List<int>? script,
   ) {
     if (script == null || script.length == 0) return null;
     List<int> scriptLength;
@@ -454,7 +447,7 @@ class BitcoinTransaction extends Transaction {
         data.addAll(input.reservedTxId + input.voutInBuffer);
         if (input == selectedInput) {
           //  txin:
-          List<int> script;
+          late List<int> script;
           if (input.utxo.type == BitcoinTransactionType.PUBKEYHASH) {
             script = toP2pkhScript(toPubKeyHash(input.publicKey));
           } else if (input.utxo.type == BitcoinTransactionType.PUBKEY) {
@@ -465,8 +458,8 @@ class BitcoinTransaction extends Transaction {
               BitcoinTransactionType.WITNESS_V0_KEYHASH) {
             // do nothing
           } else {
-            Log.warning('Unusable utxo: ${input.utxo.txId}');
-            return null;
+            throw InvalidUtxo(
+                "${input.utxo.txId} type[${input.utxo.type}] is invaild");
           }
           data.addAll(script);
         } else {
@@ -513,7 +506,7 @@ class BitcoinTransaction extends Transaction {
         else
           data.add(0);
       } else {
-        input.scriptSig != null ? data.addAll(input.scriptSig) : data.add(0);
+        input.scriptSig != null ? data.addAll(input.scriptSig!) : data.add(0);
       }
       data.addAll(input.sequenceInBuffer);
     }
@@ -533,7 +526,7 @@ class BitcoinTransaction extends Transaction {
       for (Input input in this._inputs) {
         if (input.isSegwit(this._segwitType)) {
           if (input.scriptSig != null) {
-            data.addAll(input.scriptSig);
+            data.addAll(input.scriptSig!);
           }
         } else {
           data.add(0);
@@ -550,6 +543,6 @@ class BitcoinTransaction extends Transaction {
   }
 
   Uint8List get transactionHash {
-    return Cryptor.sha256round(serializeTransaction);
+    return Uint8List.fromList(Cryptor.sha256round(serializeTransaction));
   }
 }

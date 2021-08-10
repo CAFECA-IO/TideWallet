@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:tidewallet3/blocs/toggle_token/toggle_token_bloc.dart';
 
 import '../database/db_operator.dart';
+import '../blocs/toggle_token/toggle_token_bloc.dart';
+import '../blocs/account_currency/account_currency_bloc.dart';
+import '../blocs/fiat/fiat_bloc.dart';
+import '../blocs/user/user_bloc.dart';
 import './welcome.screen.dart';
 import './authenticate.screen.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/loading_dialog.dart';
-import '../blocs/account_currency/account_currency_bloc.dart';
-import '../blocs/fiat/fiat_bloc.dart';
-import '../blocs/user/user_bloc.dart';
 import '../main.dart';
 import '../services/fcm_service.dart';
 
@@ -107,7 +106,7 @@ class _LandingScreenState extends State<LandingScreen> {
 
             return AuthenticateScreen();
           }
-          return WelcomeScreen();
+          return WelcomeScreen(); // ++ ?? show never use, null-safety
         },
       ),
     );

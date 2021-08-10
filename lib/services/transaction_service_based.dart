@@ -11,16 +11,16 @@ class TransactionServiceBased extends TransactionService {
   @override
   Transaction prepareTransaction(
       bool publish, String to, Decimal amount, Uint8List message,
-      {Decimal fee,
-      Decimal gasPrice,
-      Decimal gasLimit,
-      int nonce,
-      int chainId,
-      String accountcurrencyId,
-      List<UnspentTxOut> unspentTxOuts,
-      String changeAddress,
-      int keyIndex,
-      Uint8List privKey}) {
+      {Decimal? fee,
+      Decimal? gasPrice,
+      Decimal? gasLimit,
+      int? nonce,
+      int? chainId,
+      String? accountcurrencyId,
+      List<UnspentTxOut>? unspentTxOuts,
+      String? changeAddress,
+      int? keyIndex,
+      Uint8List? privKey}) {
     // TODO: implement prepareTransaction
     throw UnimplementedError();
   }
@@ -33,10 +33,10 @@ class TransactionServiceBased extends TransactionService {
 
   @override
   Decimal calculateTransactionVSize(
-      {List<UnspentTxOut> unspentTxOuts,
-      Decimal feePerByte,
-      Decimal amount,
-      Uint8List message}) {
+      {required List<UnspentTxOut> unspentTxOuts,
+      required Decimal feePerByte,
+      required Decimal amount,
+      Uint8List? message}) {
     // TODO: implement calculateTransactionVSize
     throw UnimplementedError();
   }

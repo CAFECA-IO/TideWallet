@@ -14,12 +14,12 @@ class HTTPAgent {
   static const int _defaultRetryCount = 3;
   static final HTTPAgent _instance = HTTPAgent._internal();
   factory HTTPAgent() => _instance;
-  Dio _dio;
+  late Dio _dio;
   PrefManager _prefManager = PrefManager();
-  Alice _alice;
+  late Alice? _alice;
 
   TokenInterceptor _tokenInterceptor = TokenInterceptor();
-  RetryInterceptor _retryInterceptor;
+  late RetryInterceptor _retryInterceptor;
   LogInterceptor _logInterceptor =
       LogInterceptor(responseBody: true, responseHeader: false);
 
@@ -34,7 +34,7 @@ class HTTPAgent {
 
   setAlice(Alice alice) {
     _alice = alice;
-    _dio.interceptors.add(_alice.getDioInterceptor());
+    _dio.interceptors.add(_alice!.getDioInterceptor());
   }
 
   setInterceptor() {
@@ -73,13 +73,13 @@ class HTTPAgent {
   }
 
   Future<bool> _refreshToken() async {
-    AuthItem tk = await this._prefManager.getAuthItem();
+    AuthItem tk = (await this._prefManager.getAuthItem())!;
 
     _dio.interceptors.requestLock.lock();
     _dio.interceptors.responseLock.lock();
 
-    APIResponse res = await this.post(
-        Endpoint.url, {'token': tk.token, 'tokenSecret': tk.tokenSecret});
+    APIResponse res = await this
+        .post(Endpoint.url, {'token': tk.token, 'tokenSecret': tk.tokenSecret});
     _dio.interceptors.requestLock.unlock();
     _dio.interceptors.responseLock.unlock();
 

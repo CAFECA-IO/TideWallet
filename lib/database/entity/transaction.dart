@@ -91,20 +91,20 @@ class TransactionEntity {
   TransactionEntity.fromTransaction(Currency currency, Transaction transaction,
       String amount, String fee, String gasPrice, String? destinationAddresses)
       : this.accountcurrencyId = currency.id,
-        this.transactionId = currency.id + transaction.txId,
+        this.transactionId = currency.id + transaction.txId!,
         this.amount = amount, // in smallest coin unit
-        this.txId = transaction.txId,
+        this.txId = transaction.txId!,
         this.sourceAddress = transaction.sourceAddresses,
         this.destinctionAddress =
             destinationAddresses ?? transaction.destinationAddresses,
-        this.confirmation = transaction.confirmations,
+        this.confirmation = transaction.confirmations!,
         this.gasPrice = gasPrice, // in smallest parentCoin unit
         this.gasUsed = transaction.gasUsed?.toInt(),
         this.fee = fee, // in smallest parentCoin unit
         this.direction = transaction.direction.title,
-        this.status = transaction.status.title,
-        this.timestamp = transaction.timestamp,
-        this.note = hex.encode(transaction.message);
+        this.status = transaction.status!.title,
+        this.timestamp = transaction.timestamp!,
+        this.note = hex.encode(transaction.message!);
   //     {
   // List sourceAddress =
   //     data['source_addresses']; // json.decode(data['source_addresses']);

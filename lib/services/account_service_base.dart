@@ -21,7 +21,7 @@ class AccountServiceBase extends AccountService {
   ACCOUNT _base;
   String _accountId;
   int _syncInterval;
-  int _lastSyncTimestamp;
+  int _lastSyncTimestamp = 0;
 
   get base => this._base;
   get lastSyncTimestamp => this._lastSyncTimestamp;
@@ -38,19 +38,15 @@ class AccountServiceBase extends AccountService {
 
   @override
   Future start() async {
-    AccountCurrencyEntity select = await DBOperator()
+    AccountCurrencyEntity select = (await DBOperator()
         .accountCurrencyDao
-        .findOneByAccountyId(this._accountId);
+        .findOneByAccountyId(this._accountId))!;
 
     await this._pushResult();
     await this._getSupportedToken();
     await this._getSettingTokens();
 
-    if (select != null) {
-      this._lastSyncTimestamp = select.lastSyncTime;
-    } else {
-      this._lastSyncTimestamp = 0;
-    }
+    this._lastSyncTimestamp = select.lastSyncTime;
   }
 
   @override

@@ -8,28 +8,33 @@ import '../helpers/ethereum_based_utils.dart';
 import '../cores/signer.dart';
 
 class EthereumTransaction extends Transaction {
-  String id;
-  String currencyId;
-  String txHash;
+  late String? id;
+  late String currencyId;
+  late TransactionDirection direction;
+  late Decimal amount; // in Wei
+  late TransactionStatus? status;
+  late int? timestamp; // in second //TODO uncheck
+  late int? confirmations;
+  // late String _address;
+  late Decimal fee; // in Wei
+  late String? txId;
+  late Uint8List? message; // utf8.encode
+  late String sourceAddresses;
+  late String destinationAddresses;
+
   String from;
   final String to;
-  int timestamp;
-  int confirmations;
-  TransactionStatus status;
   final int nonce;
   int block;
-  final Decimal amount; // in Wei
   final Decimal gasPrice; // in Wei
   final Decimal gasUsed;
-  final Uint8List message; // utf8.encode
-  int chainId;
+  int? chainId;
   MsgSignature signature;
-  Decimal fee;
 
   EthereumTransaction({
     this.id,
-    this.currencyId,
-    this.txHash,
+    required this.currencyId,
+    this.txId,
     this.from,
     this.to,
     this.timestamp,

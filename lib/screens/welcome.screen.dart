@@ -47,7 +47,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           DialogController.show(
               context,
               ErrorDialog(
-                  state.message != null ? t(state.message) : t('cancel')));
+                  state.message != null ? t(state.message!) : t('cancel')));
         }
         if (state is CancelledSignInWithThirdParty) {
           // Navigator.of(context).pop();

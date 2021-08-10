@@ -11,35 +11,34 @@ import '../theme.dart';
 import '../database/entity/transaction.dart';
 
 class Transaction {
-  String id;
-  TransactionDirection direction;
-  Decimal amount; // in eth
-  TransactionStatus status;
-  int timestamp; // in second //TODO uncheck
-  int confirmations;
-  String _address;
-  Decimal fee; // in eth
-  String txId;
-  Uint8List message;
-  String sourceAddresses;
-  String destinationAddresses;
-  Decimal gasPrice; // in Wei
+  late String? id;
+  late TransactionDirection direction;
+  late Decimal amount; // in eth
+  late TransactionStatus? status;
+  late int? timestamp; // in second //TODO uncheck
+  late int? confirmations;
+  late String _address;
+  late Decimal fee; // in eth
+  late String? txId;
+  late Uint8List? message;
+  late String sourceAddresses;
+  late String destinationAddresses;
+  Decimal? gasPrice; // in Wei
   Decimal? gasUsed;
-
-  DateTime get dateTime => timestamp != null
-      ? DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: false)
+  DateTime? get dateTime => timestamp != null
+      ? DateTime.fromMillisecondsSinceEpoch(timestamp! * 1000, isUtc: false)
       : null;
   String get address => _address;
 
   String get messageInString {
-    String _message = hex.encode(this.message);
+    String _message = hex.encode(this.message!);
     try {
       // try to read as utf8
-      _message = utf8.decode(this.message);
+      _message = utf8.decode(this.message!);
       Log.debug('utf8 message: $message');
     } catch (e) {
       // try to read as ascii
-      _message = String.fromCharCodes(this.message);
+      _message = String.fromCharCodes(this.message!);
       Log.debug('ascii message: $message');
     }
     return _message;
@@ -61,16 +60,17 @@ class Transaction {
     throw UnimplementedError();
   }
 
+  Transaction();
 // need update
-  Transaction({
+  Transaction.base({
     this.id,
-    this.direction,
-    this.amount,
+    required this.direction,
+    required this.amount,
     this.status,
     this.timestamp,
     this.confirmations,
-    String address,
-    this.fee,
+    required String address,
+    required this.fee,
     this.txId,
     this.message,
   }) : _address = address;
@@ -92,7 +92,9 @@ class Transaction {
         : entity.destinctionAddress;
     confirmations = entity.confirmation;
     timestamp = entity.timestamp;
-    message = hex.decode(stripHexPrefix(entity.note));
+    message = entity.note != null
+        ? Uint8List.fromList(hex.decode(stripHexPrefix(entity.note!)))
+        : Uint8List(0);
     status = entity.status == 'pending'
         ? TransactionStatus.pending
         : entity.status == 'success'
@@ -139,16 +141,12 @@ extension TransactionDirectionExt on TransactionDirection {
     switch (this) {
       case TransactionDirection.sent:
         return 0;
-        break;
       case TransactionDirection.received:
         return 1;
-        break;
       case TransactionDirection.moved:
         return 2;
-        break;
       case TransactionDirection.unknown:
         return 3;
-        break;
     }
   }
 
@@ -156,16 +154,12 @@ extension TransactionDirectionExt on TransactionDirection {
     switch (this) {
       case TransactionDirection.sent:
         return "assets/images/icons/ic_send_black.png";
-        break;
       case TransactionDirection.received:
         return "assets/images/icons/ic_receive_black.png";
-        break;
       case TransactionDirection.moved:
         return "assets/images/icons/ic_transfer_in_black.png";
-        break;
       case TransactionDirection.unknown:
         return "assets/images/icons/ic_transfer_in_black.png";
-        break;
     }
   }
 
@@ -173,16 +167,12 @@ extension TransactionDirectionExt on TransactionDirection {
     switch (this) {
       case TransactionDirection.sent:
         return "send";
-        break;
       case TransactionDirection.received:
         return "receive";
-        break;
       case TransactionDirection.moved:
         return "move";
-        break;
       case TransactionDirection.unknown:
         return "unknown";
-        break;
     }
   }
 
@@ -190,14 +180,11 @@ extension TransactionDirectionExt on TransactionDirection {
     switch (this) {
       case TransactionDirection.sent:
         return "transfer_to";
-        break;
       case TransactionDirection.received:
       case TransactionDirection.moved:
         return "receive_from";
-        break;
       case TransactionDirection.unknown:
         return "Unknown";
-        break;
     }
   }
 
@@ -205,16 +192,12 @@ extension TransactionDirectionExt on TransactionDirection {
     switch (this) {
       case TransactionDirection.sent:
         return MyColors.primary_04;
-        break;
       case TransactionDirection.received:
         return MyColors.primary_03;
-        break;
       case TransactionDirection.moved:
         return MyColors.primary_02;
-        break;
       case TransactionDirection.unknown:
         return MyColors.primary_02;
-        break;
     }
   }
 }
@@ -230,13 +213,10 @@ extension TransactionStatueExt on TransactionStatus {
     switch (this) {
       case TransactionStatus.success:
         return "assets/images/icons/ic_completed_green.png";
-        break;
       case TransactionStatus.fail:
         return "assets/images/icons/ic_failed_red.png";
-        break;
       case TransactionStatus.pending:
         return "assets/images/icons/ic_pending_grey.png";
-        break;
     }
   }
 
@@ -244,13 +224,10 @@ extension TransactionStatueExt on TransactionStatus {
     switch (this) {
       case TransactionStatus.success:
         return "compeleted";
-        break;
       case TransactionStatus.fail:
         return "transaction_fail";
-        break;
       case TransactionStatus.pending:
         return "pending";
-        break;
     }
   }
 
@@ -258,13 +235,10 @@ extension TransactionStatueExt on TransactionStatus {
     switch (this) {
       case TransactionStatus.success:
         return MyColors.secondary_08;
-        break;
       case TransactionStatus.fail:
         return MyColors.secondary_09;
-        break;
       case TransactionStatus.pending:
         return MyColors.secondary_10;
-        break;
     }
   }
 }

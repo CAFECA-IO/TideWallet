@@ -11,7 +11,6 @@ import '../repositories/trader_repository.dart';
 import '../repositories/account_repository.dart';
 import '../helpers/i18n.dart';
 import 'transaction_list.screen.dart';
-import 'add_currency.screen.dart';
 import '../screens/toggle_currency.screen.dart';
 
 final t = I18n.t;
@@ -30,7 +29,6 @@ class _AccountCurrencyScreenState extends State<AccountCurrencyScreen> {
   late AccountCurrencyBloc _bloc;
   late AccountRepository _repo;
   late TraderRepository _traderRepo;
-  late List<Currency> _currencies;
 
   @override
   didChangeDependencies() {
@@ -48,7 +46,6 @@ class _AccountCurrencyScreenState extends State<AccountCurrencyScreen> {
         BlocBuilder<AccountCurrencyBloc, AccountCurrencyState>(
           bloc: _bloc,
           builder: (context, state) {
-            _currencies = state.currencies;
             return Container(
               decoration: BoxDecoration(color: Color(0xFFF7F8F9)),
               child: Column(children: [
