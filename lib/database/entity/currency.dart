@@ -8,51 +8,61 @@ class CurrencyEntity {
 
   final String name;
 
-  final String? description;
-
   final String symbol;
+
+  final String type;
+
+  final bool publish;
 
   final int decimals;
 
-  final String address;
+  @ColumnInfo(name: 'exchange_rate')
+  final String? exchangeRate;
 
-  final String type;
+  final String?
+      image; // ++ debugInfo, fiat icon is null, but crypto and token icon is not null
+
+  final String? description;
+
+  final String? address;
 
   @ColumnInfo(name: 'total_supply')
   final String? totalSupply;
 
   final String? contract;
 
-  final String image;
-
   CurrencyEntity({
     required this.currencyId,
     required this.name,
     required this.symbol,
-    required this.description,
-    required this.address,
-    required this.contract,
+    required this.publish,
     required this.decimals,
-    required this.totalSupply,
     required this.type,
     required this.image,
+    required this.exchangeRate,
+    this.description,
+    this.address,
+    this.totalSupply,
+    this.contract,
   });
 
   CurrencyEntity.fromJson(Map json)
       : this.currencyId = json['currency_id'] ?? json['token_id'],
         this.name = json['name'],
-        this.description = json['description'],
-        this.address = json['contract'],
-        this.contract = json['contract'],
         this.symbol = json['symbol'],
         this.decimals = json['decimals'],
-        this.totalSupply = json['total_supply'],
         this.type = json['type'] == 0
             ? 'fiat'
             : json['type'] == 1
                 ? 'currency'
                 : 'token',
-        this.image = json['icon'];
+        this.publish = json['publish'],
+        this.image = json['icon'],
+        this.exchangeRate = json['exchange_rate'],
+        this.description = json['description'],
+        this.address = json['contract'],
+        this.contract = json['contract'],
+        this.totalSupply = json['total_supply'];
 
   @override
   bool operator ==(Object other) =>

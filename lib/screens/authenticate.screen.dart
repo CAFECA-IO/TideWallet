@@ -4,10 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'home.screen.dart';
 import '../blocs/local_auth/local_auth_bloc.dart';
 import '../blocs/user/user_bloc.dart';
+import '../widgets/dialogs/loading_dialog.dart';
+import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/buttons/primary_button.dart';
 import '../widgets/version.dart';
 import '../helpers/i18n.dart';
-import '../helpers/logger.dart';
 
 class AuthenticateScreen extends StatefulWidget {
   static const routeName = '/authenticate';
@@ -77,6 +78,9 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
       listener: (context, state) {
         if (state is UserSuccess)
           Navigator.of(context).pushNamed(HomeScreen.routeName);
+        if (state is UserLoading) {
+          DialogController.showUnDissmissible(context, LoadingDialog());
+        }
       },
       child: BlocBuilder<LocalAuthBloc, LocalAuthState>(
         builder: (context, state) {

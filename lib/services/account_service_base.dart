@@ -38,9 +38,13 @@ class AccountServiceBase extends AccountService {
 
   @override
   Future start() async {
-    AccountCurrencyEntity select = (await DBOperator()
+    AccountCurrencyEntity? select = (await DBOperator()
         .accountCurrencyDao
-        .findOneByAccountyId(this._accountId))!;
+        .findOneByAccountyId(this._accountId));
+    if (select == null) {
+      Log.debug("@@! select in accountServiceBase is null?");
+      return;
+    }
 
     await this._pushResult();
     await this._getSupportedToken();

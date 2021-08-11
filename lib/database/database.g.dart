@@ -99,7 +99,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Account` (`account_id` TEXT NOT NULL, `user_id` TEXT NOT NULL, `network_id` TEXT NOT NULL, `account_index` INTEGER NOT NULL, FOREIGN KEY (`user_id`) REFERENCES `User` (`user_id`) ON UPDATE NO ACTION ON DELETE CASCADE, PRIMARY KEY (`account_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Currency` (`currency_id` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT, `symbol` TEXT NOT NULL, `decimals` INTEGER NOT NULL, `address` TEXT NOT NULL, `type` TEXT NOT NULL, `total_supply` TEXT, `contract` TEXT, `image` TEXT NOT NULL, PRIMARY KEY (`currency_id`))');
+            'CREATE TABLE IF NOT EXISTS `Currency` (`currency_id` TEXT NOT NULL, `name` TEXT NOT NULL, `symbol` TEXT NOT NULL, `type` TEXT NOT NULL, `publish` INTEGER NOT NULL, `decimals` INTEGER NOT NULL, `exchange_rate` TEXT, `image` TEXT, `description` TEXT, `address` TEXT, `total_supply` TEXT, `contract` TEXT, PRIMARY KEY (`currency_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `_Transaction` (`transaction_id` TEXT NOT NULL, `accountcurrency_id` TEXT NOT NULL, `tx_id` TEXT NOT NULL, `source_address` TEXT NOT NULL, `destinction_address` TEXT NOT NULL, `timestamp` INTEGER, `confirmation` INTEGER NOT NULL, `gas_price` TEXT, `gas_used` INTEGER, `fee` TEXT NOT NULL, `note` TEXT, `status` TEXT NOT NULL, `direction` TEXT NOT NULL, `amount` TEXT NOT NULL, PRIMARY KEY (`transaction_id`))');
         await database.execute(
@@ -312,14 +312,16 @@ class _$CurrencyDao extends CurrencyDao {
             (CurrencyEntity item) => <String, Object?>{
                   'currency_id': item.currencyId,
                   'name': item.name,
-                  'description': item.description,
                   'symbol': item.symbol,
-                  'decimals': item.decimals,
-                  'address': item.address,
                   'type': item.type,
+                  'publish': item.publish ? 1 : 0,
+                  'decimals': item.decimals,
+                  'exchange_rate': item.exchangeRate,
+                  'image': item.image,
+                  'description': item.description,
+                  'address': item.address,
                   'total_supply': item.totalSupply,
-                  'contract': item.contract,
-                  'image': item.image
+                  'contract': item.contract
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -337,13 +339,15 @@ class _$CurrencyDao extends CurrencyDao {
             currencyId: row['currency_id'] as String,
             name: row['name'] as String,
             symbol: row['symbol'] as String,
-            description: row['description'] as String?,
-            address: row['address'] as String,
-            contract: row['contract'] as String?,
+            publish: (row['publish'] as int) != 0,
             decimals: row['decimals'] as int,
-            totalSupply: row['total_supply'] as String?,
             type: row['type'] as String,
-            image: row['image'] as String));
+            image: row['image'] as String?,
+            exchangeRate: row['exchange_rate'] as String?,
+            description: row['description'] as String?,
+            address: row['address'] as String?,
+            totalSupply: row['total_supply'] as String?,
+            contract: row['contract'] as String?));
   }
 
   @override

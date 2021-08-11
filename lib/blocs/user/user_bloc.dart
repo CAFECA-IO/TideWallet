@@ -21,6 +21,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     UserEvent event,
   ) async* {
     if (event is UserInit) {
+      yield UserLoading();
       await _accountRepo.coreInit(debugMode: this._debugMode);
       yield UserSuccess();
     }

@@ -228,9 +228,13 @@ class AccountCore {
         if (local.indexWhere((c) => c.currencyId == d['currency_id']) > -1)
           continue;
         else {
+          Log.debug('CurrencyEntity.fromJson(d) d: $d');
+          Log.debug(
+              'CurrencyEntity.fromJson(d) d: ${CurrencyEntity.fromJson(d).toString()}');
           l.add(CurrencyEntity.fromJson(d));
         }
       }
+
       await DBOperator().currencyDao.insertCurrencies(l);
       return l;
     }
