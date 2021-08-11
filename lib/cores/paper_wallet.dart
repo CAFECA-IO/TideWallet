@@ -25,7 +25,7 @@ class PaperWallet {
     EthPrivateKey credentials = EthPrivateKey.fromHex(data['key'] as String);
     Wallet wallet =
         Wallet.createNew(credentials, data['password'] as String, rng);
-    Log.info(wallet.toJson());
+    Log.debug(wallet.toJson());
 
     return wallet;
   }
@@ -141,8 +141,7 @@ class PaperWallet {
   }
 
   // static String walletToJson(Wallet wallet) {
-  static FutureOr<String> walletToJson(dynamic wallet) {
-    // ++ update null-safety
+  static String walletToJson(Wallet wallet) {
     return wallet.toJson();
   }
 

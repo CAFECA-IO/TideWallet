@@ -30,7 +30,7 @@ class AccountRepository {
 
     if (!AccountCore().isInit || isInit) {
       AccountCore().setMessenger();
-      this._preferDisplay = await this._prefManager.getSeletedDisplay();
+
       return await AccountCore().init(debugMode: this.debugMode);
     }
 

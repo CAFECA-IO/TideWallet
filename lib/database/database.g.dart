@@ -95,13 +95,13 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `User` (`user_id` TEXT NOT NULL, `keystore` TEXT NOT NULL, `third_party_id` TEXT NOT NULL, `install_id` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `last_sync_time:` INTEGER NOT NULL, PRIMARY KEY (`user_id`))');
+            'CREATE TABLE IF NOT EXISTS `User` (`user_id` TEXT NOT NULL, `keystore` TEXT NOT NULL, `third_party_id` TEXT NOT NULL, `install_id` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `last_sync_time` INTEGER NOT NULL, PRIMARY KEY (`user_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Account` (`account_id` TEXT NOT NULL, `user_id` TEXT NOT NULL, `network_id` TEXT NOT NULL, `account_index` INTEGER NOT NULL, FOREIGN KEY (`user_id`) REFERENCES `User` (`user_id`) ON UPDATE NO ACTION ON DELETE CASCADE, PRIMARY KEY (`account_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Currency` (`currency_id` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT, `symbol` TEXT NOT NULL, `decimals` INTEGER NOT NULL, `address` TEXT NOT NULL, `type` TEXT NOT NULL, `total_supply` TEXT, `contract` TEXT, `image` TEXT NOT NULL, PRIMARY KEY (`currency_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `_Transaction` (`transaction_id` TEXT NOT NULL, `accountcurrency_id` TEXT NOT NULL, `tx_id` TEXT NOT NULL, `source_address` TEXT NOT NULL, `destinction_address` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `confirmation` INTEGER NOT NULL, `gas_price` TEXT, `gas_used` INTEGER, `fee` TEXT NOT NULL, `note` TEXT, `status` TEXT NOT NULL, `direction` TEXT NOT NULL, `amount` TEXT NOT NULL, PRIMARY KEY (`transaction_id`))');
+            'CREATE TABLE IF NOT EXISTS `_Transaction` (`transaction_id` TEXT NOT NULL, `accountcurrency_id` TEXT NOT NULL, `tx_id` TEXT NOT NULL, `source_address` TEXT NOT NULL, `destinction_address` TEXT NOT NULL, `timestamp` INTEGER, `confirmation` INTEGER NOT NULL, `gas_price` TEXT, `gas_used` INTEGER, `fee` TEXT NOT NULL, `note` TEXT, `status` TEXT NOT NULL, `direction` TEXT NOT NULL, `amount` TEXT NOT NULL, PRIMARY KEY (`transaction_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Network` (`network_id` TEXT NOT NULL, `network` TEXT NOT NULL, `coin_type` INTEGER NOT NULL, `publish` INTEGER NOT NULL, `chain_id` INTEGER NOT NULL, PRIMARY KEY (`network_id`))');
         await database.execute(
@@ -180,7 +180,7 @@ class _$UserDao extends UserDao {
                   'third_party_id': item.thirdPartyId,
                   'install_id': item.installId,
                   'timestamp': item.timestamp,
-                  'last_sync_time:': item.lastSyncTime
+                  'last_sync_time': item.lastSyncTime
                 }),
         _userEntityUpdateAdapter = UpdateAdapter(
             database,
@@ -192,7 +192,7 @@ class _$UserDao extends UserDao {
                   'third_party_id': item.thirdPartyId,
                   'install_id': item.installId,
                   'timestamp': item.timestamp,
-                  'last_sync_time:': item.lastSyncTime
+                  'last_sync_time': item.lastSyncTime
                 }),
         _userEntityDeletionAdapter = DeletionAdapter(
             database,
@@ -204,7 +204,7 @@ class _$UserDao extends UserDao {
                   'third_party_id': item.thirdPartyId,
                   'install_id': item.installId,
                   'timestamp': item.timestamp,
-                  'last_sync_time:': item.lastSyncTime
+                  'last_sync_time': item.lastSyncTime
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -228,7 +228,7 @@ class _$UserDao extends UserDao {
             row['third_party_id'] as String,
             row['install_id'] as String,
             row['timestamp'] as int,
-            row['last_sync_time:'] as int));
+            row['last_sync_time'] as int));
   }
 
   @override
@@ -461,7 +461,7 @@ class _$TransactionDao extends TransactionDao {
             note: row['note'] as String?,
             fee: row['fee'] as String,
             status: row['status'] as String,
-            timestamp: row['timestamp'] as int,
+            timestamp: row['timestamp'] as int?,
             direction: row['direction'] as String,
             amount: row['amount'] as String));
   }
@@ -482,7 +482,7 @@ class _$TransactionDao extends TransactionDao {
             note: row['note'] as String?,
             fee: row['fee'] as String,
             status: row['status'] as String,
-            timestamp: row['timestamp'] as int,
+            timestamp: row['timestamp'] as int?,
             direction: row['direction'] as String,
             amount: row['amount'] as String),
         arguments: [id]);
@@ -504,7 +504,7 @@ class _$TransactionDao extends TransactionDao {
             note: row['note'] as String?,
             fee: row['fee'] as String,
             status: row['status'] as String,
-            timestamp: row['timestamp'] as int,
+            timestamp: row['timestamp'] as int?,
             direction: row['direction'] as String,
             amount: row['amount'] as String),
         arguments: [id]);

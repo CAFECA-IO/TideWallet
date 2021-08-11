@@ -43,6 +43,6 @@ class DBOperator {
   }
 
   down() async {
-    await this.database?.close();
+    await this.database.close();
   }
 }

@@ -19,14 +19,14 @@ import '../models/api_response.mode.dart';
 import '../services/fcm_service.dart';
 
 class User {
-  late String _id;
-  late String _thirdPartyId;
-  late String _installId;
-  late int _timestamp;
+  late String? _id;
+  late String? _thirdPartyId;
+  late String? _installId;
+  late int? _timestamp;
 
   PrefManager _prefManager = PrefManager();
 
-  String get id => _id;
+  String get id => _id!;
 
   Future<bool> checkUser() async {
     UserEntity? user = await DBOperator().userDao.findUser();
@@ -62,12 +62,11 @@ class User {
       String? installId,
       int? timestamp}) {
     Uint8List userIdentifierBuffer =
-        ascii.encode(userIdentifier ?? this._thirdPartyId);
-    Uint8List installIdBuffer = ascii.encode(installId ?? this._installId);
-    Log.warning('userId: ${this._id}');
+        ascii.encode(userIdentifier ?? this._thirdPartyId!);
+    Uint8List installIdBuffer = ascii.encode(installId ?? this._installId!);
     List<int> pwseedBuffer = Cryptor.keccak256round(Cryptor.keccak256round(
             Cryptor.keccak256round(userIdentifierBuffer, round: 1) +
-                Cryptor.keccak256round(hex.decode(userId ?? this._id),
+                Cryptor.keccak256round(hex.decode(userId ?? this._id!),
                     round: 1)) +
         Cryptor.keccak256round(Cryptor.keccak256round(
                 rlp.toBuffer(hex
@@ -156,7 +155,7 @@ class User {
   Future<bool> _registerUser({
     required String extendPublicKey,
     required String installId,
-    required wallet,
+    required Wallet wallet,
     required String userId,
     required String userIdentifier,
     required int timestamp,
@@ -188,7 +187,6 @@ class User {
           timestamp,
           timestamp);
       await DBOperator().userDao.insertUser(user);
-
       await this._initUser(user);
     }
 

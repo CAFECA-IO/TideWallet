@@ -16,7 +16,7 @@ class UserEntity {
 
   final int timestamp;
 
-  @ColumnInfo(name: 'last_sync_time:') // --  nullable: false
+  @ColumnInfo(name: 'last_sync_time')
   final int lastSyncTime;
 
   UserEntity(

@@ -201,7 +201,7 @@ class AccountCore {
             accountId: id,
             userId: user.userId,
             networkId: d['blockchain_id'],
-            accountIndex: d['account_index']);
+            accountIndex: int.parse(d['account_index']));
         await createAccount(acc);
         local.add(acc);
       }
