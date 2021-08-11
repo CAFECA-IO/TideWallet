@@ -19,13 +19,15 @@ class UserCreate extends UserEvent {
   UserCreate(this.userIndentifier);
 }
 
+class UserInit extends UserEvent {
+  UserInit();
+}
+
 class UserCreateWithSeed extends UserEvent {
   final String userIndentifier;
   final Uint8List seed;
 
   UserCreateWithSeed(this.userIndentifier, this.seed);
 }
-
-class UserRestore extends UserEvent {}
 
 class UserReset extends UserEvent {}

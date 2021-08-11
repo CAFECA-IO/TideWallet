@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'home.screen.dart';
 import '../blocs/local_auth/local_auth_bloc.dart';
+import '../blocs/user/user_bloc.dart';
 import '../widgets/buttons/primary_button.dart';
 import '../widgets/version.dart';
 import '../helpers/i18n.dart';
@@ -19,12 +20,20 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
   bool isAuthenticated = false;
   final t = I18n.t;
   late LocalAuthBloc _bloc;
+  late UserBloc _userbloc;
 
   @override
   void didChangeDependencies() {
     _bloc = BlocProvider.of<LocalAuthBloc>(context);
-
+    _userbloc = BlocProvider.of<UserBloc>(context);
     super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    _bloc.close();
+    _userbloc.close();
+    super.dispose();
   }
 
   Widget _unAuthLayout({List<Widget>? widgets}) {
@@ -64,28 +73,33 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LocalAuthBloc, LocalAuthState>(
-      builder: (context, state) {
-        Log.debug('state: $state');
-
-        if (state is AuthenticationStatus)
-          return state.isAuthenicated
-              ? HomeScreen()
-              : _unAuthLayout(
-                  widgets: [
-                    PrimaryButton(
-                      t('authenticate'),
-                      () {
-                        this._bloc.add(Authenticate());
-                      },
-                      iconImg: AssetImage(
-                          'assets/images/icons/ic_property_normal.png'),
-                    ),
-                  ],
-                );
-        else
-          return _unAuthLayout();
+    return BlocListener<UserBloc, UserState>(
+      listener: (context, state) {
+        if (state is UserSuccess)
+          Navigator.of(context).pushNamed(HomeScreen.routeName);
       },
+      child: BlocBuilder<LocalAuthBloc, LocalAuthState>(
+        builder: (context, state) {
+          if (state is AuthenticationStatus) {
+            this._userbloc.add(UserInit());
+            return state.isAuthenicated
+                ? _unAuthLayout()
+                : _unAuthLayout(
+                    widgets: [
+                      PrimaryButton(
+                        t('authenticate'),
+                        () {
+                          this._bloc.add(Authenticate());
+                        },
+                        iconImg: AssetImage(
+                            'assets/images/icons/ic_property_normal.png'),
+                      ),
+                    ],
+                  );
+          }
+          return _unAuthLayout();
+        },
+      ),
     );
   }
 }
