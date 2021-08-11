@@ -89,9 +89,8 @@ Uint8List encodeToRlpFromJson(Map json, MsgSignature signature) {
 
   list..add(json['value'])..add(json['data']);
 
-  if (signature != null) {
-    list..add(signature.v)..add(signature.r)..add(signature.s);
-  }
+  list..add(signature.v)..add(signature.r)..add(signature.s);
+
   Log.debug('ETH list: $list');
   return rlp.encode(list);
 }
@@ -103,22 +102,17 @@ Uint8List encodeToRlp(EthereumTransaction transaction) {
     transaction.gasUsed.toInt(),
   ];
 
-  if (transaction.to != null) {
-    list.add(getEthereumAddressBytes(transaction.to));
-  } else {
-    list.add('');
-  }
+  list.add(getEthereumAddressBytes(transaction.to));
 
   list
     ..add(BigInt.parse(transaction.amount.toString()))
     ..add(transaction.message!);
 
-  if (transaction.signature != null) {
-    list
-      ..add(transaction.signature.v)
-      ..add(transaction.signature.r)
-      ..add(transaction.signature.s);
-  }
+  list
+    ..add(transaction.signature.v)
+    ..add(transaction.signature.r)
+    ..add(transaction.signature.s);
+
   Log.debug('ETH list: $list');
   return rlp.encode(list);
 }

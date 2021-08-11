@@ -1,5 +1,4 @@
 import 'package:decimal/decimal.dart';
-import 'package:flutter/material.dart';
 
 import 'account.model.dart';
 

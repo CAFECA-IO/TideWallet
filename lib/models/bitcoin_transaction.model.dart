@@ -294,7 +294,7 @@ class BitcoinTransaction extends Transaction {
     Input input = Input(utxo, hashType);
     _inputs.add(input);
     try {
-      this.sourceAddresses = this.sourceAddresses!.isEmpty
+      this.sourceAddresses = this.sourceAddresses.isEmpty
           ? this.sourceAddresses += utxo.address
           : this.sourceAddresses += '${", " + utxo.address}';
     } catch (e) {

@@ -1,6 +1,5 @@
 import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
 
 import '../database/entity/exchage_rate.dart';
 import '../database/entity/account_currency.dart';

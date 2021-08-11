@@ -5,7 +5,6 @@ import 'dart:math';
 // import 'package:socket_io_client/socket_io_client.dart';
 import 'package:tidewallet3/helpers/logger.dart';
 import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../helpers/cryptor.dart';

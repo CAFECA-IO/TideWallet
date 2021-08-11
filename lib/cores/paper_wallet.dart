@@ -103,7 +103,7 @@ class PaperWallet {
     return publicKey;
   }
 
-  static Uint8List? getPrivKey(
+  static Uint8List getPrivKey(
     Uint8List seed,
     int chainIndex,
     int keyIndex, {
@@ -113,7 +113,7 @@ class PaperWallet {
     Uint8List bytes = Uint8List.fromList(seed);
     bip32.BIP32 root = bip32.BIP32.fromSeed(bytes);
     bip32.BIP32 child = root.derivePath("$path/$chainIndex/$keyIndex");
-    return child.privateKey;
+    return child.privateKey!;
   }
 
   // see: https://iancoleman.io/bip39

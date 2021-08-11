@@ -107,7 +107,7 @@ class User {
   }
 
   Future<bool> createUser(String userIdentifier) async {
-    Log.debug('createUser: ${userIdentifier}');
+    Log.debug('createUser: $userIdentifier');
 
     String installId = await this._prefManager.getInstallationId();
     Log.debug('installId: $installId');
