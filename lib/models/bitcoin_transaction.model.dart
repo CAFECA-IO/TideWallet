@@ -244,7 +244,7 @@ class BitcoinTransaction extends Transaction {
 
   List<Input> get inputs => this._inputs;
   List<Output> get outputs => this._outputs;
-  UnspentTxOut get changeUtxo => this._changeUtxo;
+  UnspentTxOut? get changeUtxo => this._changeUtxo;
 
   BitcoinTransaction({
     this.id,

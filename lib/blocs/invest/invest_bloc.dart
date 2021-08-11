@@ -13,7 +13,7 @@ part 'invest_state.dart';
 class InvestBloc extends Bloc<InvestEvent, InvestState> {
   final InvestRepository _repo;
   final UserRepository _userRepo;
-  StreamSubscription _subscription;
+  StreamSubscription? _subscription;
   InvestBloc(this._repo, this._userRepo) : super(InvestInitial()) {
     _subscription?.cancel();
     this._repo.listener.listen((msg) {

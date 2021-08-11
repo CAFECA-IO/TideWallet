@@ -13,7 +13,7 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
   AccountRepository _repo;
   TraderRepository _traderRepo;
 
-  StreamSubscription _subscription;
+  StreamSubscription? _subscription;
 
   CurrencyBloc(this._repo, this._traderRepo)
       : super(CurrencyInitial([], total: Decimal.zero)) {
@@ -39,7 +39,7 @@ class CurrencyBloc extends Bloc<CurrencyEvent, CurrencyState> {
     CurrencyEvent event,
   ) async* {
     if (event is GetCurrencyList) {
-      List<Currency> list = _repo.getCurrencies(event.accountId);
+      List<Currency> list = _repo.getCurrencies(event.accountId)!;
       Decimal _total = Decimal.zero;
 
       list = list.map((curr) {

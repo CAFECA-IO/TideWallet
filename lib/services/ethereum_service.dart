@@ -1,22 +1,18 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'package:convert/convert.dart';
 import 'package:decimal/decimal.dart';
 
 import 'account_service_decorator.dart';
+import 'account_service.dart';
 
-import '../models/utxo.model.dart';
 import '../models/account.model.dart';
 import '../models/transaction.model.dart';
 import '../models/api_response.mode.dart';
 import '../constants/account_config.dart';
 import '../constants/endpoint.dart';
-import '../services/account_service.dart';
-import '../helpers/cryptor.dart';
 import '../helpers/logger.dart';
 import '../helpers/http_agent.dart';
 import '../cores/account.dart';
-import '../cores/paper_wallet.dart';
 import '../database/db_operator.dart';
 import '../database/entity/account_currency.dart';
 import '../database/entity/currency.dart';
@@ -27,17 +23,17 @@ class EthereumService extends AccountServiceDecorator {
     this.syncInterval = 15000;
     // this.path = "m/44'/60'/0'";
   }
-  String _address;
-  Map<TransactionPriority, Decimal> _fee;
-  int _gasLimit;
-  int _feeTimestamp; // fetch transactionFee timestamp;
+  late String _address;
+  late Map<TransactionPriority, Decimal> _fee;
+  late int _gasLimit;
+  late int _feeTimestamp; // fetch transactionFee timestamp;
   // int _gasLimitTimestamp; // fetch estimatedGas timestamp;
   int _nonce = 0;
 
   @override
-  void init(String id, ACCOUNT base, {int interval}) {
+  void init(String id, ACCOUNT? base, {int? interval}) {
     Log.eth('ETH Service Init');
-    this.service.init(id, base ?? this.base, interval: this.syncInterval);
+    this.service.init(id, base ?? this.base!, interval: this.syncInterval);
   }
 
   @override
@@ -74,7 +70,7 @@ class EthereumService extends AccountServiceDecorator {
           totalSupply: res.data['total_supply']);
       return _token;
     } else {
-      return null;
+      throw Exception(res.message);
     }
   }
 
@@ -94,14 +90,10 @@ class EthereumService extends AccountServiceDecorator {
         final acc = updateRes.data;
         List tks = [acc] + acc['tokens'];
         final index = tks.indexWhere((token) => token['token_id'] == id);
-       
+
         await DBOperator().currencyDao.insertCurrency(
               CurrencyEntity.fromJson(
-                {
-                  ...tks[index],
-                  'icon': tk.imgUrl ?? acc['icon'],
-                  'currency_id': id
-                },
+                {...tks[index], 'icon': tk.imgUrl, 'currency_id': id},
               ),
             );
         Log.info(id);
@@ -117,7 +109,7 @@ class EthereumService extends AccountServiceDecorator {
             .findJoinedByAccountId(this.service.accountId);
 
         List<Currency> cs = jcs
-            .map((c) => Currency.fromJoinCurrency(c, jcs[0], this.base))
+            .map((c) => Currency.fromJoinCurrency(c, jcs[0], this.base!))
             .toList();
 
         AccountMessage msg =
@@ -136,8 +128,7 @@ class EthereumService extends AccountServiceDecorator {
       }
     } catch (e) {
       Log.error(e);
-
-      return null;
+      throw Exception(e);
     }
   }
 
@@ -152,8 +143,8 @@ class EthereumService extends AccountServiceDecorator {
         "value": amount,
         "data": message
       };
-      APIResponse response = await HTTPAgent().post(
-          '${Endpoint.url}/blockchain/$blockchainId/gas-limit', payload);
+      APIResponse response = await HTTPAgent()
+          .post('${Endpoint.url}/blockchain/$blockchainId/gas-limit', payload);
       Log.debug(payload);
       if (response.success) {
         Map<String, dynamic> data = response.data;
@@ -175,8 +166,8 @@ class EthereumService extends AccountServiceDecorator {
     if (_fee == null ||
         DateTime.now().millisecondsSinceEpoch - _feeTimestamp >
             this.AVERAGE_FETCH_FEE_TIME) {
-      APIResponse response = await HTTPAgent()
-          .get('${Endpoint.url}/blockchain/$blockchainId/fee');
+      APIResponse response =
+          await HTTPAgent().get('${Endpoint.url}/blockchain/$blockchainId/fee');
       if (response.success) {
         Map<String, dynamic> data = response.data; // FEE will return String
         _fee = {
@@ -195,8 +186,8 @@ class EthereumService extends AccountServiceDecorator {
   @override
   Future<List> getReceivingAddress(String currencyId) async {
     if (this._address == null) {
-      APIResponse response = await HTTPAgent().get(
-          '${Endpoint.url}/wallet/account/address/$currencyId/receive');
+      APIResponse response = await HTTPAgent()
+          .get('${Endpoint.url}/wallet/account/address/$currencyId/receive');
       if (response.success) {
         Map data = response.data;
         String address = data['address'];
@@ -220,8 +211,8 @@ class EthereumService extends AccountServiceDecorator {
 
   @override
   Future<int> getNonce(String blockchainId, String address) async {
-    APIResponse response = await HTTPAgent().get(
-        '${Endpoint.url}/blockchain/$blockchainId/address/$address/nonce');
+    APIResponse response = await HTTPAgent()
+        .get('${Endpoint.url}/blockchain/$blockchainId/address/$address/nonce');
     if (response.success) {
       Map data = response.data;
       int nonce = int.parse(data['nonce']);
@@ -252,7 +243,7 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   @override
-  Future synchro({bool force}) async {
+  Future synchro({bool? force}) async {
     await this.service.synchro(force: force);
   }
 

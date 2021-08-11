@@ -8,42 +8,41 @@ import '../helpers/mnemonic/core.dart';
 
 class ThirdPartySignInRepository {
   Future<List> signInWithAppleId() async {
-    AuthorizationCredentialAppleID credential;
+    late AuthorizationCredentialAppleID credential;
     bool result = false;
-    AuthorizationErrorCode errorCode;
-    String errorMessage;
+    late PlatformException exception;
+
     try {
       credential = await SignInWithApple.getAppleIDCredential(scopes: [
         AppleIDAuthorizationScopes.email,
         AppleIDAuthorizationScopes.fullName,
       ]);
-      if (credential != null) result = true;
+      result = true;
       Log.debug('credential userIdentifier: ${credential.userIdentifier}');
     } catch (e) {
-      errorCode = e.code;
-      errorMessage = e.message;
+      exception = e as PlatformException;
       Log.debug(e.code);
     }
     return [
       result,
-      result ? credential?.userIdentifier : errorCode,
-      !result ? errorMessage : null
+      result ? credential.userIdentifier : exception.code,
+      !result ? exception.message : null
     ];
   }
 
   Future<List> signInWithGoogleId() async {
     bool result = false;
-    String userIdentifier;
-    String errorMessage;
+    late String userIdentifier;
+    String? errorMessage;
     dynamic errorCode;
 
     final GoogleSignIn _googleSignIn = GoogleSignIn();
     GoogleSignInAccount googleSignInAccount;
 
     try {
-      googleSignInAccount = await _googleSignIn.signIn();
-      Log.debug('googleSignInAccount.id: ${googleSignInAccount?.id}');
-      userIdentifier = googleSignInAccount?.id;
+      googleSignInAccount = (await _googleSignIn.signIn())!;
+      Log.debug('googleSignInAccount.id: ${googleSignInAccount.id}');
+      userIdentifier = googleSignInAccount.id;
       result = true;
     } on PlatformException catch (exception) {
       Log.debug(exception);

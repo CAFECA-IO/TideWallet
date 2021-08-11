@@ -71,8 +71,7 @@ class TransactionEntity {
     required this.amount,
   });
 
-  TransactionEntity.fromJson(
-      String accountcurrencyId, Map<String, dynamic> data)
+  TransactionEntity.fromJson(String accountcurrencyId, Map data)
       : this.accountcurrencyId = accountcurrencyId,
         this.transactionId = accountcurrencyId + data['txid'],
         this.amount = data['amount'].toString(),

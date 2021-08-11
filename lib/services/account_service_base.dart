@@ -144,16 +144,20 @@ class AccountServiceBase extends AccountService {
         Endpoint.url + '/blockchain/${acc.networkId}/token?type=TideWallet');
 
     if (res.data != null) {
-      List tokens = res.data;
-      tokens = tokens.map((t) => CurrencyEntity.fromJson(t)).toList();
+      List data = res.data;
+      List<CurrencyEntity> tokens = [];
+      for (var d in data) {
+        tokens.add(CurrencyEntity.fromJson(d));
+      }
       await DBOperator().currencyDao.insertCurrencies(tokens);
     }
   }
 
   Future _syncTransactions() async {
-    final currencies = AccountCore().currencies[this._accountId];
+    final List<Currency>? currencies =
+        AccountCore().currencies[this._accountId];
 
-    for (var currency in currencies) {
+    for (var currency in currencies!) {
       final transactions = await this._getTransactions(currency);
       AccountMessage txMsg =
           AccountMessage(evt: ACCOUNT_EVT.OnUpdateTransactions, value: {
@@ -171,10 +175,11 @@ class AccountServiceBase extends AccountService {
         .get(Endpoint.url + '/wallet/account/txs/${currency.id}');
 
     if (res.success) {
-      List txs = res.data;
-      txs = txs
-          .map((tx) => TransactionEntity.fromJson(currency.id!, tx))
-          .toList();
+      List data = res.data;
+      List<TransactionEntity> txs = [];
+      for (var d in data) {
+        txs.add(TransactionEntity.fromJson(currency.id!, d));
+      }
 
       await DBOperator().transactionDao.insertTransactions(txs);
     }
@@ -212,8 +217,7 @@ class AccountServiceBase extends AccountService {
     throw UnimplementedError('Implement on decorator');
   }
 
-  Future updateTransaction(
-      String currencyId, Map<String, dynamic> payload) async {
+  Future updateTransaction(String currencyId, Map payload) async {
     List<Currency> currencies = AccountCore().currencies[this.accountId] ?? [];
     TransactionEntity txEntity =
         TransactionEntity.fromJson(currencyId, payload);

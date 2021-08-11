@@ -10,19 +10,19 @@ abstract class InvestState extends Equatable {
 class InvestInitial extends InvestState {}
 
 class ListInvestments extends InvestState {
-  final List<InvestAccount> investAccounts;
+  final List<InvestAccount>? investAccounts;
 
   ListInvestments({this.investAccounts});
 
   ListInvestments copyWith(
-      {int selectedType,
-      List<Investment> investments,
-      int showType,
-      Decimal totalRate}) {
+      {int? selectedType,
+      List<Investment>? investments,
+      int? showType,
+      Decimal? totalRate}) {
     return ListInvestments(
         investAccounts: investAccounts ?? this.investAccounts);
   }
 
   @override
-  List<Object> get props => [investAccounts];
+  List<Object> get props => [investAccounts!];
 }

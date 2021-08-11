@@ -8,7 +8,7 @@ import '../models/transaction.model.dart';
 abstract class AccountService {
   int AVERAGE_FETCH_FEE_TIME = 1 * 60 * 60 * 1000; // milliseconds
   int syncInterval = 10 * 10 * 1000;
-  late ACCOUNT base;
+  late ACCOUNT? base;
   late int lastSyncTimestamp;
   late String accountId;
   late Timer? timer;
@@ -28,5 +28,5 @@ abstract class AccountService {
 
   Future updateCurrency(String currencyId, Map payload);
 
-  Future synchro({bool force});
+  Future synchro({bool? force});
 }

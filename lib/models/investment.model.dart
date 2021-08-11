@@ -12,16 +12,12 @@ extension InvestStrategyExft on InvestStrategy {
     switch (this) {
       case InvestStrategy.Climb:
         return 'strategy_of_climb';
-        break;
       case InvestStrategy.Decline:
         return 'strategy_of_decline';
-        break;
       case InvestStrategy.Fluctuating:
         return 'strategy_of_flutuating';
-        break;
       default:
         return 'unknown';
-        break;
     }
   }
 }
@@ -31,16 +27,12 @@ extension InvestAmplitudeExt on InvestAmplitude {
     switch (this) {
       case InvestAmplitude.Low:
         return 0;
-        break;
       case InvestAmplitude.Normal:
         return 1;
-        break;
       case InvestAmplitude.High:
         return 2;
-        break;
       default:
         return 0;
-        break;
     }
   }
 
@@ -48,16 +40,12 @@ extension InvestAmplitudeExt on InvestAmplitude {
     switch (this) {
       case InvestAmplitude.Low:
         return 'low_amplitude';
-        break;
       case InvestAmplitude.Normal:
         return 'normal_amplitude';
-        break;
       case InvestAmplitude.High:
         return 'high_amplitude';
-        break;
       default:
         return 'unknown';
-        break;
     }
   }
 }
@@ -67,16 +55,12 @@ extension InvestPercentageExt on InvestPercentage {
     switch (this) {
       case InvestPercentage.Low:
         return 0;
-        break;
       case InvestPercentage.Normal:
         return 1;
-        break;
       case InvestPercentage.High:
         return 2;
-        break;
       default:
         return 0;
-        break;
     }
   }
 
@@ -84,16 +68,12 @@ extension InvestPercentageExt on InvestPercentage {
     switch (this) {
       case InvestPercentage.Low:
         return '10';
-        break;
       case InvestPercentage.Normal:
         return '50';
-        break;
       case InvestPercentage.High:
         return '90';
-        break;
       default:
         return 'unknown';
-        break;
     }
   }
 }

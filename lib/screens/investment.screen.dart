@@ -60,10 +60,10 @@ class _InvestmentScreenState extends State<InvestmentScreen>
                         padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0),
                         child: ListView.builder(
                           padding: EdgeInsets.zero,
-                          itemCount: state.investAccounts.length,
+                          itemCount: state.investAccounts!.length,
                           itemBuilder: (ctx, index) {
                             InvestAccount investAccount =
-                                state.investAccounts[index];
+                                state.investAccounts![index];
                             Currency currency = investAccount.currency;
                             List<Investment> investments =
                                 investAccount.investments;

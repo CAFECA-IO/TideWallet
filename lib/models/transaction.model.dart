@@ -52,7 +52,7 @@ class Transaction {
     throw UnimplementedError();
   }
 
-  UnspentTxOut get changeUtxo {
+  UnspentTxOut? get changeUtxo {
     throw UnimplementedError();
   }
 

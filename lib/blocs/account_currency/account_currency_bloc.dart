@@ -49,7 +49,8 @@ class AccountCurrencyBloc
     if (this._repo.debugMode) return currencies;
     return currencies
         .where((cur) =>
-            cur.publish || (display != null && display[cur.currencyId] == true))
+            cur.publish! ||
+            (display != null && display[cur.currencyId] == true))
         .toList();
   }
 
@@ -72,7 +73,7 @@ class AccountCurrencyBloc
         return curr.copyWith(inUSD: v.toString());
       }).toList();
 
-      list.sort((a, b) => a.accountType.index.compareTo(b.accountType.index));
+      list.sort((a, b) => a.accountType!.index.compareTo(b.accountType!.index));
 
       yield AccountCurrencyLoaded(list, total: _total);
     }
@@ -101,7 +102,8 @@ class AccountCurrencyBloc
         _total += Decimal.parse(c.inUSD!);
       });
 
-      _list.sort((a, b) => a.accountType.index.compareTo(b.accountType.index));
+      _list
+          .sort((a, b) => a.accountType!.index.compareTo(b.accountType!.index));
 
       yield AccountCurrencyLoaded(_list, total: _total);
     }
@@ -130,7 +132,8 @@ class AccountCurrencyBloc
         return curr.copyWith(inUSD: v.toString());
       }).toList();
 
-      _list.sort((a, b) => a.accountType.index.compareTo(b.accountType.index));
+      _list
+          .sort((a, b) => a.accountType!.index.compareTo(b.accountType!.index));
 
       yield AccountCurrencyLoaded(_list, total: _total);
     }

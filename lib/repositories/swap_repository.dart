@@ -37,7 +37,7 @@ class SwapRepository {
     EthereumService _accountService =
         AccountCore().getService(sellCurrency.accountId) as EthereumService;
     String address =
-        (await _accountService.getReceivingAddress(sellCurrency.id))[0];
+        (await _accountService.getReceivingAddress(sellCurrency.id!))[0];
     int nonce =
         await _accountService.getNonce(sellCurrency.blockchainId, address);
     Decimal _sellAmount = Decimal.tryParse(sellAmount)!;
@@ -48,7 +48,7 @@ class SwapRepository {
     TransactionService _transactionService =
         EthereumTransactionService(TransactionServiceBased());
     Transaction transaction = _transactionService.prepareTransaction(
-        sellCurrency.publish,
+        sellCurrency.publish!,
         to,
         Converter.toEthSmallestUnit(_sellAmount),
         rlp.toBuffer(swapData),
@@ -59,7 +59,7 @@ class SwapRepository {
         chainId: sellCurrency.chainId,
         privKey: privKey,
         changeAddress: address);
-    Decimal balance = Decimal.parse(sellCurrency.amount) - _sellAmount - fee;
+    Decimal balance = Decimal.parse(sellCurrency.amount!) - _sellAmount - fee;
     return [transaction, balance];
   }
 }

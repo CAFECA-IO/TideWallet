@@ -24,15 +24,15 @@ class BitcoinService extends AccountServiceDecorator {
     this.syncInterval = 10 * 60 * 1000;
     // this.path = "m/44'/0'/0'";
   }
-  int _numberOfUsedExternalKey;
-  int _numberOfUsedInternalKey;
-  int _lastSyncTimestamp;
-  Map<TransactionPriority, Decimal> _fee;
-  int _timestamp; // fetch transactionFee timestamp;
+  late int _numberOfUsedExternalKey;
+  late int _numberOfUsedInternalKey;
+  late int _lastSyncTimestamp;
+  late Map<TransactionPriority, Decimal> _fee;
+  late int _timestamp; // fetch transactionFee timestamp;
 
   @override
-  void init(String id, ACCOUNT base, {int interval}) {
-    this.service.init(id, base ?? this.base, interval: this.syncInterval);
+  void init(String id, ACCOUNT? base, {int? interval}) {
+    this.service.init(id, base ?? this.base!, interval: this.syncInterval);
   }
 
   @override
@@ -59,8 +59,8 @@ class BitcoinService extends AccountServiceDecorator {
     if (_fee == null ||
         DateTime.now().millisecondsSinceEpoch - _timestamp >
             this.AVERAGE_FETCH_FEE_TIME) {
-      APIResponse response = await HTTPAgent()
-          .get('${Endpoint.url}/blockchain/$blockchainId/fee');
+      APIResponse response =
+          await HTTPAgent().get('${Endpoint.url}/blockchain/$blockchainId/fee');
       if (response.success) {
         Map<String, dynamic> data = response.data; // FEE will return String
 
@@ -159,17 +159,16 @@ class BitcoinService extends AccountServiceDecorator {
         '${Endpoint.url}/blockchain/$blockchainId/push-tx',
         {"hex": hex.encode(transaction.serializeTransaction)});
     bool success = response.success;
-    BitcoinTransaction _transaction;
+    BitcoinTransaction? _transaction;
     if (success) {
       // updateUsedUtxo
-      _transaction = transaction;
+      _transaction = transaction as BitcoinTransaction;
       _transaction.id = response.data['txid'];
       _transaction.txId = response.data['txid'];
       _transaction.timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
       _transaction.confirmations = 0;
       _transaction.message = transaction.message ?? Uint8List(0);
-      _transaction.direction =
-          transaction.direction ?? TransactionDirection.sent;
+      _transaction.direction = transaction.direction;
       _transaction.status = transaction.status ?? TransactionStatus.pending;
       transaction.inputs.forEach((Input input) async {
         UnspentTxOut _utxo = input.utxo;
@@ -180,11 +179,11 @@ class BitcoinService extends AccountServiceDecorator {
       });
       // insertChangeUtxo
       if (transaction.changeUtxo != null) {
-        Log.debug('changeUtxo txId: ${transaction.changeUtxo.txId}');
+        Log.debug('changeUtxo txId: ${transaction.changeUtxo!.txId}');
         await DBOperator()
             .utxoDao
-            .insertUtxo(UtxoEntity.fromUnspentUtxo(transaction.changeUtxo));
-        Log.debug('changeUtxo amount: ${transaction.changeUtxo.amount}');
+            .insertUtxo(UtxoEntity.fromUnspentUtxo(transaction.changeUtxo!));
+        Log.debug('changeUtxo amount: ${transaction.changeUtxo!.amount}');
       }
       // backend will parse transaction and insert changeUtxo to backend DB
     }
@@ -214,7 +213,7 @@ class BitcoinService extends AccountServiceDecorator {
   }
 
   @override
-  Future synchro({bool force}) async {
+  Future synchro({bool? force}) async {
     await this.service.synchro(force: force);
     await this._syncUTXO();
   }
