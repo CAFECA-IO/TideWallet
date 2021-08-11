@@ -6,7 +6,7 @@ import '../models/account.model.dart';
 import '../models/investment.model.dart';
 
 class InvestRepository {
-  PublishSubject<InvestmentMessage> get listener => InvestmentCore().messenger;
+  PublishSubject<InvestmentMessage> get listener => InvestmentCore().messenger!;
 
   InvestRepository() {
     InvestmentCore().setMessenger();

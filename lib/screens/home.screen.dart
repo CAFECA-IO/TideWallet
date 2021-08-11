@@ -5,7 +5,6 @@ import './investment.screen.dart';
 import './swap.screen.dart';
 import './wallet_connect.screen.dart';
 import './scan.screen.dart';
-import './credit_card.screen.dart';
 import './settings.screen.dart';
 import '../widgets/appBar.dart';
 import '../widgets/bottom_nav_bar.dart';

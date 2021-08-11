@@ -16,7 +16,8 @@ class CreateWalletBloc extends Bloc<CreateWalletEvent, CreateWalletState> {
   CreateFormError validateState(CreateWalletCheck state) {
     if (state.name.isEmpty) return CreateFormError.nameEmpty;
     if (state.rules.contains(false)) return CreateFormError.passwordInvalid;
-    if (state.password != state.rePassword) return CreateFormError.passwordNotMatch;
+    if (state.password != state.rePassword)
+      return CreateFormError.passwordNotMatch;
 
     return CreateFormError.none;
   }
@@ -25,8 +26,8 @@ class CreateWalletBloc extends Bloc<CreateWalletEvent, CreateWalletState> {
   Stream<CreateWalletState> mapEventToState(
     CreateWalletEvent event,
   ) async* {
-    CreateWalletCheck _state = state;
-    
+    CreateWalletCheck _state = state as CreateWalletCheck;
+
     if (event is InputWalletName) {
       if (_state.password.isNotEmpty) {
         yield _state.copyWith(
@@ -49,12 +50,10 @@ class CreateWalletBloc extends Bloc<CreateWalletEvent, CreateWalletState> {
     }
 
     if (event is SubmitCreateWallet) {
-      
       yield _state.copyWith(error: this.validateState(_state));
     }
-    
+
     if (event is CleanCreateWalletError) {
-      
       yield _state.copyWith(error: null);
     }
   }

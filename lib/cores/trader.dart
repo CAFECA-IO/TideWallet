@@ -76,7 +76,7 @@ class Trader {
     if (index < 0) return Decimal.zero;
 
     return this._cryptos[index].exchangeRate *
-        Decimal.tryParse(_currency.amount)!;
+        Decimal.tryParse(_currency.amount!)!;
   }
 
   Decimal calculateUSDToCurrency(Currency _currency, Decimal amountInUSD) {

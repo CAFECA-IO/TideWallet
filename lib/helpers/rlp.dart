@@ -42,7 +42,7 @@ Uint8List encodeLength(int length, int offset) {
   }
 }
 
-int safeParseInt(String v, [int base]) {
+int safeParseInt(String v, [int? base]) {
   if (v.startsWith('00')) {
     throw FormatException('invalid RLP: extra zeros');
   }

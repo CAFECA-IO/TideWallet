@@ -19,16 +19,16 @@ abstract class SwapState extends Equatable {
 class SwapInitial extends SwapState {}
 
 class SwapLoaded extends SwapState {
-  final Currency sellCurrency;
-  final Currency buyCurrency;
-  final String sellAmount;
-  final List<Currency> targets;
-  final String contract;
-  final String buyAmount;
-  final String exchangeRate;
-  final SwapResult result;
-  final Decimal gasPrice;
-  final Decimal gasLimit;
+  final Currency? sellCurrency;
+  final Currency? buyCurrency;
+  final String? sellAmount;
+  final List<Currency>? targets;
+  final String? contract;
+  final String? buyAmount;
+  final String? exchangeRate;
+  final SwapResult? result;
+  final Decimal? gasPrice;
+  final Decimal? gasLimit;
 
   SwapLoaded(
       {this.sellCurrency,
@@ -43,16 +43,16 @@ class SwapLoaded extends SwapState {
       this.gasLimit});
 
   SwapLoaded copyWith(
-      {Currency sellCurrency,
-      Currency buyCurrency,
-      String sellAmount,
-      List<Currency> targets,
-      String contract,
-      String buyAmount,
-      String exchangeRate,
-      SwapResult result,
-      Decimal gasPrice,
-      Decimal gasLimit}) {
+      {Currency? sellCurrency,
+      Currency? buyCurrency,
+      String? sellAmount,
+      List<Currency>? targets,
+      String? contract,
+      String? buyAmount,
+      String? exchangeRate,
+      SwapResult? result,
+      Decimal? gasPrice,
+      Decimal? gasLimit}) {
     return SwapLoaded(
         sellCurrency: sellCurrency ?? this.sellCurrency,
         buyCurrency: buyCurrency ?? this.buyCurrency,
@@ -68,15 +68,15 @@ class SwapLoaded extends SwapState {
 
   @override
   List<Object> get props => [
-        sellCurrency,
-        buyCurrency,
-        sellAmount,
-        contract,
-        targets,
-        buyAmount,
-        exchangeRate,
+        sellCurrency!,
+        buyCurrency!,
+        sellAmount!,
+        contract!,
+        targets!,
+        buyAmount!,
+        exchangeRate!,
         result.toString(),
-        gasPrice,
-        gasLimit
+        gasPrice!,
+        gasLimit!
       ];
 }

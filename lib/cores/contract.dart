@@ -49,19 +49,19 @@ class ContractCore {
     AccountService _service = AccountCore().getService(currency.accountId);
     String _address =
         (await _service.getReceivingAddress(currency.currencyId))[0];
-    switch (currency.accountType) {
+    switch (currency.accountType!) {
       case ACCOUNT.BTC:
         TransactionService _transactionService =
             BitcoinTransactionService(TransactionServiceBased());
         _data = _transactionService.extractAddressData(
-            _address, currency.publish)[1];
+            _address, currency.publish!)[1];
         break;
       case ACCOUNT.ETH:
       case ACCOUNT.CFC:
         TransactionService _transactionService =
             EthereumTransactionService(TransactionServiceBased());
         _data =
-            _transactionService.extractAddressData(_address, currency.publish);
+            _transactionService.extractAddressData(_address, currency.publish!);
         break;
       case ACCOUNT.XRP:
         // TODO: Handle this case.

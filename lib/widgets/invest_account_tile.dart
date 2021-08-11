@@ -29,7 +29,8 @@ class InvestAccountTile extends StatelessWidget {
                     t(investment.investAmplitude.value) +
                     ")"),
                 SizedBox(height: 6.0),
-                Text(investment.investAmount.toString() + " " + currency.symbol,
+                Text(
+                    investment.investAmount.toString() + " " + currency.symbol!,
                     style: Theme.of(context).textTheme.subtitle2),
               ],
               crossAxisAlignment: CrossAxisAlignment.start,

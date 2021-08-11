@@ -15,9 +15,9 @@ class SwapCore {
       {String? sellAmount, String? buyAmount}) async {
     if (sellAmount != null) {
       Map<String, String> payload = {
-        'sellCurrencyId': sellCurrency.id,
+        'sellCurrencyId': sellCurrency.id!,
         'sellAmount': sellAmount.toString(),
-        'buyCurrencyId': buyCurrency.id,
+        'buyCurrencyId': buyCurrency.id!,
       };
       Map<String, String> result;
       // ++
@@ -44,9 +44,9 @@ class SwapCore {
       return result;
     } else if (buyAmount != null) {
       Map<String, String> payload = {
-        'sellCurrencyId': sellCurrency.id,
+        'sellCurrencyId': sellCurrency.id!,
         'sellAmount': sellAmount.toString(),
-        'buyCurrencyId': buyCurrency.id,
+        'buyCurrencyId': buyCurrency.id!,
       };
       Map<String, String> result;
       // ++

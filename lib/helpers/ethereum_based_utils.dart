@@ -111,7 +111,7 @@ Uint8List encodeToRlp(EthereumTransaction transaction) {
 
   list
     ..add(BigInt.parse(transaction.amount.toString()))
-    ..add(transaction.message);
+    ..add(transaction.message!);
 
   if (transaction.signature != null) {
     list

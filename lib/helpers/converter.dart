@@ -28,10 +28,10 @@ class Converter {
   }
 
   static Decimal toCurrencySmallestUnit(Decimal value, int decimals) {
-    return value * Decimal.fromInt(pow(10, decimals));
+    return value * Decimal.fromInt(pow(10, decimals) as int);
   }
 
   static Decimal toCurrencyUnit(Decimal value, int decimals) {
-    return value / Decimal.fromInt(pow(10, decimals));
+    return value / Decimal.fromInt(pow(10, decimals) as int);
   }
 }

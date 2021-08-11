@@ -10,10 +10,8 @@ part 'receive_event.dart';
 part 'receive_state.dart';
 
 class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
-  TransactionRepository _repo;
-  ReceiveBloc(this._repo)
-      : assert(_repo != null),
-        super(ReceiveInitial(null, null));
+  late TransactionRepository _repo;
+  ReceiveBloc(this._repo) : super(ReceiveInitial(null, null));
 
   @override
   Stream<ReceiveState> mapEventToState(

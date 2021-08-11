@@ -8,8 +8,8 @@ class Log {
   static final Log _instance = Log._internal();
   factory Log() => _instance;
 
-  Logger _stackLogger;
-  Logger _noStacklogger;
+  late Logger _stackLogger;
+  late Logger _noStacklogger;
 
   Log._internal() {
     _noStacklogger = Logger(
@@ -42,7 +42,8 @@ class Log {
 
   static void info(dynamic msg) {
     if (Config.logLevel > 1) return;
-    _instance._noStacklogger.i("$msg (${StackTrace.current.toString().split('\n')[1].split('(')[1].split(')')[0]})");
+    _instance._noStacklogger.i(
+        "$msg (${StackTrace.current.toString().split('\n')[1].split('(')[1].split(')')[0]})");
     logToServer('\x1B[94m[INFO]\x1B[0m $msg');
   }
 
@@ -59,12 +60,12 @@ class Log {
         "$msg (${StackTrace.current.toString().split('\n')[1].split('(')[1].split(')')[0]})");
     logToServer('\x1B[91m[ERROR]\x1B[0m $msg');
   }
-  
+
   static void eth(dynamic msg) {
     if (Config.logLevel > 3) return;
     print('\x1B[94m' + '| 🔹 $msg |' + '\x1B[0m');
   }
-  
+
   static void btc(dynamic msg) {
     if (Config.logLevel > 3) return;
     print('\x1B[33m' + '| ₿ $msg |' + '\x1B[0m');

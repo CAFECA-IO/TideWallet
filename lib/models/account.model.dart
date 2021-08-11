@@ -16,50 +16,50 @@ enum ACCOUNT_EVT {
 }
 
 class Currency {
-  final String id; // AccountCurrencyEntity id for Backend
+  final String? id; // AccountCurrencyEntity id for Backend
   final String accountId;
-  final int cointype;
+  final String currencyId; // CurrencyEntity currency_id for APP
+  final String blockchainId;
+  final int? cointype;
   final int? purpose;
   final int? accountIndex; // ++ ??, null-safety
-  final String symbol;
-  final String imgPath;
-  String amount;
+  final String? symbol;
+  final String? imgPath;
+  String? amount;
   final String? inUSD;
-  final String name;
-  final ACCOUNT accountType;
-  final String blockchainId;
-  final String network;
-  final int chainId;
-  final int decimals;
-  final bool publish;
-  final String currencyId; // CurrencyEntity currency_id for APP
+  final String? name;
+  final ACCOUNT? accountType;
+  final String? network;
+  final int? chainId;
+  final int? decimals;
+  final bool? publish;
   final String? contract;
-  final String type;
-  final String accountSymbol;
+  final String? type;
+  final String? accountSymbol;
   final int? accountDecimals;
   final String? accountAmount;
 
   Currency({
-    required this.id,
+    this.id,
     required this.accountId,
-    required this.cointype,
-    this.purpose,
-    required this.amount,
-    this.inUSD,
-    required this.imgPath,
-    required this.symbol,
-    required this.name,
-    this.accountIndex,
-    required this.accountType,
-    required this.chainId,
     required this.blockchainId,
-    required this.network,
-    required this.decimals,
-    required this.publish,
     required this.currencyId,
+    this.cointype,
+    this.purpose,
+    this.amount,
+    this.inUSD,
+    this.imgPath,
+    this.symbol,
+    this.name,
+    this.accountIndex,
+    this.accountType,
+    this.chainId,
+    this.network,
+    this.decimals,
+    this.publish,
     this.contract,
-    required this.type,
-    required this.accountSymbol,
+    this.type,
+    this.accountSymbol,
     this.accountDecimals,
     this.accountAmount,
   });
@@ -167,22 +167,22 @@ class AccountMessage {
 }
 
 class Token {
-  final String symbol;
-  final String name;
-  final int decimal;
   final String imgUrl;
-  final String totalSupply;
   final String contract;
-  final String description;
+  final String? symbol;
+  final String? name;
+  final int? decimal;
+  final String? totalSupply;
+  final String? description;
 
   Token({
-    required this.symbol,
-    required this.name,
-    required this.decimal,
     required this.imgUrl,
-    required this.totalSupply,
     required this.contract,
-    required this.description,
+    this.symbol,
+    this.name,
+    this.decimal,
+    this.totalSupply,
+    this.description,
   });
 }
 
@@ -212,7 +212,7 @@ class Fiat {
 }
 
 class DisplayCurrency extends Equatable {
-  final bool editable;
+  final bool? editable;
   final bool opened;
   final String symbol;
   final String name;
@@ -223,7 +223,7 @@ class DisplayCurrency extends Equatable {
   final String blockchainId;
 
   DisplayCurrency({
-    required this.editable,
+    this.editable,
     this.opened = false,
     required this.symbol,
     required this.name,

@@ -27,7 +27,7 @@ class TransactionEntity {
   @ColumnInfo(name: 'destinction_address')
   String destinctionAddress;
 
-  final int timestamp;
+  final int? timestamp;
 
   final int confirmation;
 
@@ -90,8 +90,8 @@ class TransactionEntity {
 
   TransactionEntity.fromTransaction(Currency currency, Transaction transaction,
       String amount, String fee, String gasPrice, String? destinationAddresses)
-      : this.accountcurrencyId = currency.id,
-        this.transactionId = currency.id + transaction.txId!,
+      : this.accountcurrencyId = currency.id!,
+        this.transactionId = currency.id! + transaction.txId!,
         this.amount = amount, // in smallest coin unit
         this.txId = transaction.txId!,
         this.sourceAddress = transaction.sourceAddresses,

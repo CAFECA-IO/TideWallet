@@ -69,8 +69,8 @@ class RetryOptions {
   }
 
   RetryOptions copyWith({
-    int retryCount,
-    Duration sleepTime,
+    int? retryCount,
+    Duration? sleepTime,
   }) =>
       RetryOptions(
         retryCount: retryCount ?? this.retryCount,
@@ -88,7 +88,7 @@ class RetryOptions {
   }
 
 // ++ merge is no longer supported
-  Options mergeIn(Options options) {
+  Options? mergeIn(Options options) {
     //   return options.merge(
     //       extra: <String, dynamic>{}
     //         ..addAll(options.extra ?? {})

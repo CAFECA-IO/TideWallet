@@ -181,7 +181,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                       Container(
                         child: Align(
                           child: Text(
-                            '${t('balance')}: ${state.spandable != null ? (Formatter.formatDecimal(_repo.currency.amount.toString()) + " " + _repo.currency.symbol) : "loading..."}',
+                            '${t('balance')}: ${state.spandable != null ? (Formatter.formatDecimal(_repo.currency.amount.toString()) + " " + _repo.currency.symbol!) : "loading..."}',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                           alignment: Alignment.centerRight,
@@ -285,7 +285,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                             style: Theme.of(context).textTheme.headline3,
                           ),
                           Text(
-                            '${state.fee == null || state.fee.toString().isEmpty ? "loading..." : (Formatter.formatDecimal(state.fee.toString()) + " " + _repo.currency.accountSymbol)}',
+                            '${state.fee == null || state.fee.toString().isEmpty ? "loading..." : (Formatter.formatDecimal(state.fee.toString()) + " " + _repo.currency.accountSymbol!)}',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                         ],

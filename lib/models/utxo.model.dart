@@ -87,7 +87,7 @@ class UnspentTxOut {
             Converter.toCurrencyUnit(Decimal.parse(utxo.amount), utxo.decimals),
         changeIndex = utxo.changeIndex,
         keyIndex = utxo.keyIndex,
-        data = hex.decode(utxo.script),
+        data = Uint8List.fromList(hex.decode(utxo.script)),
         timestamp = utxo.timestamp,
         locked = utxo.locked,
         address = utxo.address,

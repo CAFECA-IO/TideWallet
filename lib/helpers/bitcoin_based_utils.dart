@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'package:meta/meta.dart';
 import 'package:fixnum/fixnum.dart';
 import 'package:bs58check/bs58check.dart' as bs58check;
 import 'package:convert/convert.dart';
@@ -13,24 +12,6 @@ import 'bech32.dart';
 import 'segwit.dart';
 import 'logger.dart';
 
-// const int OP_0 = 0x00;
-// const int OP_PUSHDATA1 = 0x4c;
-// const int OP_PUSHDATA2 = 0x4d;
-// const int OP_PUSHDATA4 = 0x4e;
-// const int OP_1NEGATE = 0x4f;
-// const int OP_1 = 0x51;
-// const int OP_16 = 0x60;
-// const int OP_DUP = 0x76;
-// const int OP_EQUAL = 0x87;
-// const int OP_EQUALVERIFY = 0x88;
-// const int OP_HASH160 = 0xa9;
-// const int OP_CHECKSIG = 0xac;
-// const int OP_CODESEPARATOR = 0xab;
-
-/// Works with both legacy and cashAddr formats of the address
-///
-/// There is no reason to instanciate this class. All constants, functions, and methods are static.
-/// It is assumed that all necessary data to work with addresses are kept in the instance of [ECPair] or [Transaction]
 class Address {
   static const formatCashAddr = 0;
   static const formatLegacy = 1;
@@ -256,7 +237,7 @@ class Address {
       throw FormatException("Invalid Address Format: $address");
     }
 
-    String exception;
+    late String exception;
     // try to decode the address with either one or all three possible prefixes
     for (int i = 0; i < prefixes.length; i++) {
       final payload = _base32Decode(address);
@@ -377,7 +358,7 @@ class Address {
       final value = string[i];
       if (!_CHARSET_INVERSE_INDEX.containsKey(value))
         throw FormatException("Invalid character '$value'");
-      data[i] = _CHARSET_INVERSE_INDEX[string[i]];
+      data[i] = _CHARSET_INVERSE_INDEX[string[i]] as int;
     }
 
     return data;
@@ -439,12 +420,12 @@ class NetworkType {
   int wif;
 
   NetworkType(
-      {@required this.messagePrefix,
-      this.bech32,
-      @required this.bip32,
-      @required this.pubKeyHash,
-      @required this.scriptHash,
-      @required this.wif});
+      {required this.messagePrefix,
+      required this.bech32,
+      required this.bip32,
+      required this.pubKeyHash,
+      required this.scriptHash,
+      required this.wif});
 
   @override
   String toString() {
@@ -456,7 +437,7 @@ class Bip32Type {
   int public;
   int private;
 
-  Bip32Type({@required this.public, @required this.private});
+  Bip32Type({required this.public, required this.private});
 
   @override
   String toString() {
@@ -465,13 +446,13 @@ class Bip32Type {
 }
 
 class PaymentData {
-  String address;
-  Uint8List hash;
-  Uint8List output;
-  Uint8List signature;
-  Uint8List pubkey;
-  Uint8List input;
-  List<Uint8List> witness;
+  String? address;
+  Uint8List? hash;
+  Uint8List? output;
+  Uint8List? signature;
+  Uint8List? pubkey;
+  Uint8List? input;
+  List<Uint8List>? witness;
 
   PaymentData(
       {this.address,
@@ -491,9 +472,9 @@ class PaymentData {
 class P2WPKH {
   final EMPTY_SCRIPT = Uint8List.fromList([]);
 
-  PaymentData data;
-  NetworkType network;
-  P2WPKH({@required data, network}) {
+  late PaymentData data;
+  late NetworkType network;
+  P2WPKH({required data, network}) {
     this.network = network ?? bitcoin;
     this.data = data;
     _init();
@@ -507,7 +488,7 @@ class P2WPKH {
         data.witness == null) throw new ArgumentError('Not enough data');
 
     if (data.address != null) {
-      _getDataFromAddress(data.address);
+      _getDataFromAddress(data.address!);
     }
 
     if (data.hash != null) {
@@ -515,43 +496,43 @@ class P2WPKH {
     }
 
     if (data.output != null) {
-      if (data.output.length != 22 ||
-          data.output[0] != OPS['OP_0'] ||
-          data.output[1] != 20) // 0x14
+      if (data.output!.length != 22 ||
+          data.output![0] != OPS['OP_0'] ||
+          data.output![1] != 20) // 0x14
         throw new ArgumentError('Output is invalid');
       if (data.hash == null) {
-        data.hash = data.output.sublist(2);
+        data.hash = data.output!.sublist(2);
       }
       _getDataFromHash();
     }
 
     if (data.pubkey != null) {
-      data.hash = Cryptor.hash160(data.pubkey);
+      data.hash = Cryptor.hash160(data.pubkey!);
       _getDataFromHash();
     }
 
     if (data.witness != null) {
-      if (data.witness.length != 2)
+      if (data.witness!.length != 2)
         throw new ArgumentError('Witness is invalid');
-      if (!bscript.isCanonicalScriptSignature(data.witness[0]))
+      if (!bscript.isCanonicalScriptSignature(data.witness![0]))
         throw new ArgumentError('Witness has invalid signature');
-      if (!isPoint(data.witness[1]))
+      if (!isPoint(data.witness![1]))
         throw new ArgumentError('Witness has invalid pubkey');
-      _getDataFromWitness(data.witness);
+      _getDataFromWitness(data.witness!);
     } else if (data.pubkey != null && data.signature != null) {
-      data.witness = [data.signature, data.pubkey];
+      data.witness = [data.signature!, data.pubkey!];
       if (data.input == null) data.input = EMPTY_SCRIPT;
     }
   }
 
-  void _getDataFromWitness([List<Uint8List> witness]) {
+  void _getDataFromWitness(List<Uint8List> witness) {
     if (data.input == null) {
       data.input = EMPTY_SCRIPT;
     }
     if (data.pubkey == null) {
       data.pubkey = witness[1];
       if (data.hash == null) {
-        data.hash = Cryptor.hash160(data.pubkey);
+        data.hash = Cryptor.hash160(data.pubkey!);
       }
       _getDataFromHash();
     }
@@ -560,7 +541,7 @@ class P2WPKH {
 
   void _getDataFromHash() {
     if (data.address == null) {
-      data.address = segwit.encode(Segwit(network.bech32, 0, data.hash));
+      data.address = segwit.encode(Segwit(network.bech32, 0, data.hash!));
     }
     if (data.output == null) {
       data.output = bscript.compile([OPS['OP_0'], data.hash]);
@@ -637,57 +618,63 @@ Uint8List compressedPubKey(List<int> uncompressedPubKey) {
     List<int> prefix =
         BigInt.parse(hex.encode(y), radix: 16).isEven ? [0x02] : [0x03];
     return Uint8List.fromList(prefix + x);
+  } else {
+    throw Error();
   }
 }
 
 Uint8List toPubKeyHash(List<int> pubKey) {
-  List<int> publicKey = pubKey.length > 33 ? compressedPubKey(pubKey) : pubKey;
-  List<int> pubKeyHash = Cryptor.hash160(publicKey);
+  Uint8List publicKey = pubKey.length > 33
+      ? compressedPubKey(pubKey)
+      : Uint8List.fromList(pubKey);
+  Uint8List pubKeyHash = Cryptor.hash160(publicKey);
   return pubKeyHash;
 }
 
 Uint8List toP2pkhScript(List<int> pubKeyHash) {
   // Pubkey Hash to P2PKH Script
   List<int> data = [];
-  data.add(OPS['OP_DUP']); //0x76;
-  data.add(OPS['OP_HASH160']); // 0xa9;
+  data.add(OPS['OP_DUP']!); //0x76;
+  data.add(OPS['OP_HASH160']!); // 0xa9;
   data.add(pubKeyHash.length);
   data.addAll(pubKeyHash);
-  data.add(OPS['OP_EQUALVERIFY']); //0x88;
-  data.add(OPS['OP_CHECKSIG']); // 0xac；
+  data.add(OPS['OP_EQUALVERIFY']!); //0x88;
+  data.add(OPS['OP_CHECKSIG']!); // 0xac；
   return Uint8List.fromList(data);
 }
 
 Uint8List toP2shScript(List<int> sriptHash) {
   // Pubkey Hash to P2PKH Script
   List<int> data = [];
-  data.add(OPS['OP_HASH160']);
+  data.add(OPS['OP_HASH160']!);
   data.add(sriptHash.length);
   data.addAll(sriptHash);
-  data.add(OPS['OP_EQUAL']);
+  data.add(OPS['OP_EQUAL']!);
   return Uint8List.fromList(data);
 }
 
 Uint8List toP2pkScript(List<int> pubKey) {
-  List<int> publicKey = pubKey.length > 33 ? compressedPubKey(pubKey) : pubKey;
+  Uint8List publicKey = pubKey.length > 33
+      ? compressedPubKey(pubKey)
+      : Uint8List.fromList(pubKey);
   List<int> data = [];
   data.add(publicKey.length);
   data.addAll(publicKey);
-  data.add(OPS['OP_CHECKSIG']);
+  data.add(OPS['OP_CHECKSIG']!);
   return Uint8List.fromList(data);
 }
 
 Uint8List pubkeyToBIP49RedeemScript(List<int> pubKey) {
   List<int> pubKeyHash = toPubKeyHash(pubKey);
-  List<int> rs = [OPS['OP_0'], pubKeyHash.length];
+  List<int> rs = [OPS['OP_0']!, pubKeyHash.length];
   rs.addAll(pubKeyHash);
   return Uint8List.fromList(rs);
 }
 
 //44
 String pubKeyToP2pkhAddress(List<int> pubKey, int p2pkhAddressPrefix) {
-  final List<int> fingerprint = toPubKeyHash(pubKey);
-  final List<int> hashPubKey =
+  final Uint8List fingerprint = toPubKeyHash(pubKey);
+  final Uint8List hashPubKey =
       Uint8List.fromList([p2pkhAddressPrefix] + fingerprint);
   final String address = bs58check.encode(hashPubKey);
   return address;
@@ -703,31 +690,33 @@ String pubKeyToP2pkhCashAddress(List<int> pubKey, int p2pkhAddressPrefix) {
 
 //84
 String pubKeyToP2wpkhAddress(List<int> pubKey, String bech32Hrp) {
-  String address;
+  late String address;
   if (bech32Hrp == 'bc') {
     address = P2WPKH(
             data: PaymentData(pubkey: Uint8List.fromList(pubKey)),
             network: bitcoin)
         .data
-        .address;
+        .address!;
   } else if (bech32Hrp == 'tb') {
     address = P2WPKH(
             data: PaymentData(pubkey: Uint8List.fromList(pubKey)),
             network: bitcoinTestnet)
         .data
-        .address;
+        .address!;
   } else if (bech32Hrp == 'ltc') {
     address = P2WPKH(
             data: PaymentData(pubkey: Uint8List.fromList(pubKey)),
             network: litecoin)
         .data
-        .address;
+        .address!;
   } else if (bech32Hrp == 'tltc') {
     address = P2WPKH(
             data: PaymentData(pubkey: Uint8List.fromList(pubKey)),
             network: litecoinTestnet)
         .data
-        .address;
+        .address!;
+  } else {
+    throw OutOfBoundChars(bech32Hrp);
   }
   return address;
 }

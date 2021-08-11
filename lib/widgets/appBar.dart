@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../screens/toggle_currency.screen.dart';
 
 import '../screens/account_currency.screen.dart';
-import '../screens/scan_wallet.screen.dart';
 import '../screens/scan_address.screen.dart';
 import '../screens/wallet_connect.screen.dart';
 import '../screens/transaction_list.screen.dart';
@@ -10,7 +9,6 @@ import '../screens/transaction_preview.screen.dart';
 import '../screens/create_transaction.screen.dart';
 import '../screens/transaction_detail.screen.dart';
 import '../screens/settings.screen.dart';
-import '../screens/add_currency.screen.dart';
 import '../screens/add_investment.screen.dart';
 import '../screens/receive.screen.dart';
 import '../screens/setting_fiat.screen.dart';
@@ -44,12 +42,10 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
         case WalletConnectScreen.routeName:
         case CreateTransactionScreen.routeName:
         case TransactionPreviewScreen.routeName:
-        case ScanWalletScreen.routeName:
         case ScanAddressScreen.routeName:
         case ScanScreen.routeName:
         case TransactionListScreen.routeName:
         case TransactionDetailScreen.routeName:
-        case AddCurrencyScreen.routeName:
         case AddInvestmentScreen.routeName:
         case ReceiveScreen.routeName:
         case SettingFiatScreen.routeName:
@@ -195,7 +191,6 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
     }
 
     bool showBackground() {
-      if (routeName == ScanWalletScreen.routeName) return false;
       if (routeName == ScanAddressScreen.routeName) return false;
       if (routeName == ScanScreen.routeName) return false;
       if (routeName == TransactionListScreen.routeName) return false;

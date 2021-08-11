@@ -21,9 +21,7 @@ import './screens/landing.screen.dart';
 import './screens/wallet_connect.screen.dart';
 import './screens/create_transaction.screen.dart';
 import './screens/transaction_preview.screen.dart';
-import './screens/scan_wallet.screen.dart';
 import './screens/scan_address.screen.dart';
-import './screens/add_currency.screen.dart';
 import './screens/transaction_list.screen.dart';
 import './screens/transaction_detail.screen.dart';
 import './screens/receive.screen.dart';
@@ -40,8 +38,7 @@ import './blocs/delegate.dart';
 import './blocs/user/user_bloc.dart';
 import './blocs/toggle_token/toggle_token_bloc.dart';
 import './blocs/transaction/transaction_bloc.dart';
-// import './blocs/transaction_status/transaction_status_bloc.dart';
-import './blocs/restore_wallet/restore_wallet_bloc.dart';
+import './blocs/transaction_status/transaction_status_bloc.dart';
 import './blocs/receive/receive_bloc.dart';
 import './blocs/invest_plan/invest_plan_bloc.dart';
 import './blocs/local_auth/local_auth_bloc.dart';
@@ -112,11 +109,6 @@ class MyApp extends StatelessWidget {
                   Provider.of<InvestRepository>(context, listen: false),
                   Provider.of<UserRepository>(context, listen: false)),
             ),
-            BlocProvider<RestoreWalletBloc>(
-              create: (BuildContext context) => RestoreWalletBloc(
-                Provider.of<UserRepository>(context, listen: false),
-              ),
-            ),
             BlocProvider<AccountCurrencyBloc>(
               create: (BuildContext context) => AccountCurrencyBloc(
                 Provider.of<AccountRepository>(context, listen: false),
@@ -172,11 +164,9 @@ MaterialApp _material = MaterialApp(
     LandingScreen.routeName: (context) => LandingScreen(),
     CreateTransactionScreen.routeName: (context) => CreateTransactionScreen(),
     TransactionPreviewScreen.routeName: (context) => TransactionPreviewScreen(),
-    ScanWalletScreen.routeName: (conte) => ScanWalletScreen(),
     ScanAddressScreen.routeName: (conte) => ScanAddressScreen(),
     TransactionListScreen.routeName: (context) => TransactionListScreen(),
     TransactionDetailScreen.routeName: (context) => TransactionDetailScreen(),
-    AddCurrencyScreen.routeName: (context) => AddCurrencyScreen(),
     AddInvestmentScreen.routeName: (context) => AddInvestmentScreen(),
     ReceiveScreen.routeName: (context) => ReceiveScreen(),
     SettingFiatScreen.routeName: (context) => SettingFiatScreen(),

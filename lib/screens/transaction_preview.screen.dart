@@ -159,6 +159,10 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
                       _localBloc.add(InitAuth());
                     } else {
                       // ++ [Emily 4/1/2021]
+                      DialogController.dismiss(context);
+                      DialogController.show(
+                          context, ErrorDialog('Authentication Fail'));
+                      // TODO
                     }
                   }
                 },

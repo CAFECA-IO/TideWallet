@@ -19,25 +19,27 @@ class MnemonicBloc extends Bloc<MnemonicEvent, MnemonicState> {
     MnemonicEvent event,
   ) async* {
     if (event is InputMnemo) {
-      MnemonicTyping _state = state;
+      MnemonicTyping _state = state as MnemonicTyping;
 
       yield _state.copyWith(mnemonic: event.text, error: MNEMONIC_ERROR.NONE);
     }
 
     if (event is InputMnemoPassword) {
-      MnemonicTyping _state = state;
+      MnemonicTyping _state = state as MnemonicTyping;
 
-      yield _state.copyWith(passphrase: event.password, error: MNEMONIC_ERROR.NONE);
+      yield _state.copyWith(
+          passphrase: event.password, error: MNEMONIC_ERROR.NONE);
     }
 
     if (event is InputMnemoRePassword) {
-      MnemonicTyping _state = state;
+      MnemonicTyping _state = state as MnemonicTyping;
 
-      yield _state.copyWith(rePassphrase: event.password, error: MNEMONIC_ERROR.NONE);
+      yield _state.copyWith(
+          rePassphrase: event.password, error: MNEMONIC_ERROR.NONE);
     }
 
     if (event is SubmitMnemonic) {
-      MnemonicTyping _state = state;
+      MnemonicTyping _state = state as MnemonicTyping;
 
       if (_state.passphrase != _state.rePassphrase) {
         yield (_state.copyWith(error: MNEMONIC_ERROR.PASSWORD_NOT_MATCH));
@@ -47,19 +49,20 @@ class MnemonicBloc extends Bloc<MnemonicEvent, MnemonicState> {
         bool valid = await _repo.checkMnemonicVaildity(_state.mnemonic);
 
         if (valid) {
-          Uint8List seed =
-              await _repo.mnemonicToSeed(_state.mnemonic.trimRight(), _state.passphrase);
+          Uint8List seed = await _repo.mnemonicToSeed(
+              _state.mnemonic.trimRight(), _state.passphrase);
           try {
-            final signin = Platform.isIOS ? _repo.signInWithAppleId : _repo.signInWithGoogleId;
-            List result =  await signin();
+            final signin = Platform.isIOS
+                ? _repo.signInWithAppleId
+                : _repo.signInWithGoogleId;
+            List result = await signin();
 
             if (result[0]) {
               yield MnemonicSuccess(result[1], seed);
             } else {
               yield _state;
             }
-
-          } catch(e) {
+          } catch (e) {
             yield _state.copyWith(error: MNEMONIC_ERROR.LOGIN);
           }
         } else {

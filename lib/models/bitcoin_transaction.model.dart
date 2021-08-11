@@ -543,6 +543,6 @@ class BitcoinTransaction extends Transaction {
   }
 
   Uint8List get transactionHash {
-    return Uint8List.fromList(Cryptor.sha256round(serializeTransaction));
+    return Cryptor.sha256round(serializeTransaction);
   }
 }

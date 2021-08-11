@@ -17,9 +17,14 @@ class MnemonicTyping extends MnemonicState {
   final String rePassphrase;
   final MNEMONIC_ERROR error;
 
-  MnemonicTyping({this.mnemonic = '', this.passphrase = '', this.rePassphrase = '', this.error = MNEMONIC_ERROR.NONE});
+  MnemonicTyping(
+      {this.mnemonic = '',
+      this.passphrase = '',
+      this.rePassphrase = '',
+      this.error = MNEMONIC_ERROR.NONE});
 
-  copyWith({mnemonic, passphrase, rePassphrase, error}) => MnemonicTyping(
+  MnemonicState copyWith({mnemonic, passphrase, rePassphrase, error}) =>
+      MnemonicTyping(
         mnemonic: mnemonic ?? this.mnemonic,
         passphrase: passphrase ?? this.passphrase,
         rePassphrase: rePassphrase ?? this.rePassphrase,

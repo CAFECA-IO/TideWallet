@@ -15,14 +15,14 @@ enum FCM_LOCAL_EVENT { UNLOCK_APP }
 class FCM {
   FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   static final FCM _instance = FCM._internal();
-  NotificationSettings settings;
+  late NotificationSettings settings;
 
   factory FCM() => _instance;
   FCM._internal();
 
-  GlobalKey<NavigatorState> _navigator;
+  late GlobalKey<NavigatorState> _navigator;
   StreamController _controller = StreamController();
-  StreamSubscription _subscription;
+  late StreamSubscription? _subscription;
 
   // static Future<dynamic> myBackgroundMessageHandler(
   //     Map<String, dynamic> message) {
@@ -86,7 +86,7 @@ class FCM {
         'User granted permission: ${this.settings.authorizationStatus}'); // -- debugInfo
   }
 
-  Future<String> getToken() {
+  Future<String?> getToken() {
     return this._firebaseMessaging.getToken();
   }
 
@@ -117,10 +117,10 @@ class FCM {
 
       if (navigate) {
         Currency account = AccountCore()
-            .currencies[msg.accountId]
+            .currencies[msg.accountId]!
             .firstWhere((currency) => currency.currencyId == msg.currencyId);
 
-        this._navigator.currentState.pushNamed(TransactionListScreen.routeName,
+        this._navigator.currentState!.pushNamed(TransactionListScreen.routeName,
             arguments: {"account": account});
       }
     }

@@ -14,20 +14,20 @@ part 'transaction_event.dart';
 part 'transaction_state.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
-  TransactionRepository _repo;
-  TraderRepository _traderRepo;
+  late TransactionRepository _repo;
+  late TraderRepository _traderRepo;
 
-  StreamSubscription _subscription;
+  late StreamSubscription? _subscription;
 
-  Map<TransactionPriority, Decimal> _gasPrice;
-  Decimal _gasLimit;
+  late Map<TransactionPriority, Decimal>? _gasPrice;
+  late Decimal? _gasLimit;
 
   TransactionBloc(this._repo, this._traderRepo) : super(TransactionInitial()) {
     _subscription?.cancel();
     this._repo.listener.listen((msg) {
       if (msg.evt == ACCOUNT_EVT.OnUpdateCurrency) {
-        int index = msg.value.indexWhere((Currency currency) =>
-            currency.id == this._repo.currency.id);
+        int index = msg.value.indexWhere(
+            (Currency currency) => currency.id == this._repo.currency.id);
 
         if (index >= 0) {
           Currency currency = msg.value[index];
@@ -69,7 +69,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     if (event is UpdateTransactionCreateCurrency) {
       _repo.setCurrency(event.currency);
       if (state is TransactionInitial) {
-        TransactionInitial _state = state;
+        TransactionInitial _state = state as TransactionInitial;
         yield _state.copyWith(spandable: Decimal.parse(event.currency.amount));
       } else {
         yield TransactionInitial(
@@ -80,7 +80,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     if (state is TransactionPublishing) return;
     if (state is CreateTransactionFail) return;
 
-    TransactionInitial _state = state;
+    TransactionInitial _state = state as TransactionInitial;
 
     if (event is ResetAddress) {
       List<bool> _rules = [false, _state.rules[1]];
@@ -113,19 +113,19 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       List<dynamic> result;
       List<bool> rules = [_state.rules[0], rule2];
       Decimal fee;
-      Decimal gasPrice;
-      Decimal gasLimit;
+      Decimal? gasPrice;
+      Decimal? gasLimit;
       Decimal amount;
       String feeToFiat;
       String message;
 
-      amount = Decimal.tryParse(event.amount);
+      amount = Decimal.tryParse(event.amount)!;
       if (_state.rules[0] && amount != null) {
         result = await _repo.getTransactionFee(
             amount: amount, address: _state.address);
         if (result.length == 1) {
           _gasPrice = result[0];
-          fee = _gasPrice[TransactionPriority.standard];
+          fee = _gasPrice![TransactionPriority.standard]!;
           gasLimit = null;
           gasPrice = null;
           rule2 = _repo.verifyAmount(amount, fee: fee);
@@ -137,7 +137,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             message = result[2];
           } catch (e) {}
           if (gasLimit != null) {
-            fee = gasPrice * gasLimit;
+            fee = gasPrice! * gasLimit;
             rule2 = _repo.verifyAmount(amount, fee: fee);
           } else {
             rule2 = false;

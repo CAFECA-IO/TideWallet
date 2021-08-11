@@ -85,7 +85,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                       decoration: BoxDecoration(
                           color: MyColors.font_01, shape: BoxShape.circle),
                       child: Image.network(
-                        state.currency?.imgPath ?? _currency.imgPath,
+                        state.currency?.imgPath ?? _currency.imgPath!,
                         width: 32.0,
                         height: 32.0,
                       ),
@@ -94,7 +94,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                       padding: const EdgeInsets.all(4.0),
                       child: Text(
                         state.currency?.symbol?.toUpperCase() ??
-                            _currency.symbol,
+                            _currency.symbol!,
                         style: Theme.of(context).textTheme.button,
                       ),
                     ),
@@ -104,7 +104,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4),
                       child: Text(
-                          '${Formatter.formatDecimal(state.currency?.amount ?? _currency.amount)}',
+                          '${Formatter.formatDecimal(state.currency?.amount ?? _currency.amount!)}',
                           style: Theme.of(context).textTheme.headline4),
                     ),
                     BlocBuilder<FiatBloc, FiatState>(

@@ -13,7 +13,7 @@ import 'package:crypto/crypto.dart' as crypto;
 // import 'logger.dart';
 
 class Cryptor {
-  static List<int> keccak256round(List<int> buffer, {int round = 2}) {
+  static Uint8List keccak256round(List<int> buffer, {int round = 2}) {
     List<int> result = buffer;
     if (round > 0) {
       SHA3 k = SHA3(256, KECCAK_PADDING, 256);
@@ -25,31 +25,31 @@ class Cryptor {
       return keccak256round(result, round: round - 1);
     }
 
-    return result;
+    return Uint8List.fromList(result);
   }
 
   String keccak256Hash(String data) {
     return hex.encode(keccak256round(hex.decode(data), round: 1));
   }
 
-  // static List<int> ripemd160Legacy(List<int> data) {
+  // static Uint8List ripemd160Legacy(List<int> data) {
   //   final bird.CryptographyHashes dartHashes = bird.CryptographyHashes.dart;
   //   final bird.CryptographyHash ripemd160 = dartHashes.ripemd160();
   //   List<int> ripemd160Data = ripemd160.digestRaw(Uint8List.fromList(data));
   //   return ripemd160Data;
   // }
 
-  static List<int> ripemd160(List<int> data) {
+  static Uint8List ripemd160(List<int> data) {
     final RIPEMD160Digest ripemd160 = RIPEMD160Digest();
     List<int> ripemd160Data = ripemd160.process(Uint8List.fromList(data));
-    return ripemd160Data;
+    return Uint8List.fromList(ripemd160Data);
   }
 
-  static List<int> hash160(List<int> data) {
+  static Uint8List hash160(List<int> data) {
     return ripemd160(sha256round(data, round: 1));
   }
 
-  static List<int> sha256round(List<int> buffer, {int round = 2}) {
+  static Uint8List sha256round(List<int> buffer, {int round = 2}) {
     List<int> result = buffer;
     if (round > 0) {
       List<int> hash = crypto.sha256.convert(buffer).bytes;
@@ -59,7 +59,7 @@ class Cryptor {
       return sha256round(result, round: round - 1);
     }
 
-    return result;
+    return Uint8List.fromList(result);
   }
 
   static String base58Encode(Uint8List payload) {
@@ -71,7 +71,6 @@ class Cryptor {
   }
 
   static String aesEncrypt(String message, String secret, String iv) {
-    assert(message != null);
     final key = encrypt.Key.fromBase16(secret);
 
     final encrypter =
@@ -83,7 +82,6 @@ class Cryptor {
   }
 
   static String aesDecrypt(String message, String secret, String iv) {
-    assert(message != null);
     String decrypted;
     final key = encrypt.Key.fromBase16(secret);
     final _iv = encrypt.IV.fromBase16(iv);

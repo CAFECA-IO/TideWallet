@@ -45,7 +45,7 @@ class ToggleTokenBloc extends Bloc<ToggletokenEvent, ToggleTokenState> {
     }
 
     if (event is ToggleToken) {
-      ToggleTokenLoaded _state = state;
+      ToggleTokenLoaded _state = state as ToggleTokenLoaded;
       List<DisplayCurrency> _list = [..._state.list];
 
       int index =
@@ -63,6 +63,7 @@ class ToggleTokenBloc extends Bloc<ToggletokenEvent, ToggleTokenState> {
             Token(contract: _list[index].contract, imgUrl: _list[index].icon);
 
         bool success = await _repo.addToken(cur, token);
+        if (!success) throw Exception('Failed to add toggle');
       }
       await _repo.toggleDisplay(cur, event.value);
     }

@@ -620,7 +620,7 @@ class _$AccountCurrencyDao extends AccountCurrencyDao {
   }
 
   @override
-  Future<List<JoinCurrency>?> findJoinedByAccountId(String id) async {
+  Future<List<JoinCurrency>> findJoinedByAccountId(String id) async {
     return _queryAdapter.queryList(
         'SELECT * FROM JoinCurrency WHERE JoinCurrency.account_id = ?1',
         mapper: (Map<String, Object?> row) => JoinCurrency(

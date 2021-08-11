@@ -66,7 +66,7 @@ class TransactionItem extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  '${transaction.direction == TransactionDirection.received ? "+" : "-"} ${transaction.amount} ${currency.symbol.toUpperCase()}',
+                  '${transaction.direction == TransactionDirection.received ? "+" : "-"} ${transaction.amount} ${currency.symbol!.toUpperCase()}',
                   style: Theme.of(context).textTheme.bodyText1!.copyWith(
                       color: transaction.status == TransactionStatus.fail
                           ? Theme.of(context).cursorColor

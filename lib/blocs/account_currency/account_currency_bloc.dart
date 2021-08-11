@@ -13,9 +13,9 @@ part 'account_currency_state.dart';
 
 class AccountCurrencyBloc
     extends Bloc<AccountCurrencyEvent, AccountCurrencyState> {
-  AccountRepository _repo;
-  TraderRepository _traderRepo;
-  StreamSubscription _subscription;
+  late AccountRepository _repo;
+  late TraderRepository _traderRepo;
+  late StreamSubscription? _subscription;
 
   AccountCurrencyBloc(this._repo, this._traderRepo)
       : super(AccountCurrencyInitial([], total: Decimal.zero)) {
@@ -98,7 +98,7 @@ class AccountCurrencyBloc
       Decimal _total = Decimal.zero;
 
       _list.forEach((c) {
-        _total += Decimal.parse(c.inUSD);
+        _total += Decimal.parse(c.inUSD!);
       });
 
       _list.sort((a, b) => a.accountType.index.compareTo(b.accountType.index));
@@ -112,7 +112,7 @@ class AccountCurrencyBloc
     }
 
     if (event is ToggleDisplay) {
-      AccountCurrencyLoaded _state = state;
+      AccountCurrencyLoaded _state = state as AccountCurrencyLoaded;
       List<Currency> _list = [..._state.currencies];
 
       int index = _state.currencies

@@ -65,7 +65,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
             if (state is AddressLoaded) {
               DialogController.dismiss(context);
               setState(() {
-                _address = state.address;
+                _address = state.address!;
               });
             }
           },
@@ -78,7 +78,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
               children: [
                 Container(
                   child: Text(
-                    '${t('remit')} ${_currency.symbol.toUpperCase()}',
+                    '${t('remit')} ${_currency.symbol!.toUpperCase()}',
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                 ),

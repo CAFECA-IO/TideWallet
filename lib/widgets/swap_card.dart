@@ -86,18 +86,18 @@ class SwapCard extends StatelessWidget {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                           children: <Widget>[
-                                            Image.network(e.imgPath,
+                                            Image.network(e.imgPath!,
                                                 width: 30.0, height: 30.0),
                                             SizedBox(width: 10.0),
                                             Text(
-                                              e.name,
+                                              e.name!,
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .bodyText2,
                                             ),
                                             Spacer(),
                                             Text(
-                                                '${Formatter.formatDecimal(e.amount)} ${e.symbol.toUpperCase()}',
+                                                '${Formatter.formatDecimal(e.amount!)} ${e.symbol!.toUpperCase()}',
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .caption)
@@ -141,14 +141,14 @@ class SwapCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Image.network(
-                      _currency.imgPath,
+                      _currency.imgPath!,
                       width: 36.0,
                       height: 36.0,
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.0),
                       child: Text(
-                        _currency.symbol.toUpperCase(),
+                        _currency.symbol!.toUpperCase(),
                         style: Theme.of(context)
                             .textTheme
                             .headline1!
@@ -164,7 +164,7 @@ class SwapCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  'Balance: ${Formatter.formatDecimal(_currency.amount)} ${_currency.symbol}',
+                  'Balance: ${Formatter.formatDecimal(_currency.amount!)} ${_currency.symbol}',
                   style: Theme.of(context).textTheme.subtitle2,
                 ),
               ),

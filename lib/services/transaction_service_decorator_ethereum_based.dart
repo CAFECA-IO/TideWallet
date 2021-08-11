@@ -19,8 +19,7 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
       EthereumTransaction transaction, Uint8List privKey) {
     Log.debug('ETH from privKey: $privKey');
     Uint8List payload = encodeToRlp(transaction);
-    Uint8List rawDataHash =
-        Uint8List.fromList(Cryptor.keccak256round(payload, round: 1));
+    Uint8List rawDataHash = Cryptor.keccak256round(payload, round: 1);
     MsgSignature signature = Signer().sign(rawDataHash, privKey);
     Log.debug('ETH signature: $signature');
 

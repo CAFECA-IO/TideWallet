@@ -1,9 +1,8 @@
 import 'dart:convert';
-// import 'dart:math';
 import 'dart:typed_data';
+
 import 'package:flutter/foundation.dart';
 import 'package:web3dart/web3dart.dart';
-// import 'package:uuid/uuid.dart';
 import 'package:convert/convert.dart';
 
 import '../cores/paper_wallet.dart';
@@ -21,7 +20,6 @@ import '../services/fcm_service.dart';
 
 class User {
   late String _id;
-  bool _isBackup = false;
   late String _thirdPartyId;
   late String _installId;
   late int _timestamp;
@@ -163,7 +161,7 @@ class User {
     required String userIdentifier,
     required int timestamp,
   }) async {
-    String fcmToken = await FCM().getToken();
+    String? fcmToken = await FCM().getToken();
 
     final Map payload = {
       "wallet_name":

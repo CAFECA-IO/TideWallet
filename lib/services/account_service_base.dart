@@ -18,10 +18,10 @@ import '../models/transaction.model.dart';
 import 'account_service.dart';
 
 class AccountServiceBase extends AccountService {
-  ACCOUNT _base;
-  String _accountId;
-  int _syncInterval;
-  int _lastSyncTimestamp = 0;
+  late ACCOUNT _base;
+  late String _accountId;
+  late int _syncInterval;
+  late int _lastSyncTimestamp = 0;
 
   get base => this._base;
   get lastSyncTimestamp => this._lastSyncTimestamp;
@@ -30,7 +30,7 @@ class AccountServiceBase extends AccountService {
   AccountServiceBase();
 
   @override
-  void init(String id, ACCOUNT base, {int interval}) {
+  void init(String id, ACCOUNT base, {int? interval}) {
     this._accountId = id;
     this._base = base;
     this._syncInterval = interval ?? this._syncInterval;
@@ -91,7 +91,7 @@ class AccountServiceBase extends AccountService {
     return [];
   }
 
-  synchro({bool force}) async {
+  synchro({bool? force}) async {
     int now = DateTime.now().millisecondsSinceEpoch;
 
     if (now - this._lastSyncTimestamp > this._syncInterval || force == true) {
@@ -138,7 +138,7 @@ class AccountServiceBase extends AccountService {
 
     if (tokens.isNotEmpty) return;
     AccountEntity acc =
-        await DBOperator().accountDao.findAccount(this._accountId);
+        (await DBOperator().accountDao.findAccount(this._accountId))!;
 
     APIResponse res = await HTTPAgent().get(
         Endpoint.url + '/blockchain/${acc.networkId}/token?type=TideWallet');
@@ -172,12 +172,13 @@ class AccountServiceBase extends AccountService {
 
     if (res.success) {
       List txs = res.data;
-      txs =
-          txs.map((tx) => TransactionEntity.fromJson(currency.id, tx)).toList();
+      txs = txs
+          .map((tx) => TransactionEntity.fromJson(currency.id!, tx))
+          .toList();
 
       await DBOperator().transactionDao.insertTransactions(txs);
     }
-    return this._loadTransactions(currency.id);
+    return this._loadTransactions(currency.id!);
   }
 
   Future<List<TransactionEntity>> _loadTransactions(String currencyId) async {
@@ -190,7 +191,7 @@ class AccountServiceBase extends AccountService {
     List<TransactionEntity> _transactions2 = transactions
         .where((transaction) => transaction.timestamp != null)
         .toList()
-          ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+          ..sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
 
     return (_transactions1 + _transactions2);
   }
@@ -211,8 +212,9 @@ class AccountServiceBase extends AccountService {
     throw UnimplementedError('Implement on decorator');
   }
 
-  Future updateTransaction(String currencyId, Map payload) async {
-    List<Currency> currencies = AccountCore().currencies[this.accountId];
+  Future updateTransaction(
+      String currencyId, Map<String, dynamic> payload) async {
+    List<Currency> currencies = AccountCore().currencies[this.accountId] ?? [];
     TransactionEntity txEntity =
         TransactionEntity.fromJson(currencyId, payload);
 
@@ -253,7 +255,7 @@ class AccountServiceBase extends AccountService {
 
   _getSettingTokens() async {
     AccountEntity acc =
-        await DBOperator().accountDao.findAccount(this._accountId);
+        (await DBOperator().accountDao.findAccount(this._accountId))!;
     APIResponse response = await HTTPAgent().get(
         '${Endpoint.url}/blockchain/${acc.networkId}/token?type=TideWallet');
 

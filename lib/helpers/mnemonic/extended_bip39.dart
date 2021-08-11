@@ -47,16 +47,17 @@ String _deriveChecksumBits(Uint8List entropy) {
 }
 
 String eXgenerateMnemonic(
-    {int length, RandomBytes randomBytes = _randomBytes, String lang}) {
-  assert(length != null);
+    {required int length,
+    RandomBytes randomBytes = _randomBytes,
+    String? lang}) {
   final strength = (length ~/ 3 * 32);
   assert(strength % 32 == 0);
   final entropy = randomBytes(strength ~/ 8);
   return eXentropyToMnemonic(hex.encode(entropy), lang: lang);
 }
 
-String eXentropyToMnemonic(String entropyString, {String lang = 'English'}) {
-  final entropy = hex.decode(entropyString);
+String eXentropyToMnemonic(String entropyString, {String? lang = 'English'}) {
+  final entropy = Uint8List.fromList(hex.decode(entropyString));
   if (entropy.length < 16) {
     throw ArgumentError(_INVALID_ENTROPY);
   }
@@ -74,9 +75,9 @@ String eXentropyToMnemonic(String entropyString, {String lang = 'English'}) {
       .allMatches(bits)
       .map((match) => match.group(0))
       .toList(growable: false);
-  List<String> wordlist = _loadWordList(lang);
+  List<String> wordlist = _loadWordList(lang!);
   String words =
-      chunks.map((binary) => wordlist[_binaryToByte(binary)]).join(' ');
+      chunks.map((binary) => wordlist[_binaryToByte(binary!)]).join(' ');
   return words;
 }
 
@@ -89,7 +90,7 @@ bool eXvalidateMnemonic(String mnemonic) {
   return true;
 }
 
-String eXmnemonicToEntropy(mnemonic, {String lang}) {
+String eXmnemonicToEntropy(mnemonic, {String? lang}) {
   var words = mnemonic.split(' ');
   if (words.length % 3 != 0) {
     throw new ArgumentError(_INVALID_MNEMONIC);
@@ -139,7 +140,7 @@ String eXmnemonicToEntropy(mnemonic, {String lang}) {
   final regex = RegExp(r".{1,8}");
   final entropyBytes = Uint8List.fromList(regex
       .allMatches(entropyBits)
-      .map((match) => _binaryToByte(match.group(0)))
+      .map((match) => _binaryToByte(match.group(0)!))
       .toList(growable: false));
   if (entropyBytes.length < 16) {
     throw StateError(_INVALID_ENTROPY);

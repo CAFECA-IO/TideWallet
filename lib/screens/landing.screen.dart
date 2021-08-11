@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../database/db_operator.dart';
-import '../blocs/toggle_token/toggle_token_bloc.dart';
-import '../blocs/account_currency/account_currency_bloc.dart';
-import '../blocs/fiat/fiat_bloc.dart';
 import '../blocs/user/user_bloc.dart';
 import './welcome.screen.dart';
 import './authenticate.screen.dart';
@@ -20,13 +17,10 @@ class LandingScreen extends StatefulWidget {
 }
 
 class _LandingScreenState extends State<LandingScreen> {
-  bool _isInit = true;
-  late UserBloc _bloc;
-  late FiatBloc _fiatBloc;
-  late AccountCurrencyBloc _accountBloc;
   FCM _fcm = FCM();
-  late ToggleTokenBloc _ttBloc;
+  bool _isInit = true;
   bool _debugMode = false;
+  late UserBloc _bloc;
 
   @override
   void initState() {
@@ -44,13 +38,9 @@ class _LandingScreenState extends State<LandingScreen> {
     if (arg != null && arg["debugMode"] != null) {
       this._debugMode = arg["debugMode"]!;
     }
-    _ttBloc = BlocProvider.of<ToggleTokenBloc>(context);
 
     if (_isInit) {
       await DBOperator().init();
-      // force AccountCurrencyBloc call constructor
-      _accountBloc = BlocProvider.of<AccountCurrencyBloc>(context);
-      _fiatBloc = BlocProvider.of<FiatBloc>(context);
       _isInit = false;
     }
     _bloc = BlocProvider.of<UserBloc>(context)
@@ -62,8 +52,6 @@ class _LandingScreenState extends State<LandingScreen> {
   @override
   void dispose() {
     _bloc.close();
-    _fiatBloc.close();
-    _accountBloc.close();
     super.dispose();
   }
 
@@ -102,11 +90,9 @@ class _LandingScreenState extends State<LandingScreen> {
             );
           }
           if (state is UserSuccess) {
-            _ttBloc.add(InitTokens());
-
             return AuthenticateScreen();
           }
-          return WelcomeScreen(); // ++ ?? show never use, null-safety
+          return WelcomeScreen();
         },
       ),
     );

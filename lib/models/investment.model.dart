@@ -111,7 +111,7 @@ class InvestmentMessage {
   final INVESTMENT_EVT evt;
   final value;
 
-  InvestmentMessage({@required this.evt, this.value});
+  InvestmentMessage({required this.evt, this.value});
 }
 
 class Investment {
@@ -122,7 +122,7 @@ class Investment {
   final Decimal fee;
   final Decimal estimateProfit;
   final Decimal iRR; //Internal Rate of Return
-  Decimal feeToFiat;
+  Decimal? feeToFiat;
 
   Investment(this.id, this.investStrategy, this.investAmplitude,
       this.investAmount, this.fee, this.estimateProfit, this.iRR,

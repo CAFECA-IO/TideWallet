@@ -19,7 +19,7 @@ class SwapRepository {
   SwapRepository();
   Future<Map<String, dynamic>> getSwapDetail(
       Currency sellCurrency, Currency buyCurrency,
-      {String sellAmount, String buyAmount}) async {
+      {String? sellAmount, String? buyAmount}) async {
     return await SwapCore().getSwapDetail(sellCurrency, buyCurrency,
         sellAmount: sellAmount, buyAmount: buyAmount);
   }
@@ -35,13 +35,13 @@ class SwapRepository {
       Decimal gasLimit) async {
     // ++ Get sellCurrency's cfc currency to do the transaction
     EthereumService _accountService =
-        AccountCore().getService(sellCurrency.accountId);
+        AccountCore().getService(sellCurrency.accountId) as EthereumService;
     String address =
         (await _accountService.getReceivingAddress(sellCurrency.id))[0];
     int nonce =
         await _accountService.getNonce(sellCurrency.blockchainId, address);
-    Decimal _sellAmount = Decimal.tryParse(sellAmount);
-    Decimal _buyAmount = Decimal.tryParse(buyAmount);
+    Decimal _sellAmount = Decimal.tryParse(sellAmount)!;
+    Decimal _buyAmount = Decimal.tryParse(buyAmount)!;
     String swapData = await ContractCore()
         .swapData(sellCurrency, _sellAmount, buyCurrency, _buyAmount);
     Decimal fee = gasPrice * gasLimit;

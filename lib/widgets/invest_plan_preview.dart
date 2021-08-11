@@ -89,7 +89,7 @@ class _InvestPlanPreviewState extends State<InvestPlanPreview> {
               Container(
                 child: Align(
                   child: Text(
-                    widget.currency.name,
+                    widget.currency.name!,
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   alignment: Alignment.centerLeft,
@@ -114,7 +114,7 @@ class _InvestPlanPreviewState extends State<InvestPlanPreview> {
                   child: Text(
                     widget.investment.investAmount.toString() +
                         " " +
-                        widget.currency.symbol,
+                        widget.currency.symbol!,
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   alignment: Alignment.centerLeft,
@@ -162,7 +162,7 @@ class _InvestPlanPreviewState extends State<InvestPlanPreview> {
                   child: Text(
                     widget.investment.fee.toString() +
                         " " +
-                        widget.currency.symbol,
+                        widget.currency.symbol!,
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   alignment: Alignment.centerLeft,
@@ -187,7 +187,7 @@ class _InvestPlanPreviewState extends State<InvestPlanPreview> {
                   child: Text(
                     widget.investment.estimateProfit.toString() +
                         " " +
-                        widget.currency.symbol,
+                        widget.currency.symbol!,
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   alignment: Alignment.centerLeft,

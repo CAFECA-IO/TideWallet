@@ -66,7 +66,7 @@ Future<List<Transaction>> getETHTransactions() async {
         Decimal.parse("${Random().nextInt(10)}.${Random().nextInt(9)}");
     String txid = randomHex(32);
 
-    Transaction transaction = Transaction(
+    Transaction transaction = Transaction.base(
         id: randomHex(6),
         direction: direction,
         amount: amount,

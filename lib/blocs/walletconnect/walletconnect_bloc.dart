@@ -195,8 +195,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
             // final addressRequested = event.request.params[1];
             final lst =
                 hex.decode(event.request.params![0].replaceAll('0x', ''));
-            final data =
-                Uint8List.fromList(Cryptor.keccak256round(lst, round: 1));
+            final data = Cryptor.keccak256round(lst, round: 1);
             final signature = Signer().sign(data, key);
             result = '0x' +
                 signature.r.toRadixString(16) +

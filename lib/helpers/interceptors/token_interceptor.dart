@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import '../logger.dart';
 
 class TokenInterceptor extends Interceptor {
-  String _token;
+  String? _token;
 
   bool isTokenExisted() {
     return _token != null;

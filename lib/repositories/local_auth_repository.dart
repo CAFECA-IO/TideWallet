@@ -23,11 +23,10 @@ class LocalAuthRepository {
     List<BiometricType> listOfBiometrics;
     try {
       listOfBiometrics = await _localAuthentication.getAvailableBiometrics();
+      print(listOfBiometrics);
     } on PlatformException catch (e) {
-      print(e);
+      throw (e);
     }
-
-    print(listOfBiometrics);
   }
 
   Future<bool> authenticateUser() async {

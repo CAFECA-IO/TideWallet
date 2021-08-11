@@ -21,6 +21,7 @@ class _ToggleCurrencyScreenState extends State<ToggleCurrencyScreen> {
   @override
   void didChangeDependencies() {
     _bloc = BlocProvider.of<ToggleTokenBloc>(context);
+    _bloc.add(InitTokens());
     super.didChangeDependencies();
   }
 
