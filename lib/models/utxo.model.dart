@@ -25,8 +25,8 @@ class UnspentTxOut {
 
   //TEST
   // String scriptPubKey;
-  Uint8List privatekey;
-  Uint8List publickey;
+  Uint8List? privatekey;
+  Uint8List? publickey;
 
   List<int> get script => data;
   List<int> get hash => data;
@@ -35,20 +35,20 @@ class UnspentTxOut {
       Converter.toCurrencySmallestUnit(this.amount, this.decimals);
 
   UnspentTxOut({
-    this.id,
-    this.accountcurrencyId,
-    this.txId,
-    this.vout,
-    this.type,
-    this.address,
-    this.amount, // in currency uint
-    this.changeIndex,
-    this.keyIndex,
-    this.data,
-    this.timestamp,
-    this.locked,
+    required this.id,
+    required this.accountcurrencyId,
+    required this.txId,
+    required this.vout,
+    required this.type,
+    required this.address,
+    required this.amount, // in currency uint
+    required this.changeIndex,
+    required this.keyIndex,
+    required this.data,
+    required this.timestamp,
+    required this.locked,
     this.sequence,
-    this.decimals,
+    required this.decimals,
     // for transaction only
     this.privatekey,
     this.publickey,
@@ -56,20 +56,20 @@ class UnspentTxOut {
   });
 
   UnspentTxOut.fromSmallestUint({
-    this.id,
-    this.accountcurrencyId,
-    this.txId,
-    this.vout,
-    this.type,
-    this.address,
-    Decimal amount, // in currency uint
-    this.changeIndex,
-    this.keyIndex,
-    this.data,
-    this.timestamp,
-    this.locked,
+    required this.id,
+    required this.accountcurrencyId,
+    required this.txId,
+    required this.vout,
+    required this.type,
+    required this.address,
+    required Decimal amount, // in currency uint
+    required this.changeIndex,
+    required this.keyIndex,
+    required this.data,
+    required this.timestamp,
+    required this.locked,
     this.sequence,
-    this.decimals,
+    required this.decimals,
     // for transaction only
     this.privatekey,
     this.publickey,

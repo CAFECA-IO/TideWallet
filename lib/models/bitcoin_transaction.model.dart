@@ -117,7 +117,7 @@ class Input {
 
   Input(UnspentTxOut utxo, this.hashType)
       : this.utxo = utxo,
-        this.publicKey = utxo.publickey,
+        this.publicKey = utxo.publickey!,
         this.address = utxo.address;
   bool segwit = false;
 

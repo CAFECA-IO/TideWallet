@@ -58,7 +58,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
       Uint8List rawData = transaction.getRawDataToSign(index);
       Uint8List rawDataHash = Uint8List.fromList(Cryptor.sha256round(rawData));
       UnspentTxOut utxo = transaction.inputs[index].utxo;
-      MsgSignature sig = Signer().sign(rawDataHash, utxo.privatekey);
+      MsgSignature sig = Signer().sign(rawDataHash, utxo.privatekey!);
       Uint8List buffer = new Uint8List(64);
       Log.btc('utxo txId: ${utxo.txId}');
       Log.btc('utxo.amount: ${utxo.amount}');

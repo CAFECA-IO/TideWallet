@@ -25,7 +25,7 @@ class EthereumTransaction extends Transaction {
   String from;
   final String to;
   final int nonce;
-  int block;
+  int? block;
   final Decimal gasPrice; // in Wei
   final Decimal gasUsed;
   int? chainId;
@@ -35,33 +35,33 @@ class EthereumTransaction extends Transaction {
     this.id,
     required this.currencyId,
     this.txId,
-    this.from,
-    this.to,
+    required this.from,
+    required this.to,
+    required this.nonce,
+    required this.amount,
+    required this.gasPrice,
+    required this.gasUsed,
+    required this.fee,
+    required this.signature,
     this.timestamp,
-    this.nonce,
     this.confirmations,
     this.status,
     this.block,
-    this.amount,
-    this.gasPrice,
-    this.gasUsed,
-    this.fee,
     this.message,
     this.chainId,
-    this.signature,
   });
 
   EthereumTransaction.prepareTransaction(
-      {this.from,
-      this.to,
-      this.nonce,
-      this.amount,
-      this.gasPrice,
-      this.gasUsed,
+      {required this.from,
+      required this.to,
+      required this.nonce,
+      required this.amount,
+      required this.gasPrice,
+      required this.gasUsed,
       this.message,
       this.chainId,
-      this.fee,
-      this.signature}) {
+      required this.fee,
+      required this.signature}) {
     this.direction = TransactionDirection.sent;
     this.status = TransactionStatus.pending;
     this.destinationAddresses = this.to;
