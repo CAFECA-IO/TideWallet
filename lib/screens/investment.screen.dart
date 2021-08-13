@@ -64,7 +64,7 @@ class _InvestmentScreenState extends State<InvestmentScreen>
                           itemBuilder: (ctx, index) {
                             InvestAccount investAccount =
                                 state.investAccounts![index];
-                            Currency currency = investAccount.currency;
+                            Account account = investAccount.account;
                             List<Investment> investments =
                                 investAccount.investments;
                             return Container(
@@ -93,7 +93,7 @@ class _InvestmentScreenState extends State<InvestmentScreen>
                                     children: <Widget>[
                                       CircleAvatar(
                                         backgroundImage:
-                                            NetworkImage(currency.imgPath!),
+                                            NetworkImage(account.imgPath!),
                                         radius: 14,
                                       ),
                                       SizedBox(width: 10),
@@ -101,9 +101,9 @@ class _InvestmentScreenState extends State<InvestmentScreen>
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: <Widget>[
-                                          Text(currency.symbol!.toUpperCase()),
+                                          Text(account.symbol!.toUpperCase()),
                                           Text(
-                                            'Avalible ${currency.amount}',
+                                            'Avalible ${account.balance}',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .subtitle2,
@@ -127,7 +127,7 @@ class _InvestmentScreenState extends State<InvestmentScreen>
                                         CrossAxisAlignment.start,
                                     children: investments
                                         .map((investment) => InvestAccountTile(
-                                                currency, investment, () {
+                                                account, investment, () {
                                               //TODO
                                             }))
                                         .toList(),

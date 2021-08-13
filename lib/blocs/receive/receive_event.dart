@@ -8,8 +8,8 @@ abstract class ReceiveEvent extends Equatable {
 }
 
 class GetReceivingAddress extends ReceiveEvent {
-  final Currency currency;
-  GetReceivingAddress(this.currency);
+  final Account account;
+  GetReceivingAddress(this.account);
 
   @override
   List<Object> get props => [];

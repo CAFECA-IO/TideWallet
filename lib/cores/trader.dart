@@ -70,45 +70,44 @@ class Trader {
     return this._fiats[index];
   }
 
-  Decimal calculateToUSD(Currency _currency) {
+  Decimal calculateToUSD(Account _account) {
     int index =
-        this._cryptos.indexWhere((c) => c.currencyId == _currency.currencyId);
+        this._cryptos.indexWhere((c) => c.currencyId == _account.currencyId);
     if (index < 0) return Decimal.zero;
 
     return this._cryptos[index].exchangeRate *
-        Decimal.tryParse(_currency.amount!)!;
+        Decimal.tryParse(_account.balance)!;
   }
 
-  Decimal calculateUSDToCurrency(Currency _currency, Decimal amountInUSD) {
+  Decimal calculateUSDToCurrency(Account _account, Decimal amountInUSD) {
     int index =
-        this._cryptos.indexWhere((c) => c.currencyId == _currency.currencyId);
+        this._cryptos.indexWhere((c) => c.currencyId == _account.currencyId);
     if (index < 0) return Decimal.zero;
 
     return amountInUSD / this._cryptos[index].exchangeRate;
   }
 
-  Decimal calculateAmountToUSD(Currency _currency, Decimal amount) {
+  Decimal calculateAmountToUSD(Account _account, Decimal amount) {
     int index =
-        this._cryptos.indexWhere((c) => c.currencyId == _currency.currencyId);
+        this._cryptos.indexWhere((c) => c.currencyId == _account.currencyId);
     if (index < 0) return Decimal.zero;
     return this._cryptos[index].exchangeRate * amount;
   }
 
   Map<String, Decimal> getSwapRateAndAmount(
-      Currency sellCurrency, Currency buyCurrency, Decimal sellAmount) {
-    Fiat sellCryptos = this
-        ._cryptos
-        .firstWhere((c) => c.currencyId == sellCurrency.currencyId);
+      Account sellAccount, Account buyAccount, Decimal sellAmount) {
+    Fiat sellCryptos =
+        this._cryptos.firstWhere((c) => c.currencyId == sellAccount.currencyId);
     Fiat buyCryptos =
-        this._cryptos.firstWhere((c) => c.currencyId == buyCurrency.currencyId);
+        this._cryptos.firstWhere((c) => c.currencyId == buyAccount.currencyId);
     // Log.debug(
     //     'sellCryptos ${sellCryptos.name} [${sellCryptos.currencyId}]: ${sellCryptos.exchangeRate}');
     // Log.debug(
     //     'buyCryptos ${buyCryptos.name} [${buyCryptos.currencyId}]: ${buyCryptos.exchangeRate}');
     Decimal exchangeRate = calculateUSDToCurrency(
-        buyCurrency, calculateAmountToUSD(sellCurrency, Decimal.one));
+        buyAccount, calculateAmountToUSD(sellAccount, Decimal.one));
     Decimal buyAmount =
-        calculateUSDToCurrency(buyCurrency, sellAmount * exchangeRate);
+        calculateUSDToCurrency(buyAccount, sellAmount * exchangeRate);
     return {"buyAmount": buyAmount, "exchangeRate": exchangeRate};
   }
 }

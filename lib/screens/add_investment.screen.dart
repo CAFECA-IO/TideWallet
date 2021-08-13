@@ -38,7 +38,7 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
   TextEditingController _controller = TextEditingController();
   late InvestPlanBloc _bloc;
   int index = 1;
-  late Currency? _currency;
+  late Account? _account;
   late InvestStrategy? _strategy;
   late InvestAmplitude? _amplitude;
   late InvestPercentage? _percentage;
@@ -46,7 +46,7 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
   @override
   void didChangeDependencies() {
     this._bloc = BlocProvider.of<InvestPlanBloc>(context)
-      ..add(InvestPlanInitialed(AccountCore().getAllCurrencies()[0],
+      ..add(InvestPlanInitialed(AccountCore().getAllAccounts()[0],
           InvestStrategy.Climb, InvestAmplitude.Normal, InvestPercentage.Low));
     super.didChangeDependencies();
   }
@@ -75,7 +75,7 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
               );
             else {
               if (state is InvestPlanStatus) {
-                _currency = state.currency;
+                _account = state.account;
                 _strategy = state.strategy;
                 _amplitude = state.amplitude;
                 _percentage = state.percentage;
@@ -106,7 +106,7 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
                         padding: EdgeInsets.symmetric(
                             vertical: 22.0, horizontal: 16.0),
                         child: InvestPlanPreview(
-                            currency: state.currency,
+                            account: state.account,
                             investment: state.investment!),
                       ),
                     );
@@ -127,12 +127,12 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
                     ),
                     ItemPicker(
                       title: t('invest_account'),
-                      items: AccountCore().getAllCurrencies(),
+                      items: AccountCore().getAllAccounts(),
                       selectedItem:
-                          _currency ?? AccountCore().getAllCurrencies()[0],
+                          _account ?? AccountCore().getAllAccounts()[0],
                       onTap: () {},
                       notifyParent: ({required int index, dynamic value}) {
-                        _bloc.add(CurrencySelected(value));
+                        _bloc.add(AccountSelected(value));
                       },
                     ),
                     SizedBox(height: 32),

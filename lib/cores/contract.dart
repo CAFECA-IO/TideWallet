@@ -44,24 +44,24 @@ class ContractCore {
 
   ContractCore._internal();
 
-  Future<dynamic> _extractAddressData(Currency currency) async {
+  Future<dynamic> _extractAddressData(Account account) async {
     dynamic _data;
-    AccountService _service = AccountCore().getService(currency.accountId);
+    AccountService _service = AccountCore().getService(account.shareAccountId);
     String _address =
-        (await _service.getReceivingAddress(currency.currencyId))[0];
-    switch (currency.accountType!) {
+        (await _service.getReceivingAddress(account.shareAccountId))[0];
+    switch (account.accountType) {
       case ACCOUNT.BTC:
         TransactionService _transactionService =
             BitcoinTransactionService(TransactionServiceBased());
         _data = _transactionService.extractAddressData(
-            _address, currency.publish!)[1];
+            _address, account.publish)[1];
         break;
       case ACCOUNT.ETH:
       case ACCOUNT.CFC:
         TransactionService _transactionService =
             EthereumTransactionService(TransactionServiceBased());
         _data =
-            _transactionService.extractAddressData(_address, currency.publish!);
+            _transactionService.extractAddressData(_address, account.publish);
         break;
       case ACCOUNT.XRP:
         // TODO: Handle this case.
@@ -84,9 +84,9 @@ class ContractCore {
   0x695543c38480000000880de0b6b3a7640000848000003c89019750257f3db70000a8ea674fdde714fd979de3edf0f56aa9716b898ec801
   */
   Future<String> swapData(
-    Currency sellCurrency,
+    Account sellAccount,
     Decimal sellAmount,
-    Currency buyCurrency,
+    Account buyAccount,
     Decimal buyAmount,
   ) async {
     BigInt _sellAmount =
@@ -94,12 +94,12 @@ class ContractCore {
     BigInt _buyAmount =
         BigInt.from(Converter.toEthSmallestUnit(buyAmount).toInt());
 
-    String _address = await _extractAddressData(buyCurrency);
+    String _address = await _extractAddressData(buyAccount);
     Uint8List _buffer = rlp.encode([
       ContractFunction.swap.name,
-      '0x${sellCurrency.blockchainId}',
+      '0x${sellAccount.blockchainId}',
       _sellAmount,
-      '0x${buyCurrency.blockchainId}',
+      '0x${buyAccount.blockchainId}',
       _buyAmount,
       _address,
     ]);
@@ -117,13 +117,13 @@ class ContractCore {
 
   0x855511cc800000000de0b6b3a764000005d07e81f97923b57ceed458c6fa493511545397537a73e5f5
   */
-  Future<String> withdrawData(Currency currency, Decimal amount) async {
+  Future<String> withdrawData(Account account, Decimal amount) async {
     BigInt _amount = BigInt.from(Converter.toEthSmallestUnit(amount).toInt());
     var _address;
-    _address = await _extractAddressData(currency);
+    _address = await _extractAddressData(account);
     Uint8List _buffer = rlp.encode([
       ContractFunction.transfer,
-      '0x${currency.blockchainId}',
+      '0x${account.blockchainId}',
       _amount,
       _address
     ]);
@@ -142,11 +142,11 @@ class ContractCore {
 
   0xb483afd3800000000de0b6b3a764000005d07e81f97923b57ceed458c6fa493511545397537a73e5f501
   */
-  String transferData(Currency currency, Decimal amount, String address) {
+  String transferData(Account account, Decimal amount, String address) {
     BigInt _amount = BigInt.from(Converter.toEthSmallestUnit(amount).toInt());
     Uint8List _buffer = rlp.encode([
       ContractFunction.transfer,
-      '0x${currency.blockchainId}',
+      '0x${account.blockchainId}',
       _amount,
       address
     ]);
@@ -157,15 +157,15 @@ class ContractCore {
   /*
   TODO undefined
   */
-  Future<String> donateData(Currency currency, Decimal amount) async {
+  Future<String> donateData(Account account, Decimal amount) async {
     BigInt _amount = BigInt.from(Converter.toEthSmallestUnit(amount).toInt());
 
     var _address;
-    _address = await _extractAddressData(currency);
+    _address = await _extractAddressData(account);
 
     Uint8List _buffer = rlp.encode([
       ContractFunction.donate,
-      '0x${currency.blockchainId}',
+      '0x${account.blockchainId}',
       _amount,
       _address
     ]);

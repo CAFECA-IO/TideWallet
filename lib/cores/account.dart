@@ -30,7 +30,7 @@ class AccountCore {
     return _accounts;
   }
 
-  List<Account>? getAccountsByShareAccounttId(String shareAccountId) =>
+  List<Account>? getAccountsByShareAccountId(String shareAccountId) =>
       this._accounts[shareAccountId];
 
   List<Account> getAllAccounts() =>

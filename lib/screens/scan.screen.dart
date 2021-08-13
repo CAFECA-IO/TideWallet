@@ -48,7 +48,7 @@ class _ScanScreenState extends State<ScanScreen> {
         } else if (state is ScannedAddress) {
           Navigator.of(context).pop();
           Navigator.of(context).pushNamed(CreateTransactionScreen.routeName,
-              arguments: {"account": state.currency, "address": state.address});
+              arguments: {"account": state.account, "address": state.address});
         }
       },
       child: Scaffold(

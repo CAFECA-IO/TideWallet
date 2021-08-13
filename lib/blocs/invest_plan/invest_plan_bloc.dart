@@ -43,11 +43,11 @@ class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
     InvestPlanEvent event,
   ) async* {
     if (event is InvestPlanInitialed) {
-      Decimal investAmount = Decimal.tryParse(event.currency.amount!) ??
+      Decimal investAmount = Decimal.tryParse(event.account.balance) ??
           Decimal.zero * Decimal.tryParse(event.percentage.value)!;
-      Log.debug('event.currency.name: ${event.currency.name}');
+      Log.debug('event.account.name: ${event.account.name}');
       yield InvestPlanStatus(
-          currency: event.currency,
+          account: event.account,
           strategy: event.strategy,
           amplitude: event.amplitude,
           percentage: event.percentage,
@@ -56,8 +56,8 @@ class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
 
     if (state is InvestPlanStatus) {
       InvestPlanStatus _state = state as InvestPlanStatus;
-      if (event is CurrencySelected) {
-        yield _state.copyWith(currency: event.currency);
+      if (event is AccountSelected) {
+        yield _state.copyWith(account: event.account);
       }
       if (event is StrategySetected) {
         yield _state.copyWith(strategy: event.strategy);
@@ -66,41 +66,41 @@ class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
         yield _state.copyWith(amplitude: event.amplitude);
       }
       if (event is PercentageSelected) {
-        Decimal investAmount = Decimal.tryParse(_state.currency.amount!) ??
+        Decimal investAmount = Decimal.tryParse(_state.account.balance) ??
             Decimal.zero * Decimal.tryParse(event.percentage.value)!;
         yield _state.copyWith(
             percentage: event.percentage, investAmount: investAmount
-            // _traderRepo.calculateAmountToFiat(_state.currency, investAmount)
+            // _traderRepo.calculateAmountToFiat(_state.account, investAmount)
             );
       }
       if (event is InputPercentage) {
-        Decimal investAmount = Decimal.tryParse(_state.currency.amount!) ??
+        Decimal investAmount = Decimal.tryParse(_state.account.balance) ??
             Decimal.zero * Decimal.tryParse(event.percentage)!;
         yield _state.copyWith(investAmount: investAmount
-            // _traderRepo.calculateAmountToFiat(_state.currency, investAmount)
+            // _traderRepo.calculateAmountToFiat(_state.account, investAmount)
             );
       }
       if (event is GenerateInvestPlan) {
         // TOOD
         yield InvestLoading();
-        Investment investment = await _repo.generateInvestment(_state.currency,
+        Investment investment = await _repo.generateInvestment(_state.account,
             _state.strategy, _state.amplitude, _state.investAmount);
         investment.feeToFiat =
-            _traderRepo.calculateAmountToFiat(_state.currency, investment.fee);
+            _traderRepo.calculateAmountToFiat(_state.account, investment.fee);
         yield _state.copyWith(investment: investment);
       }
       if (event is CreateInvestPlan) {
         // TOOD
         yield InvestLoading();
         bool result =
-            await _repo.createInvestment(_state.currency, _state.investment!);
+            await _repo.createInvestment(_state.account, _state.investment!);
         if (result)
           yield InvestSuccess();
         else
           yield InvestFail();
       }
     } else
-      this.add(InvestPlanInitialed(AccountCore().accounts[0],
+      this.add(InvestPlanInitialed(AccountCore().accounts[0]![0],
           InvestStrategy.Climb, InvestAmplitude.Normal, InvestPercentage.Low));
   }
 }

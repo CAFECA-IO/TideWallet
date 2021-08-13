@@ -31,17 +31,17 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
   late TransactionStatusBloc _bloc;
   late TransactionRepository _repo;
   late TraderRepository _traderRepo;
-  late Currency _currency;
+  late Account _account;
 
   @override
   void didChangeDependencies() {
-    Map<String, Currency> arg =
-        ModalRoute.of(context)!.settings.arguments! as Map<String, Currency>;
-    _currency = arg["account"]!;
+    Map<String, Account> arg =
+        ModalRoute.of(context)!.settings.arguments! as Map<String, Account>;
+    _account = arg["account"]!;
     _repo = Provider.of<TransactionRepository>(context);
     _traderRepo = Provider.of<TraderRepository>(context);
     _bloc = TransactionStatusBloc(_repo, _traderRepo)
-      ..add(UpdateCurrency(_currency));
+      ..add(UpdateAccount(_account));
     super.didChangeDependencies();
   }
 
@@ -85,7 +85,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                       decoration: BoxDecoration(
                           color: MyColors.font_01, shape: BoxShape.circle),
                       child: Image.network(
-                        state.currency?.imgPath ?? _currency.imgPath!,
+                        state.account?.imgPath ?? _account.imgPath!,
                         width: 32.0,
                         height: 32.0,
                       ),
@@ -93,8 +93,8 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                     Padding(
                       padding: const EdgeInsets.all(4.0),
                       child: Text(
-                        state.currency?.symbol?.toUpperCase() ??
-                            _currency.symbol!,
+                        state.account?.symbol?.toUpperCase() ??
+                            _account.symbol!,
                         style: Theme.of(context).textTheme.button,
                       ),
                     ),
@@ -104,7 +104,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4),
                       child: Text(
-                          '${Formatter.formatDecimal(state.currency?.amount ?? _currency.amount!)}',
+                          '${Formatter.formatDecimal(state.account?.balance ?? _account.balance!)}',
                           style: Theme.of(context).textTheme.headline4),
                     ),
                     BlocBuilder<FiatBloc, FiatState>(
@@ -114,7 +114,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
 
                       if (fiatState is FiatLoaded) {
                         _state = fiatState;
-                        String num = state.currency?.inUSD ?? _currency.inUSD!;
+                        String num = state.account?.inFiat ?? _account.inFiat!;
                         value = Formatter.formatDecimal(
                             (Decimal.tryParse(num)! / _state.fiat.exchangeRate)
                                 .toString());
@@ -142,7 +142,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                         () {
                           Navigator.of(context).pushNamed(
                               CreateTransactionScreen.routeName,
-                              arguments: {"account": state.currency});
+                              arguments: {"account": state.account});
                         },
                         textColor: MyColors.primary_04,
                         iconImg:
@@ -154,7 +154,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                         () {
                           Navigator.of(context).pushNamed(
                               ReceiveScreen.routeName,
-                              arguments: {"currency": state.currency});
+                              arguments: {"account": state.account});
                         },
                         textColor: MyColors.primary_03,
                         iconImg: AssetImage(
@@ -173,9 +173,9 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                         itemCount: state.transactions.length,
                         itemBuilder: (context, index) {
                           Transaction transaction = state.transactions[index];
-                          Currency currency = state.currency!;
+                          Account account = state.account!;
                           return TransactionItem(
-                              currency: currency, transaction: transaction);
+                              account: account, transaction: transaction);
                         },
                       ),
                     ),

@@ -6,7 +6,7 @@ import '../services/transaction_service_bitcoin.dart';
 import '../services/transaction_service_ethereum.dart';
 
 class ScanRepository {
-  Currency? getAddressType(String data) {
+  Account? getAddressType(String data) {
     BitcoinTransactionService _btcTxSvc =
         BitcoinTransactionService(TransactionServiceBased());
     EthereumTransactionService _ethTxSvc =
@@ -17,9 +17,9 @@ class ScanRepository {
     try {
       result = _ethTxSvc.verifyAddress(data, true);
       if (result)
-        return AccountCore().getAllCurrencies().firstWhere((currency) =>
-            currency.type!.toLowerCase() == 'currency' &&
-            currency.symbol!.toLowerCase() == 'eth');
+        return AccountCore().getAllAccounts().firstWhere((account) =>
+            account.type.toLowerCase() == 'account' &&
+            account.symbol.toLowerCase() == 'eth');
     } catch (e) {
       return null;
     }
@@ -27,10 +27,10 @@ class ScanRepository {
     try {
       result = _btcTxSvc.verifyAddress(data, true);
       if (result)
-        return AccountCore().getAllCurrencies().firstWhere((currency) =>
-            currency.type!.toLowerCase() == 'currency' &&
-            currency.symbol!.toLowerCase() == 'btc' &&
-            !currency.publish!);
+        return AccountCore().getAllAccounts().firstWhere((account) =>
+            account.type.toLowerCase() == 'account' &&
+            account.symbol.toLowerCase() == 'btc' &&
+            !account.publish);
     } catch (e) {
       return null;
     }
@@ -38,10 +38,10 @@ class ScanRepository {
     try {
       result = _btcTxSvc.verifyAddress(data, false);
       if (result)
-        return AccountCore().getAllCurrencies().firstWhere((currency) =>
-            currency.type!.toLowerCase() == 'currency' &&
-            currency.symbol!.toLowerCase() == 'btc' &&
-            currency.publish!);
+        return AccountCore().getAllAccounts().firstWhere((account) =>
+            account.type.toLowerCase() == 'account' &&
+            account.symbol.toLowerCase() == 'btc' &&
+            account.publish);
     } catch (e) {
       return null;
     }

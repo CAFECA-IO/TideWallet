@@ -18,37 +18,37 @@ import '../helpers/logger.dart'; // --
 class SwapRepository {
   SwapRepository();
   Future<Map<String, dynamic>> getSwapDetail(
-      Currency sellCurrency, Currency buyCurrency,
+      Account sellAccount, Account buyAccount,
       {String? sellAmount, String? buyAmount}) async {
-    return await SwapCore().getSwapDetail(sellCurrency, buyCurrency,
+    return await SwapCore().getSwapDetail(sellAccount, buyAccount,
         sellAmount: sellAmount, buyAmount: buyAmount);
   }
 
   Future<List> swap(
       Uint8List privKey,
-      Currency sellCurrency,
+      Account sellAccount,
       String sellAmount,
-      Currency buyCurrency,
+      Account buyAccount,
       String buyAmount,
       String to,
       Decimal gasPrice,
       Decimal gasLimit) async {
-    // ++ Get sellCurrency's cfc currency to do the transaction
+    // ++ Get sellAccount's cfc Account to do the transaction
     EthereumService _accountService =
-        AccountCore().getService(sellCurrency.accountId) as EthereumService;
+        AccountCore().getService(sellAccount.shareAccountId) as EthereumService;
     String address =
-        (await _accountService.getReceivingAddress(sellCurrency.id!))[0];
+        (await _accountService.getReceivingAddress(sellAccount.id!))[0];
     int nonce =
-        await _accountService.getNonce(sellCurrency.blockchainId, address);
+        await _accountService.getNonce(sellAccount.blockchainId, address);
     Decimal _sellAmount = Decimal.tryParse(sellAmount)!;
     Decimal _buyAmount = Decimal.tryParse(buyAmount)!;
     String swapData = await ContractCore()
-        .swapData(sellCurrency, _sellAmount, buyCurrency, _buyAmount);
+        .swapData(sellAccount, _sellAmount, buyAccount, _buyAmount);
     Decimal fee = gasPrice * gasLimit;
     TransactionService _transactionService =
         EthereumTransactionService(TransactionServiceBased());
     Transaction transaction = _transactionService.prepareTransaction(
-        sellCurrency.publish!,
+        sellAccount.publish!,
         to,
         Converter.toEthSmallestUnit(_sellAmount),
         rlp.toBuffer(swapData),
@@ -56,10 +56,10 @@ class SwapRepository {
         gasPrice: Converter.toEthSmallestUnit(gasPrice),
         gasLimit: gasLimit,
         fee: Converter.toEthSmallestUnit(fee),
-        chainId: sellCurrency.chainId,
+        chainId: sellAccount.chainId,
         privKey: privKey,
         changeAddress: address);
-    Decimal balance = Decimal.parse(sellCurrency.amount!) - _sellAmount - fee;
+    Decimal balance = Decimal.parse(sellAccount.balance) - _sellAmount - fee;
     return [transaction, balance];
   }
 }

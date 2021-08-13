@@ -25,18 +25,18 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
   final t = I18n.t;
   late TransactionRepository _repo;
   late ReceiveBloc _bloc;
-  late Currency _currency;
+  late Account _account;
   String _address = '';
   bool _isCalled = false;
 
   @override
   void didChangeDependencies() {
-    Map<String, Currency> arg =
-        ModalRoute.of(context)!.settings.arguments as Map<String, Currency>;
-    _currency = arg["currency"]!;
+    Map<String, Account> arg =
+        ModalRoute.of(context)!.settings.arguments as Map<String, Account>;
+    _account = arg["account"]!;
     _repo = Provider.of<TransactionRepository>(context);
     if (!_isCalled) {
-      _bloc = ReceiveBloc(_repo)..add(GetReceivingAddress(_currency));
+      _bloc = ReceiveBloc(_repo)..add(GetReceivingAddress(_account));
       _isCalled = true;
     }
     super.didChangeDependencies();
@@ -78,7 +78,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
               children: [
                 Container(
                   child: Text(
-                    '${t('remit')} ${_currency.symbol!.toUpperCase()}',
+                    '${t('remit')} ${_account.symbol!.toUpperCase()}',
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                 ),
@@ -86,7 +86,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
                 Container(
                   height: 40,
                   child: Text(
-                    _currency.accountType == ACCOUNT.BTC
+                    _account.accountType == ACCOUNT.BTC
                         ? t('btc_receving_address_hint')
                         : '',
                     style: Theme.of(context).textTheme.subtitle2,

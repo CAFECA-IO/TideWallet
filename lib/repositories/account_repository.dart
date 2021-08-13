@@ -37,12 +37,12 @@ class AccountRepository {
     return Future.delayed(Duration(seconds: 0));
   }
 
-  List<Currency> getAllCurrencies() {
-    return AccountCore().getAllCurrencies();
+  List<Account> getAllAccounts() {
+    return AccountCore().getAllAccounts();
   }
 
-  List<Currency>? getCurrencies(String accountId) {
-    return AccountCore().getCurrencies(accountId);
+  List<Account> getAccounts(String accountId) {
+    return AccountCore().getAccountsByShareAccountId(accountId)!;
   }
 
   bool validateETHAddress(String address) {
@@ -53,11 +53,11 @@ class AccountRepository {
     return EthereumService.getTokeninfo(bkid, address);
   }
 
-  Future<bool> addToken(Currency currency, Token token) async {
-    AccountService _ethService = AccountCore().getService(currency.accountId);
+  Future<bool> addToken(Account account, Token token) async {
+    AccountService _ethService = AccountCore().getService(account.id);
 
     return (_ethService as EthereumService)
-        .addToken(currency.blockchainId, token);
+        .addToken(account.blockchainId, token);
   }
 
   close() {
@@ -74,18 +74,19 @@ class AccountRepository {
     return this._prefManager.getSeletedDisplay();
   }
 
-  Future toggleDisplay(Currency currency, bool value) async {
+  Future toggleDisplay(Account account, bool value) async {
     final result = await this
         ._prefManager
-        .setSelectedDisplay(currency.accountId, currency.currencyId, value);
+        .setSelectedDisplay(account.shareAccountId, account.currencyId, value);
     this._preferDisplay = result;
 
     if (value == true) {
-      AccountService _service = AccountCore().getService(currency.accountId);
+      AccountService _service =
+          AccountCore().getService(account.shareAccountId);
       _service.synchro(force: true);
     } else {
       AccountMessage msg = AccountMessage(
-          evt: ACCOUNT_EVT.ToggleDisplayCurrency, value: currency.currencyId);
+          evt: ACCOUNT_EVT.ToggleDisplayCurrency, value: account.currencyId);
 
       AccountCore().messenger.add(msg);
     }

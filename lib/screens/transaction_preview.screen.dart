@@ -27,7 +27,7 @@ class TransactionPreviewScreen extends StatefulWidget {
 class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
   late TransactionBloc _bloc;
   late LocalAuthBloc _localBloc;
-  late Currency _currency;
+  late Account _account;
   late Transaction _transaction;
   late String _feeToFiat;
   late UserRepository _userRepo;
@@ -37,7 +37,7 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
   void didChangeDependencies() {
     Map<String, dynamic> arg =
         ModalRoute.of(context)!.settings.arguments! as Map<String, dynamic>;
-    _currency = arg["currency"];
+    _account = arg["account"];
     _transaction = arg["transaction"];
     _feeToFiat = arg["feeToFiat"];
 
@@ -115,7 +115,7 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
                     ),
                     SizedBox(height: 7),
                     Align(
-                      child: Text("${_transaction.amount} ${_currency.symbol}"),
+                      child: Text("${_transaction.amount} ${_account.symbol}"),
                       alignment: Alignment.centerLeft,
                     )
                   ],
@@ -135,7 +135,7 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
                     SizedBox(height: 7),
                     Align(
                       child: Text(
-                          "${_transaction.fee} ${_currency.accountSymbol}"),
+                          "${_transaction.fee} ${_account.shareAccountSymbol}"),
                       alignment: Alignment.centerLeft,
                     ),
                     SizedBox(height: 4),

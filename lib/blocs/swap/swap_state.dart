@@ -19,10 +19,10 @@ abstract class SwapState extends Equatable {
 class SwapInitial extends SwapState {}
 
 class SwapLoaded extends SwapState {
-  final Currency? sellCurrency;
-  final Currency? buyCurrency;
+  final Account? sellAccount;
+  final Account? buyAccount;
   final String? sellAmount;
-  final List<Currency>? targets;
+  final List<Account>? targets;
   final String? contract;
   final String? buyAmount;
   final String? exchangeRate;
@@ -31,8 +31,8 @@ class SwapLoaded extends SwapState {
   final Decimal? gasLimit;
 
   SwapLoaded(
-      {this.sellCurrency,
-      this.buyCurrency,
+      {this.sellAccount,
+      this.buyAccount,
       this.sellAmount,
       this.contract,
       this.targets,
@@ -43,10 +43,10 @@ class SwapLoaded extends SwapState {
       this.gasLimit});
 
   SwapLoaded copyWith(
-      {Currency? sellCurrency,
-      Currency? buyCurrency,
+      {Account? sellAccount,
+      Account? buyAccount,
       String? sellAmount,
-      List<Currency>? targets,
+      List<Account>? targets,
       String? contract,
       String? buyAmount,
       String? exchangeRate,
@@ -54,8 +54,8 @@ class SwapLoaded extends SwapState {
       Decimal? gasPrice,
       Decimal? gasLimit}) {
     return SwapLoaded(
-        sellCurrency: sellCurrency ?? this.sellCurrency,
-        buyCurrency: buyCurrency ?? this.buyCurrency,
+        sellAccount: sellAccount ?? this.sellAccount,
+        buyAccount: buyAccount ?? this.buyAccount,
         sellAmount: sellAmount ?? this.sellAmount,
         contract: contract ?? this.contract,
         targets: targets ?? this.targets,
@@ -68,8 +68,8 @@ class SwapLoaded extends SwapState {
 
   @override
   List<Object> get props => [
-        sellCurrency!,
-        buyCurrency!,
+        sellAccount!,
+        buyAccount!,
         sellAmount!,
         contract!,
         targets!,

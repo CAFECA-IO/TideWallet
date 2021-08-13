@@ -10,9 +10,9 @@ abstract class ScanState extends Equatable {
 class ScanInitial extends ScanState {}
 
 class ScannedAddress extends ScanState {
-  final Currency currency;
+  final Account account;
   final String address;
-  ScannedAddress(this.currency, this.address);
+  ScannedAddress(this.account, this.address);
 }
 
 class ScannedWalletConnect extends ScanState {

@@ -53,19 +53,19 @@ class ToggleTokenBloc extends Bloc<ToggletokenEvent, ToggleTokenState> {
       _list[index] = _list[index].copyWith(opened: event.value);
 
       yield ToggleTokenLoaded(_list);
-      Currency cur = Currency(
-          accountId: _list[index].accountId,
-          currencyId: _list[index].currencyId,
-          blockchainId: _list[index].blockchainId);
+      // Account cur = Account(
+      //     accountId: _list[index].accountId,
+      //     currencyId: _list[index].currencyId,
+      //     blockchainId: _list[index].blockchainId);
 
       if (event.value == true) {
         Token token =
             Token(contract: _list[index].contract, imgUrl: _list[index].icon);
 
-        bool success = await _repo.addToken(cur, token);
-        if (!success) throw Exception('Failed to add toggle');
+        // bool success = await _repo.addToken(cur, token);
+        // if (!success) throw Exception('Failed to add toggle');
       }
-      await _repo.toggleDisplay(cur, event.value);
+      // await _repo.toggleDisplay(cur, event.value);
     }
   }
 }

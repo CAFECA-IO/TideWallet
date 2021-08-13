@@ -32,7 +32,7 @@ import './screens/scan.screen.dart';
 import './screens/recover_mnemonic.screen.dart';
 import './screens/toggle_currency.screen.dart';
 import './blocs/fiat/fiat_bloc.dart';
-import './blocs/account_currency/account_currency_bloc.dart';
+import './blocs/account/account_bloc.dart';
 import './blocs/delegate.dart';
 import './blocs/user/user_bloc.dart';
 import './blocs/toggle_token/toggle_token_bloc.dart';
@@ -106,8 +106,8 @@ class MyApp extends StatelessWidget {
                   Provider.of<InvestRepository>(context, listen: false),
                   Provider.of<UserRepository>(context, listen: false)),
             ),
-            BlocProvider<AccountCurrencyBloc>(
-              create: (BuildContext context) => AccountCurrencyBloc(
+            BlocProvider<AccountBloc>(
+              create: (BuildContext context) => AccountBloc(
                 Provider.of<AccountRepository>(context, listen: false),
                 Provider.of<TraderRepository>(context, listen: false),
               ),

@@ -14,19 +14,19 @@ class TraderRepository {
 
   Future<Fiat> getSelectedFiat() => _trader.getSelectedFiat();
 
-  Decimal calculateToFiat(Currency _curr) {
+  Decimal calculateToFiat(Account _curr) {
     return _trader.calculateToUSD(_curr) / _selectedFiat.exchangeRate;
   }
 
-  Decimal calculateToUSD(Currency _curr) {
+  Decimal calculateToUSD(Account _curr) {
     return _trader.calculateToUSD(_curr);
   }
 
-  Decimal calculateAmountToUSD(Currency _curr, Decimal _amount) {
+  Decimal calculateAmountToUSD(Account _curr, Decimal _amount) {
     return _trader.calculateAmountToUSD(_curr, _amount);
   }
 
-  Decimal calculateAmountToFiat(Currency _curr, Decimal _amount) {
+  Decimal calculateAmountToFiat(Account _curr, Decimal _amount) {
     return _trader.calculateAmountToUSD(_curr, _amount) /
         _selectedFiat.exchangeRate;
   }
@@ -37,7 +37,7 @@ class TraderRepository {
   }
 
   Map<String, Decimal> getSwapRateAndAmount(
-      Currency _sellCurr, Currency _buyCurr, Decimal _amount) {
+      Account _sellCurr, Account _buyCurr, Decimal _amount) {
     return _trader.getSwapRateAndAmount(_sellCurr, _buyCurr, _amount);
   }
 }

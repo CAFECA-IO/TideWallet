@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:tidewallet3/models/account.model.dart';
 
 import 'account_service.dart';
 import 'bitcoin_service.dart';
 import '../cores/account.dart';
+import '../models/account.model.dart';
 import '../models/fcm.modal.dart';
 import '../screens/transaction_list.screen.dart';
 
@@ -112,12 +112,12 @@ class FCM {
     if (msg.event == FCM_EVENT.TRANSACTION_NEW) {
       AccountService svc = AccountCore().getService(msg.accountId);
       await svc.updateTransaction(msg.currencyId, msg.payload);
-      await svc.updateCurrency(msg.currencyId, msg.payload);
+      await svc.updateAccount(msg.currencyId, msg.payload);
       // await svc.updateCurrency(msg.currencyId, {'balance': '100'});
 
       if (navigate) {
-        Currency account = AccountCore()
-            .currencies[msg.accountId]!
+        Account account = AccountCore()
+            .accounts[msg.accountId]!
             .firstWhere((currency) => currency.currencyId == msg.currencyId);
 
         this._navigator.currentState!.pushNamed(TransactionListScreen.routeName,

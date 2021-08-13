@@ -1,32 +1,31 @@
 part of 'receive_bloc.dart';
 
 abstract class ReceiveState extends Equatable {
-  final Currency? currency;
+  final Account? account;
   final String? address;
-  const ReceiveState(this.currency, this.address);
+  const ReceiveState(this.account, this.address);
 
   @override
   List<Object> get props => [];
 }
 
 class ReceiveInitial extends ReceiveState {
-  ReceiveInitial(Currency? currency, String? address)
-      : super(currency, address);
+  ReceiveInitial(Account? account, String? address) : super(account, address);
 
   @override
-  List<Object> get props => [currency!, address!];
+  List<Object> get props => [account!, address!];
 }
 
 class AddressLoading extends ReceiveState {
-  AddressLoading(Currency currency, String address) : super(currency, address);
+  AddressLoading(Account account, String address) : super(account, address);
 
   @override
-  List<Object> get props => [currency!, address!];
+  List<Object> get props => [account!, address!];
 }
 
 class AddressLoaded extends ReceiveState {
-  AddressLoaded(Currency currency, String address) : super(currency, address);
+  AddressLoaded(Account account, String address) : super(account, address);
 
   @override
-  List<Object> get props => [currency!, address!];
+  List<Object> get props => [account!, address!];
 }

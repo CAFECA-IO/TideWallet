@@ -27,7 +27,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
   late TransactionRepository _txRepo;
   late AccountRepository _accountRepo;
   static const ACCOUNT _accountType = ACCOUNT.ETH;
-  late Currency _selected;
+  late Account _selected;
   late Map<TransactionPriority, Decimal> _gasPrice;
 
   WalletConnectBloc(this._accountRepo, this._txRepo)
@@ -35,7 +35,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
 
   getReceivingAddress() => _txRepo.getReceivingAddress();
 
-  Currency get currency => this._selected;
+  Account get account => this._selected;
   Map<TransactionPriority, Decimal> get gasPrice => this._gasPrice;
 
   @override
@@ -112,7 +112,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
       if (event is RequestWC) {
         int? chainId = event.request.params?[0]['chainId'];
         if (chainId == null) chainId = 1;
-        final currencies = this._accountRepo.getAllCurrencies();
+        final currencies = this._accountRepo.getAllAccounts();
         _selected = currencies.firstWhere(
             (c) => c.accountType == _accountType && c.chainId == chainId,
             orElse: () =>
@@ -123,7 +123,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
         // check to use the right chain
         // Log.info('*** chainId $chainId ${_selected.network} __ ${_selected.chainId}');
 
-        this._txRepo.setCurrency(_selected);
+        this._txRepo.setAccount(_selected);
         _session.chainId = chainId;
         _session.networkId = chainId;
         String address = await getReceivingAddress();

@@ -18,7 +18,7 @@ import '../repositories/trader_repository.dart';
 import '../constants/account_config.dart';
 
 class TransactionDetailScreen extends StatefulWidget {
-  // final Currency currency;
+  // final account account;
   // final Transaction transaction;
 
   static const routeName = '/transaction-detail';
@@ -35,14 +35,14 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
   late TransactionStatusBloc _bloc;
   late TransactionRepository _repo;
   late TraderRepository _traderRepo;
-  late Currency _currency;
+  late Account _account;
   late Transaction _transaction;
 
   @override
   void didChangeDependencies() {
     Map<String, dynamic> arg =
         ModalRoute.of(context)!.settings.arguments! as Map<String, dynamic>;
-    _currency = arg["currency"];
+    _account = arg["account"];
     _transaction = arg["transaction"];
     _repo = Provider.of<TransactionRepository>(context);
 
@@ -63,11 +63,11 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
     super.dispose();
   }
 
-  String getLaunchLink(Currency currency, transaction) {
+  String getLaunchLink(Account account, transaction) {
     const PROTOCAL = 'https://';
-    String network = _currency.network!.toLowerCase();
+    String network = _account.network!.toLowerCase();
 
-    switch (currency.accountType) {
+    switch (account.accountType) {
       case ACCOUNT.BTC:
         if (network == 'bitcoin') {
           network = 'mainnet';
@@ -77,7 +77,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
           network = 'testnet';
         }
 
-        return '$PROTOCAL${Explorer.BLOCK_EXPLORER}/${_currency.symbol!.toLowerCase()}/$network/tx/${transaction.txId}';
+        return '$PROTOCAL${Explorer.BLOCK_EXPLORER}/${_account.symbol!.toLowerCase()}/$network/tx/${transaction.txId}';
       case ACCOUNT.ETH:
         return '$PROTOCAL${network == 'ethereum' ? '' : network + '.'}${Explorer.ETHERSCAN}/tx/${transaction.txId}';
       case ACCOUNT.CFC:
@@ -122,7 +122,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                         width: 8,
                       ),
                       Text(
-                        _currency.symbol!,
+                        _account.symbol!,
                         style: Theme.of(context).textTheme.headline1!.copyWith(
                               color: _transaction.status !=
                                       TransactionStatus.success
@@ -218,7 +218,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Align(
                       child: Text(
-                        '${Formatter.formatDecimal(_transaction.fee.toString())} ${_currency.accountSymbol}',
+                        '${Formatter.formatDecimal(_transaction.fee.toString())} ${_account.shareAccountSymbol}',
                         style: Theme.of(context).textTheme.bodyText1,
                       ),
                       alignment: Alignment.centerLeft,
@@ -237,7 +237,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                     child: Row(
                       children: [
                         Container(
-                          child: Image.network(_currency.imgPath!),
+                          child: Image.network(_account.imgPath!),
                           width: 24,
                         ),
                         SizedBox(
@@ -247,7 +247,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                           onTap: () {
                             try {
                               String url =
-                                  this.getLaunchLink(_currency, _transaction);
+                                  this.getLaunchLink(_account, _transaction);
                               _launchURL(url);
                             } catch (error) {
                               Log.debug(error); // ++ errorhandle, null-safety

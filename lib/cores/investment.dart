@@ -29,7 +29,7 @@ class InvestmentCore {
   }
 
   Future<Investment> generateInvestment(
-      Currency currency,
+      Account account,
       InvestStrategy strategy,
       InvestAmplitude amplitude,
       Decimal amount) async {
@@ -45,14 +45,13 @@ class InvestmentCore {
         Decimal.parse(estimatedProfit), Decimal.parse(irr));
   }
 
-  Future<List> createInvestment(
-      Currency currency, Investment investment) async {
+  Future<List> createInvestment(Account account, Investment investment) async {
     await Future.delayed(Duration(milliseconds: 500));
     // ++ api: post investment 2021/3/16 Emily
     int index =
-        _investAccount.indexWhere((acc) => acc.currency.id == currency.id);
+        _investAccount.indexWhere((acc) => acc.account.id == account.id);
     if (index < 0)
-      _investAccount.add(InvestAccount(currency, [investment])); // --
+      _investAccount.add(InvestAccount(account, [investment])); // --
     else
       _investAccount[index].investments.add(investment);
 

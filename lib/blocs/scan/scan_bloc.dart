@@ -23,7 +23,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
     if (event is ScanQRCode) {
       String result = event.result;
       Log.debug(result);
-      Currency? currency;
+      Account? account;
       if (result.contains(':')) {
         String prefix = result.split(':')[0];
 
@@ -31,49 +31,49 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
           yield ScannedWalletConnect(result);
         else if (prefix.toLowerCase() == 'ethereum') {
           try {
-            currency = AccountCore().getAllCurrencies().firstWhere((currency) =>
-                currency.type!.toLowerCase() == 'currency' &&
-                currency.symbol!.toLowerCase() == 'eth' &&
-                currency.publish!);
+            account = AccountCore().getAllAccounts().firstWhere((account) =>
+                account.type.toLowerCase() == 'account' &&
+                account.symbol.toLowerCase() == 'eth' &&
+                account.publish);
           } catch (e) {
-            currency = null;
+            account = null;
           }
-          if (currency != null)
-            yield ScannedAddress(currency, result);
+          if (account != null)
+            yield ScannedAddress(account, result);
           else
             yield ErrorFormat();
         } else if (prefix.toLowerCase() == 'bitcoin') {
           try {
-            currency = AccountCore().getAllCurrencies().firstWhere((currency) =>
-                currency.type!.toLowerCase() == 'currency' &&
-                currency.symbol!.toLowerCase() == 'btc' &&
-                currency.publish!);
+            account = AccountCore().getAllAccounts().firstWhere((account) =>
+                account.type.toLowerCase() == 'account' &&
+                account.symbol.toLowerCase() == 'btc' &&
+                account.publish);
           } catch (e) {
-            currency = null;
+            account = null;
           }
-          if (currency != null)
-            yield ScannedAddress(currency, result);
+          if (account != null)
+            yield ScannedAddress(account, result);
           else
             yield ErrorFormat();
         } else if (prefix.toLowerCase() == 'bitcointestnet') {
           try {
-            currency = AccountCore().getAllCurrencies().firstWhere((currency) =>
-                currency.type!.toLowerCase() == 'currency' &&
-                currency.symbol!.toLowerCase() == 'btc' &&
-                !currency.publish!);
+            account = AccountCore().getAllAccounts().firstWhere((account) =>
+                account.type.toLowerCase() == 'account' &&
+                account.symbol.toLowerCase() == 'btc' &&
+                !account.publish);
           } catch (e) {
-            currency = null;
+            account = null;
           }
-          if (currency != null)
-            yield ScannedAddress(currency, result);
+          if (account != null)
+            yield ScannedAddress(account, result);
           else
             yield ErrorFormat();
         } else
           yield ErrorFormat();
       } else {
-        Currency? currency = this._repo.getAddressType(result);
-        if (currency != null)
-          yield ScannedAddress(currency, result);
+        Account? account = this._repo.getAddressType(result);
+        if (account != null)
+          yield ScannedAddress(account, result);
         else
           yield ErrorFormat();
       }

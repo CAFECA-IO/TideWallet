@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import './account_currency.screen.dart';
+import './account.screen.dart';
 import './investment.screen.dart';
 import './swap.screen.dart';
 import './wallet_connect.screen.dart';
@@ -74,14 +74,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     List<HomeScreenContent> _screens = [
-      HomeScreenContent(AccountCurrencyScreen((int index) {
+      HomeScreenContent(AccountScreen((int index) {
         _pageController.jumpToPage(index);
         setState(
           () {
             _selectedIndex = index;
           },
         );
-      }), AccountCurrencyScreen.routeName, t('total_asset'),
+      }), AccountScreen.routeName, t('total_asset'),
           iconData: Icons.account_balance_wallet, bottomText: ''),
       // HomeScreenContent(
       //     InvestmentScreen(), InvestmentScreen.routeName, t('total_value'),

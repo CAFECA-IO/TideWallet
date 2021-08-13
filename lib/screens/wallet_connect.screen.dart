@@ -128,7 +128,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                     context: context,
                     dapp: state.peer!.url,
                     param: tx,
-                    currency: _bloc.currency,
+                    currency: _bloc.account,
                     submit: submit,
                     cancel: cancel);
                 break;

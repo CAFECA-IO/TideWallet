@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../screens/toggle_currency.screen.dart';
 
-import '../screens/account_currency.screen.dart';
+import '../screens/account.screen.dart';
 import '../screens/scan_address.screen.dart';
 import '../screens/wallet_connect.screen.dart';
 import '../screens/transaction_list.screen.dart';
@@ -194,7 +194,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
       if (routeName == ScanAddressScreen.routeName) return false;
       if (routeName == ScanScreen.routeName) return false;
       if (routeName == TransactionListScreen.routeName) return false;
-      if (routeName == AccountCurrencyScreen.routeName) return false;
+      if (routeName == AccountScreen.routeName) return false;
       if (routeName == SettingsScreen.routeName) return false;
       if (routeName == InvestmentScreen.routeName) return false;
       // if (routeName == CreditCardScreen.routeName) return false;

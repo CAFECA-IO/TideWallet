@@ -8,23 +8,23 @@ abstract class SwapEvent extends Equatable {
 }
 
 class InitSwap extends SwapEvent {
-  final Currency sellCurrency;
+  final Account sellAccount;
   // final int percentage;
-  InitSwap(this.sellCurrency);
+  InitSwap(this.sellAccount);
 }
 
-class ChangeSwapSellCurrency extends SwapEvent {
-  final Currency sellCurrency;
-  ChangeSwapSellCurrency(this.sellCurrency);
+class ChangeSwapSellAccount extends SwapEvent {
+  final Account sellAccount;
+  ChangeSwapSellAccount(this.sellAccount);
 }
 
-class ChangeSwapBuyCurrency extends SwapEvent {
-  final Currency buyCurrency;
-  ChangeSwapBuyCurrency(this.buyCurrency);
+class ChangeSwapBuyAccount extends SwapEvent {
+  final Account buyAccount;
+  ChangeSwapBuyAccount(this.buyAccount);
 }
 
-class ExchangeSwapCurrency extends SwapEvent {
-  ExchangeSwapCurrency();
+class ExchangeSwapAccount extends SwapEvent {
+  ExchangeSwapAccount();
 }
 
 class UpdateSellAmount extends SwapEvent {

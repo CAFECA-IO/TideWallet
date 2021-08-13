@@ -15,14 +15,14 @@ import 'dialogs/error_dialog.dart';
 final t = I18n.t;
 
 class SwapConfirm extends StatefulWidget {
-  final Map<String, String> sellCurrency;
-  final Map<String, String> buyCurrency;
+  final Map<String, String> sellAccount;
+  final Map<String, String> buyAccount;
   final String exchangeRate;
   final Function confirmFunc;
 
   SwapConfirm(
-      {required this.sellCurrency,
-      required this.buyCurrency,
+      {required this.sellAccount,
+      required this.buyAccount,
       required this.confirmFunc,
       required this.exchangeRate});
 
@@ -110,12 +110,12 @@ class _SwapConfirmState extends State<SwapConfirm> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        accountItem(widget.sellCurrency),
+                        accountItem(widget.sellAccount),
                         Text(
                           'to',
                           style: TextStyle(color: MyColors.secondary_02),
                         ),
-                        accountItem(widget.buyCurrency)
+                        accountItem(widget.buyAccount)
                       ],
                     ),
                     Padding(
@@ -140,11 +140,11 @@ class _SwapConfirmState extends State<SwapConfirm> {
                       child: Column(
                         children: [
                           detailItem(t('exchange_rate'),
-                              '1${widget.sellCurrency['symbol']} = ${widget.exchangeRate} ${widget.buyCurrency['symbol']}'),
+                              '1${widget.sellAccount['symbol']} = ${widget.exchangeRate} ${widget.buyAccount['symbol']}'),
                           detailItem(t('buy'),
-                              '${widget.buyCurrency['amount']} ${widget.buyCurrency['symbol']}'),
+                              '${widget.buyAccount['amount']} ${widget.buyAccount['symbol']}'),
                           detailItem(t('sell'),
-                              '${widget.sellCurrency['amount']} ${widget.sellCurrency['symbol']}')
+                              '${widget.sellAccount['amount']} ${widget.sellAccount['symbol']}')
                         ],
                       ),
                     ),

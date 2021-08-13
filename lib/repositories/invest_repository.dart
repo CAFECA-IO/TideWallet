@@ -17,17 +17,16 @@ class InvestRepository {
   }
 
   Future<Investment> generateInvestment(
-      Currency currency,
+      Account account,
       InvestStrategy strategy,
       InvestAmplitude amplitude,
       Decimal amount) async {
     return await InvestmentCore()
-        .generateInvestment(currency, strategy, amplitude, amount);
+        .generateInvestment(account, strategy, amplitude, amount);
   }
 
-  Future<bool> createInvestment(
-      Currency currency, Investment investment) async {
-    List result = await InvestmentCore().createInvestment(currency, investment);
+  Future<bool> createInvestment(Account account, Investment investment) async {
+    List result = await InvestmentCore().createInvestment(account, investment);
     if (result[0]) {
       InvestmentMessage invMsg = InvestmentMessage(
           evt: INVESTMENT_EVT.OnUpdateInvestment,

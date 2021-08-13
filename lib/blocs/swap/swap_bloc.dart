@@ -38,18 +38,18 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     SwapEvent event,
   ) async* {
     if (event is InitSwap) {
-      Currency sellCurrency = event.sellCurrency;
-      List<Currency> targets = AccountCore()
-          .getAllCurrencies()
-          .where((curr) => curr.id != event.sellCurrency.id)
+      Account sellAccount = event.sellAccount;
+      List<Account> targets = AccountCore()
+          .getAllAccounts()
+          .where((curr) => curr.id != event.sellAccount.id)
           .toList();
-      Currency buyCurrency = targets[0];
+      Account buyAccount = targets[0];
       Decimal usePercent = Decimal.fromInt(10);
-      Decimal sellAmount = Decimal.tryParse(sellCurrency.amount!)! *
+      Decimal sellAmount = Decimal.tryParse(sellAccount.balance)! *
           usePercent /
           Decimal.fromInt(100);
       Map<String, dynamic> result = await _swapRepo.getSwapDetail(
-          sellCurrency, buyCurrency,
+          sellAccount, buyAccount,
           sellAmount: sellAmount.toString());
       String buyAmount = result['expectedExchangeAmount'];
       String exchangeRate = result['exchangeRate'];
@@ -58,9 +58,9 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       Decimal gasLimit = Decimal.tryParse(result['gasLimit'])!;
 
       yield SwapLoaded(
-          sellCurrency: sellCurrency,
+          sellAccount: sellAccount,
           targets: targets,
-          buyCurrency: targets[0],
+          buyAccount: targets[0],
           contract: contract,
           exchangeRate: exchangeRate,
           sellAmount: sellAmount.toString(),
@@ -69,26 +69,26 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
           gasLimit: gasLimit);
     }
 
-    if (event is ChangeSwapSellCurrency) {
+    if (event is ChangeSwapSellAccount) {
       SwapLoaded _state = state as SwapLoaded;
-      Currency sellCurrency = event.sellCurrency;
-      List<Currency> targets = AccountCore()
-          .getAllCurrencies()
-          .where((curr) => curr.id != event.sellCurrency.id)
+      Account sellAccount = event.sellAccount;
+      List<Account> targets = AccountCore()
+          .getAllAccounts()
+          .where((curr) => curr.id != event.sellAccount.id)
           .toList();
-      Currency buyCurrency = _state.buyCurrency!;
-      if (event.sellCurrency.id == buyCurrency.id) buyCurrency = targets[0];
+      Account buyAccount = _state.buyAccount!;
+      if (event.sellAccount.id == buyAccount.id) buyAccount = targets[0];
       Decimal sellAmount = Decimal.tryParse(_state.sellAmount!)! <
-                  Decimal.parse(sellCurrency.amount!) &&
+                  Decimal.parse(sellAccount.balance) &&
               Decimal.tryParse(_state.sellAmount!)! != Decimal.zero
           ? Decimal.tryParse(_state.sellAmount!)!
-          : Decimal.tryParse(sellCurrency.amount!)! *
+          : Decimal.tryParse(sellAccount.balance)! *
               Decimal.fromInt(10) /
               Decimal.fromInt(100);
-      Log.debug('sellCurrency.amount: ${sellCurrency.amount}');
+      Log.debug('sellAccount.amount: ${sellAccount.balance}');
       Log.debug('sellAmount: $sellAmount');
       Map<String, dynamic> result = await _swapRepo.getSwapDetail(
-          sellCurrency, buyCurrency,
+          sellAccount, buyAccount,
           sellAmount: sellAmount.toString());
       Decimal buyAmount = Decimal.tryParse(result['expectedExchangeAmount'])!;
       Decimal exchangeRate = Decimal.tryParse(result['exchangeRate'])!;
@@ -97,8 +97,8 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       Decimal gasLimit = Decimal.tryParse(result['gasLimit'])!;
 
       yield _state.copyWith(
-          sellCurrency: sellCurrency,
-          buyCurrency: buyCurrency,
+          sellAccount: sellAccount,
+          buyAccount: buyAccount,
           sellAmount: sellAmount.toString(),
           contract: contract,
           targets: targets,
@@ -108,11 +108,11 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
           gasLimit: gasLimit);
     }
 
-    if (event is ChangeSwapBuyCurrency) {
+    if (event is ChangeSwapBuyAccount) {
       SwapLoaded _state = state as SwapLoaded;
-      Currency buyCurrency = event.buyCurrency;
+      Account buyAccount = event.buyAccount;
       Map<String, dynamic> result = await _swapRepo.getSwapDetail(
-          _state.sellCurrency!, buyCurrency,
+          _state.sellAccount!, buyAccount,
           sellAmount: _state.sellAmount);
       Decimal buyAmount = Decimal.tryParse(result['expectedExchangeAmount'])!;
       Decimal exchangeRate = Decimal.tryParse(result['exchangeRate'])!;
@@ -120,7 +120,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       Decimal gasPrice = Decimal.tryParse(result['gasPrice'])!;
       Decimal gasLimit = Decimal.tryParse(result['gasLimit'])!;
       yield _state.copyWith(
-          buyCurrency: buyCurrency,
+          buyAccount: buyAccount,
           exchangeRate: exchangeRate.toString(),
           buyAmount: buyAmount.toString(),
           contract: contract,
@@ -128,13 +128,13 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
           gasLimit: gasLimit);
     }
 
-    if (event is ExchangeSwapCurrency) {
+    if (event is ExchangeSwapAccount) {
       SwapLoaded _state = state as SwapLoaded;
-      Decimal sellAmount = Decimal.tryParse(_state.buyCurrency!.amount!)! *
+      Decimal sellAmount = Decimal.tryParse(_state.buyAccount!.balance)! *
           Decimal.fromInt(10) /
           Decimal.fromInt(100);
       Map<String, dynamic> result = await _swapRepo.getSwapDetail(
-          _state.buyCurrency!, _state.sellCurrency!,
+          _state.buyAccount!, _state.sellAccount!,
           sellAmount: sellAmount.toString());
 
       Decimal buyAmount = Decimal.tryParse(result['expectedExchangeAmount'])!;
@@ -143,14 +143,14 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       Decimal gasPrice = Decimal.tryParse(result['gasPrice'])!;
       Decimal gasLimit = Decimal.tryParse(result['gasLimit'])!;
 
-      List<Currency> targets = AccountCore()
-          .getAllCurrencies()
-          .where((curr) => curr.id != _state.buyCurrency!.id)
+      List<Account> targets = AccountCore()
+          .getAllAccounts()
+          .where((curr) => curr.id != _state.buyAccount!.id)
           .toList();
 
       yield _state.copyWith(
-          sellCurrency: _state.buyCurrency,
-          buyCurrency: _state.sellCurrency,
+          sellAccount: _state.buyAccount,
+          buyAccount: _state.sellAccount,
           sellAmount: sellAmount.toString(),
           contract: contract,
           targets: targets,
@@ -164,7 +164,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       SwapLoaded _state = state as SwapLoaded;
       Decimal sellAmount = Decimal.tryParse(event.amount)!;
       Map<String, dynamic> result = await _swapRepo.getSwapDetail(
-          _state.sellCurrency!, _state.buyCurrency!,
+          _state.sellAccount!, _state.buyAccount!,
           sellAmount: sellAmount.toString());
       Decimal buyAmount = Decimal.tryParse(result['expectedExchangeAmount'])!;
       Decimal exchangeRate = Decimal.tryParse(result['exchangeRate'])!;
@@ -184,7 +184,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
 
       if (buyAmount == Decimal.zero) return;
       Map<String, dynamic> result = await _swapRepo.getSwapDetail(
-          _state.sellCurrency!, _state.buyCurrency!,
+          _state.sellAccount!, _state.buyAccount!,
           buyAmount: buyAmount.toString());
       Decimal sellAmount = Decimal.tryParse(result['expectedExchangeAmount'])!;
       Decimal exchangeRate = Decimal.tryParse(result['exchangeRate'])!;
@@ -204,7 +204,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       this.add(ClearSwapResult());
 
       if (Decimal.tryParse(_state.sellAmount!)! >
-          Decimal.tryParse(_state.sellCurrency!.amount!)!) {
+          Decimal.tryParse(_state.sellAccount!.balance)!) {
         yield _state.copyWith(result: SwapResult.insufficient);
         return;
       }
@@ -220,13 +220,13 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     if (event is SwapConfirmed) {
       SwapLoaded _state = state as SwapLoaded;
       // ++ error handle if buyAmoumt is too high need to update SwapUI => exchangeRate, and expected buyAmount 2021/3/19 Emily
-      _transactionRepo.setCurrency(_state.sellCurrency!);
+      _transactionRepo.setAccount(_state.sellAccount!);
 
       // List result = await _swapRepo.swap(
       //   (await _transactionRepo.getPrivKey(event.password, 0, 0)),
-      //   _state.sellCurrency,
+      //   _state.sellAccount,
       //   _state.sellAmount,
-      //   _state.buyCurrency,
+      //   _state.buyAccount,
       //   _state.buyAmount,
       //   _state.contract,
       //   _state.gasPrice,

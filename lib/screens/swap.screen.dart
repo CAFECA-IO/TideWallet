@@ -36,8 +36,8 @@ class _SwapScreenState extends State<SwapScreen> {
   late SwapBloc _swapBloc;
   TextEditingController _sellAmountController = TextEditingController();
   TextEditingController _buyAmountController = TextEditingController();
-  late Map<String, String> _sellCurrency;
-  late Map<String, String> _buyCurrency;
+  late Map<String, String> _sellAccount;
+  late Map<String, String> _buyAccount;
   bool _isInit = true;
   FocusNode _sellAmountFocusNode = FocusNode();
   FocusNode _buyAmountFocusNode = FocusNode();
@@ -55,14 +55,14 @@ class _SwapScreenState extends State<SwapScreen> {
       Map? argument = ModalRoute.of(context)?.settings.arguments as Map?;
 
       if (argument != null) {
-        Currency currency = argument['currency'];
-        _swapBloc.add(InitSwap(currency));
+        Account account = argument['account'];
+        _swapBloc.add(InitSwap(account));
       } else {
-        List<Currency> _currencies = AccountCore().getAllCurrencies();
-        Currency _curr = _currencies.firstWhere(
+        List<Account> _currencies = AccountCore().getAllAccounts();
+        Account _curr = _currencies.firstWhere(
             (curr) =>
-                Decimal.tryParse(curr.amount!) != null &&
-                Decimal.tryParse(curr.amount!)! > Decimal.zero,
+                Decimal.tryParse(curr.balance) != null &&
+                Decimal.tryParse(curr.balance)! > Decimal.zero,
             orElse: () => _currencies.first);
         _swapBloc.add(InitSwap(_curr));
       }
@@ -107,9 +107,8 @@ class _SwapScreenState extends State<SwapScreen> {
             showModalBottomSheet(
               isScrollControlled: true,
               context: context,
-              builder: (context) =>
-                  SwapSuccess(_sellCurrency, _buyCurrency, () {
-                this._swapBloc.add(InitSwap(state.sellCurrency!));
+              builder: (context) => SwapSuccess(_sellAccount, _buyAccount, () {
+                this._swapBloc.add(InitSwap(state.sellAccount!));
               }),
             );
 
@@ -122,14 +121,14 @@ class _SwapScreenState extends State<SwapScreen> {
 
           // CheckSwap ==>
           if (state.result == SwapResult.valid) {
-            _sellCurrency = {
-              'icon': state.sellCurrency!.imgPath!,
-              'symbol': state.sellCurrency!.symbol!,
+            _sellAccount = {
+              'icon': state.sellAccount!.imgPath!,
+              'symbol': state.sellAccount!.symbol!,
               'amount': state.sellAmount.toString()
             };
-            _buyCurrency = {
-              'icon': state.buyCurrency!.imgPath!,
-              'symbol': state.buyCurrency!.symbol!,
+            _buyAccount = {
+              'icon': state.buyAccount!.imgPath!,
+              'symbol': state.buyAccount!.symbol!,
               'amount': state.buyAmount.toString()
             };
             showModalBottomSheet(
@@ -138,8 +137,8 @@ class _SwapScreenState extends State<SwapScreen> {
               context: context,
               builder: (context) => SwapConfirm(
                 exchangeRate: state.exchangeRate.toString(),
-                sellCurrency: _sellCurrency,
-                buyCurrency: _buyCurrency,
+                sellAccount: _sellAccount,
+                buyAccount: _buyAccount,
                 confirmFunc: (String password) {
                   _swapBloc.add(SwapConfirmed(password));
                 },
@@ -180,7 +179,7 @@ class _SwapScreenState extends State<SwapScreen> {
                     children: <Widget>[
                       Column(
                         children: [
-                          SwapCard(state.sellCurrency!,
+                          SwapCard(state.sellAccount!,
                               onTap: () {
                                 setState(() {
                                   _currentController = _sellAmountController;
@@ -194,12 +193,12 @@ class _SwapScreenState extends State<SwapScreen> {
                                 if (v.isEmpty) return;
                                 _swapBloc.add(UpdateBuyAmount(v));
                               },
-                              onSelect: (Currency v) {
-                                _swapBloc.add(ChangeSwapSellCurrency(v));
+                              onSelect: (Account v) {
+                                _swapBloc.add(ChangeSwapSellAccount(v));
                               },
                               currencies:
-                                  [state.sellCurrency!] + state.targets!),
-                          SwapCard(state.buyCurrency!,
+                                  [state.sellAccount!] + state.targets!),
+                          SwapCard(state.buyAccount!,
                               onTap: () {
                                 setState(() {
                                   _currentController = _buyAmountController;
@@ -213,8 +212,8 @@ class _SwapScreenState extends State<SwapScreen> {
                                 if (v.isEmpty) return;
                                 _swapBloc.add(UpdateBuyAmount(v));
                               },
-                              onSelect: (Currency v) {
-                                _swapBloc.add(ChangeSwapBuyCurrency(v));
+                              onSelect: (Account v) {
+                                _swapBloc.add(ChangeSwapBuyAccount(v));
                               },
                               currencies: state.targets),
                         ],
@@ -229,7 +228,7 @@ class _SwapScreenState extends State<SwapScreen> {
                         // right: 40.0,
                         child: GestureDetector(
                           onTap: () {
-                            this._swapBloc.add(ExchangeSwapCurrency());
+                            this._swapBloc.add(ExchangeSwapAccount());
                           },
                           child: Align(
                             alignment: Alignment.center,
@@ -268,8 +267,8 @@ class _SwapScreenState extends State<SwapScreen> {
                         textAlign: TextAlign.center,
                       ),
                       Text(
-                          '1 ${state.sellCurrency!.symbol} = ${Formatter.formatDecimal(state.exchangeRate!)} ${state.buyCurrency!.symbol}')
-                      // Text('${state.sellCurrency.symbol}/${state.buyCurrency.symbol} = ${state.exchangeRate}')
+                          '1 ${state.sellAccount!.symbol} = ${Formatter.formatDecimal(state.exchangeRate!)} ${state.buyAccount!.symbol}')
+                      // Text('${state.sellAccount.symbol}/${state.buyAccount.symbol} = ${state.exchangeRate}')
                     ],
                   ),
                 ),

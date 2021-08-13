@@ -11,13 +11,13 @@ class SwapCore {
   SwapCore._internal();
 
   Future<Map<String, dynamic>> getSwapDetail(
-      Currency sellCurrency, Currency buyCurrency,
+      Account sellAccount, Account buyAccount,
       {String? sellAmount, String? buyAmount}) async {
     if (sellAmount != null) {
       Map<String, String> payload = {
-        'sellCurrencyId': sellCurrency.id!,
+        'sellAccountId': sellAccount.id,
         'sellAmount': sellAmount.toString(),
-        'buyCurrencyId': buyCurrency.id!,
+        'buyAccountId': buyAccount.id,
       };
       Map<String, String> result;
       // ++
@@ -35,7 +35,7 @@ class SwapCore {
         'exchangeRate': '$randomNumber',
         'expectedExchangeAmount':
             '${randomNumber * Decimal.tryParse(sellAmount)!}',
-        'contract': '', // ++ buyCurrency cfc token contract，
+        'contract': '', // ++ buyAccount cfc token contract，
         'gasPrice': '',
         'gasLimit': ''
       };
@@ -44,9 +44,9 @@ class SwapCore {
       return result;
     } else if (buyAmount != null) {
       Map<String, String> payload = {
-        'sellCurrencyId': sellCurrency.id!,
+        'sellAccountId': sellAccount.id,
         'sellAmount': sellAmount.toString(),
-        'buyCurrencyId': buyCurrency.id!,
+        'buyAccountId': buyAccount.id,
       };
       Map<String, String> result;
       // ++
@@ -63,7 +63,7 @@ class SwapCore {
         'exchangeRate': '$randomNumber',
         'expectedExchangeAmount':
             '${randomNumber * Decimal.tryParse(sellAmount!)!}',
-        'contract': '', // ++ buyCurrency cfc token contract
+        'contract': '', // ++ buyAccount cfc token contract
         'gasPrice': '',
         'gasLimit': ''
       };

@@ -38,7 +38,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
   late TextEditingController _gasController;
   late TextEditingController _gasPriceController;
   late TransactionRepository _repo;
-  late Currency _currency;
+  late Account _account;
   late String? _address;
   final _form = GlobalKey<FormState>();
   bool _isSelected = false;
@@ -48,17 +48,17 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
     Map<String, dynamic> arg =
         ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
     Log.debug(arg);
-    _currency = arg["account"];
+    _account = arg["account"];
     _address = arg["address"];
     _addressController = TextEditingController();
     _amountController = TextEditingController();
     _gasController = TextEditingController();
     _gasPriceController = TextEditingController();
     this._repo = Provider.of<TransactionRepository>(context);
-    this._repo.setCurrency(_currency);
+    this._repo.setAccount(_account);
     _fiatBloc = BlocProvider.of<FiatBloc>(context);
     _bloc = BlocProvider.of<TransactionBloc>(context)
-      ..add(UpdateTransactionCreateCurrency(this._currency));
+      ..add(UpdateTransactionCreateAccount(this._account));
     if (_address != null) {
       _addressController.text = _address!;
       _bloc.add(ValidAddress(_addressController.text));
@@ -181,7 +181,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                       Container(
                         child: Align(
                           child: Text(
-                            '${t('balance')}: ${state.spandable != null ? (Formatter.formatDecimal(_repo.currency.amount.toString()) + " " + _repo.currency.symbol!) : "loading..."}',
+                            '${t('balance')}: ${state.spandable != null ? (Formatter.formatDecimal(_repo.account.balance.toString()) + " " + _repo.account.symbol!) : "loading..."}',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                           alignment: Alignment.centerRight,
@@ -239,7 +239,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                                           RegExp(r'(^\d*\.?\d*)$')),
                                     ],
                                     labelText:
-                                        '${t('custom')} Gas Price (${_repo.currency.symbol})',
+                                        '${t('custom')} Gas Price (${_repo.account.symbol})',
                                     autovalidate: AutovalidateMode.disabled,
                                     controller: _gasPriceController,
                                     onChanged: (String v) {
@@ -285,7 +285,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                             style: Theme.of(context).textTheme.headline3,
                           ),
                           Text(
-                            '${state.fee == null || state.fee.toString().isEmpty ? "loading..." : (Formatter.formatDecimal(state.fee.toString()) + " " + _repo.currency.accountSymbol!)}',
+                            '${state.fee == null || state.fee.toString().isEmpty ? "loading..." : (Formatter.formatDecimal(state.fee.toString()) + " " + _repo.account.shareAccountSymbol)}',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                         ],
@@ -298,7 +298,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                         ),
                       ),
                       Spacer(),
-                      _repo.currency.accountType == ACCOUNT.ETH
+                      _repo.account.accountType == ACCOUNT.ETH
                           ? Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
@@ -335,7 +335,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                               Navigator.of(context).pushNamed(
                                   TransactionPreviewScreen.routeName,
                                   arguments: {
-                                    "currency": _currency,
+                                    "account": _account,
                                     "transaction": Transaction.base(
                                       address: _addressController.text,
                                       direction: TransactionDirection.sent,

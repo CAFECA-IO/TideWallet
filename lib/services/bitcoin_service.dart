@@ -196,7 +196,7 @@ class BitcoinService extends AccountServiceDecorator {
 
     if (now - this.service.lastSyncTimestamp > this.syncInterval) {
       Log.btc('_syncUTXO');
-      String currencyId = this.service.accountId;
+      String currencyId = this.service.shareAccountId;
       Log.btc('_syncUTXO currencyId: $currencyId');
 
       APIResponse response = await HTTPAgent()
@@ -230,7 +230,7 @@ class BitcoinService extends AccountServiceDecorator {
   }
 
   @override
-  Future updateCurrency(String currencyId, Map payload) {
-    return this.service.updateCurrency(currencyId, payload);
+  Future updateAccount(String currencyId, Map payload) {
+    return this.service.updateAccount(currencyId, payload);
   }
 }

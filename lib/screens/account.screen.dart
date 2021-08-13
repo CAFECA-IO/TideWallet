@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
-import '../blocs/account_currency/account_currency_bloc.dart';
+import '../blocs/account/account_bloc.dart';
 import '../blocs/fiat/fiat_bloc.dart';
 import '../widgets/header.dart';
 import '../widgets/account_item.dart';
@@ -15,18 +15,18 @@ import '../screens/toggle_currency.screen.dart';
 
 final t = I18n.t;
 
-class AccountCurrencyScreen extends StatefulWidget {
+class AccountScreen extends StatefulWidget {
   final Function jumpTo;
   static const routeName = '/account';
 
-  AccountCurrencyScreen(this.jumpTo);
+  AccountScreen(this.jumpTo);
 
   @override
-  _AccountCurrencyScreenState createState() => _AccountCurrencyScreenState();
+  _AccountScreenState createState() => _AccountScreenState();
 }
 
-class _AccountCurrencyScreenState extends State<AccountCurrencyScreen> {
-  late AccountCurrencyBloc _bloc;
+class _AccountScreenState extends State<AccountScreen> {
+  late AccountBloc _bloc;
   late AccountRepository _repo;
   late TraderRepository _traderRepo;
 
@@ -35,7 +35,7 @@ class _AccountCurrencyScreenState extends State<AccountCurrencyScreen> {
     _repo = Provider.of<AccountRepository>(context);
     _traderRepo = Provider.of<TraderRepository>(context);
 
-    _bloc = AccountCurrencyBloc(_repo, _traderRepo)..add(GetCurrencyList());
+    _bloc = AccountBloc(_repo, _traderRepo)..add(GetAccountList());
     super.didChangeDependencies();
   }
 
@@ -43,7 +43,7 @@ class _AccountCurrencyScreenState extends State<AccountCurrencyScreen> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        BlocBuilder<AccountCurrencyBloc, AccountCurrencyState>(
+        BlocBuilder<AccountBloc, AccountState>(
           bloc: _bloc,
           builder: (context, state) {
             return Container(
@@ -66,9 +66,9 @@ class _AccountCurrencyScreenState extends State<AccountCurrencyScreen> {
                           childAspectRatio: 1.0,
                           mainAxisSpacing: 4.0,
                           crossAxisSpacing: 4.0),
-                      children: state.currencies
+                      children: state.accounts
                           .map(
-                            (Currency acc) => AccountItem(
+                            (Account acc) => AccountItem(
                               acc,
                               () {
                                 Navigator.of(context).pushNamed(
