@@ -1,7 +1,7 @@
 import 'package:convert/convert.dart';
 import 'package:floor/floor.dart';
 
-import 'account_currency.dart';
+import 'account.dart';
 import '../../models/transaction.model.dart';
 import '../../models/account.model.dart';
 
@@ -12,11 +12,11 @@ class TransactionEntity {
   final String transactionId;
 
   @ForeignKey(
-      childColumns: ['accountcurrency_id'],
-      parentColumns: ['accountcurrency_id'],
-      entity: AccountCurrencyEntity)
-  @ColumnInfo(name: 'accountcurrency_id')
-  final String accountcurrencyId;
+      childColumns: ['account_id'],
+      parentColumns: ['id'],
+      entity: AccountEntity)
+  @ColumnInfo(name: 'account_id')
+  final String accountId;
 
   @ColumnInfo(name: 'tx_id')
   final String txId;
@@ -54,7 +54,7 @@ class TransactionEntity {
 
   TransactionEntity({
     required this.transactionId,
-    required this.accountcurrencyId,
+    required this.accountId,
     required this.txId,
     required this.confirmation,
     required this.sourceAddress,
@@ -71,9 +71,9 @@ class TransactionEntity {
     required this.amount,
   });
 
-  TransactionEntity.fromJson(String accountcurrencyId, Map data)
-      : this.accountcurrencyId = accountcurrencyId,
-        this.transactionId = accountcurrencyId + data['txid'],
+  TransactionEntity.fromJson(String accountId, Map data)
+      : this.accountId = accountId,
+        this.transactionId = accountId + data['txid'],
         this.amount = data['amount'].toString(),
         this.txId = data['txid'],
         this.sourceAddress = data['source_addresses'],
@@ -87,10 +87,10 @@ class TransactionEntity {
         this.timestamp = data['timestamp'],
         this.note = data['note'];
 
-  TransactionEntity.fromTransaction(Currency currency, Transaction transaction,
+  TransactionEntity.fromTransaction(Account account, Transaction transaction,
       String amount, String fee, String gasPrice, String? destinationAddresses)
-      : this.accountcurrencyId = currency.id!,
-        this.transactionId = currency.id! + transaction.txId!,
+      : this.accountId = account.id,
+        this.transactionId = account.id + transaction.txId!,
         this.amount = amount, // in smallest coin unit
         this.txId = transaction.txId!,
         this.sourceAddress = transaction.sourceAddresses,

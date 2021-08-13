@@ -87,7 +87,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     Decimal? gasLimit,
     int? nonce,
     int? chainId,
-    String? accountcurrencyId,
+    String? accountId,
     Decimal? fee,
     List<UnspentTxOut>? unspentTxOuts,
     int? keyIndex,
@@ -142,7 +142,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     if (change > Decimal.zero) {
       UnspentTxOut changeUtxo = UnspentTxOut.fromSmallestUint(
           id: signedTransaction.txId! + "-1",
-          accountcurrencyId: accountcurrencyId!,
+          accountId: accountId!,
           txId: signedTransaction.txId!,
           vout: 1,
           type: this.segwitType == SegwitType.nativeSegWit

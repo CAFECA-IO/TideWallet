@@ -23,7 +23,7 @@ abstract class TransactionService {
       Decimal? gasLimit,
       int? nonce,
       int? chainId,
-      String? accountcurrencyId,
+      String? accountId,
       List<UnspentTxOut>? unspentTxOuts,
       String? changeAddress,
       int? keyIndex,

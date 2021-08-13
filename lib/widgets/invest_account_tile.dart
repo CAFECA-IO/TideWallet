@@ -7,11 +7,11 @@ import '../helpers/i18n.dart';
 final t = I18n.t;
 
 class InvestAccountTile extends StatelessWidget {
-  final Currency currency;
+  final Account account;
   final Investment investment;
   final Function()? onClick;
 
-  InvestAccountTile(this.currency, this.investment, this.onClick);
+  InvestAccountTile(this.account, this.investment, this.onClick);
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -29,8 +29,7 @@ class InvestAccountTile extends StatelessWidget {
                     t(investment.investAmplitude.value) +
                     ")"),
                 SizedBox(height: 6.0),
-                Text(
-                    investment.investAmount.toString() + " " + currency.symbol!,
+                Text(investment.investAmount.toString() + " " + account.symbol!,
                     style: Theme.of(context).textTheme.subtitle2),
               ],
               crossAxisAlignment: CrossAxisAlignment.start,

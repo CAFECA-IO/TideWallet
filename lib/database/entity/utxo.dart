@@ -1,7 +1,7 @@
 import 'package:floor/floor.dart';
 import 'package:convert/convert.dart';
 
-import 'account_currency.dart';
+import 'account.dart';
 import '../../models/utxo.model.dart';
 import '../../models/bitcoin_transaction.model.dart';
 
@@ -9,9 +9,9 @@ import '../../models/bitcoin_transaction.model.dart';
   tableName: 'Utxo',
   foreignKeys: [
     ForeignKey(
-      childColumns: ['accountcurrency_id'],
-      parentColumns: ['accountcurrency_id'],
-      entity: AccountCurrencyEntity,
+      childColumns: ['account_id'],
+      parentColumns: ['id'],
+      entity: AccountEntity,
       onDelete: ForeignKeyAction.cascade,
     )
   ],
@@ -21,8 +21,8 @@ class UtxoEntity {
   @ColumnInfo(name: 'utxo_id') // --  nullable: false
   final String utxoId;
 
-  @ColumnInfo(name: 'accountcurrency_id')
-  final String accountcurrencyId;
+  @ColumnInfo(name: 'account_id')
+  final String accountId;
 
   @ColumnInfo(name: 'tx_id')
   final String txId;
@@ -51,7 +51,7 @@ class UtxoEntity {
 
   UtxoEntity(
       this.utxoId,
-      this.accountcurrencyId,
+      this.accountId,
       this.txId,
       this.vout,
       this.type,
@@ -66,7 +66,7 @@ class UtxoEntity {
 
   UtxoEntity.fromUnspentUtxo(UnspentTxOut _utxo)
       : this.utxoId = _utxo.id,
-        this.accountcurrencyId = _utxo.accountcurrencyId,
+        this.accountId = _utxo.accountId,
         this.txId = _utxo.txId,
         this.vout = _utxo.vout,
         this.type = _utxo.type.value,
@@ -81,7 +81,7 @@ class UtxoEntity {
 
   UtxoEntity.fromJson(String accountId, Map<String, dynamic> data)
       : this.utxoId = data['txid'] + "-" + "${data['vout']}",
-        this.accountcurrencyId = accountId,
+        this.accountId = accountId,
         this.txId = data['txid'],
         this.vout = data['vout'],
         this.type = data['type'],
@@ -100,7 +100,7 @@ class UtxoEntity {
       identical(this, other) ||
       other is UtxoEntity &&
           utxoId == other.utxoId &&
-          accountcurrencyId == other.accountcurrencyId &&
+          accountId == other.accountId &&
           txId == other.txId &&
           vout == other.vout &&
           type == other.type &&
@@ -122,7 +122,7 @@ class JoinUtxo {
   final String utxoId;
 
   @ColumnInfo(name: 'accountcurrency_id')
-  final String accountcurrencyId;
+  final String accountId;
 
   @ColumnInfo(name: 'tx_id')
   final String txId;
@@ -153,7 +153,7 @@ class JoinUtxo {
 
   JoinUtxo(
       this.utxoId,
-      this.accountcurrencyId,
+      this.accountId,
       this.txId,
       this.vout,
       this.type,
@@ -169,7 +169,7 @@ class JoinUtxo {
 
   JoinUtxo.fromUnspentUtxo(UnspentTxOut _utxo)
       : this.utxoId = _utxo.id,
-        this.accountcurrencyId = _utxo.accountcurrencyId,
+        this.accountId = _utxo.accountId,
         this.txId = _utxo.txId,
         this.vout = _utxo.vout,
         this.type = _utxo.type.value,

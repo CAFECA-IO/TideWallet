@@ -22,67 +22,67 @@ class TransactionStatusBloc
       : super(TransactionStatusInitial(null, [], null)) {
     _subscription?.cancel();
     this._repo.listener.listen((msg) {
-      if (msg.evt == ACCOUNT_EVT.OnUpdateCurrency) {
-        int index = msg.value.indexWhere((Currency currency) {
-          return currency.id == this._repo.currency.id;
+      if (msg.evt == ACCOUNT_EVT.OnUpdateAccount) {
+        int index = msg.value.indexWhere((Account account) {
+          return account.id == this._repo.account.id;
         });
         if (index < 0) return;
-        Currency currency = msg.value[index];
-        this.add(UpdateCurrency(_addUSD(currency)));
+        Account account = msg.value[index];
+        this.add(UpdateAccount(_addUSD(account)));
       }
       if (msg.evt == ACCOUNT_EVT.OnUpdateTransactions) {
-        Currency currency = msg.value['currency'];
-        if (currency.id != this._repo.currency.id) return;
+        Account account = msg.value['account'];
+        if (account.id != this._repo.account.id) return;
         List<Transaction> transactions = msg.value['transactions'];
-        this.add(UpdateTransactionList(_addUSD(currency), transactions));
+        this.add(UpdateTransactionList(_addUSD(account), transactions));
       }
 
       if (msg.evt == ACCOUNT_EVT.OnUpdateTransaction) {
-        Currency currency = msg.value['currency'];
-        if (currency.id != this._repo.currency.id) return;
+        Account account = msg.value['account'];
+        if (account.id != this._repo.account.id) return;
         Transaction transaction = msg.value['transaction'];
         this.add(UpdateTransaction(transaction));
       }
     });
   }
 
-  Currency _addUSD(Currency c) {
-    return c.copyWith(inUSD: _traderRepo.calculateToFiat(c).toString());
+  Account _addUSD(Account acc) {
+    return acc.copyWith(inFiat: _traderRepo.calculateToFiat(acc).toString());
   }
 
   @override
   Stream<TransactionStatusState> mapEventToState(
     TransactionStatusEvent event,
   ) async* {
-    if (event is UpdateCurrency) {
-      if (state.currency == null) {
-        Log.debug('event.currency: ${event.currency}');
-        _repo.setCurrency(event.currency);
+    if (event is UpdateAccount) {
+      if (state.account == null) {
+        Log.debug('event.account: ${event.account}');
+        _repo.setAccount(event.account);
 
         final List<Transaction> transactions = await _repo.getTransactions();
         Log.debug('transactions: $transactions');
 
-        yield TransactionStatusLoaded(event.currency, transactions, null);
-      } else if (state.currency!.symbol == event.currency.symbol) {
+        yield TransactionStatusLoaded(event.account, transactions, null);
+      } else if (state.account!.symbol == event.account.symbol) {
         yield TransactionStatusLoaded(
-            event.currency, state.transactions, state.transaction);
+            event.account, state.transactions, state.transaction);
       }
     }
     if (event is UpdateTransactionList) {
-      if (state.currency != null && state.currency!.id == event.currency.id) {
+      if (state.account != null && state.account!.id == event.account.id) {
         if (state.transaction != null) {
           int index = event.transactions.indexWhere(
               (Transaction tx) => tx.txId == state.transaction!.txId);
           yield TransactionStatusLoaded(
-              event.currency, event.transactions, event.transactions[index]);
+              event.account, event.transactions, event.transactions[index]);
         }
-        yield TransactionStatusLoaded(event.currency, event.transactions, null);
+        yield TransactionStatusLoaded(event.account, event.transactions, null);
       }
     }
     if (event is UpdateTransaction) {
       Log.debug('event.transaction: ${event.transaction}');
       yield TransactionStatusLoaded(
-          state.currency!, state.transactions, event.transaction);
+          state.account!, state.transactions, event.transaction);
     }
   }
 }

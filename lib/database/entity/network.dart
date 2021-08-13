@@ -3,14 +3,13 @@ import 'package:floor/floor.dart';
 @Entity(tableName: 'Network')
 class NetworkEntity {
   @primaryKey
-  @ColumnInfo(name: 'network_id')
-  final String networkId;
+  @ColumnInfo(name: 'blockchain_id')
+  final String blockchainId;
 
-  // @ColumnInfo(nullable: false)
   final String network;
 
-  @ColumnInfo(name: 'coin_type')
-  final int coinType;
+  @ColumnInfo(name: 'blockchain_coin_type')
+  final int blockchainCoinType;
 
   final bool publish;
 
@@ -18,9 +17,9 @@ class NetworkEntity {
   final int chainId;
 
   NetworkEntity(
-      {required this.networkId,
+      {required this.blockchainId,
       required this.network,
-      required this.coinType,
+      required this.blockchainCoinType,
       required this.publish,
       required this.chainId});
 
@@ -29,18 +28,19 @@ class NetworkEntity {
       identical(this, other) ||
       other is NetworkEntity &&
           runtimeType == other.runtimeType &&
-          networkId == other.networkId &&
+          blockchainId == other.blockchainId &&
           network == other.network &&
           publish == other.publish;
 
   @override
-  int get hashCode => networkId.hashCode ^ network.hashCode ^ publish.hashCode;
+  int get hashCode =>
+      blockchainId.hashCode ^ network.hashCode ^ publish.hashCode;
 
   NetworkEntity.fromJson(Map json)
-      : this.networkId = json['blockchain_id'],
+      : this.blockchainId = json['blockchain_id'],
         this.network = json['name'],
-        this.coinType = json['coin_type'],
-        this.chainId =
-            json['network_id'], // TODO: Change 'network_id' to 'chain_id'
+        this.blockchainCoinType = json['coin_type'],
+        this.chainId = json[
+            'network_id'], // ++ backedn api 2021/08/12 => TODO: Change 'network_id' to 'chain_id'
         this.publish = json['publish'];
 }

@@ -1,161 +1,182 @@
 import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
 
+import '../database/entity/account.dart';
+import '../database/entity/currency.dart';
 import '../database/entity/exchage_rate.dart';
-import '../database/entity/account_currency.dart';
 import '../constants/account_config.dart';
 
 enum ACCOUNT_EVT {
   OnUpdateAccount,
-  OnUpdateCurrency,
+  OnUpdateAccounts,
   OnUpdateTransactions,
   OnUpdateTransaction,
   ClearAll,
   ToggleDisplayCurrency
 }
 
-class Currency {
-  final String? id; // AccountCurrencyEntity id for Backend
-  final String accountId;
-  final String currencyId; // CurrencyEntity currency_id for APP
+class Account {
+  final String id;
+  final String shareAccountId;
+  final String userId;
   final String blockchainId;
-  final int? cointype;
-  final int? purpose;
-  final int? accountIndex; // ++ ??, null-safety
-  final String? symbol;
-  final String? imgPath;
-  String? amount;
-  final String? inUSD;
-  final String? name;
-  final ACCOUNT? accountType;
-  final String? network;
-  final int? chainId;
-  final int? decimals;
-  final bool? publish;
+  final String currencyId; // CurrencyEntity currency_id for APP
+  final int purpose;
+  final int accountCoinType;
+  final int accountIndex;
+  final int curveType;
+  String balance;
+  final int numberOfUsedExternalKey;
+  final int numberOfUsedInternalKey;
+  final int lastSyncTime;
+  final String keystore;
+  final String network;
+  final int blockchainCoinType;
+  final int chainId;
+  final String name;
+  final String symbol;
+  final String type;
+  final bool publish;
+  final int decimals;
+  final String exchangeRate;
+  final String imgPath;
   final String? contract;
-  final String? type;
-  final String? accountSymbol;
-  final int? accountDecimals;
-  final String? accountAmount;
 
-  Currency({
-    this.id,
-    required this.accountId,
-    required this.blockchainId,
-    required this.currencyId,
-    this.cointype,
-    this.purpose,
-    this.amount,
-    this.inUSD,
-    this.imgPath,
-    this.symbol,
-    this.name,
-    this.accountIndex,
-    this.accountType,
-    this.chainId,
-    this.network,
-    this.decimals,
-    this.publish,
-    this.contract,
-    this.type,
-    this.accountSymbol,
-    this.accountDecimals,
-    this.accountAmount,
-  });
+  late String inFiat;
+  final ACCOUNT accountType;
+  final String shareAccountSymbol;
+  final int shareAccountDecimals;
+  final String shareAccountAmount;
 
-  Currency copyWith({
+  Account(
+      {required this.id,
+      required this.shareAccountId,
+      required this.userId,
+      required this.blockchainId,
+      required this.currencyId,
+      required this.purpose,
+      required this.accountCoinType,
+      required this.accountIndex,
+      required this.curveType,
+      required this.balance,
+      required this.numberOfUsedExternalKey,
+      required this.numberOfUsedInternalKey,
+      required this.lastSyncTime,
+      required this.keystore,
+      required this.network,
+      required this.blockchainCoinType,
+      required this.chainId,
+      required this.name,
+      required this.symbol,
+      required this.type,
+      required this.publish,
+      required this.contract,
+      required this.decimals,
+      required this.exchangeRate,
+      required this.imgPath,
+      required this.accountType,
+      required this.shareAccountSymbol,
+      required this.shareAccountDecimals,
+      required this.shareAccountAmount});
+
+  Account copyWith({
     String? id,
-    String? accountId,
-    String? currencyId,
-    int? cointype,
-    int? purpose,
-    String? symbol,
-    String? imgPath,
-    String? amount,
-    String? inUSD,
-    String? name,
-    ACCOUNT? accountType,
+    String? shareAccountId,
+    String? userId,
     String? blockchainId,
+    String? currencyId,
+    int? purpose,
+    int? accountCoinType,
+    int? accountIndex,
+    int? curveType,
+    String? balance,
+    int? numberOfUsedExternalKey,
+    int? numberOfUsedInternalKey,
+    int? lastSyncTime,
+    String? keystore,
     String? network,
+    int? blockchainCoinType,
     int? chainId,
-    int? decimals,
+    String? name,
+    String? symbol,
+    String? type,
     bool? publish,
     String? contract,
-    String? type,
-    String? accountSymbol,
-    int? accountDecimals,
-    String? accountAmount,
+    int? decimals,
+    String? exchangeRate,
+    String? imgPath,
+    String? inFiat,
+    ACCOUNT? accountType,
+    String? shareAccountSymbol,
+    int? shareAccountDecimals,
+    String? shareAccountAmount,
   }) {
-    return Currency(
-        id: id ?? this.id,
-        accountId: accountId ?? this.accountId,
-        cointype: cointype ?? this.cointype,
-        purpose: purpose ?? this.purpose,
-        amount: amount ?? this.amount,
-        inUSD: inUSD ?? this.inUSD,
-        symbol: symbol ?? this.symbol,
-        imgPath: imgPath ?? this.imgPath,
-        name: name ?? this.name,
-        accountType: accountType ?? this.accountType,
-        blockchainId: blockchainId ?? this.blockchainId,
-        network: network ?? this.network,
-        chainId: chainId ?? this.chainId,
-        decimals: decimals ?? this.decimals,
-        publish: publish ?? this.publish,
-        contract: contract ?? this.contract,
-        type: type ?? this.type,
-        accountSymbol: accountSymbol ?? this.accountSymbol,
-        accountDecimals: accountDecimals ?? this.accountDecimals,
-        accountAmount: accountAmount ?? this.accountAmount,
-        currencyId: currencyId ?? this.currencyId);
+    return Account(
+      id: id ?? this.id,
+      shareAccountId: shareAccountId ?? this.shareAccountId,
+      userId: userId ?? this.userId,
+      blockchainId: blockchainId ?? this.blockchainId,
+      currencyId: currencyId ?? this.currencyId,
+      purpose: purpose ?? this.purpose,
+      accountCoinType: accountCoinType ?? this.accountCoinType,
+      accountIndex: accountIndex ?? this.accountIndex,
+      curveType: curveType ?? this.curveType,
+      balance: balance ?? this.balance,
+      numberOfUsedExternalKey:
+          numberOfUsedExternalKey ?? this.numberOfUsedExternalKey,
+      numberOfUsedInternalKey:
+          numberOfUsedInternalKey ?? this.numberOfUsedInternalKey,
+      lastSyncTime: lastSyncTime ?? this.lastSyncTime,
+      keystore: keystore ?? this.keystore,
+      network: network ?? this.network,
+      blockchainCoinType: blockchainCoinType ?? this.blockchainCoinType,
+      chainId: chainId ?? this.chainId,
+      name: name ?? this.name,
+      symbol: symbol ?? this.symbol,
+      type: type ?? this.type,
+      publish: publish ?? this.publish,
+      contract: contract ?? this.contract,
+      decimals: decimals ?? this.decimals,
+      exchangeRate: exchangeRate ?? this.exchangeRate,
+      imgPath: imgPath ?? this.imgPath,
+      accountType: accountType ?? this.accountType,
+      shareAccountSymbol: shareAccountSymbol ?? this.shareAccountSymbol,
+      shareAccountDecimals: shareAccountDecimals ?? this.shareAccountDecimals,
+      shareAccountAmount: shareAccountAmount ?? this.shareAccountAmount,
+    );
   }
 
-  // Currency.fromMap(
-  //   Map map,
-  // )   : id = map['currency_id'],
-  //       accountId = map['account_id'],
-  //       cointype = map['cointype'],
-  //       purpose = map['purpose'],
-  //       accountIndex = map['accountIndex'],
-  //       symbol = map['symbol'],
-  //       name = map['name'],
-  //       imgPath = map['imgPath'],
-  //       amount = map['balance'] ?? '0',
-  //       inUSD = map['inUSD'] ?? '0',
-  //       accountType = map['accountType'],
-  //       blockchainId = map['blockchain_id'],
-  //       network = map['network'],
-  //       chainId = map['chain_id'],
-  //       decimals = map['decimals'],
-  //       publish = map['publish'],
-  //       currencyId = map['currency_id'],
-  //       contract = map['contract'],
-  //       type = map['type'];
-
-  Currency.fromJoinCurrency(
-      JoinCurrency entity, JoinCurrency parentEntity, ACCOUNT type)
-      : id = entity.accountcurrencyId,
-        accountId = entity.accountId,
-        cointype = entity.coinType,
-        purpose = null, // Dreprecated
+  Account.fromJoinAccount(
+      JoinAccount entity, JoinAccount sharedEntity, ACCOUNT type)
+      : id = entity.id,
+        shareAccountId = entity.shareAccountId,
+        accountCoinType = entity.accountCoinType,
+        purpose = entity.purpose, // Dreprecated
         accountIndex = entity.accountIndex,
         symbol = entity.symbol,
         name = entity.name,
         imgPath = entity.image,
-        inUSD = '0',
-        accountType = type,
-        amount = entity.balance,
+        balance = entity.balance,
         blockchainId = entity.blockchainId,
         network = entity.network,
         chainId = entity.chainId,
         publish = entity.publish,
-        currencyId = entity.currencyId,
         contract = entity.contract,
+        currencyId = entity.currencyId,
         decimals = entity.decimals,
         type = entity.type,
-        accountDecimals = parentEntity.decimals,
-        accountSymbol = parentEntity.symbol,
-        accountAmount = parentEntity.balance;
+        userId = entity.userId,
+        curveType = entity.curveType,
+        numberOfUsedExternalKey = entity.numberOfUsedExternalKey,
+        numberOfUsedInternalKey = entity.numberOfUsedInternalKey,
+        lastSyncTime = entity.lastSyncTime,
+        keystore = entity.keystore,
+        blockchainCoinType = entity.blockchainCoinType,
+        exchangeRate = entity.exchangeRate,
+        accountType = type,
+        shareAccountSymbol = sharedEntity.symbol,
+        shareAccountDecimals = sharedEntity.decimals,
+        shareAccountAmount = sharedEntity.balance;
 }
 
 class AccountMessage {
@@ -211,24 +232,22 @@ class Fiat {
 }
 
 class DisplayCurrency extends Equatable {
-  final bool? editable;
+  final bool editable;
   final bool opened;
   final String symbol;
   final String name;
   final String icon;
   final String currencyId;
-  final String accountId;
   final String contract;
   final String blockchainId;
 
   DisplayCurrency({
-    this.editable,
+    this.editable = false,
     this.opened = false,
     required this.symbol,
     required this.name,
     required this.icon,
     required this.currencyId,
-    required this.accountId,
     required this.contract,
     required this.blockchainId,
   });
@@ -240,7 +259,6 @@ class DisplayCurrency extends Equatable {
     String? name,
     String? icon,
     String? currencyId,
-    String? accountId,
     String? contract,
     String? blockchainId,
   }) {
@@ -251,10 +269,19 @@ class DisplayCurrency extends Equatable {
         name: name ?? this.name,
         icon: icon ?? this.icon,
         currencyId: currencyId ?? this.currencyId,
-        accountId: accountId ?? this.accountId,
         contract: contract ?? this.contract,
         blockchainId: blockchainId ?? this.blockchainId);
   }
+
+  DisplayCurrency.fromCurrencyEntity(CurrencyEntity entity)
+      : opened = false,
+        editable = false,
+        symbol = entity.symbol,
+        name = entity.name,
+        icon = entity.image!,
+        currencyId = entity.currencyId,
+        contract = entity.contract!,
+        blockchainId = entity.blockchainId!;
 
   @override
   List<Object> get props => [opened];

@@ -19,11 +19,11 @@ import 'dialogs/dialog_controller.dart';
 import 'dialogs/error_dialog.dart';
 
 class InvestPlanPreview extends StatefulWidget {
-  final Currency currency;
+  final Account account;
   final Investment investment;
 
   const InvestPlanPreview(
-      {Key? key, required this.currency, required this.investment})
+      {Key? key, required this.account, required this.investment})
       : super(key: key);
   @override
   _InvestPlanPreviewState createState() => _InvestPlanPreviewState();
@@ -89,7 +89,7 @@ class _InvestPlanPreviewState extends State<InvestPlanPreview> {
               Container(
                 child: Align(
                   child: Text(
-                    widget.currency.name!,
+                    widget.account.name!,
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   alignment: Alignment.centerLeft,
@@ -114,7 +114,7 @@ class _InvestPlanPreviewState extends State<InvestPlanPreview> {
                   child: Text(
                     widget.investment.investAmount.toString() +
                         " " +
-                        widget.currency.symbol!,
+                        widget.account.symbol!,
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   alignment: Alignment.centerLeft,
@@ -162,7 +162,7 @@ class _InvestPlanPreviewState extends State<InvestPlanPreview> {
                   child: Text(
                     widget.investment.fee.toString() +
                         " " +
-                        widget.currency.symbol!,
+                        widget.account.symbol!,
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   alignment: Alignment.centerLeft,
@@ -187,7 +187,7 @@ class _InvestPlanPreviewState extends State<InvestPlanPreview> {
                   child: Text(
                     widget.investment.estimateProfit.toString() +
                         " " +
-                        widget.currency.symbol!,
+                        widget.account.symbol!,
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                   alignment: Alignment.centerLeft,

@@ -6,18 +6,18 @@ import './inputs/normal_input.dart';
 import '../theme.dart';
 
 class SwapCard extends StatelessWidget {
-  final Currency _currency;
+  final Account _account;
   final Function(String)? onChanged;
   final TextEditingController amountController;
   final FocusNode focusNode;
   final bool readOnly;
-  final List<Currency>? currencies;
+  final List<Account>? currencies;
   final Function? onSelect;
   final String label;
   final Function()? onTap;
 
   SwapCard(
-    this._currency, {
+    this._account, {
     required this.label,
     this.currencies,
     required this.onChanged,
@@ -97,7 +97,7 @@ class SwapCard extends StatelessWidget {
                                             ),
                                             Spacer(),
                                             Text(
-                                                '${Formatter.formatDecimal(e.amount!)} ${e.symbol!.toUpperCase()}',
+                                                '${Formatter.formatDecimal(e.balance)} ${e.symbol!.toUpperCase()}',
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .caption)
@@ -141,14 +141,14 @@ class SwapCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Image.network(
-                      _currency.imgPath!,
+                      _account.imgPath!,
                       width: 36.0,
                       height: 36.0,
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.0),
                       child: Text(
-                        _currency.symbol!.toUpperCase(),
+                        _account.symbol!.toUpperCase(),
                         style: Theme.of(context)
                             .textTheme
                             .headline1!
@@ -164,7 +164,7 @@ class SwapCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
-                  'Balance: ${Formatter.formatDecimal(_currency.amount!)} ${_currency.symbol}',
+                  'Balance: ${Formatter.formatDecimal(_account.balance)} ${_account.symbol}',
                   style: Theme.of(context).textTheme.subtitle2,
                 ),
               ),

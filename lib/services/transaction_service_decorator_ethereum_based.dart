@@ -42,7 +42,7 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
     Decimal? gasLimit, //ETH
     int? nonce, //ETH
     int? chainId, //ETH
-    String? accountcurrencyId,
+    String? accountId,
     Decimal? fee,
     List<UnspentTxOut>? unspentTxOuts = const [],
     String? changeAddress,

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:convert/convert.dart';
 import 'package:decimal/decimal.dart';
+import 'package:tidewallet3/blocs/transaction_status/transaction_status_bloc.dart';
 
 import 'account_service_decorator.dart';
 import 'account_service.dart';
@@ -14,7 +15,7 @@ import '../helpers/logger.dart';
 import '../helpers/http_agent.dart';
 import '../cores/account.dart';
 import '../database/db_operator.dart';
-import '../database/entity/account_currency.dart';
+import '../database/entity/account.dart';
 import '../database/entity/currency.dart';
 
 class EthereumService extends AccountServiceDecorator {
@@ -84,7 +85,7 @@ class EthereumService extends AccountServiceDecorator {
     try {
       String id = res.data['token_id'];
       APIResponse updateRes = await HTTPAgent()
-          .get(Endpoint.url + '/wallet/account/${this.service.accountId}');
+          .get(Endpoint.url + '/wallet/account/${this.service.shareAccountId}');
 
       if (updateRes.success) {
         final acc = updateRes.data;
@@ -98,27 +99,28 @@ class EthereumService extends AccountServiceDecorator {
             );
         Log.info(id);
 
-        int now = DateTime.now().millisecondsSinceEpoch;
-        final v = AccountCurrencyEntity.fromJson(
-            tks[index], this.service.accountId, now);
+        final v = AccountEntity.fromAccountJson(
+            tks[index],
+            this.service.shareAccountId,
+            AccountCore().accounts[this.service.shareAccountId]![0].userId);
 
-        await DBOperator().accountCurrencyDao.insertAccount(v);
+        await DBOperator().accountDao.insertAccount(v);
 
-        List<JoinCurrency> jcs = await DBOperator()
-            .accountCurrencyDao
-            .findJoinedByAccountId(this.service.accountId);
+        List<JoinAccount> jcs = await DBOperator()
+            .accountDao
+            .findJoinedAccountsByShareAccountId(this.service.shareAccountId);
 
-        List<Currency> cs = jcs
-            .map((c) => Currency.fromJoinCurrency(c, jcs[0], this.base!))
+        List<Account> cs = jcs
+            .map((c) => Account.fromJoinAccount(c, jcs[0], this.base))
             .toList();
 
         AccountMessage msg =
             AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: cs[0]);
-        AccountCore().currencies[this.service.accountId] = cs;
+        AccountCore().accounts[this.service.shareAccountId] = cs;
 
         AccountMessage currMsg = AccountMessage(
-            evt: ACCOUNT_EVT.OnUpdateCurrency,
-            value: AccountCore().currencies[this.service.accountId]);
+            evt: ACCOUNT_EVT.OnUpdateAccount,
+            value: AccountCore().accounts[this.service.shareAccountId]);
 
         AccountCore().messenger.add(msg);
         AccountCore().messenger.add(currMsg);
@@ -248,12 +250,12 @@ class EthereumService extends AccountServiceDecorator {
   }
 
   @override
-  Future updateTransaction(String currencyId, Map payload) {
-    return this.service.updateTransaction(currencyId, payload);
+  Future updateTransaction(String accountid, Map payload) {
+    return this.service.updateTransaction(accountid, payload);
   }
 
   @override
-  Future updateCurrency(String currencyId, Map payload) {
-    return this.service.updateCurrency(currencyId, payload);
+  Future updateAccount(String accountid, Map payload) {
+    return this.service.updateAccount(accountid, payload);
   }
 }

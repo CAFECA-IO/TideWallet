@@ -19,7 +19,7 @@ class SignTransaction extends StatefulWidget {
   final Map param;
   final Function cancel;
   final Function submit;
-  final Currency currency;
+  final Account currency;
 
   SignTransaction({
     required this.context,
@@ -59,7 +59,7 @@ class _SignTransactionState extends State<SignTransaction> {
             Decimal.fromInt(pow(10, 18) as int);
     Decimal feeInFiat = _traderRepo.calculateAmountToFiat(widget.currency, fee);
 
-    bool able = (Decimal.tryParse(widget.currency.amount!)! *
+    bool able = (Decimal.tryParse(widget.currency.balance)! *
                 Decimal.fromInt(pow(10, 18) as int) -
             amount -
             fee) >

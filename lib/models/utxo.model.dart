@@ -9,7 +9,7 @@ import '../database/entity/utxo.dart';
 
 class UnspentTxOut {
   final String id;
-  final String accountcurrencyId;
+  final String accountId;
   final String txId;
   final int vout;
   final BitcoinTransactionType type;
@@ -36,7 +36,7 @@ class UnspentTxOut {
 
   UnspentTxOut({
     required this.id,
-    required this.accountcurrencyId,
+    required this.accountId,
     required this.txId,
     required this.vout,
     required this.type,
@@ -57,7 +57,7 @@ class UnspentTxOut {
 
   UnspentTxOut.fromSmallestUint({
     required this.id,
-    required this.accountcurrencyId,
+    required this.accountId,
     required this.txId,
     required this.vout,
     required this.type,
@@ -78,7 +78,7 @@ class UnspentTxOut {
 
   UnspentTxOut.fromUtxoEntity(JoinUtxo utxo)
       : id = utxo.utxoId,
-        accountcurrencyId = utxo.accountcurrencyId,
+        accountId = utxo.accountId,
         txId = utxo.txId,
         vout = utxo.vout,
         type = BitcoinTransactionType.values

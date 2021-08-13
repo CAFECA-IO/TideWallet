@@ -78,10 +78,10 @@ extension InvestPercentageExt on InvestPercentage {
 }
 
 class InvestAccount {
-  final Currency currency;
+  final Account account;
   final List<Investment> investments;
 
-  InvestAccount(this.currency, this.investments);
+  InvestAccount(this.account, this.investments);
 }
 
 enum INVESTMENT_EVT { OnUpdateInvestment, ClearAll }

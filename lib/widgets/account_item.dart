@@ -5,7 +5,7 @@ import '../models/account.model.dart';
 import '../helpers/formatter.dart';
 
 class AccountItem extends StatelessWidget {
-  final Currency _account;
+  final Account _account;
   final Function _onClick;
   final Fiat fiat;
   Color? _testnetColor;
@@ -39,13 +39,13 @@ class AccountItem extends StatelessWidget {
                       ? _testnetColor ?? Colors.black
                       : Colors.black),
             ),
-            Text(Formatter.formatDecimal(_account.amount!),
+            Text(Formatter.formatDecimal(_account.balance),
                 style: TextStyle(
                     color: !_account.publish!
                         ? _testnetColor ?? Colors.black
                         : Colors.black)),
             Text(
-                '≈ ${Formatter.formatDecimal((Decimal.tryParse(_account.inUSD!)! / fiat.exchangeRate).toString(), decimalLength: 2)} ${fiat.name}',
+                '≈ ${Formatter.formatDecimal((Decimal.tryParse(_account.inFiat)! / fiat.exchangeRate).toString(), decimalLength: 2)} ${fiat.name}',
                 style: Theme.of(context).textTheme.subtitle2!.copyWith(
                     color: !_account.publish!
                         ? _testnetColor ?? Colors.black

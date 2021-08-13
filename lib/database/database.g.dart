@@ -70,8 +70,6 @@ class _$AppDatabase extends AppDatabase {
 
   NetworkDao? _networkDaoInstance;
 
-  AccountCurrencyDao? _accountCurrencyDaoInstance;
-
   UtxoDao? _utxoDaoInstance;
 
   ExchangeRateDao? _exchangeRateDaoInstance;
@@ -97,22 +95,20 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `User` (`user_id` TEXT NOT NULL, `keystore` TEXT NOT NULL, `third_party_id` TEXT NOT NULL, `install_id` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `last_sync_time` INTEGER NOT NULL, PRIMARY KEY (`user_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Account` (`account_id` TEXT NOT NULL, `user_id` TEXT NOT NULL, `network_id` TEXT NOT NULL, `account_index` INTEGER NOT NULL, FOREIGN KEY (`user_id`) REFERENCES `User` (`user_id`) ON UPDATE NO ACTION ON DELETE CASCADE, PRIMARY KEY (`account_id`))');
+            'CREATE TABLE IF NOT EXISTS `Account` (`id` TEXT NOT NULL, `share_account_id` TEXT NOT NULL, `user_id` TEXT NOT NULL, `blockchain_id` TEXT NOT NULL, `currency_id` TEXT NOT NULL, `purpose` INTEGER NOT NULL, `account_coin_type` INTEGER NOT NULL, `account_index` INTEGER NOT NULL, `curve_type` INTEGER NOT NULL, `balance` TEXT NOT NULL, `number_of_used_external_key` INTEGER NOT NULL, `number_of_used_internal_key` INTEGER NOT NULL, `last_sync_time` INTEGER NOT NULL, FOREIGN KEY (`user_id`) REFERENCES `User` (`user_id`) ON UPDATE NO ACTION ON DELETE CASCADE, FOREIGN KEY (`blockchain_id`) REFERENCES `Network` (`blockchain_id`) ON UPDATE NO ACTION ON DELETE CASCADE, FOREIGN KEY (`currency_id`) REFERENCES `Currency` (`currency_id`) ON UPDATE NO ACTION ON DELETE CASCADE, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Currency` (`currency_id` TEXT NOT NULL, `name` TEXT NOT NULL, `symbol` TEXT NOT NULL, `type` TEXT NOT NULL, `publish` INTEGER NOT NULL, `decimals` INTEGER NOT NULL, `exchange_rate` TEXT, `image` TEXT, `description` TEXT, `address` TEXT, `total_supply` TEXT, `contract` TEXT, PRIMARY KEY (`currency_id`))');
+            'CREATE TABLE IF NOT EXISTS `Currency` (`currency_id` TEXT NOT NULL, `name` TEXT NOT NULL, `symbol` TEXT NOT NULL, `type` TEXT NOT NULL, `publish` INTEGER NOT NULL, `decimals` INTEGER NOT NULL, `exchange_rate` TEXT NOT NULL, `image` TEXT, PRIMARY KEY (`currency_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `_Transaction` (`transaction_id` TEXT NOT NULL, `accountcurrency_id` TEXT NOT NULL, `tx_id` TEXT NOT NULL, `source_address` TEXT NOT NULL, `destinction_address` TEXT NOT NULL, `timestamp` INTEGER, `confirmation` INTEGER NOT NULL, `gas_price` TEXT, `gas_used` INTEGER, `fee` TEXT NOT NULL, `note` TEXT, `status` TEXT NOT NULL, `direction` TEXT NOT NULL, `amount` TEXT NOT NULL, PRIMARY KEY (`transaction_id`))');
+            'CREATE TABLE IF NOT EXISTS `_Transaction` (`transaction_id` TEXT NOT NULL, `account_id` TEXT NOT NULL, `tx_id` TEXT NOT NULL, `source_address` TEXT NOT NULL, `destinction_address` TEXT NOT NULL, `timestamp` INTEGER, `confirmation` INTEGER NOT NULL, `gas_price` TEXT, `gas_used` INTEGER, `fee` TEXT NOT NULL, `note` TEXT, `status` TEXT NOT NULL, `direction` TEXT NOT NULL, `amount` TEXT NOT NULL, PRIMARY KEY (`transaction_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Network` (`network_id` TEXT NOT NULL, `network` TEXT NOT NULL, `coin_type` INTEGER NOT NULL, `publish` INTEGER NOT NULL, `chain_id` INTEGER NOT NULL, PRIMARY KEY (`network_id`))');
+            'CREATE TABLE IF NOT EXISTS `Network` (`blockchain_id` INTEGER NOT NULL, `network` TEXT NOT NULL, `blockchain_coin_type` INTEGER NOT NULL, `publish` INTEGER NOT NULL, `chain_id` INTEGER NOT NULL, PRIMARY KEY (`blockchain_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `AccountCurrency` (`accountcurrency_id` TEXT NOT NULL, `account_id` TEXT NOT NULL, `currency_id` TEXT NOT NULL, `balance` TEXT NOT NULL, `number_of_used_external_key` INTEGER NOT NULL, `number_of_used_internal_key` INTEGER NOT NULL, `last_sync_time` INTEGER NOT NULL, FOREIGN KEY (`account_id`) REFERENCES `Account` (`account_id`) ON UPDATE NO ACTION ON DELETE CASCADE, FOREIGN KEY (`currency_id`) REFERENCES `Currency` (`currency_id`) ON UPDATE NO ACTION ON DELETE CASCADE, PRIMARY KEY (`accountcurrency_id`))');
-        await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Utxo` (`utxo_id` TEXT NOT NULL, `accountcurrency_id` TEXT NOT NULL, `tx_id` TEXT NOT NULL, `vout` INTEGER NOT NULL, `type` TEXT NOT NULL, `amount` TEXT NOT NULL, `chain_index` INTEGER NOT NULL, `key_index` INTEGER NOT NULL, `script` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `locked` INTEGER NOT NULL, `sequence` INTEGER NOT NULL, `address` TEXT NOT NULL, FOREIGN KEY (`accountcurrency_id`) REFERENCES `AccountCurrency` (`accountcurrency_id`) ON UPDATE NO ACTION ON DELETE CASCADE, PRIMARY KEY (`utxo_id`))');
+            'CREATE TABLE IF NOT EXISTS `Utxo` (`utxo_id` TEXT NOT NULL, `account_id` TEXT NOT NULL, `tx_id` TEXT NOT NULL, `vout` INTEGER NOT NULL, `type` TEXT NOT NULL, `amount` TEXT NOT NULL, `chain_index` INTEGER NOT NULL, `key_index` INTEGER NOT NULL, `script` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `locked` INTEGER NOT NULL, `sequence` INTEGER NOT NULL, `address` TEXT NOT NULL, FOREIGN KEY (`account_id`) REFERENCES `Account` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE, PRIMARY KEY (`utxo_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `ExchangeRate` (`exchange_rate_id` TEXT NOT NULL, `name` TEXT NOT NULL, `rate` TEXT NOT NULL, `lastSyncTime` INTEGER NOT NULL, `type` TEXT NOT NULL, PRIMARY KEY (`exchange_rate_id`))');
 
         await database.execute(
-            '''CREATE VIEW IF NOT EXISTS `JoinCurrency` AS SELECT * FROM AccountCurrency INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id INNER JOIN Account ON AccountCurrency.account_id = Account.account_id INNER JOIN Network ON Account.network_id = Network.network_id''');
+            '''CREATE VIEW IF NOT EXISTS `JoinAccount` AS SELECT * FROM Account INNER JOIN User ON Account.user_id = User.user_id INNER JOIN Network ON Account.blockchain_id = Network.blockchain_id INNER JOIN Currency ON Account.currency_id = Currency.currency_id''');
         await database.execute(
             '''CREATE VIEW IF NOT EXISTS `JoinUtxo` AS SELECT * FROM Utxo INNER JOIN AccountCurrency ON Utxo.accountcurrency_id = AccountCurrency.accountcurrency_id INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id''');
         await database.execute(
@@ -148,12 +144,6 @@ class _$AppDatabase extends AppDatabase {
   @override
   NetworkDao get networkDao {
     return _networkDaoInstance ??= _$NetworkDao(database, changeListener);
-  }
-
-  @override
-  AccountCurrencyDao get accountCurrencyDao {
-    return _accountCurrencyDaoInstance ??=
-        _$AccountCurrencyDao(database, changeListener);
   }
 
   @override
@@ -254,10 +244,19 @@ class _$AccountDao extends AccountDao {
             database,
             'Account',
             (AccountEntity item) => <String, Object?>{
-                  'account_id': item.accountId,
+                  'id': item.id,
+                  'share_account_id': item.shareAccountId,
                   'user_id': item.userId,
-                  'network_id': item.networkId,
-                  'account_index': item.accountIndex
+                  'blockchain_id': item.blockchainId,
+                  'currency_id': item.currencyId,
+                  'purpose': item.purpose,
+                  'account_coin_type': item.accountCoinType,
+                  'account_index': item.accountIndex,
+                  'curve_type': item.curveType,
+                  'balance': item.balance,
+                  'number_of_used_external_key': item.numberOfUsedExternalKey,
+                  'number_of_used_internal_key': item.numberOfUsedInternalKey,
+                  'last_sync_time': item.lastSyncTime
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -272,10 +271,19 @@ class _$AccountDao extends AccountDao {
   Future<List<AccountEntity>> findAllAccounts() async {
     return _queryAdapter.queryList('SELECT * FROM Account',
         mapper: (Map<String, Object?> row) => AccountEntity(
-            accountId: row['account_id'] as String,
+            id: row['id'] as String,
+            shareAccountId: row['share_account_id'] as String,
             userId: row['user_id'] as String,
-            networkId: row['network_id'] as String,
-            accountIndex: row['account_index'] as int));
+            blockchainId: row['blockchain_id'] as String,
+            currencyId: row['currency_id'] as String,
+            purpose: row['purpose'] as int,
+            accountCoinType: row['account_coin_type'] as int,
+            accountIndex: row['account_index'] as int,
+            curveType: row['curve_type'] as int,
+            balance: row['balance'] as String,
+            numberOfUsedExternalKey: row['number_of_used_external_key'] as int,
+            numberOfUsedInternalKey: row['number_of_used_internal_key'] as int,
+            lastSyncTime: row['last_sync_time'] as int));
   }
 
   @override
@@ -283,10 +291,19 @@ class _$AccountDao extends AccountDao {
     return _queryAdapter.query(
         'SELECT * FROM Account WHERE account_id = ?1 LIMIT 1',
         mapper: (Map<String, Object?> row) => AccountEntity(
-            accountId: row['account_id'] as String,
+            id: row['id'] as String,
+            shareAccountId: row['share_account_id'] as String,
             userId: row['user_id'] as String,
-            networkId: row['network_id'] as String,
-            accountIndex: row['account_index'] as int),
+            blockchainId: row['blockchain_id'] as String,
+            currencyId: row['currency_id'] as String,
+            purpose: row['purpose'] as int,
+            accountCoinType: row['account_coin_type'] as int,
+            accountIndex: row['account_index'] as int,
+            curveType: row['curve_type'] as int,
+            balance: row['balance'] as String,
+            numberOfUsedExternalKey: row['number_of_used_external_key'] as int,
+            numberOfUsedInternalKey: row['number_of_used_internal_key'] as int,
+            lastSyncTime: row['last_sync_time'] as int),
         arguments: [id]);
   }
 
@@ -317,11 +334,7 @@ class _$CurrencyDao extends CurrencyDao {
                   'publish': item.publish ? 1 : 0,
                   'decimals': item.decimals,
                   'exchange_rate': item.exchangeRate,
-                  'image': item.image,
-                  'description': item.description,
-                  'address': item.address,
-                  'total_supply': item.totalSupply,
-                  'contract': item.contract
+                  'image': item.image
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -343,11 +356,7 @@ class _$CurrencyDao extends CurrencyDao {
             decimals: row['decimals'] as int,
             type: row['type'] as String,
             image: row['image'] as String?,
-            exchangeRate: row['exchange_rate'] as String?,
-            description: row['description'] as String?,
-            address: row['address'] as String?,
-            totalSupply: row['total_supply'] as String?,
-            contract: row['contract'] as String?));
+            exchangeRate: row['exchange_rate'] as String));
   }
 
   @override
@@ -383,7 +392,7 @@ class _$TransactionDao extends TransactionDao {
             '_Transaction',
             (TransactionEntity item) => <String, Object?>{
                   'transaction_id': item.transactionId,
-                  'accountcurrency_id': item.accountcurrencyId,
+                  'account_id': item.accountId,
                   'tx_id': item.txId,
                   'source_address': item.sourceAddress,
                   'destinction_address': item.destinctionAddress,
@@ -403,7 +412,7 @@ class _$TransactionDao extends TransactionDao {
             ['transaction_id'],
             (TransactionEntity item) => <String, Object?>{
                   'transaction_id': item.transactionId,
-                  'accountcurrency_id': item.accountcurrencyId,
+                  'account_id': item.accountId,
                   'tx_id': item.txId,
                   'source_address': item.sourceAddress,
                   'destinction_address': item.destinctionAddress,
@@ -423,7 +432,7 @@ class _$TransactionDao extends TransactionDao {
             ['transaction_id'],
             (TransactionEntity item) => <String, Object?>{
                   'transaction_id': item.transactionId,
-                  'accountcurrency_id': item.accountcurrencyId,
+                  'account_id': item.accountId,
                   'tx_id': item.txId,
                   'source_address': item.sourceAddress,
                   'destinction_address': item.destinctionAddress,
@@ -455,7 +464,7 @@ class _$TransactionDao extends TransactionDao {
     return _queryAdapter.queryList('SELECT * FROM _Transaction',
         mapper: (Map<String, Object?> row) => TransactionEntity(
             transactionId: row['transaction_id'] as String,
-            accountcurrencyId: row['accountcurrency_id'] as String,
+            accountId: row['account_id'] as String,
             txId: row['tx_id'] as String,
             confirmation: row['confirmation'] as int,
             sourceAddress: row['source_address'] as String,
@@ -476,7 +485,7 @@ class _$TransactionDao extends TransactionDao {
         'SELECT * FROM _Transaction WHERE _Transaction.accountcurrency_id = ?1',
         mapper: (Map<String, Object?> row) => TransactionEntity(
             transactionId: row['transaction_id'] as String,
-            accountcurrencyId: row['accountcurrency_id'] as String,
+            accountId: row['account_id'] as String,
             txId: row['tx_id'] as String,
             confirmation: row['confirmation'] as int,
             sourceAddress: row['source_address'] as String,
@@ -498,7 +507,7 @@ class _$TransactionDao extends TransactionDao {
         'SELECT * FROM _Transaction WHERE _Transaction.tx_id = ?1 limit 1',
         mapper: (Map<String, Object?> row) => TransactionEntity(
             transactionId: row['transaction_id'] as String,
-            accountcurrencyId: row['accountcurrency_id'] as String,
+            accountId: row['account_id'] as String,
             txId: row['tx_id'] as String,
             confirmation: row['confirmation'] as int,
             sourceAddress: row['source_address'] as String,
@@ -544,9 +553,9 @@ class _$NetworkDao extends NetworkDao {
             database,
             'Network',
             (NetworkEntity item) => <String, Object?>{
-                  'network_id': item.networkId,
+                  'blockchain_id': item.blockchainId,
                   'network': item.network,
-                  'coin_type': item.coinType,
+                  'blockchain_coin_type': item.blockchainCoinType,
                   'publish': item.publish ? 1 : 0,
                   'chain_id': item.chainId
                 });
@@ -563,9 +572,9 @@ class _$NetworkDao extends NetworkDao {
   Future<List<NetworkEntity>> findAllNetworks() async {
     return _queryAdapter.queryList('SELECT * FROM Network',
         mapper: (Map<String, Object?> row) => NetworkEntity(
-            networkId: row['network_id'] as String,
+            blockchainId: row['blockchain_id'] as int,
             network: row['network'] as String,
-            coinType: row['coin_type'] as int,
+            blockchainCoinType: row['blockchain_coin_type'] as int,
             publish: (row['publish'] as int) != 0,
             chainId: row['chain_id'] as int));
   }
@@ -577,111 +586,6 @@ class _$NetworkDao extends NetworkDao {
   }
 }
 
-class _$AccountCurrencyDao extends AccountCurrencyDao {
-  _$AccountCurrencyDao(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database),
-        _accountCurrencyEntityInsertionAdapter = InsertionAdapter(
-            database,
-            'AccountCurrency',
-            (AccountCurrencyEntity item) => <String, Object?>{
-                  'accountcurrency_id': item.accountcurrencyId,
-                  'account_id': item.accountId,
-                  'currency_id': item.currencyId,
-                  'balance': item.balance,
-                  'number_of_used_external_key': item.numberOfUsedExternalKey,
-                  'number_of_used_internal_key': item.numberOfUsedInternalKey,
-                  'last_sync_time': item.lastSyncTime
-                });
-
-  final sqflite.DatabaseExecutor database;
-
-  final StreamController<String> changeListener;
-
-  final QueryAdapter _queryAdapter;
-
-  final InsertionAdapter<AccountCurrencyEntity>
-      _accountCurrencyEntityInsertionAdapter;
-
-  @override
-  Future<List<AccountCurrencyEntity>> findAllCurrencies() async {
-    return _queryAdapter.queryList('SELECT * FROM AccountCurrency',
-        mapper: (Map<String, Object?> row) => AccountCurrencyEntity(
-            accountcurrencyId: row['accountcurrency_id'] as String,
-            accountId: row['account_id'] as String,
-            currencyId: row['currency_id'] as String,
-            balance: row['balance'] as String,
-            numberOfUsedExternalKey: row['number_of_used_external_key'] as int,
-            numberOfUsedInternalKey: row['number_of_used_internal_key'] as int,
-            lastSyncTime: row['last_sync_time'] as int));
-  }
-
-  @override
-  Future<AccountCurrencyEntity?> findOneByAccountyId(String id) async {
-    return _queryAdapter.query(
-        'SELECT * FROM AccountCurrency WHERE AccountCurrency.accountcurrency_id = ?1 LIMIT 1',
-        mapper: (Map<String, Object?> row) => AccountCurrencyEntity(accountcurrencyId: row['accountcurrency_id'] as String, accountId: row['account_id'] as String, currencyId: row['currency_id'] as String, balance: row['balance'] as String, numberOfUsedExternalKey: row['number_of_used_external_key'] as int, numberOfUsedInternalKey: row['number_of_used_internal_key'] as int, lastSyncTime: row['last_sync_time'] as int),
-        arguments: [id]);
-  }
-
-  @override
-  Future<List<JoinCurrency>> findJoinedByAccountId(String id) async {
-    return _queryAdapter.queryList(
-        'SELECT * FROM JoinCurrency WHERE JoinCurrency.account_id = ?1',
-        mapper: (Map<String, Object?> row) => JoinCurrency(
-            accountcurrencyId: row['accountcurrency_id'] as String,
-            currencyId: row['currency_id'] as String,
-            symbol: row['symbol'] as String,
-            name: row['name'] as String,
-            balance: row['balance'] as String,
-            accountIndex: row['account_index'] as int,
-            coinType: row['coin_type'] as int,
-            image: row['image'] as String,
-            blockchainId: row['network_id'] as String,
-            network: row['network'] as String,
-            chainId: row['chain_id'] as int,
-            publish: (row['publish'] as int) != 0,
-            contract: row['contract'] as String?,
-            decimals: row['decimals'] as int,
-            type: row['type'] as String,
-            accountId: row['account_id'] as String),
-        arguments: [id]);
-  }
-
-  @override
-  Future<List<JoinCurrency>> findAllJoinedCurrency() async {
-    return _queryAdapter.queryList('SELECT * FROM JoinCurrency',
-        mapper: (Map<String, Object?> row) => JoinCurrency(
-            accountcurrencyId: row['accountcurrency_id'] as String,
-            currencyId: row['currency_id'] as String,
-            symbol: row['symbol'] as String,
-            name: row['name'] as String,
-            balance: row['balance'] as String,
-            accountIndex: row['account_index'] as int,
-            coinType: row['coin_type'] as int,
-            image: row['image'] as String,
-            blockchainId: row['network_id'] as String,
-            network: row['network'] as String,
-            chainId: row['chain_id'] as int,
-            publish: (row['publish'] as int) != 0,
-            contract: row['contract'] as String?,
-            decimals: row['decimals'] as int,
-            type: row['type'] as String,
-            accountId: row['account_id'] as String));
-  }
-
-  @override
-  Future<void> insertAccount(AccountCurrencyEntity account) async {
-    await _accountCurrencyEntityInsertionAdapter.insert(
-        account, OnConflictStrategy.replace);
-  }
-
-  @override
-  Future<List<int>> insertCurrencies(List<AccountCurrencyEntity> currencies) {
-    return _accountCurrencyEntityInsertionAdapter.insertListAndReturnIds(
-        currencies, OnConflictStrategy.replace);
-  }
-}
-
 class _$UtxoDao extends UtxoDao {
   _$UtxoDao(this.database, this.changeListener)
       : _queryAdapter = QueryAdapter(database),
@@ -690,7 +594,7 @@ class _$UtxoDao extends UtxoDao {
             'Utxo',
             (UtxoEntity item) => <String, Object?>{
                   'utxo_id': item.utxoId,
-                  'accountcurrency_id': item.accountcurrencyId,
+                  'account_id': item.accountId,
                   'tx_id': item.txId,
                   'vout': item.vout,
                   'type': item.type,
@@ -709,7 +613,7 @@ class _$UtxoDao extends UtxoDao {
             ['utxo_id'],
             (UtxoEntity item) => <String, Object?>{
                   'utxo_id': item.utxoId,
-                  'accountcurrency_id': item.accountcurrencyId,
+                  'account_id': item.accountId,
                   'tx_id': item.txId,
                   'vout': item.vout,
                   'type': item.type,
@@ -780,7 +684,7 @@ class _$UtxoDao extends UtxoDao {
     return _queryAdapter.queryList('SELECT * FROM Utxo',
         mapper: (Map<String, Object?> row) => UtxoEntity(
             row['utxo_id'] as String,
-            row['accountcurrency_id'] as String,
+            row['account_id'] as String,
             row['tx_id'] as String,
             row['vout'] as int,
             row['type'] as String,
@@ -800,7 +704,7 @@ class _$UtxoDao extends UtxoDao {
         'SELECT * FROM Utxo WHERE Utxo.accountcurrency_id = ?1',
         mapper: (Map<String, Object?> row) => UtxoEntity(
             row['utxo_id'] as String,
-            row['accountcurrency_id'] as String,
+            row['account_id'] as String,
             row['tx_id'] as String,
             row['vout'] as int,
             row['type'] as String,

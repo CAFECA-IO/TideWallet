@@ -9,11 +9,11 @@ import '../screens/transaction_detail.screen.dart';
 
 // class TransactionItem extends StatefulWidget {
 class TransactionItem extends StatelessWidget {
-  final Currency currency;
+  final Account account;
   final Transaction transaction;
 
   const TransactionItem(
-      {Key? key, required this.currency, required this.transaction})
+      {Key? key, required this.account, required this.transaction})
       : super(key: key);
 
   final t = I18n.t;
@@ -23,7 +23,7 @@ class TransactionItem extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed(TransactionDetailScreen.routeName,
-            arguments: {"currency": currency, "transaction": transaction});
+            arguments: {"account": account, "transaction": transaction});
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -66,7 +66,7 @@ class TransactionItem extends StatelessWidget {
                   ],
                 ),
                 Text(
-                  '${transaction.direction == TransactionDirection.received ? "+" : "-"} ${transaction.amount} ${currency.symbol!.toUpperCase()}',
+                  '${transaction.direction == TransactionDirection.received ? "+" : "-"} ${transaction.amount} ${account.symbol!.toUpperCase()}',
                   style: Theme.of(context).textTheme.bodyText1!.copyWith(
                       color: transaction.status == TransactionStatus.fail
                           ? Theme.of(context).cursorColor

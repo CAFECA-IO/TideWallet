@@ -23,13 +23,18 @@ class AccountCore {
   bool _isInit = false;
   bool _debugMode = false;
   List<AccountService> _services = [];
-  List<Currency> accounts = [];
-  Map<String, List<Currency>> _currencies = {};
+  Map<String, List<Account>> _accounts = {};
   List<DisplayCurrency> settingOptions = [];
 
-  Map<String, List<Currency>> get currencies {
-    return _currencies;
+  Map<String, List<Account>> get accounts {
+    return _accounts;
   }
+
+  List<Account>? getAccountsByShareAccounttId(String shareAccountId) =>
+      this._accounts[shareAccountId];
+
+  List<Account> getAllAccounts() =>
+      this._accounts.values.reduce((currList, currs) => currList + currs);
 
   static final AccountCore _instance = AccountCore._internal();
   factory AccountCore() => _instance;
@@ -46,6 +51,33 @@ class AccountCore {
     messenger = PublishSubject<AccountMessage>();
   }
 
+  Future _getSupportedToken(List<NetworkEntity> chains, bool update) async {
+    for (NetworkEntity chain in chains) {
+      List<CurrencyEntity> tokens = await DBOperator()
+          .currencyDao
+          .findAllTokensByBlockchainId(chain.blockchainId);
+
+      if (tokens.isEmpty || update) {
+        APIResponse res = await HTTPAgent().get(Endpoint.url +
+            '/blockchain/${chain.blockchainId}/token?type=TideWallet');
+
+        if (res.data != null) {
+          List data = res.data;
+          tokens = [];
+          for (var d in data) {
+            tokens.add(CurrencyEntity.fromJson(d));
+          }
+          await DBOperator().currencyDao.insertCurrencies(tokens);
+        }
+      }
+      List<DisplayCurrency> dcs = [];
+      for (CurrencyEntity t in tokens) {
+        dcs.add(DisplayCurrency.fromCurrencyEntity(t));
+      }
+      this.settingOptions.addAll(dcs);
+    }
+  }
+
   Future init({required bool debugMode}) async {
     this._isInit = true;
     this._debugMode = debugMode;
@@ -54,16 +86,14 @@ class AccountCore {
 
   _initAccounts() async {
     Log.debug('_initAccounts this._debugMode: ${this._debugMode}');
-    UserEntity? user = await DBOperator().userDao.findUser();
-    if (user == null)
-      throw Error(); // -- debugInfo: user could not be null, null-safety
+    UserEntity user = (await DBOperator().userDao.findUser())!;
     final int timestamp = DateTime.now().millisecondsSinceEpoch;
     final bool update = user.lastSyncTime - timestamp > AccountCore.syncInteral;
     final chains = (await this.getNetworks(update))
         .where((network) => this._debugMode ? true : network.publish)
         .toList();
     final accounts = await this.getAccounts(update);
-    final currencies = await this.getSupportedCurrencies(update);
+    await this.getSupportedCurrencies(update);
 
     if (update) {
       final updateUser = user.copyWith(lastSyncTime: timestamp);
@@ -71,14 +101,14 @@ class AccountCore {
     }
 
     for (var i = 0; i < accounts.length; i++) {
+      if (accounts[i].id != accounts[i].shareAccountId) continue;
       AccountService? svc;
-      int blockIndex = chains
-          .indexWhere((chain) => chain.networkId == accounts[i].networkId);
+      int blockIndex = chains.indexWhere(
+          (chain) => chain.blockchainId == accounts[i].blockchainId);
 
       if (blockIndex > -1) {
-        int srvIndex = this
-            ._services
-            .indexWhere((svc) => svc.accountId == accounts[i].accountId);
+        int srvIndex = this._services.indexWhere(
+            (svc) => svc.shareAccountId == accounts[i].shareAccountId);
         if (srvIndex >= 0) {
           svc = this._services[srvIndex];
           if (this._debugMode) {
@@ -87,61 +117,53 @@ class AccountCore {
             if (!chains[blockIndex].publish) {
               svc.stop();
               this._services.remove(svc);
-              this.accounts.remove(this.accounts[i]);
-              this._currencies.remove(this.accounts[i].accountId);
+              this._accounts.remove(accounts[i].shareAccountId);
               return;
             }
           }
         }
 
-        ACCOUNT? account;
-        switch (chains[blockIndex].coinType) {
+        ACCOUNT? base;
+        switch (chains[blockIndex].blockchainCoinType) {
           case 0:
           case 1:
             svc = BitcoinService(AccountServiceBase());
-            account = ACCOUNT.BTC;
+            base = ACCOUNT.BTC;
             break;
           case 60:
           case 603:
             svc = EthereumService(AccountServiceBase());
-            account = ACCOUNT.ETH;
+            base = ACCOUNT.ETH;
             break;
           // case 3324:
           case 8017:
             svc = EthereumService(AccountServiceBase());
-            account = ACCOUNT.CFC;
+            base = ACCOUNT.CFC;
             break;
           default:
         }
 
         if (svc != null &&
-            account != null &&
-            this._currencies[accounts[i].accountId] == null) {
-          this._currencies[accounts[i].accountId] = [];
+            base != null &&
+            this._accounts[accounts[i].shareAccountId] == null) {
+          this._accounts[accounts[i].shareAccountId] = [];
 
           this._services.add(svc);
-          svc.init(accounts[i].accountId, account);
+          svc.init(accounts[i].shareAccountId, base);
           await svc.start();
         }
       }
     }
-
-    Future.wait(
-      [
-        _addAccount(accounts),
-      ],
-    );
+    await this._getSupportedToken(chains, update);
   }
 
   close() {
     this._isInit = false;
-
     this._services.forEach((service) {
       service.stop();
     });
     this._services = [];
-    this.accounts = [];
-    this._currencies = {};
+    this._accounts = {};
     this.settingOptions = [];
   }
 
@@ -151,12 +173,9 @@ class AccountCore {
     return false;
   }
 
-  createAccount(AccountEntity account) async {
-    await DBOperator().accountDao.insertAccount(account);
-  }
-
-  AccountService getService(String accountId) {
-    return _services.firstWhere((svc) => (svc.accountId == accountId));
+  AccountService getService(String shareAccountId) {
+    return _services
+        .firstWhere((svc) => (svc.shareAccountId == shareAccountId));
   }
 
   Future<List<NetworkEntity>> getNetworks(bool update) async {
@@ -188,21 +207,15 @@ class AccountCore {
     APIResponse res = await HTTPAgent().get(Endpoint.url + '/wallet/accounts');
 
     List l = res.data ?? [];
-    UserEntity? user = await DBOperator().userDao.findUser();
-    if (user == null)
-      throw Error(); // -- debugInfo: user could not be null, null-safety
+    UserEntity user = (await DBOperator().userDao.findUser())!;
 
     for (var d in l) {
       final String id = d['account_id'];
-      bool exist = local.indexWhere((el) => el.accountId == id) > -1;
+      bool exist = local.indexWhere((el) => el.id == id) > -1;
 
       if (!exist) {
-        AccountEntity acc = AccountEntity(
-            accountId: id,
-            userId: user.userId,
-            networkId: d['blockchain_id'],
-            accountIndex: int.parse(d['account_index']));
-        await createAccount(acc);
+        AccountEntity acc = AccountEntity.fromAccountJson(d, id, user.userId);
+        await DBOperator().accountDao.insertAccount(acc);
         local.add(acc);
       }
     }
@@ -228,13 +241,9 @@ class AccountCore {
         if (local.indexWhere((c) => c.currencyId == d['currency_id']) > -1)
           continue;
         else {
-          Log.debug('CurrencyEntity.fromJson(d) d: $d');
-          Log.debug(
-              'CurrencyEntity.fromJson(d) d: ${CurrencyEntity.fromJson(d).toString()}');
           l.add(CurrencyEntity.fromJson(d));
         }
       }
-
       await DBOperator().currencyDao.insertCurrencies(l);
       return l;
     }
@@ -245,9 +254,4 @@ class AccountCore {
   //   return await this._services.getReceivingAddress();
   // }
 
-  List<Currency>? getCurrencies(String accountId) =>
-      this._currencies[accountId];
-
-  List<Currency> getAllCurrencies() =>
-      this._currencies.values.reduce((currList, currs) => currList + currs);
 }
