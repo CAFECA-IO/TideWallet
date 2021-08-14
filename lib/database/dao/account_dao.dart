@@ -7,7 +7,7 @@ abstract class AccountDao {
   @Query('SELECT * FROM Account')
   Future<List<AccountEntity>> findAllAccounts();
 
-  @Query('SELECT * FROM Account WHERE id = :id LIMIT 1')
+  @Query('SELECT * FROM Account WHERE id = :id')
   Future<AccountEntity?> findAccount(String id);
 
   @Query('SELECT * FROM JoinAccount')

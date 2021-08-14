@@ -8,6 +8,7 @@ import './authenticate.screen.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/loading_dialog.dart';
 import '../main.dart';
+import 'home.screen.dart';
 // import '../services/fcm_service.dart';
 
 class LandingScreen extends StatefulWidget {
@@ -62,8 +63,11 @@ class _LandingScreenState extends State<LandingScreen> {
         if (state is UserLoading) {
           DialogController.showUnDissmissible(context, LoadingDialog());
         }
-        if (state is UserSuccess || state is UserFail) {
+        if (state is UserExist || state is UserFail) {
           DialogController.dismiss(context);
+        }
+        if (state is UserAuthenticated) {
+          Navigator.of(context).pushNamed(HomeScreen.routeName);
         }
       },
       listenWhen: (prevState, currState) {
@@ -75,7 +79,7 @@ class _LandingScreenState extends State<LandingScreen> {
       },
       child: BlocBuilder<UserBloc, UserState>(
         builder: (context, state) {
-          if (state is UserInitial) {
+          if (state is UserAuthenticated) {
             return Scaffold(
               body: Container(
                 height: double.infinity,
@@ -89,7 +93,7 @@ class _LandingScreenState extends State<LandingScreen> {
               ),
             );
           }
-          if (state is UserSuccess) {
+          if (state is UserExist && state.existed) {
             return AuthenticateScreen();
           }
           return WelcomeScreen();

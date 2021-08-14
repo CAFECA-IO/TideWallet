@@ -406,10 +406,10 @@ class TransactionRepository {
   }
 
   Future<Account> _updateAccount(String id, String balance) async {
-    AccountEntity account = (await DBOperator().accountDao.findAccount(id))!;
+    AccountEntity? account = await DBOperator().accountDao.findAccount(id);
     Log.warning('PublishTransaction _updateAccount id: $id');
 
-    AccountEntity updateAccount = account.copyWith(balance: balance);
+    AccountEntity updateAccount = account!.copyWith(balance: balance);
 
     await DBOperator().accountDao.insertAccount(updateAccount);
 

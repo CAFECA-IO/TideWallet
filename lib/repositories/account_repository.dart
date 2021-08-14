@@ -1,4 +1,5 @@
 import 'package:rxdart/subjects.dart';
+import 'package:tidewallet3/helpers/logger.dart';
 import 'package:tidewallet3/services/account_service.dart';
 
 import '../cores/account.dart';
@@ -31,7 +32,8 @@ class AccountRepository {
     if (!AccountCore().isInit || isInit) {
       AccountCore().setMessenger();
 
-      return await AccountCore().init(debugMode: this.debugMode);
+      await AccountCore().init(debugMode: this.debugMode);
+      return;
     }
 
     return Future.delayed(Duration(seconds: 0));

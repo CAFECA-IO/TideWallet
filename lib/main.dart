@@ -16,6 +16,8 @@ import './repositories/invest_repository.dart';
 import './repositories/swap_repository.dart';
 import './repositories/local_auth_repository.dart';
 import './screens/landing.screen.dart';
+import '../screens/authenticate.screen.dart';
+import '../screens/welcome.screen.dart';
 import './screens/home.screen.dart';
 import './screens/wallet_connect.screen.dart';
 import './screens/create_transaction.screen.dart';
@@ -158,7 +160,8 @@ MaterialApp _material = MaterialApp(
   theme: myThemeData,
   routes: {
     '/': (context) => LandingScreen(),
-    LandingScreen.routeName: (context) => LandingScreen(),
+    WelcomeScreen.routeName: (context) => WelcomeScreen(),
+    AuthenticateScreen.routeName: (context) => AuthenticateScreen(),
     HomeScreen.routeName: (context) => HomeScreen(),
     CreateTransactionScreen.routeName: (context) => CreateTransactionScreen(),
     TransactionPreviewScreen.routeName: (context) => TransactionPreviewScreen(),

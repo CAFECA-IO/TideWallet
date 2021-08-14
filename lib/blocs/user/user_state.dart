@@ -11,8 +11,11 @@ class UserInitial extends UserState {}
 
 class UserLoading extends UserState {}
 
-class UserSuccess extends UserState {}
-
-class UserAuthenticated extends UserState {}
+class UserExist extends UserState {
+  final bool existed;
+  UserExist(this.existed);
+}
 
 class UserFail extends UserState {}
+
+class UserAuthenticated extends UserState {}

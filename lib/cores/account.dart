@@ -225,9 +225,6 @@ class AccountCore {
       final String id = d['account_id'];
       AccountEntity acc = AccountEntity.fromAccountJson(d, id, user.userId);
       await DBOperator().accountDao.insertAccount(acc);
-      AccountEntity? _acc = await DBOperator().accountDao.findAccount(id);
-      Log.debug(
-          "findAccount _acc.id: ${_acc?.id}, _acc.shareAccountId: ${_acc?.shareAccountId}, _acc.blockchainId: ${_acc?.blockchainId}, _acc.currencyId: ${_acc?.currencyId},  _acc.balance: ${_acc?.balance}");
 
       accs.add(acc);
     }

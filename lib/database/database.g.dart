@@ -286,7 +286,7 @@ class _$AccountDao extends AccountDao {
 
   @override
   Future<AccountEntity?> findAccount(String id) async {
-    return _queryAdapter.query('SELECT * FROM Account WHERE id = ?1 LIMIT 1',
+    return _queryAdapter.query('SELECT * FROM Account WHERE id = ?1',
         mapper: (Map<String, Object?> row) => AccountEntity(
             id: row['id'] as String,
             shareAccountId: row['share_account_id'] as String,

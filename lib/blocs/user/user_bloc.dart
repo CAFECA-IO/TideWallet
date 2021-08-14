@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:tidewallet3/helpers/logger.dart';
 
 import '../../repositories/user_repository.dart';
 import '../../repositories/account_repository.dart';
@@ -23,38 +24,29 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     if (event is UserInit) {
       yield UserLoading();
       await _accountRepo.coreInit(debugMode: this._debugMode);
+      Log.verbose("_accountRepo.coreInit");
+
       yield UserAuthenticated();
     }
 
     if (event is UserCheck) {
       bool existed = await _repo.checkUser();
+      Log.debug("UserCheck existed: $existed");
       if (event.debugMode != null) this._debugMode = event.debugMode!;
-      if (existed) {
-        yield UserSuccess();
-      } else {
-        yield UserFail();
-      }
+      yield UserExist(existed);
     }
 
     if (event is UserCreate) {
       yield UserLoading();
       bool success = await _repo.createUser(event.userIndentifier);
-      if (success) {
-        yield UserSuccess();
-      } else {
-        yield UserFail();
-      }
+      yield UserExist(success);
     }
 
     if (event is UserCreateWithSeed) {
       yield UserLoading();
       bool success =
           await _repo.createUserWithSeed(event.userIndentifier, event.seed);
-      if (success) {
-        yield UserSuccess();
-      } else {
-        yield UserFail();
-      }
+      yield UserExist(success);
     }
 
     if (event is UserReset) {

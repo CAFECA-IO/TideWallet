@@ -75,38 +75,27 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<UserBloc, UserState>(
-      listener: (context, state) {
-        if (state is UserAuthenticated) {
-          Log.debug('Navigator.of(context).pushNamed(HomeScreen.routeName)');
-          Navigator.of(context).pushNamed(HomeScreen.routeName);
+    return BlocBuilder<LocalAuthBloc, LocalAuthState>(
+      builder: (context, state) {
+        if (state is AuthenticationStatus) {
+          this._userbloc.add(UserInit());
+          return state.isAuthenicated
+              ? _unAuthLayout()
+              : _unAuthLayout(
+                  widgets: [
+                    PrimaryButton(
+                      t('authenticate'),
+                      () {
+                        this._bloc.add(Authenticate());
+                      },
+                      iconImg: AssetImage(
+                          'assets/images/icons/ic_property_normal.png'),
+                    ),
+                  ],
+                );
         }
-        if (state is UserLoading) {
-          DialogController.showUnDissmissible(context, LoadingDialog());
-        }
+        return _unAuthLayout();
       },
-      child: BlocBuilder<LocalAuthBloc, LocalAuthState>(
-        builder: (context, state) {
-          if (state is AuthenticationStatus) {
-            this._userbloc.add(UserInit());
-            return state.isAuthenicated
-                ? _unAuthLayout()
-                : _unAuthLayout(
-                    widgets: [
-                      PrimaryButton(
-                        t('authenticate'),
-                        () {
-                          this._bloc.add(Authenticate());
-                        },
-                        iconImg: AssetImage(
-                            'assets/images/icons/ic_property_normal.png'),
-                      ),
-                    ],
-                  );
-          }
-          return _unAuthLayout();
-        },
-      ),
     );
   }
 }
