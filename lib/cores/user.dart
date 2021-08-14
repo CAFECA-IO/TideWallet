@@ -16,7 +16,7 @@ import '../database/db_operator.dart';
 import '../database/entity/user.dart';
 import '../models/auth.model.dart';
 import '../models/api_response.mode.dart';
-import '../services/fcm_service.dart';
+// import '../services/fcm_service.dart';
 
 class User {
   late String? _id;
@@ -160,7 +160,7 @@ class User {
     required String userIdentifier,
     required int timestamp,
   }) async {
-    String? fcmToken = await FCM().getToken();
+    // String? fcmToken = await FCM().getToken();
 
     final Map payload = {
       "wallet_name":
@@ -168,7 +168,7 @@ class User {
       "extend_public_key": extendPublicKey,
       "install_id": installId,
       "app_uuid": installId,
-      "fcm_token": fcmToken
+      // "fcm_token": fcmToken
     };
 
     APIResponse res = await HTTPAgent().post('${Endpoint.url}/user', payload);
@@ -178,14 +178,16 @@ class User {
 
       String keystore = await compute(PaperWallet.walletToJson, wallet);
 
+      // -- debugInfo
+      Log.info('_registerUser token: ${res.data["token"]}');
+      Log.info('_registerUser tokenSecret: ${res.data["tokenSecret"]}');
+
       UserEntity user = UserEntity(
-          // res.data['user_id'], // ++ inform backend to update userId become radom hex[Emily 04/01/2021]
-          userId,
-          keystore,
-          userIdentifier,
-          installId,
-          timestamp,
-          timestamp);
+          userId: userId,
+          keystore: keystore,
+          thirdPartyId: userIdentifier,
+          installId: installId,
+          timestamp: timestamp);
       await DBOperator().userDao.insertUser(user);
       await this._initUser(user);
     }
@@ -240,36 +242,6 @@ class User {
     Wallet w = await compute(PaperWallet.jsonToWallet, [keystore, pwd]);
 
     return w;
-  }
-
-  Future<bool> restoreUser(Wallet wallet, String keystore, String pwd) async {
-    List<int> seed =
-        await compute(PaperWallet.magicSeed, wallet.privateKey.privateKey);
-    String extPK = PaperWallet.getExtendedPublicKey(seed: seed);
-
-    String installId = await this._prefManager.getInstallationId();
-    // this._passwordHash = _seasonedPassword(pwd);
-
-    final Map payload = {
-      "wallet_name": 'Recover Wallet',
-      "extend_public_key": extPK,
-      "install_id": installId,
-      "app_uuid": installId
-    };
-
-    APIResponse res = await HTTPAgent().post('${Endpoint.url}/user', payload);
-
-    if (res.success) {
-      this._prefManager.setAuthItem(AuthItem.fromJson(res.data));
-
-      // UserEntity user = UserEntity(
-      //     res.data['user_id'], keystore, this._passwordHash, this._salt, false);
-      // await DBOperator().userDao.insertUser(user);
-
-      // await this._initUser(user);
-    }
-
-    return res.success;
   }
 
   Future<void> _initUser(UserEntity user) async {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tidewallet3/helpers/logger.dart';
 
 import 'home.screen.dart';
 import '../blocs/local_auth/local_auth_bloc.dart';
@@ -76,8 +77,10 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
   Widget build(BuildContext context) {
     return BlocListener<UserBloc, UserState>(
       listener: (context, state) {
-        if (state is UserSuccess)
+        if (state is UserAuthenticated) {
+          Log.debug('Navigator.of(context).pushNamed(HomeScreen.routeName)');
           Navigator.of(context).pushNamed(HomeScreen.routeName);
+        }
         if (state is UserLoading) {
           DialogController.showUnDissmissible(context, LoadingDialog());
         }

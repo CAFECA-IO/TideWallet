@@ -28,7 +28,7 @@ class Account {
   String balance;
   final int numberOfUsedExternalKey;
   final int numberOfUsedInternalKey;
-  final int lastSyncTime;
+  final int? lastSyncTime;
   final String keystore;
   final String network;
   final int blockchainCoinType;
@@ -167,12 +167,12 @@ class Account {
         type = entity.type,
         userId = entity.userId,
         curveType = entity.curveType,
-        numberOfUsedExternalKey = entity.numberOfUsedExternalKey,
-        numberOfUsedInternalKey = entity.numberOfUsedInternalKey,
+        numberOfUsedExternalKey = entity.numberOfUsedExternalKey ?? 0,
+        numberOfUsedInternalKey = entity.numberOfUsedInternalKey ?? 0,
         lastSyncTime = entity.lastSyncTime,
         keystore = entity.keystore,
         blockchainCoinType = entity.blockchainCoinType,
-        exchangeRate = entity.exchangeRate,
+        exchangeRate = entity.exchangeRate ?? "0",
         accountType = type,
         shareAccountSymbol = sharedEntity.symbol,
         shareAccountDecimals = sharedEntity.decimals,

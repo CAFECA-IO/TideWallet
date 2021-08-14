@@ -115,11 +115,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       Decimal? fee;
       Decimal? gasPrice;
       Decimal? gasLimit;
-      Decimal amount;
+      Decimal? amount;
       String? feeToFiat;
       String? message;
 
-      amount = Decimal.tryParse(event.amount)!;
+      amount = Decimal.tryParse(event.amount);
       if (_state.rules[0] && amount != null) {
         result = await _repo.getTransactionFee(
             amount: amount, address: _state.address);

@@ -2,7 +2,7 @@ import 'package:decimal/decimal.dart';
 import 'package:intl/intl.dart';
 
 class Formatter {
-  static dateTime(DateTime dateTime) {
+  static dateTime(DateTime? dateTime) {
     // assert(dateTime != null, 'eee');
     return dateTime != null
         ? DateFormat('MMM dd,yyyy, kk:mm a').format(dateTime)
@@ -26,5 +26,4 @@ class Formatter {
         address.substring(address.length - showLength, address.length);
     return prefix + "..." + suffix;
   }
-
 }

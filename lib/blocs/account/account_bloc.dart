@@ -131,8 +131,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
         return curr.copyWith(inFiat: v.toString());
       }).toList();
 
-      _list
-          .sort((a, b) => a.accountType!.index.compareTo(b.accountType!.index));
+      _list.sort((a, b) => a.accountType.index.compareTo(b.accountType.index));
 
       yield AccountLoaded(_list, total: _total);
     }

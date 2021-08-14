@@ -8,7 +8,7 @@ import './authenticate.screen.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/loading_dialog.dart';
 import '../main.dart';
-import '../services/fcm_service.dart';
+// import '../services/fcm_service.dart';
 
 class LandingScreen extends StatefulWidget {
   static const routeName = 'landing-screen';
@@ -17,17 +17,17 @@ class LandingScreen extends StatefulWidget {
 }
 
 class _LandingScreenState extends State<LandingScreen> {
-  FCM _fcm = FCM();
+  // FCM _fcm = FCM();
   bool _isInit = true;
   bool _debugMode = false;
   late UserBloc _bloc;
 
   @override
   void initState() {
-    _fcm.configure(navigatorKey);
-    _fcm.getToken().then((value) {
-      print(value);
-    });
+    // _fcm.configure(navigatorKey);
+    // _fcm.getToken().then((value) {
+    //   print(value);
+    // });
     super.initState();
   }
 

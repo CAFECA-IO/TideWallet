@@ -36,6 +36,41 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     super.didChangeDependencies();
   }
 
+  void _options(state) {
+    return DialogController.showUnDissmissible(
+      context,
+      Center(
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          width: 240.0,
+          height: 170.0,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+            color: Theme.of(context).backgroundColor,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              PrimaryButton(t('automatic'), () {
+                DialogController.dismiss(context);
+                _userBloc.add(UserCreate(state.userIndentifier));
+              }),
+              // SizedBox(height: 10),
+              Container(
+                margin: const EdgeInsets.only(top: 30.0),
+                child: PrimaryButton(t('recover_mnemonic'), () {
+                  Navigator.of(context)
+                      .pushNamed(RecoverMemonicScreen.routeName);
+                }),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<ThirdPartySignInBloc, ThirdPartySignInState>(
@@ -49,16 +84,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               ErrorDialog(
                   state.message != null ? t(state.message!) : t('cancel')));
         }
-        if (state is CancelledSignInWithThirdParty) {
-          // Navigator.of(context).pop();
-          Navigator.of(context).popUntil(
-            (ModalRoute.withName('/')),
-          );
-          DialogController.show(context, ErrorDialog(t('cancel')));
-        }
         if (state is SignedInWithThirdParty) {
           if (Platform.isAndroid) Navigator.of(context).pop();
-          _userBloc.add(UserCreate(state.userIndentifier));
+          _options(state);
         }
         if (state is SigningInWithThirdParty) {
           DialogController.showUnDissmissible(context, LoadingDialog());
@@ -92,11 +120,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               Platform.isIOS
                   ? lib.SignInWithAppleButton(
                       onPressed: () {
-                        this._bloc.add(SignInWithApple());
+                        _bloc.add(SignInWithApple());
                       },
                     )
                   : PrimaryButton(t('sign_in_with_google_id'), () {
-                      this._bloc.add(SignInWithGoogle());
+                      _bloc.add(SignInWithGoogle());
                     },
                       icon: Row(
                         children: [
@@ -116,13 +144,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       ),
                       padding: EdgeInsets.symmetric(
                           horizontal: 32.5, vertical: 8.0)),
-              Container(
-                margin: const EdgeInsets.only(top: 30.0),
-                child: PrimaryButton(t('recover_mnemonic'), () {
-                  Navigator.of(context)
-                      .pushNamed(RecoverMemonicScreen.routeName);
-                }),
-              ),
             ],
           ),
         ),

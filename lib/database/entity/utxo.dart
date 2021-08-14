@@ -115,13 +115,13 @@ class UtxoEntity {
 }
 
 @DatabaseView(
-    'SELECT * FROM Utxo INNER JOIN AccountCurrency ON Utxo.accountcurrency_id = AccountCurrency.accountcurrency_id INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id',
+    'SELECT * FROM Utxo INNER JOIN Account ON Utxo.account_id = Account.account_id INNER JOIN Currency ON Account.currency_id = Currency.currency_id',
     viewName: 'JoinUtxo')
 class JoinUtxo {
   @ColumnInfo(name: 'utxo_id') // --  nullable: false
   final String utxoId;
 
-  @ColumnInfo(name: 'accountcurrency_id')
+  @ColumnInfo(name: 'account_id')
   final String accountId;
 
   @ColumnInfo(name: 'tx_id')

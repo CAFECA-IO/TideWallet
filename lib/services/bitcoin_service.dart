@@ -31,8 +31,8 @@ class BitcoinService extends AccountServiceDecorator {
   late int _timestamp; // fetch transactionFee timestamp;
 
   @override
-  void init(String id, ACCOUNT? base, {int? interval}) {
-    this.service.init(id, base ?? this.base!, interval: this.syncInterval);
+  void init(String id, ACCOUNT base, {int? interval}) {
+    this.service.init(id, base, interval: this.syncInterval);
   }
 
   @override
@@ -194,9 +194,9 @@ class BitcoinService extends AccountServiceDecorator {
   Future _syncUTXO() async {
     int now = DateTime.now().millisecondsSinceEpoch;
 
-    if (now - this.service.lastSyncTimestamp > this.syncInterval) {
+    if (now - this.service.lastSyncTimestamp! > this.syncInterval) {
       Log.btc('_syncUTXO');
-      String currencyId = this.service.shareAccountId;
+      String currencyId = this.service.shareAccountId!;
       Log.btc('_syncUTXO currencyId: $currencyId');
 
       APIResponse response = await HTTPAgent()

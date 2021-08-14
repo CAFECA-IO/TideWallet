@@ -73,7 +73,7 @@ class CurrencyEntity {
 }
 
 @DatabaseView(
-    'SELECT * FROM Currency INNER JOIN AccountCurrency ON Currency.currency_id = AccountCurrency.currency_id',
+    'SELECT * FROM Currency INNER JOIN Account ON Currency.currency_id = Account.currency_id',
     viewName: 'CurrencyWithAccountId')
 class AvailableTokensOnChain {
   @primaryKey

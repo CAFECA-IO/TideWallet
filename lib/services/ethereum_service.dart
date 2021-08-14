@@ -32,9 +32,9 @@ class EthereumService extends AccountServiceDecorator {
   int _nonce = 0;
 
   @override
-  void init(String id, ACCOUNT? base, {int? interval}) {
+  void init(String id, ACCOUNT base, {int? interval}) {
     Log.eth('ETH Service Init');
-    this.service.init(id, base ?? this.base!, interval: this.syncInterval);
+    this.service.init(id, base, interval: this.syncInterval);
   }
 
   @override
@@ -101,22 +101,22 @@ class EthereumService extends AccountServiceDecorator {
 
         final v = AccountEntity.fromAccountJson(
             tks[index],
-            this.service.shareAccountId,
+            this.service.shareAccountId!,
             AccountCore().accounts[this.service.shareAccountId]![0].userId);
 
         await DBOperator().accountDao.insertAccount(v);
 
         List<JoinAccount> jcs = await DBOperator()
             .accountDao
-            .findJoinedAccountsByShareAccountId(this.service.shareAccountId);
+            .findJoinedAccountsByShareAccountId(this.service.shareAccountId!);
 
         List<Account> cs = jcs
-            .map((c) => Account.fromJoinAccount(c, jcs[0], this.base))
+            .map((c) => Account.fromJoinAccount(c, jcs[0], this.base!))
             .toList();
 
         AccountMessage msg =
             AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: cs[0]);
-        AccountCore().accounts[this.service.shareAccountId] = cs;
+        AccountCore().accounts[this.service.shareAccountId!] = cs;
 
         AccountMessage currMsg = AccountMessage(
             evt: ACCOUNT_EVT.OnUpdateAccount,

@@ -52,16 +52,7 @@ class MnemonicBloc extends Bloc<MnemonicEvent, MnemonicState> {
           Uint8List seed = await _repo.mnemonicToSeed(
               _state.mnemonic.trimRight(), _state.passphrase);
           try {
-            final signin = Platform.isIOS
-                ? _repo.signInWithAppleId
-                : _repo.signInWithGoogleId;
-            List result = await signin();
-
-            if (result[0]) {
-              yield MnemonicSuccess(result[1], seed);
-            } else {
-              yield _state;
-            }
+            yield MnemonicSuccess(_repo.thirdPartyId, seed);
           } catch (e) {
             yield _state.copyWith(error: MNEMONIC_ERROR.LOGIN);
           }

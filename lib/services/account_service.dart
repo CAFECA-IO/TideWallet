@@ -8,10 +8,10 @@ import '../models/transaction.model.dart';
 abstract class AccountService {
   int AVERAGE_FETCH_FEE_TIME = 1 * 60 * 60 * 1000; // milliseconds
   int syncInterval = 10 * 10 * 1000;
-  late ACCOUNT base;
-  late int lastSyncTimestamp;
-  late String shareAccountId;
-  late Timer timer;
+  ACCOUNT? base;
+  int? lastSyncTimestamp;
+  String? shareAccountId;
+  Timer? timer;
 
   void init(String id, ACCOUNT base, {int interval});
   Future start();

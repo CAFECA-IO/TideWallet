@@ -46,7 +46,7 @@ import 'theme.dart';
 
 void main() async {
   runApp(MyApp());
-  await Firebase.initializeApp();
+  // await Firebase.initializeApp();
   Bloc.observer = ObserverDelegate();
   await Endpoint.init();
   SystemChrome.setPreferredOrientations([

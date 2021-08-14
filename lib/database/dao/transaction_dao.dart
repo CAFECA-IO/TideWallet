@@ -7,8 +7,7 @@ abstract class TransactionDao {
   @Query('SELECT * FROM _Transaction')
   Future<List<TransactionEntity>> findAllTransactions();
 
-  @Query(
-      'SELECT * FROM _Transaction WHERE _Transaction.accountcurrency_id = :id')
+  @Query('SELECT * FROM _Transaction WHERE _Transaction.account_id = :id')
   Future<List<TransactionEntity>> findAllTransactionsById(String id);
 
   @Query('SELECT * FROM _Transaction WHERE _Transaction.tx_id = :id limit 1')

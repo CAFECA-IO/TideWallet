@@ -99,7 +99,7 @@ class TransactionRepository {
 
   Future<String> getReceivingAddress() async {
     // TEST: is BackendAddress correct?
-    List result = await _accountService.getReceivingAddress(this._account.id!);
+    List result = await _accountService.getReceivingAddress(this._account.id);
     String address = result[0];
 
     return address;
@@ -117,14 +117,14 @@ class TransactionRepository {
     Map<TransactionPriority, Decimal> _fee =
         await _accountService.getTransactionFee(this._account.blockchainId);
 
-    // TODO if (message != null)
+    // TODO if (message = null)
     Decimal? _gasLimit;
     switch (this._account.accountType) {
       case ACCOUNT.BTC:
         BitcoinService _svc = _accountService as BitcoinService;
 
         List<UnspentTxOut> unspentTxOuts =
-            await _svc.getUnspentTxOut(_account.id!);
+            await _svc.getUnspentTxOut(_account.id);
         Map<TransactionPriority, Decimal> fee = {
           TransactionPriority.slow:
               _transactionService.calculateTransactionVSize(
@@ -153,8 +153,7 @@ class TransactionRepository {
       case ACCOUNT.CFC:
         EthereumService _svc = _accountService as EthereumService;
         if (this._address == null) {
-          _address =
-              (await _accountService.getChangingAddress(_account.id!))[0];
+          _address = (await _accountService.getChangingAddress(_account.id))[0];
         }
         String to = address!.contains(':') ? address.split(':')[1] : address;
         String from =
@@ -171,7 +170,7 @@ class TransactionRepository {
                   hex.decode(hex
                       .encode(encodeBigInt(BigInt.parse(
                           Converter.toCurrencySmallestUnit(
-                                  amount!, _account.decimals!)
+                                  amount!, _account.decimals)
                               .toString())))
                       .padLeft(64, '0')) +
                   rlp.toBuffer(message ?? Uint8List(0)));
@@ -205,12 +204,12 @@ class TransactionRepository {
   Future<bool> verifyAddress(String address) async {
     bool verified = false;
     if (this._address == null) {
-      _address = (await _accountService.getChangingAddress(_account.id!))[0];
+      _address = (await _accountService.getChangingAddress(_account.id))[0];
     }
     verified = address != _address && address.length > 0;
     if (verified) {
       verified =
-          _transactionService.verifyAddress(address, this.account.publish!);
+          _transactionService.verifyAddress(address, this.account.publish);
     }
     return verified;
   }
@@ -253,7 +252,7 @@ class TransactionRepository {
         late String changeAddress;
         late int keyIndex;
         List<UnspentTxOut> unspentTxOuts =
-            await _svc.getUnspentTxOut(_account.id!);
+            await _svc.getUnspentTxOut(_account.id);
         Log.debug('unspentTxOuts: $unspentTxOuts');
         Decimal utxoAmount = Decimal.zero;
         Log.btc('amount + fee: ${amount + fee!}');
@@ -271,7 +270,7 @@ class TransactionRepository {
               await getPubKey(pwd, utxo.changeIndex, utxo.keyIndex);
           _utxos.add(utxo);
           if (utxoAmount > (amount + fee)) {
-            List result = await _svc.getChangingAddress(_account.id!);
+            List result = await _svc.getChangingAddress(_account.id);
             Log.btc('prepareTransaction getChangingAddress: $result');
             changeAddress = result[0];
             keyIndex = result[1];
@@ -304,7 +303,7 @@ class TransactionRepository {
 
         Decimal fee = gasPrice! * gasLimit!;
         Decimal balance = Decimal.parse(this._account.balance) - amount - fee;
-        if (this._account.type!.toLowerCase() == 'token') {
+        if (this._account.type.toLowerCase() == 'token') {
           // ERC20
           _tokenTransactionAmount = amount.toString();
           _tokenTransactionAddress = to;
@@ -317,16 +316,16 @@ class TransactionRepository {
         Transaction transaction = _transactionService.prepareTransaction(
             this
                 ._account
-                .publish!, // ++ debugInfo, isMainnet required not publish, null-safety
+                .publish, // ++ debugInfo, isMainnet required not publish, null-safety
             to,
-            Converter.toCurrencySmallestUnit(amount, this._account.decimals!),
+            Converter.toCurrencySmallestUnit(amount, this._account.decimals),
             rlp.toBuffer(message),
             nonce: nonce,
             gasPrice: Converter.toCurrencySmallestUnit(
-                gasPrice, this._account.shareAccountDecimals!),
+                gasPrice, this._account.shareAccountDecimals),
             gasLimit: gasLimit,
             fee: Converter.toCurrencySmallestUnit(
-                fee, this._account.shareAccountDecimals!),
+                fee, this._account.shareAccountDecimals),
             chainId: _account.chainId,
             privKey: await getPrivKey(pwd, 0, 0),
             changeAddress: this._address);
@@ -358,7 +357,7 @@ class TransactionRepository {
   _pushResult(Transaction transaction, Decimal balance) async {
     // TODO updateCurrencyAmount
     String _amount =
-        Converter.toCurrencyUnit(transaction.amount, this._account.decimals!)
+        Converter.toCurrencyUnit(transaction.amount, this._account.decimals)
             .toString();
     String _fee = Converter.toCurrencyUnit(
             transaction.fee, this._account.shareAccountDecimals)
@@ -378,21 +377,20 @@ class TransactionRepository {
         _gasPrice = Converter.toCurrencyUnit(
                 transaction.gasPrice!, this._account.shareAccountDecimals)
             .toString();
-        if (this._account.type!.toLowerCase() != 'token') {
-          _updateAccount(this._account.id!, balance.toString());
-          _updateTransaction(
-              this._account.id!, _acc, transaction, _amount, _fee,
+        if (this._account.type.toLowerCase() != 'token') {
+          _updateAccount(this._account.id, balance.toString());
+          _updateTransaction(this._account.id, _acc, transaction, _amount, _fee,
               gasPrice: _gasPrice);
         } else {
           _acc.balance = balance.toString();
-          _updateAccount(this._account.id!, balance.toString());
-          _updateTransaction(this._account.id!, _acc, transaction,
+          _updateAccount(this._account.id, balance.toString());
+          _updateTransaction(this._account.id, _acc, transaction,
               _tokenTransactionAmount, _fee,
               gasPrice: _gasPrice,
               destinationAddresses: _tokenTransactionAddress);
           Account _accParent = await _updateAccount(
               this._account.shareAccountId,
-              (Decimal.parse(this._account.shareAccountAmount!) -
+              (Decimal.parse(this._account.shareAccountAmount) -
                       Decimal.parse(_fee))
                   .toString());
           _updateTransaction(

@@ -60,7 +60,7 @@ class I18nDelegate extends LocalizationsDelegate<I18n> {
 }
 
 class SpecificI18nDelegate extends LocalizationsDelegate<I18n> {
-  final Locale overriddenLocale;
+  final Locale? overriddenLocale;
 
   const SpecificI18nDelegate(this.overriddenLocale);
 
@@ -68,7 +68,7 @@ class SpecificI18nDelegate extends LocalizationsDelegate<I18n> {
   bool isSupported(Locale locale) => overriddenLocale != null;
 
   @override
-  Future<I18n> load(Locale locale) => I18n.load(overriddenLocale);
+  Future<I18n> load(Locale locale) => I18n.load(overriddenLocale!);
 
   @override
   bool shouldReload(LocalizationsDelegate<I18n> old) => true;

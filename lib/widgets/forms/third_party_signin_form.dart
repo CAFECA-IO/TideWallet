@@ -66,10 +66,6 @@ class _ThirdPartySignInFormState extends State<ThirdPartySignInForm> {
           if (state.message != null)
             DialogController.show(context, ErrorDialog(state.message!));
         }
-        if (state is CancelledSignInWithThirdParty) {
-          Navigator.of(context).pop();
-          DialogController.show(context, ErrorDialog(t('cancel')));
-        }
         if (state is SignedInWithThirdParty) {
           _userBloc.add(UserCreate(state.userIndentifier));
         }

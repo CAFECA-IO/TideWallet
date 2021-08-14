@@ -88,12 +88,20 @@ class AccountCore {
     Log.debug('_initAccounts this._debugMode: ${this._debugMode}');
     UserEntity user = (await DBOperator().userDao.findUser())!;
     final int timestamp = DateTime.now().millisecondsSinceEpoch;
-    final bool update = user.lastSyncTime - timestamp > AccountCore.syncInteral;
-    final chains = (await this.getNetworks(update))
+
+    Log.debug('_initAccounts user lastSyncTime: ${user.lastSyncTime}');
+    final bool update = user.lastSyncTime == null
+        ? true
+        : user.lastSyncTime! - timestamp > AccountCore.syncInteral;
+    Log.debug('_initAccounts update: $update');
+
+    await this.getSupportedCurrencies(update);
+
+    final networks = (await this.getNetworks(update))
         .where((network) => this._debugMode ? true : network.publish)
         .toList();
+
     final accounts = await this.getAccounts(update);
-    await this.getSupportedCurrencies(update);
 
     if (update) {
       final updateUser = user.copyWith(lastSyncTime: timestamp);
@@ -103,7 +111,7 @@ class AccountCore {
     for (var i = 0; i < accounts.length; i++) {
       if (accounts[i].id != accounts[i].shareAccountId) continue;
       AccountService? svc;
-      int blockIndex = chains.indexWhere(
+      int blockIndex = networks.indexWhere(
           (chain) => chain.blockchainId == accounts[i].blockchainId);
 
       if (blockIndex > -1) {
@@ -114,7 +122,7 @@ class AccountCore {
           if (this._debugMode) {
             return;
           } else {
-            if (!chains[blockIndex].publish) {
+            if (!networks[blockIndex].publish) {
               svc.stop();
               this._services.remove(svc);
               this._accounts.remove(accounts[i].shareAccountId);
@@ -124,7 +132,7 @@ class AccountCore {
         }
 
         ACCOUNT? base;
-        switch (chains[blockIndex].blockchainCoinType) {
+        switch (networks[blockIndex].blockchainCoinType) {
           case 0:
           case 1:
             svc = BitcoinService(AccountServiceBase());
@@ -154,7 +162,7 @@ class AccountCore {
         }
       }
     }
-    await this._getSupportedToken(chains, update);
+    await this._getSupportedToken(networks, update);
   }
 
   close() {
@@ -185,10 +193,10 @@ class AccountCore {
     if (networks.isEmpty || update) {
       APIResponse res = await HTTPAgent().get(Endpoint.url + '/blockchain');
       List l = res.data;
+      Log.debug("getNetworks networks: $l");
       networks = l.map((chain) => NetworkEntity.fromJson(chain)).toList();
       await DBOperator().networkDao.insertNetworks(networks);
     }
-
     return networks;
   }
 
@@ -196,30 +204,34 @@ class AccountCore {
     List<AccountEntity> result =
         await DBOperator().accountDao.findAllAccounts();
     if (result.isEmpty || update) {
-      result = await this._addAccount(result);
+      result = await this._addAccount();
       return result;
     } else {
       return result;
     }
   }
 
-  Future<List<AccountEntity>> _addAccount(List<AccountEntity> local) async {
+  Future<List<AccountEntity>> _addAccount() async {
     APIResponse res = await HTTPAgent().get(Endpoint.url + '/wallet/accounts');
 
     List l = res.data ?? [];
+    List<AccountEntity> accs = [];
+    Log.debug('_addAccount AccountDatas: $l');
+
     UserEntity user = (await DBOperator().userDao.findUser())!;
+    Log.debug('_addAccount user.userId: ${user.userId}');
 
     for (var d in l) {
       final String id = d['account_id'];
-      bool exist = local.indexWhere((el) => el.id == id) > -1;
+      AccountEntity acc = AccountEntity.fromAccountJson(d, id, user.userId);
+      await DBOperator().accountDao.insertAccount(acc);
+      AccountEntity? _acc = await DBOperator().accountDao.findAccount(id);
+      Log.debug(
+          "findAccount _acc.id: ${_acc?.id}, _acc.shareAccountId: ${_acc?.shareAccountId}, _acc.blockchainId: ${_acc?.blockchainId}, _acc.currencyId: ${_acc?.currencyId},  _acc.balance: ${_acc?.balance}");
 
-      if (!exist) {
-        AccountEntity acc = AccountEntity.fromAccountJson(d, id, user.userId);
-        await DBOperator().accountDao.insertAccount(acc);
-        local.add(acc);
-      }
+      accs.add(acc);
     }
-    return local;
+    return accs;
   }
 
   Future<List<CurrencyEntity>> getSupportedCurrencies(bool update) async {

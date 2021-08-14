@@ -20,7 +20,7 @@ class AccountServiceBase extends AccountService {
   late ACCOUNT _base;
   late String _shareAccountId;
   late int _syncInterval;
-  late int? _lastSyncTimestamp = 0;
+  int? _lastSyncTimestamp;
 
   get base => this._base;
   get lastSyncTimestamp => this._lastSyncTimestamp!;
@@ -37,15 +37,18 @@ class AccountServiceBase extends AccountService {
 
   @override
   Future start() async {
-    AccountEntity select =
-        (await DBOperator().accountDao.findAccount(this._shareAccountId))!;
+    Log.debug('start this._shareAccountId: ${this._shareAccountId}');
+    AccountEntity? _acc =
+        await DBOperator().accountDao.findAccount(this._shareAccountId);
+    Log.debug(
+        "start _acc.id: ${_acc?.id}, _acc.shareAccountId: ${_acc?.shareAccountId}, _acc.blockchainId: ${_acc?.blockchainId}, _acc.currencyId: ${_acc?.currencyId},  _acc.balance: ${_acc?.balance}");
     await this._pushResult();
-    this._lastSyncTimestamp = select.lastSyncTime;
+    this._lastSyncTimestamp = _acc?.lastSyncTime;
   }
 
   @override
   void stop() {
-    this.timer.cancel();
+    this.timer?.cancel();
   }
 
   @override
@@ -56,13 +59,13 @@ class AccountServiceBase extends AccountService {
 
   Future<List<AccountEntity>> getData() async {
     List<AccountEntity> accounts = [];
-    AccountEntity accountEntity =
-        (await DBOperator().accountDao.findAccount(this._shareAccountId))!;
+    AccountEntity? accountEntity =
+        await DBOperator().accountDao.findAccount(this._shareAccountId);
     APIResponse res = await HTTPAgent()
         .get(Endpoint.url + '/wallet/account/${this._shareAccountId}');
     final acc = res.data;
 
-    if (acc != null) {
+    if (acc != null && accountEntity != null) {
       AccountEntity _mainAccount = accountEntity.copyWith(
           balance: acc['balance'],
           numberOfUsedExternalKey: acc["number_of_used_external_key"] ?? 0,

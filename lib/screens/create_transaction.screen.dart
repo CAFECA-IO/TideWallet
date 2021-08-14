@@ -181,7 +181,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                       Container(
                         child: Align(
                           child: Text(
-                            '${t('balance')}: ${state.spandable != null ? (Formatter.formatDecimal(_repo.account.balance.toString()) + " " + _repo.account.symbol!) : "loading..."}',
+                            '${t('balance')}: ${state.spandable != null ? (Formatter.formatDecimal(_repo.account.balance.toString()) + " " + _repo.account.symbol) : "loading..."}',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                           alignment: Alignment.centerRight,

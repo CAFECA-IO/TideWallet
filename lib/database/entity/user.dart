@@ -17,16 +17,16 @@ class UserEntity {
   final int timestamp;
 
   @ColumnInfo(name: 'last_sync_time')
-  final int lastSyncTime;
+  int? lastSyncTime;
 
-  UserEntity(
-    this.userId,
-    this.keystore,
-    this.thirdPartyId,
-    this.installId,
-    this.timestamp,
+  UserEntity({
+    required this.userId,
+    required this.keystore,
+    required this.thirdPartyId,
+    required this.installId,
+    required this.timestamp,
     this.lastSyncTime,
-  );
+  });
 
   @override
   bool operator ==(Object other) =>
@@ -48,12 +48,12 @@ class UserEntity {
     int? lastSyncTime,
   }) {
     return UserEntity(
-      userId ?? this.userId,
-      keystore ?? this.keystore,
-      thirdPartyId ?? this.thirdPartyId,
-      installId ?? this.installId,
-      timestamp ?? this.timestamp,
-      lastSyncTime ?? this.lastSyncTime,
+      userId: userId ?? this.userId,
+      keystore: keystore ?? this.keystore,
+      thirdPartyId: thirdPartyId ?? this.thirdPartyId,
+      installId: installId ?? this.installId,
+      timestamp: timestamp ?? this.timestamp,
+      lastSyncTime: lastSyncTime ?? this.lastSyncTime,
     );
   }
 }

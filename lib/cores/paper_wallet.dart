@@ -25,7 +25,6 @@ class PaperWallet {
     EthPrivateKey credentials = EthPrivateKey.fromHex(data['key'] as String);
     Wallet wallet =
         Wallet.createNew(credentials, data['password'] as String, rng);
-    Log.debug(wallet.toJson());
 
     return wallet;
   }

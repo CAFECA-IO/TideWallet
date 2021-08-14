@@ -86,18 +86,18 @@ class SwapCard extends StatelessWidget {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                           children: <Widget>[
-                                            Image.network(e.imgPath!,
+                                            Image.network(e.imgPath,
                                                 width: 30.0, height: 30.0),
                                             SizedBox(width: 10.0),
                                             Text(
-                                              e.name!,
+                                              e.name,
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .bodyText2,
                                             ),
                                             Spacer(),
                                             Text(
-                                                '${Formatter.formatDecimal(e.balance)} ${e.symbol!.toUpperCase()}',
+                                                '${Formatter.formatDecimal(e.balance)} ${e.symbol.toUpperCase()}',
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .caption)
@@ -141,14 +141,14 @@ class SwapCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Image.network(
-                      _account.imgPath!,
+                      _account.imgPath,
                       width: 36.0,
                       height: 36.0,
                     ),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.0),
                       child: Text(
-                        _account.symbol!.toUpperCase(),
+                        _account.symbol.toUpperCase(),
                         style: Theme.of(context)
                             .textTheme
                             .headline1!

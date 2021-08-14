@@ -93,7 +93,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `User` (`user_id` TEXT NOT NULL, `keystore` TEXT NOT NULL, `third_party_id` TEXT NOT NULL, `install_id` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `last_sync_time` INTEGER NOT NULL, PRIMARY KEY (`user_id`))');
+            'CREATE TABLE IF NOT EXISTS `User` (`user_id` TEXT NOT NULL, `keystore` TEXT NOT NULL, `third_party_id` TEXT NOT NULL, `install_id` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `last_sync_time` INTEGER, PRIMARY KEY (`user_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Account` (`id` TEXT NOT NULL, `share_account_id` TEXT NOT NULL, `user_id` TEXT NOT NULL, `blockchain_id` TEXT NOT NULL, `currency_id` TEXT NOT NULL, `purpose` INTEGER NOT NULL, `account_coin_type` INTEGER NOT NULL, `account_index` INTEGER NOT NULL, `curve_type` INTEGER NOT NULL, `balance` TEXT NOT NULL, `number_of_used_external_key` INTEGER, `number_of_used_internal_key` INTEGER, `last_sync_time` INTEGER, FOREIGN KEY (`user_id`) REFERENCES `User` (`user_id`) ON UPDATE NO ACTION ON DELETE CASCADE, FOREIGN KEY (`blockchain_id`) REFERENCES `Network` (`blockchain_id`) ON UPDATE NO ACTION ON DELETE CASCADE, FOREIGN KEY (`currency_id`) REFERENCES `Currency` (`currency_id`) ON UPDATE NO ACTION ON DELETE CASCADE, PRIMARY KEY (`id`))');
         await database.execute(
@@ -110,7 +110,7 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             '''CREATE VIEW IF NOT EXISTS `JoinAccount` AS SELECT * FROM Account INNER JOIN User ON Account.user_id = User.user_id INNER JOIN Network ON Account.blockchain_id = Network.blockchain_id INNER JOIN Currency ON Account.currency_id = Currency.currency_id''');
         await database.execute(
-            '''CREATE VIEW IF NOT EXISTS `JoinUtxo` AS SELECT * FROM Utxo INNER JOIN AccountCurrency ON Utxo.accountcurrency_id = AccountCurrency.accountcurrency_id INNER JOIN Currency ON AccountCurrency.currency_id = Currency.currency_id''');
+            '''CREATE VIEW IF NOT EXISTS `JoinUtxo` AS SELECT * FROM Utxo INNER JOIN Account ON Utxo.account_id = Account.account_id INNER JOIN Currency ON Account.currency_id = Currency.currency_id''');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -211,12 +211,12 @@ class _$UserDao extends UserDao {
   Future<UserEntity?> findUser() async {
     return _queryAdapter.query('SELECT * FROM User limit 1',
         mapper: (Map<String, Object?> row) => UserEntity(
-            row['user_id'] as String,
-            row['keystore'] as String,
-            row['third_party_id'] as String,
-            row['install_id'] as String,
-            row['timestamp'] as int,
-            row['last_sync_time'] as int));
+            userId: row['user_id'] as String,
+            keystore: row['keystore'] as String,
+            thirdPartyId: row['third_party_id'] as String,
+            installId: row['install_id'] as String,
+            timestamp: row['timestamp'] as int,
+            lastSyncTime: row['last_sync_time'] as int?));
   }
 
   @override
@@ -286,8 +286,7 @@ class _$AccountDao extends AccountDao {
 
   @override
   Future<AccountEntity?> findAccount(String id) async {
-    return _queryAdapter.query(
-        'SELECT * FROM Account WHERE account_id = ?1 LIMIT 1',
+    return _queryAdapter.query('SELECT * FROM Account WHERE id = ?1 LIMIT 1',
         mapper: (Map<String, Object?> row) => AccountEntity(
             id: row['id'] as String,
             shareAccountId: row['share_account_id'] as String,
@@ -319,9 +318,9 @@ class _$AccountDao extends AccountDao {
             accountIndex: row['account_index'] as int,
             curveType: row['curve_type'] as int,
             balance: row['balance'] as String,
-            numberOfUsedExternalKey: row['number_of_used_external_key'] as int,
-            numberOfUsedInternalKey: row['number_of_used_internal_key'] as int,
-            lastSyncTime: row['last_sync_time'] as int,
+            numberOfUsedExternalKey: row['number_of_used_external_key'] as int?,
+            numberOfUsedInternalKey: row['number_of_used_internal_key'] as int?,
+            lastSyncTime: row['last_sync_time'] as int?,
             keystore: row['keystore'] as String,
             thirdPartyId: row['third_party_id'] as String,
             installId: row['install_id'] as String,
@@ -335,7 +334,7 @@ class _$AccountDao extends AccountDao {
             publish: (row['publish'] as int) != 0,
             contract: row['contract'] as String?,
             decimals: row['decimals'] as int,
-            exchangeRate: row['exchange_rate'] as String,
+            exchangeRate: row['exchange_rate'] as String?,
             image: row['image'] as String));
   }
 
@@ -355,9 +354,9 @@ class _$AccountDao extends AccountDao {
             accountIndex: row['account_index'] as int,
             curveType: row['curve_type'] as int,
             balance: row['balance'] as String,
-            numberOfUsedExternalKey: row['number_of_used_external_key'] as int,
-            numberOfUsedInternalKey: row['number_of_used_internal_key'] as int,
-            lastSyncTime: row['last_sync_time'] as int,
+            numberOfUsedExternalKey: row['number_of_used_external_key'] as int?,
+            numberOfUsedInternalKey: row['number_of_used_internal_key'] as int?,
+            lastSyncTime: row['last_sync_time'] as int?,
             keystore: row['keystore'] as String,
             thirdPartyId: row['third_party_id'] as String,
             installId: row['install_id'] as String,
@@ -371,7 +370,7 @@ class _$AccountDao extends AccountDao {
             publish: (row['publish'] as int) != 0,
             contract: row['contract'] as String?,
             decimals: row['decimals'] as int,
-            exchangeRate: row['exchange_rate'] as String,
+            exchangeRate: row['exchange_rate'] as String?,
             image: row['image'] as String),
         arguments: [id]);
   }
@@ -385,7 +384,7 @@ class _$AccountDao extends AccountDao {
   @override
   Future<List<int>> insertAccounts(List<AccountEntity> accounts) {
     return _accountEntityInsertionAdapter.insertListAndReturnIds(
-        accounts, OnConflictStrategy.abort);
+        accounts, OnConflictStrategy.replace);
   }
 }
 
@@ -564,7 +563,7 @@ class _$TransactionDao extends TransactionDao {
   @override
   Future<List<TransactionEntity>> findAllTransactionsById(String id) async {
     return _queryAdapter.queryList(
-        'SELECT * FROM _Transaction WHERE _Transaction.accountcurrency_id = ?1',
+        'SELECT * FROM _Transaction WHERE _Transaction.account_id = ?1',
         mapper: (Map<String, Object?> row) => TransactionEntity(
             transactionId: row['transaction_id'] as String,
             accountId: row['account_id'] as String,
@@ -722,10 +721,10 @@ class _$UtxoDao extends UtxoDao {
   @override
   Future<List<JoinUtxo>> findAllJoinedUtxosById(String id) async {
     return _queryAdapter.queryList(
-        'SELECT * FROM JoinUtxo WHERE JoinUtxo.accountcurrency_id = ?1',
+        'SELECT * FROM JoinUtxo WHERE JoinUtxo.account_id = ?1',
         mapper: (Map<String, Object?> row) => JoinUtxo(
             row['utxo_id'] as String,
-            row['accountcurrency_id'] as String,
+            row['account_id'] as String,
             row['tx_id'] as String,
             row['vout'] as int,
             row['type'] as String,
@@ -746,7 +745,7 @@ class _$UtxoDao extends UtxoDao {
     return _queryAdapter.queryList('SELECT * FROM JoinUtxo',
         mapper: (Map<String, Object?> row) => JoinUtxo(
             row['utxo_id'] as String,
-            row['accountcurrency_id'] as String,
+            row['account_id'] as String,
             row['tx_id'] as String,
             row['vout'] as int,
             row['type'] as String,
@@ -783,7 +782,7 @@ class _$UtxoDao extends UtxoDao {
   @override
   Future<List<UtxoEntity>> findAllUtxosById(String id) async {
     return _queryAdapter.queryList(
-        'SELECT * FROM Utxo WHERE Utxo.accountcurrency_id = ?1',
+        'SELECT * FROM Utxo WHERE Utxo.account_id = ?1',
         mapper: (Map<String, Object?> row) => UtxoEntity(
             row['utxo_id'] as String,
             row['account_id'] as String,
@@ -807,7 +806,7 @@ class _$UtxoDao extends UtxoDao {
         'SELECT * FROM JoinUtxo WHERE JoinUtxo.utxo_id = ?1 limit 1',
         mapper: (Map<String, Object?> row) => JoinUtxo(
             row['utxo_id'] as String,
-            row['accountcurrency_id'] as String,
+            row['account_id'] as String,
             row['tx_id'] as String,
             row['vout'] as int,
             row['type'] as String,

@@ -78,7 +78,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
               children: [
                 Container(
                   child: Text(
-                    '${t('remit')} ${_account.symbol!.toUpperCase()}',
+                    '${t('remit')} ${_account.symbol.toUpperCase()}',
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                 ),

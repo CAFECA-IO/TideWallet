@@ -85,7 +85,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                       decoration: BoxDecoration(
                           color: MyColors.font_01, shape: BoxShape.circle),
                       child: Image.network(
-                        state.account?.imgPath ?? _account.imgPath!,
+                        state.account?.imgPath ?? _account.imgPath,
                         width: 32.0,
                         height: 32.0,
                       ),
@@ -93,8 +93,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                     Padding(
                       padding: const EdgeInsets.all(4.0),
                       child: Text(
-                        state.account?.symbol?.toUpperCase() ??
-                            _account.symbol!,
+                        state.account?.symbol.toUpperCase() ?? _account.symbol,
                         style: Theme.of(context).textTheme.button,
                       ),
                     ),
@@ -104,7 +103,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4),
                       child: Text(
-                          '${Formatter.formatDecimal(state.account?.balance ?? _account.balance!)}',
+                          '${Formatter.formatDecimal(state.account?.balance ?? _account.balance)}',
                           style: Theme.of(context).textTheme.headline4),
                     ),
                     BlocBuilder<FiatBloc, FiatState>(
@@ -114,7 +113,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
 
                       if (fiatState is FiatLoaded) {
                         _state = fiatState;
-                        String num = state.account?.inFiat ?? _account.inFiat!;
+                        String num = state.account?.inFiat ?? _account.inFiat;
                         value = Formatter.formatDecimal(
                             (Decimal.tryParse(num)! / _state.fiat.exchangeRate)
                                 .toString());

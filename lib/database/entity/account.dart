@@ -32,7 +32,7 @@ class AccountEntity {
   final String id;
 
   @ColumnInfo(name: 'share_account_id')
-  late String shareAccountId;
+  final String shareAccountId;
 
   @ColumnInfo(name: 'user_id')
   final String userId;
@@ -57,13 +57,13 @@ class AccountEntity {
   final String balance;
 
   @ColumnInfo(name: 'number_of_used_external_key')
-  late int? numberOfUsedExternalKey;
+  int? numberOfUsedExternalKey;
 
   @ColumnInfo(name: 'number_of_used_internal_key')
-  late int? numberOfUsedInternalKey;
+  int? numberOfUsedInternalKey;
 
   @ColumnInfo(name: 'last_sync_time')
-  late int? lastSyncTime;
+  int? lastSyncTime;
 
   AccountEntity(
       {required this.id,
@@ -174,13 +174,13 @@ class JoinAccount {
   final String? contract;
 
   @ColumnInfo(name: 'number_of_used_external_key')
-  final int numberOfUsedExternalKey;
+  final int? numberOfUsedExternalKey;
 
   @ColumnInfo(name: 'number_of_used_internal_key')
-  final int numberOfUsedInternalKey;
+  final int? numberOfUsedInternalKey;
 
   @ColumnInfo(name: 'last_sync_time')
-  final int lastSyncTime;
+  final int? lastSyncTime;
 
   //user
   final String keystore;
@@ -216,7 +216,7 @@ class JoinAccount {
   final int decimals;
 
   @ColumnInfo(name: 'exchange_rate')
-  final String exchangeRate;
+  final String? exchangeRate;
 
   final String image;
 

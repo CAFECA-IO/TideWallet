@@ -56,7 +56,7 @@ class Decoded {
   Decoded(this.data, this.remainder);
 }
 
-dynamic decode(Uint8List input, [bool stream = false]) {
+dynamic decode(Uint8List? input, [bool stream = false]) {
   if (input == null || input.length == 0) {
     return <dynamic>[];
   }

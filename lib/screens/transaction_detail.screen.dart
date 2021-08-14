@@ -65,7 +65,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
 
   String getLaunchLink(Account account, transaction) {
     const PROTOCAL = 'https://';
-    String network = _account.network!.toLowerCase();
+    String network = _account.network.toLowerCase();
 
     switch (account.accountType) {
       case ACCOUNT.BTC:
@@ -77,7 +77,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
           network = 'testnet';
         }
 
-        return '$PROTOCAL${Explorer.BLOCK_EXPLORER}/${_account.symbol!.toLowerCase()}/$network/tx/${transaction.txId}';
+        return '$PROTOCAL${Explorer.BLOCK_EXPLORER}/${_account.symbol.toLowerCase()}/$network/tx/${transaction.txId}';
       case ACCOUNT.ETH:
         return '$PROTOCAL${network == 'ethereum' ? '' : network + '.'}${Explorer.ETHERSCAN}/tx/${transaction.txId}';
       case ACCOUNT.CFC:
@@ -122,7 +122,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                         width: 8,
                       ),
                       Text(
-                        _account.symbol!,
+                        _account.symbol,
                         style: Theme.of(context).textTheme.headline1!.copyWith(
                               color: _transaction.status !=
                                       TransactionStatus.success
@@ -237,7 +237,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                     child: Row(
                       children: [
                         Container(
-                          child: Image.network(_account.imgPath!),
+                          child: Image.network(_account.imgPath),
                           width: 24,
                         ),
                         SizedBox(

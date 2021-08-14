@@ -122,13 +122,13 @@ class _SwapScreenState extends State<SwapScreen> {
           // CheckSwap ==>
           if (state.result == SwapResult.valid) {
             _sellAccount = {
-              'icon': state.sellAccount!.imgPath!,
-              'symbol': state.sellAccount!.symbol!,
+              'icon': state.sellAccount!.imgPath,
+              'symbol': state.sellAccount!.symbol,
               'amount': state.sellAmount.toString()
             };
             _buyAccount = {
-              'icon': state.buyAccount!.imgPath!,
-              'symbol': state.buyAccount!.symbol!,
+              'icon': state.buyAccount!.imgPath,
+              'symbol': state.buyAccount!.symbol,
               'amount': state.buyAmount.toString()
             };
             showModalBottomSheet(

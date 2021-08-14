@@ -108,14 +108,12 @@ String eXmnemonicToEntropy(mnemonic, {String? lang}) {
     for (var j = 0; j < words.length; j++) {
       if (_WORDLIST[i].indexOf(words[j]) == -1) {
         matched = false;
-        break;
       } else {
         matched = true;
       }
     }
     if (matched) {
       wordlist = _WORDLIST[i];
-      break;
     }
   }
 
@@ -164,25 +162,18 @@ List<String> _loadWordList(String lang) {
   switch (lang) {
     case 'Français':
       return _WORDLIST[0];
-      break;
     case 'Italiano':
       return _WORDLIST[1];
-      break;
     case '日本語':
       return _WORDLIST[2];
-      break;
     case '한국어':
       return _WORDLIST[3];
-      break;
     case 'Español':
       return _WORDLIST[4];
-      break;
     case '简体中文':
       return _WORDLIST[5];
-      break;
     case '繁體中文':
       return _WORDLIST[6];
-      break;
     case 'English':
       return _WORDLIST[7];
   }

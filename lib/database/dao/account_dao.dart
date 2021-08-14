@@ -7,7 +7,7 @@ abstract class AccountDao {
   @Query('SELECT * FROM Account')
   Future<List<AccountEntity>> findAllAccounts();
 
-  @Query('SELECT * FROM Account WHERE account_id = :id LIMIT 1')
+  @Query('SELECT * FROM Account WHERE id = :id LIMIT 1')
   Future<AccountEntity?> findAccount(String id);
 
   @Query('SELECT * FROM JoinAccount')
@@ -19,6 +19,6 @@ abstract class AccountDao {
   @Insert(onConflict: OnConflictStrategy.replace)
   Future<void> insertAccount(AccountEntity account);
 
-  @insert
+  @Insert(onConflict: OnConflictStrategy.replace)
   Future<List<int>> insertAccounts(List<AccountEntity> accounts);
 }

@@ -13,7 +13,8 @@ class RetryInterceptor extends Interceptor {
 
   @override
   Future onError(DioError err, ErrorInterceptorHandler handler) async {
-    var extra = RetryOptions.fromExtra(err.requestOptions) ?? this.options;
+    Log.debug('RetryInterceptor err.requestOptions: ${err.requestOptions}');
+    var extra = RetryOptions.fromExtra(err.requestOptions); // ?? this.options;
 
     if (_shouldRetry(err, extra)) {
       await Future.delayed(extra.sleepTime);

@@ -93,7 +93,7 @@ class _InvestmentScreenState extends State<InvestmentScreen>
                                     children: <Widget>[
                                       CircleAvatar(
                                         backgroundImage:
-                                            NetworkImage(account.imgPath!),
+                                            NetworkImage(account.imgPath),
                                         radius: 14,
                                       ),
                                       SizedBox(width: 10),
@@ -101,7 +101,7 @@ class _InvestmentScreenState extends State<InvestmentScreen>
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: <Widget>[
-                                          Text(account.symbol!.toUpperCase()),
+                                          Text(account.symbol.toUpperCase()),
                                           Text(
                                             'Avalible ${account.balance}',
                                             style: Theme.of(context)

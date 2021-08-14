@@ -10,7 +10,7 @@ class AccountItem extends StatelessWidget {
   final Fiat fiat;
   Color? _testnetColor;
   AccountItem(this._account, this._onClick, {required this.fiat}) {
-    if (!_account.publish!) {
+    if (!_account.publish) {
       _testnetColor = Colors.black26;
     }
   }
@@ -27,27 +27,27 @@ class AccountItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.network(
-              _account.imgPath!,
+              _account.imgPath,
               width: 26.0,
               height: 26.0,
             ),
             SizedBox(height: 4.0),
             Text(
-              _account.symbol!,
+              _account.symbol,
               style: TextStyle(
-                  color: !_account.publish!
+                  color: !_account.publish
                       ? _testnetColor ?? Colors.black
                       : Colors.black),
             ),
             Text(Formatter.formatDecimal(_account.balance),
                 style: TextStyle(
-                    color: !_account.publish!
+                    color: !_account.publish
                         ? _testnetColor ?? Colors.black
                         : Colors.black)),
             Text(
                 '≈ ${Formatter.formatDecimal((Decimal.tryParse(_account.inFiat)! / fiat.exchangeRate).toString(), decimalLength: 2)} ${fiat.name}',
                 style: Theme.of(context).textTheme.subtitle2!.copyWith(
-                    color: !_account.publish!
+                    color: !_account.publish
                         ? _testnetColor ?? Colors.black
                         : Colors.black))
           ],
