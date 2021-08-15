@@ -42,7 +42,7 @@ class Account {
   final String imgPath;
   final String? contract;
 
-  late String inFiat;
+  String? inFiat;
   final ACCOUNT accountType;
   final String shareAccountSymbol;
   final int shareAccountDecimals;

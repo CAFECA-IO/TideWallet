@@ -225,10 +225,12 @@ class _InvestPlanPreviewState extends State<InvestPlanPreview> {
             listener: (context, state) {
               if (state is AuthenticationStatus) {
                 if (state.isAuthenicated) {
-                  this._bloc.add(CreateInvestPlan(_userRepo.getPassword()));
+                  this._bloc.add(CreateInvestPlan());
                   Navigator.of(context).pop();
                 } else {
-                  // ++ [Emily 4/1/2021]
+                  DialogController.dismiss(context);
+                  DialogController.show(
+                      context, ErrorDialog('Authentication Fail'));
                 }
               }
             },

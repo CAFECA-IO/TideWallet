@@ -158,13 +158,11 @@ class _SwapConfirmState extends State<SwapConfirm> {
               listener: (context, state) {
                 if (state is AuthenticationStatus) {
                   if (state.isAuthenicated) {
-                    widget.confirmFunc(_userRepo.getPassword());
                     Navigator.of(context).pop();
                   } else {
+                    DialogController.dismiss(context);
                     DialogController.show(
-                        context,
-                        ErrorDialog(t(
-                            'error_password'))); // ++ change error message[Emily 4/1/2021]
+                        context, ErrorDialog('Authentication Fail'));
                   }
                 }
               },

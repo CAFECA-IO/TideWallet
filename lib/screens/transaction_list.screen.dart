@@ -113,7 +113,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
 
                       if (fiatState is FiatLoaded) {
                         _state = fiatState;
-                        String num = state.account?.inFiat ?? _account.inFiat;
+                        String num = state.account?.inFiat ?? _account.inFiat!;
                         value = Formatter.formatDecimal(
                             (Decimal.tryParse(num)! / _state.fiat.exchangeRate)
                                 .toString());

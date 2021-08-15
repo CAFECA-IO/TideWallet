@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:convert/convert.dart';
 import 'package:decimal/decimal.dart';
-import 'package:tidewallet3/blocs/transaction_status/transaction_status_bloc.dart';
 
 import 'account_service_decorator.dart';
 import 'account_service.dart';

@@ -238,10 +238,9 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       //     blockchainId: ''); // ++ will use cfc token 2021/3/19 Emily
 
       // if (publishResult[0])
-      if (true)
-        yield _state.copyWith(result: SwapResult.success);
-      else
-        yield _state.copyWith(result: SwapResult.none);
+      if (true) yield _state.copyWith(result: SwapResult.success);
+      // else
+      //   yield _state.copyWith(result: SwapResult.none);
     }
 
     if (event is ClearSwapResult) {

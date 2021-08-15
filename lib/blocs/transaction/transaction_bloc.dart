@@ -242,7 +242,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       yield TransactionPublishing();
       try {
         List result = await _repo.prepareTransaction(
-            event.password, _state.address!, _state.amount!,
+            _state.address!, _state.amount!,
             fee: _state.fee!,
             gasPrice: _state.gasPrice!,
             gasLimit: _state.gasLimit!,

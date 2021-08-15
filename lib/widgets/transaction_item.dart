@@ -57,10 +57,10 @@ class TransactionItem extends StatelessWidget {
                     Text(
                       t(transaction.direction.title),
                       style: transaction.status == TransactionStatus.fail
-                          ? Theme.of(context)
-                              .textTheme
-                              .bodyText1!
-                              .copyWith(color: Theme.of(context).cursorColor)
+                          ? Theme.of(context).textTheme.bodyText1!.copyWith(
+                              color: Theme.of(context)
+                                  .textSelectionTheme
+                                  .cursorColor)
                           : Theme.of(context).textTheme.bodyText1,
                     ),
                   ],
@@ -69,7 +69,7 @@ class TransactionItem extends StatelessWidget {
                   '${transaction.direction == TransactionDirection.received ? "+" : "-"} ${transaction.amount} ${account.symbol.toUpperCase()}',
                   style: Theme.of(context).textTheme.bodyText1!.copyWith(
                       color: transaction.status == TransactionStatus.fail
-                          ? Theme.of(context).cursorColor
+                          ? Theme.of(context).textSelectionTheme.cursorColor
                           : transaction.direction.color),
                 )
               ],
@@ -86,10 +86,10 @@ class TransactionItem extends StatelessWidget {
                       t(transaction.direction.subtitle) +
                           ": ${Formatter.formatAdddress(transaction.address)}",
                       style: transaction.status == TransactionStatus.fail
-                          ? Theme.of(context)
-                              .textTheme
-                              .subtitle2!
-                              .copyWith(color: Theme.of(context).cursorColor)
+                          ? Theme.of(context).textTheme.subtitle2!.copyWith(
+                              color: Theme.of(context)
+                                  .textSelectionTheme
+                                  .cursorColor)
                           : Theme.of(context).textTheme.subtitle2,
                     ),
                   ],
@@ -97,10 +97,9 @@ class TransactionItem extends StatelessWidget {
                 Text(
                   Formatter.dateTime(transaction.dateTime!),
                   style: transaction.status == TransactionStatus.fail
-                      ? Theme.of(context)
-                          .textTheme
-                          .subtitle2!
-                          .copyWith(color: Theme.of(context).cursorColor)
+                      ? Theme.of(context).textTheme.subtitle2!.copyWith(
+                          color:
+                              Theme.of(context).textSelectionTheme.cursorColor)
                       : Theme.of(context).textTheme.subtitle2,
                 )
               ],

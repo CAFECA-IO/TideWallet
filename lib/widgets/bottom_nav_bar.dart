@@ -90,7 +90,7 @@ class CBottomAppBarState extends State<CBottomAppBar> {
     required ValueChanged<int> onPressed,
   }) {
     bool _isSelected = widget.selectedIndex == index;
-    Color color = _isSelected ? widget.selectedColor : widget.color!;
+    Color? color = _isSelected ? widget.selectedColor : widget.color;
     return Expanded(
       child: SizedBox(
         height: widget.height,

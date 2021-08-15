@@ -8,7 +8,6 @@ import 'package:convert/convert.dart';
 
 import '../repositories/account_repository.dart';
 import '../repositories/transaction_repository.dart';
-import '../repositories/user_repository.dart';
 import '../repositories/local_auth_repository.dart';
 import '../blocs/local_auth/local_auth_bloc.dart';
 import '../blocs/walletconnect/walletconnect_bloc.dart';
@@ -35,16 +34,15 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
   late WalletConnectBloc _bloc;
   late AccountRepository _accountRepo;
   late TransactionRepository _txRepo;
-  late UserRepository _userRepo;
+
   late String _uri;
   final t = I18n.t;
 
   @override
   void didChangeDependencies() {
+    _bloc = WalletConnectBloc(_accountRepo, _txRepo);
     _accountRepo = Provider.of<AccountRepository>(context);
     _txRepo = Provider.of<TransactionRepository>(context);
-    _userRepo = Provider.of<UserRepository>(context);
-    _bloc = WalletConnectBloc(_accountRepo, _txRepo);
     dynamic arg = ModalRoute.of(context)?.settings.arguments;
     if (arg != null) {
       _uri = arg;
@@ -128,7 +126,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                     context: context,
                     dapp: state.peer!.url,
                     param: tx,
-                    currency: _bloc.account,
+                    currency: _bloc.selected,
                     submit: submit,
                     cancel: cancel);
                 break;
@@ -175,17 +173,13 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                       this._bloc.add(
                             ApproveRequest(
                               state.currentEvent!,
-                              _userRepo.getPassword(),
                             ),
                           );
                       Navigator.of(context).pop();
                     } else {
+                      DialogController.dismiss(context);
                       DialogController.show(
-                        context,
-                        ErrorDialog(
-                          t('error_password'),
-                        ),
-                      );
+                          context, ErrorDialog('Authentication Fail'));
                     }
                   }
                 },
@@ -342,7 +336,9 @@ class StatusItem extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(width: 1.0, color: Theme.of(context).cursorColor),
+          bottom: BorderSide(
+              width: 1.0,
+              color: Theme.of(context).textSelectionTheme.cursorColor!),
         ),
       ),
       padding: const EdgeInsets.symmetric(vertical: 16.0),

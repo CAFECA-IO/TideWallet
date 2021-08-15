@@ -50,6 +50,13 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     }
 
     if (event is UserReset) {
+      // yield UserLoading();
+      // bool success = await _repo.deleteUser();
+      // if (success) {
+      //   yield UserInitial();
+      // } else {
+      //   yield UserFail();
+      // }
       yield UserFail();
     }
   }

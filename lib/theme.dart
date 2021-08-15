@@ -57,9 +57,10 @@ ThemeData myThemeData = ThemeData(
     hintColor: MyColors.primary_04,
     dividerColor: MyColors.secondary_06,
     textTheme: myTextTheme,
-    cursorColor: MyColors.secondary_03,
     disabledColor: MyColors.secondary_05,
-    backgroundColor: MyColors.font_01);
+    backgroundColor: MyColors.font_01,
+    textSelectionTheme:
+        TextSelectionThemeData(cursorColor: MyColors.secondary_03));
 
 ThemeData myDarkThemeData = ThemeData();
 

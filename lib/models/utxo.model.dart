@@ -25,7 +25,7 @@ class UnspentTxOut {
 
   //TEST
   // String scriptPubKey;
-  Uint8List? privatekey;
+  // Uint8List? privatekey;
   Uint8List? publickey;
 
   List<int> get script => data;
@@ -50,7 +50,7 @@ class UnspentTxOut {
     this.sequence,
     required this.decimals,
     // for transaction only
-    this.privatekey,
+    // this.privatekey,
     this.publickey,
     // this.scriptPubKey,
   });
@@ -71,7 +71,7 @@ class UnspentTxOut {
     this.sequence,
     required this.decimals,
     // for transaction only
-    this.privatekey,
+    // this.privatekey,
     this.publickey,
     // this.scriptPubKey,
   }) : this.amount = Converter.toCurrencyUnit(amount, decimals);

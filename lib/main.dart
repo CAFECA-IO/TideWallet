@@ -135,16 +135,6 @@ class MyApp extends StatelessWidget {
                 Provider.of<AccountRepository>(context, listen: false),
               ),
             )
-            // BlocProvider<ReceiveBloc>(
-            //   create: (BuildContext context) => ReceiveBloc(
-            //     Provider.of<AccountRepository>(context, listen: false),
-            //   ),
-            // ),
-            // BlocProvider<UpdatePasswordBloc>(
-            //   create: (BuildContext context) => UpdatePasswordBloc(
-            //     Provider.of<UserRepository>(context, listen: false),
-            //   ),
-            // ),
           ],
           child: _material,
         ),

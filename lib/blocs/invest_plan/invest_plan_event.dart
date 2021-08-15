@@ -43,7 +43,4 @@ class InputPercentage extends InvestPlanEvent {
 
 class GenerateInvestPlan extends InvestPlanEvent {}
 
-class CreateInvestPlan extends InvestPlanEvent {
-  final String password;
-  CreateInvestPlan(this.password);
-}
+class CreateInvestPlan extends InvestPlanEvent {}

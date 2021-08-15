@@ -18,8 +18,7 @@ import '../helpers/logger.dart';
 
 class AccountCore {
   static int syncInteral = 24 * 60 * 60 * 1000; // milliseconds
-  // ignore: close_sinks
-  late PublishSubject<AccountMessage> messenger;
+  PublishSubject<AccountMessage> messenger = PublishSubject<AccountMessage>();
   bool _isInit = false;
   bool _debugMode = false;
   List<AccountService> _services = [];
@@ -85,15 +84,12 @@ class AccountCore {
   }
 
   _initAccounts() async {
-    Log.debug('_initAccounts this._debugMode: ${this._debugMode}');
     UserEntity user = (await DBOperator().userDao.findUser())!;
     final int timestamp = DateTime.now().millisecondsSinceEpoch;
 
-    Log.debug('_initAccounts user lastSyncTime: ${user.lastSyncTime}');
     final bool update = user.lastSyncTime == null
         ? true
         : user.lastSyncTime! - timestamp > AccountCore.syncInteral;
-    Log.debug('_initAccounts update: $update');
 
     await this.getSupportedCurrencies(update);
 

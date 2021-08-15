@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tidewallet3/helpers/logger.dart';
 
-import 'home.screen.dart';
 import '../blocs/local_auth/local_auth_bloc.dart';
 import '../blocs/user/user_bloc.dart';
-import '../widgets/dialogs/loading_dialog.dart';
-import '../widgets/dialogs/dialog_controller.dart';
+
 import '../widgets/buttons/primary_button.dart';
 import '../widgets/version.dart';
 import '../helpers/i18n.dart';
@@ -75,27 +72,23 @@ class _AuthenticateScreenState extends State<AuthenticateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LocalAuthBloc, LocalAuthState>(
-      builder: (context, state) {
-        if (state is AuthenticationStatus) {
+    return BlocListener<LocalAuthBloc, LocalAuthState>(
+      listener: (context, state) {
+        if (state is AuthenticationStatus && state.isAuthenicated) {
           this._userbloc.add(UserInit());
-          return state.isAuthenicated
-              ? _unAuthLayout()
-              : _unAuthLayout(
-                  widgets: [
-                    PrimaryButton(
-                      t('authenticate'),
-                      () {
-                        this._bloc.add(Authenticate());
-                      },
-                      iconImg: AssetImage(
-                          'assets/images/icons/ic_property_normal.png'),
-                    ),
-                  ],
-                );
         }
-        return _unAuthLayout();
       },
+      child: _unAuthLayout(
+        widgets: [
+          PrimaryButton(
+            t('authenticate'),
+            () {
+              this._bloc.add(Authenticate());
+            },
+            iconImg: AssetImage('assets/images/icons/ic_property_normal.png'),
+          ),
+        ],
+      ),
     );
   }
 }

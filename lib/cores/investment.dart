@@ -7,19 +7,14 @@ import '../models/account.model.dart';
 import '../helpers/utils.dart';
 
 class InvestmentCore {
-  late PublishSubject<InvestmentMessage>? messenger;
+  PublishSubject<InvestmentMessage> messenger =
+      PublishSubject<InvestmentMessage>();
   List<InvestAccount> _investAccount = []; // --
 
   static final InvestmentCore _instance = InvestmentCore._internal();
   factory InvestmentCore() => _instance;
 
-  InvestmentCore._internal() {
-    if (this.messenger == null) this.setMessenger();
-  }
-
-  setMessenger() {
-    messenger = PublishSubject<InvestmentMessage>();
-  }
+  InvestmentCore._internal();
 
   Future<List<InvestAccount>> getInvestmentList(String usrId) async {
     // ++ fromDB 2021/3/16 Emily

@@ -57,7 +57,6 @@ class SwapRepository {
         gasLimit: gasLimit,
         fee: Converter.toEthSmallestUnit(fee),
         chainId: sellAccount.chainId,
-        privKey: privKey,
         changeAddress: address);
     Decimal balance = Decimal.parse(sellAccount.balance) - _sellAmount - fee;
     return [transaction, balance];

@@ -21,19 +21,18 @@ extension ContractFunctionExt on ContractFunction {
     switch (this) {
       case ContractFunction.deposit:
         return 0x48c73f68;
-        break;
+
       case ContractFunction.withdraw:
         return 0x855511cc;
-        break;
+
       case ContractFunction.transfer:
         return 0xb483afd3;
-        break;
+
       case ContractFunction.swap:
         return 0x695543c3;
-        break;
+
       case ContractFunction.donate:
         return 0x86ba0d37;
-        break;
     }
   }
 }

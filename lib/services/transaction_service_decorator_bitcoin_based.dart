@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:decimal/decimal.dart';
 import 'package:convert/convert.dart';
+import 'package:tidewallet3/cores/tidewallet.dart';
 
 import 'transaction_service.dart';
 import '../cores/signer.dart';
@@ -58,7 +59,10 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
       Uint8List rawData = transaction.getRawDataToSign(index);
       Uint8List rawDataHash = Uint8List.fromList(Cryptor.sha256round(rawData));
       UnspentTxOut utxo = transaction.inputs[index].utxo;
-      MsgSignature sig = Signer().sign(rawDataHash, utxo.privatekey!);
+      MsgSignature sig = TideWallet().sign(
+          data: rawDataHash,
+          changeIndex: utxo.changeIndex,
+          keyIndex: utxo.keyIndex);
       Uint8List buffer = new Uint8List(64);
       Log.btc('utxo txId: ${utxo.txId}');
       Log.btc('utxo.amount: ${utxo.amount}');

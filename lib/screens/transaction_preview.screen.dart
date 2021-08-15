@@ -154,15 +154,11 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
                 bloc: _localBloc,
                 listener: (context, state) {
                   if (state is AuthenticationStatus) {
-                    if (state.isAuthenicated) {
-                      _bloc.add(PublishTransaction(_userRepo.getPassword()));
-                      _localBloc.add(InitAuth());
-                    } else {
+                    if (!state.isAuthenicated) {
                       // ++ [Emily 4/1/2021]
                       DialogController.dismiss(context);
                       DialogController.show(
                           context, ErrorDialog('Authentication Fail'));
-                      // TODO
                     }
                   }
                 },

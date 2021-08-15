@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:decimal/decimal.dart';
+import 'package:tidewallet3/cores/tidewallet.dart';
 
 import 'transaction_service.dart';
 import '../cores/signer.dart';
@@ -15,12 +16,14 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
 
   EthereumBasedTransactionServiceDecorator(this.service);
 
-  EthereumTransaction _signTransaction(
-      EthereumTransaction transaction, Uint8List privKey) {
-    Log.debug('ETH from privKey: $privKey');
+  EthereumTransaction _signTransaction(EthereumTransaction transaction,
+      {int? changeIndex, int? keyIndex}) {
     Uint8List payload = encodeToRlp(transaction);
     Uint8List rawDataHash = Cryptor.keccak256round(payload, round: 1);
-    MsgSignature signature = Signer().sign(rawDataHash, privKey);
+    MsgSignature signature = TideWallet().sign(
+        data: rawDataHash,
+        changeIndex: changeIndex ?? 0,
+        keyIndex: keyIndex ?? 0);
     Log.debug('ETH signature: $signature');
 
     final chainIdV = transaction.chainId != null
@@ -37,7 +40,6 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
     String to,
     Decimal amount,
     Uint8List message, {
-    Uint8List? privKey, //ETH
     Decimal? gasPrice, //ETH
     Decimal? gasLimit, //ETH
     int? nonce, //ETH
@@ -60,7 +62,7 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
       signature: MsgSignature(BigInt.zero, BigInt.zero, chainId),
       fee: gasLimit * gasPrice, // in wei
     );
-    return _signTransaction(transaction, privKey!);
+    return _signTransaction(transaction);
   }
 
   @override

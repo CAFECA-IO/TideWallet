@@ -112,6 +112,10 @@ class UtxoEntity {
           locked == other.locked &&
           sequence == other.sequence &&
           address == other.address;
+
+  @override
+  // TODO: implement hashCode
+  int get hashCode => super.hashCode;
 }
 
 @DatabaseView(

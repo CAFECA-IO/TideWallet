@@ -1,13 +1,11 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:decimal/decimal.dart';
 import 'package:convert/convert.dart';
-import 'package:web3dart/web3dart.dart' as web3dart;
 
-import '../cores/paper_wallet.dart';
+import '../cores/tidewallet.dart';
 import '../cores/account.dart';
 import '../models/account.model.dart';
 import '../models/transaction.model.dart';
@@ -25,7 +23,6 @@ import '../helpers/utils.dart';
 import '../helpers/converter.dart';
 import '../helpers/rlp.dart' as rlp;
 import '../database/db_operator.dart';
-import '../database/entity/user.dart';
 import '../database/entity/transaction.dart';
 import '../database/entity/account.dart';
 
@@ -214,34 +211,7 @@ class TransactionRepository {
     return verified;
   }
 
-  Future<Uint8List> _getSeed(String pwd) async {
-    // TODO TEST
-    // return Uint8List.fromList(hex.decode(
-    //     'd130e96ae9f5ede60e33c5264d1e2beb03c54b5eb67d8d52773a408287178ccc'));
-    // TEST (END)
-    UserEntity user = (await DBOperator().userDao.findUser())!;
-    web3dart.Wallet wallet =
-        await compute(PaperWallet.jsonToWallet, [user.keystore, pwd]);
-    List<int> seed =
-        await compute(PaperWallet.magicSeed, wallet.privateKey.privateKey);
-    return Uint8List.fromList(seed);
-  }
-
-  Future<Uint8List> getPubKey(String pwd, int changeIndex, int keyIndex) async {
-    Uint8List seed = await _getSeed(pwd);
-    Log.warning("getPubKey seed: ${hex.encode(seed)}");
-    return PaperWallet.getPubKey(seed, changeIndex, keyIndex);
-  }
-
-  Future<Uint8List> getPrivKey(
-      String pwd, int changeIndex, int keyIndex) async {
-    Uint8List seed = await _getSeed(pwd);
-    Uint8List result = PaperWallet.getPrivKey(seed, changeIndex, keyIndex);
-    Log.warning("getPrivKey seed: ${hex.encode(seed)}");
-    return result;
-  }
-
-  Future<List> prepareTransaction(String pwd, String to, Decimal amount,
+  Future<List> prepareTransaction(String to, Decimal amount,
       {Decimal? fee,
       Decimal? gasPrice,
       Decimal? gasLimit,
@@ -264,10 +234,8 @@ class TransactionRepository {
           utxoAmount += utxo.amount; // in currency uint
           Log.btc('utxoAmount: $utxoAmount');
           Log.btc('utxo.amount: ${utxo.amount}');
-          utxo.privatekey =
-              await getPrivKey(pwd, utxo.changeIndex, utxo.keyIndex);
-          utxo.publickey =
-              await getPubKey(pwd, utxo.changeIndex, utxo.keyIndex);
+          utxo.publickey = TideWallet().getPubKey(
+              changeIndex: utxo.changeIndex, keyIndex: utxo.keyIndex);
           _utxos.add(utxo);
           if (utxoAmount > (amount + fee)) {
             List result = await _svc.getChangingAddress(_account.id);
@@ -327,7 +295,6 @@ class TransactionRepository {
             fee: Converter.toCurrencySmallestUnit(
                 fee, this._account.shareAccountDecimals),
             chainId: _account.chainId,
-            privKey: await getPrivKey(pwd, 0, 0),
             changeAddress: this._address);
 
         Log.debug(

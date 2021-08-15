@@ -56,7 +56,8 @@ class Input extends StatelessWidget {
             borderSide: BorderSide(color: Theme.of(context).primaryColorLight),
           ),
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Theme.of(context).cursorColor),
+            borderSide: BorderSide(
+                color: Theme.of(context).textSelectionTheme.cursorColor!),
           ),
         ),
         validator: validator,

@@ -7,36 +7,47 @@ import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../helpers/logger.dart';
-import '../../models/account.model.dart';
-import '../../repositories/account_repository.dart';
-import '../../repositories/transaction_repository.dart';
+import '../../cores/tidewallet.dart';
 import '../../cores/walletconnect/core.dart';
-import '../../constants/account_config.dart';
 import '../../cores/typeddata.dart';
 import '../../cores/signer.dart';
+import '../../repositories/account_repository.dart';
+import '../../repositories/transaction_repository.dart';
+import '../../models/transaction.model.dart';
+import '../../models/account.model.dart';
 import '../../helpers/cryptor.dart';
 import '../../helpers/utils.dart';
-import '../../models/transaction.model.dart';
+import '../../helpers/logger.dart';
+import '../../constants/account_config.dart';
 part 'walletconnect_event.dart';
 part 'walletconnect_state.dart';
 
 class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
-  late Connector _connector;
-  late WCSession _session;
-  late TransactionRepository _txRepo;
-  late AccountRepository _accountRepo;
   static const ACCOUNT _accountType = ACCOUNT.ETH;
-  late Account _selected;
-  late Map<TransactionPriority, Decimal> _gasPrice;
+  TransactionRepository _txRepo;
+  AccountRepository _accountRepo;
+
+  Connector? _connector;
+  Connector get connector => this._connector!;
+  set connector(Connector connector) => this._connector = connector;
+
+  WCSession? _session;
+  WCSession get session => this._session!;
+  set session(WCSession session) => this._session = session;
+
+  Account? _selected;
+  Account get selected => this._selected!;
+  set selected(Account account) => this._selected = account;
+
+  Map<TransactionPriority, Decimal>? _gasPrice;
+  Map<TransactionPriority, Decimal> get gasPrice => this._gasPrice!;
+  set gasPrice(Map<TransactionPriority, Decimal> gasPrice) =>
+      this._gasPrice = gasPrice;
 
   WalletConnectBloc(this._accountRepo, this._txRepo)
       : super(WalletConnectInitial());
 
   getReceivingAddress() => _txRepo.getReceivingAddress();
-
-  Account get account => this._selected;
-  Map<TransactionPriority, Decimal> get gasPrice => this._gasPrice;
 
   @override
   Stream<Transition<WalletConnectEvent, WalletConnectState>> transformEvents(
@@ -53,30 +64,30 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
 
   @override
   Future<void> close() {
-    _connector.killSession();
+    connector.killSession();
     return super.close();
   }
 
   subscribeToEvents() {
-    _connector.onEvt('connect', (Map data) {
+    connector.onEvt('connect', (Map data) {
       this.add(ConnectWC());
     });
 
-    _connector.onEvt('session_request', (WCRequest req) {
+    connector.onEvt('session_request', (WCRequest req) {
       this.add(RequestWC(req));
     });
 
-    _connector.onEvt('eth_sendTransaction', (WCRequest req) {
+    connector.onEvt('eth_sendTransaction', (WCRequest req) {
       this.add(ReceiveWCEvent(req));
     });
-    _connector.onEvt('personal_sign', (WCRequest req) {
+    connector.onEvt('personal_sign', (WCRequest req) {
       this.add(ReceiveWCEvent(req));
     });
-    _connector.onEvt('eth_signTypedData', (WCRequest req) {
+    connector.onEvt('eth_signTypedData', (WCRequest req) {
       Log.debug('Get eth_signTypedData on BLOC');
       this.add(ReceiveWCEvent(req));
     });
-    _connector.onEvt('disconnect', (String req) {
+    connector.onEvt('disconnect', (String req) {
       this.add(DisconnectWC('Receive Disconnet'));
     });
   }
@@ -93,13 +104,13 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
         } catch (e) {
           yield WalletConnectError(WC_ERROR.URI);
         }
-        _session = WCSession(
+        session = WCSession(
           key: connection.key,
           bridge: connection.bridge,
           peerId: connection.topic,
         );
 
-        _connector = Connector(ConnectorOpts(session: _session));
+        connector = Connector(ConnectorOpts(session: session));
         this.subscribeToEvents();
 
         yield WalletConnectLoaded(status: WC_STATUS.CONNECTING);
@@ -113,33 +124,33 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
         int? chainId = event.request.params?[0]['chainId'];
         if (chainId == null) chainId = 1;
         final currencies = this._accountRepo.getAllAccounts();
-        _selected = currencies.firstWhere(
+        selected = currencies.firstWhere(
             (c) => c.accountType == _accountType && c.chainId == chainId,
             orElse: () =>
                 currencies.firstWhere((c) => c.accountType == _accountType));
 
-        print('Connect Chain ID : ${_selected.chainId}');
+        print('Connect Chain ID : ${selected.chainId}');
 
         // check to use the right chain
-        // Log.info('*** chainId $chainId ${_selected.network} __ ${_selected.chainId}');
+        // Log.info('*** chainId $chainId ${selected.network} __ ${selected.chainId}');
 
-        this._txRepo.setAccount(_selected);
-        _session.chainId = chainId;
-        _session.networkId = chainId;
+        this._txRepo.setAccount(selected);
+        session.chainId = chainId;
+        session.networkId = chainId;
         String address = await getReceivingAddress();
 
-        _session.accounts = [address];
-        _connector.accounts = _session.accounts!;
+        session.accounts = [address];
+        connector.accounts = session.accounts!;
         yield _state.copyWith(
           status: WC_STATUS.WAITING,
-          peer: _connector.peerMeta,
-          accounts: _connector.accounts,
+          peer: connector.peerMeta,
+          accounts: connector.accounts,
         );
       }
 
       if (event is ApproveWC) {
-        _connector.approveSession(_session);
-        this._gasPrice = await _txRepo.getGasPrice();
+        connector.approveSession(session);
+        gasPrice = await _txRepo.getGasPrice();
       }
 
       if (event is ConnectWC) {
@@ -153,7 +164,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
       }
 
       if (event is CancelRequest) {
-        _connector.rejectRequest(WCReject.fromRequest(event.request));
+        connector.rejectRequest(WCReject.fromRequest(event.request));
         yield _state.copyWith(currentEvent: null);
       }
       if (event is ApproveRequest) {
@@ -171,7 +182,6 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
             Decimal gasLimit = hexStringToDecimal(param['gas']);
 
             final txRes = await _txRepo.prepareTransaction(
-              event.password,
               param['to'],
               amount,
               fee: gasPrice * gasLimit,
@@ -188,14 +198,13 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
 
             break;
           case 'personal_sign':
-            final key = await _txRepo.getPrivKey(event.password, 0, 0);
-
             // TODO:
             // final addressRequested = event.request.params[1];
             final lst =
                 hex.decode(event.request.params![0].replaceAll('0x', ''));
             final data = Cryptor.keccak256round(lst, round: 1);
-            final signature = Signer().sign(data, key);
+            final MsgSignature signature =
+                TideWallet().sign(data: data, changeIndex: 0, keyIndex: 0);
             result = '0x' +
                 signature.r.toRadixString(16) +
                 signature.s.toRadixString(16) +
@@ -203,28 +212,32 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
             break;
 
           case 'eth_signTypedData':
-            final key = await _txRepo.getPrivKey(event.password, 0, 0);
-            final data = json.decode(event.request.params![1]);
-            result = TypedData.signTypedData_v4(key, data);
+            final data = TypedData.sign(json.decode(event.request.params![1]));
+            final MsgSignature signature =
+                TideWallet().sign(data: data, changeIndex: 0, keyIndex: 0);
+            result = result = '0x' +
+                signature.r.toRadixString(16) +
+                signature.s.toRadixString(16) +
+                signature.v.toRadixString(16);
             break;
           default:
             throw (ERROR_MISSING.METHOD);
         }
 
         if (result == null) {
-          _connector.rejectRequest(WCReject.fromRequest(event.request));
+          connector.rejectRequest(WCReject.fromRequest(event.request));
 
           yield _state.copyWith(currentEvent: null, error: WC_ERROR.SEND_TX);
         } else {
-          _connector.approveRequest(
+          connector.approveRequest(
               WCApprove.fromRequest(event.request, result: result));
           yield _state.copyWith(currentEvent: null);
         }
       }
 
       if (event is DisconnectWC) {
-        if (_connector.connected == true) {
-          _connector.killSession();
+        if (connector.connected == true) {
+          connector.killSession();
         }
         yield _state.copyWith(status: WC_STATUS.UNCONNECTED);
       }

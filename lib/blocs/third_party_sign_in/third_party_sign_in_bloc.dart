@@ -2,10 +2,8 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../repositories/third_party_sign_in_repository.dart';
-import '../../helpers/logger.dart';
 
 part 'third_party_sign_in_event.dart';
 part 'third_party_sign_in_state.dart';

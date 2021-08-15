@@ -3,11 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../database/db_operator.dart';
 import '../blocs/user/user_bloc.dart';
-import './welcome.screen.dart';
-import './authenticate.screen.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/loading_dialog.dart';
-import '../main.dart';
+
+import 'authenticate.screen.dart';
+import 'welcome.screen.dart';
 import 'home.screen.dart';
 // import '../services/fcm_service.dart';
 
@@ -66,6 +66,7 @@ class _LandingScreenState extends State<LandingScreen> {
         if (state is UserExist || state is UserFail) {
           DialogController.dismiss(context);
         }
+
         if (state is UserAuthenticated) {
           Navigator.of(context).pushNamed(HomeScreen.routeName);
         }
@@ -96,6 +97,9 @@ class _LandingScreenState extends State<LandingScreen> {
           if (state is UserExist && state.existed) {
             return AuthenticateScreen();
           }
+          // if (state is UserAuthenticated) {
+          //   return HomeScreen();
+          // }
           return WelcomeScreen();
         },
       ),

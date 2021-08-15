@@ -12,14 +12,11 @@ part 'account_event.dart';
 part 'account_state.dart';
 
 class AccountBloc extends Bloc<AccountEvent, AccountState> {
-  late AccountRepository _repo;
-  late TraderRepository _traderRepo;
-  late StreamSubscription? _subscription;
+  AccountRepository _repo;
+  TraderRepository _traderRepo;
 
   AccountBloc(this._repo, this._traderRepo)
       : super(AccountInitial([], total: Decimal.zero)) {
-    _subscription?.cancel();
-
     this._repo.listener.listen((msg) {
       if (msg.evt == ACCOUNT_EVT.OnUpdateAccount) {
         List<Account> currencies = msg.value;
@@ -99,7 +96,7 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
       Decimal _total = Decimal.zero;
 
       _list.forEach((c) {
-        _total += Decimal.parse(c.inFiat);
+        _total += Decimal.parse(c.inFiat!);
       });
 
       _list.sort((a, b) => a.accountType.index.compareTo(b.accountType.index));

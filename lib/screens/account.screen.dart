@@ -51,36 +51,32 @@ class _AccountScreenState extends State<AccountScreen> {
               child: Column(children: [
                 Header(),
                 BlocBuilder<FiatBloc, FiatState>(builder: (context, fiatState) {
-                  late FiatLoaded _state;
-
-                  if (fiatState is FiatLoaded) {
-                    _state = fiatState;
-                  }
-
-                  return Expanded(
-                    child: GridView(
-                      physics: NeverScrollableScrollPhysics(),
-                      padding: EdgeInsets.zero,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          childAspectRatio: 1.0,
-                          mainAxisSpacing: 4.0,
-                          crossAxisSpacing: 4.0),
-                      children: state.accounts
-                          .map(
-                            (Account acc) => AccountItem(
-                              acc,
-                              () {
-                                Navigator.of(context).pushNamed(
-                                    TransactionListScreen.routeName,
-                                    arguments: {"account": acc});
-                              },
-                              fiat: _state.fiat,
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  );
+                  if (fiatState is FiatLoaded)
+                    return Expanded(
+                      child: GridView(
+                        physics: NeverScrollableScrollPhysics(),
+                        padding: EdgeInsets.zero,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            childAspectRatio: 1.0,
+                            mainAxisSpacing: 4.0,
+                            crossAxisSpacing: 4.0),
+                        children: state.accounts
+                            .map(
+                              (Account acc) => AccountItem(
+                                acc,
+                                () {
+                                  Navigator.of(context).pushNamed(
+                                      TransactionListScreen.routeName,
+                                      arguments: {"account": acc});
+                                },
+                                fiat: fiatState.fiat,
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    );
+                  return SizedBox();
                 })
               ]),
             );

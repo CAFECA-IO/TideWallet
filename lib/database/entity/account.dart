@@ -115,7 +115,7 @@ class AccountEntity {
   AccountEntity.fromAccountJson(Map json, String shareAccountId, String userId,
       {int? timestamp})
       : id = json['account_id'] ??
-            json['account_token_id'], // TODO = Change name
+            json['account_token_id'], // ++ debugInfo: Change name
         shareAccountId = shareAccountId,
         userId = userId,
         blockchainId = json['blockchain_id'],

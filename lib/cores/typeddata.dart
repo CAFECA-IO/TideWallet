@@ -1,10 +1,11 @@
 // ++ Paul 2021/3/17
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:tidewallet3/cores/signer.dart';
 import 'package:convert/convert.dart';
 
-import 'package:tidewallet3/helpers/cryptor.dart';
+import '../cores/signer.dart';
+
+import '../helpers/cryptor.dart';
 
 class TypedData {
   static const Map<String, dynamic> TYPED_MESSAGE_SCHEMA = {
@@ -62,10 +63,10 @@ class TypedData {
           return ['bytes32', sha3(str)];
         }
         if (type.lastIndexOf(']') == type.length - 1) {
-          final parsedType = type.substring(0, type.lastIndexOf('['));
-          final typeValuePairs = value
-              .map((e) => encodeField(name, parsedType, value: e))
-              .toList();
+          // final parsedType = type.substring(0, type.lastIndexOf('['));
+          // final typeValuePairs = value
+          //     .map((e) => encodeField(name, parsedType, value: e))
+          //     .toList();
           // ContractAbi.fromJson(jsonData, name)
 
           // return ['bytes32', sha3(ethAbi.rawEncode(typeValuePairs.map( (_a) {
@@ -142,7 +143,7 @@ class TypedData {
     for (var _i = 0, deps_1 = deps; _i < deps_1.length; _i++) {
       var type = deps_1[_i];
 
-      var children = types[type];
+      // var children = types[type];
       // if (!children) {
       //     throw new Error("No type definition specified: " + type);
       // }
@@ -231,7 +232,7 @@ class TypedData {
           useV4: useV4);
     }
 
-    return sha3(hex.encode(parts));
+    return Uint8List.fromList(sha3(hex.encode(parts)));
   }
 
   // ignore: non_constant_identifier_names
