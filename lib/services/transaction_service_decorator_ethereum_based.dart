@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 import 'package:decimal/decimal.dart';
-import 'package:tidewallet3/cores/tidewallet.dart';
 
 import 'transaction_service.dart';
+import '../cores/paper_wallet.dart';
 import '../cores/signer.dart';
 import '../models/utxo.model.dart';
 import '../models/ethereum_transaction.model.dart';
@@ -16,11 +16,11 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
 
   EthereumBasedTransactionServiceDecorator(this.service);
 
-  EthereumTransaction _signTransaction(EthereumTransaction transaction,
-      {int? changeIndex, int? keyIndex}) {
+  Future<EthereumTransaction> _signTransaction(EthereumTransaction transaction,
+      {int? changeIndex, int? keyIndex}) async {
     Uint8List payload = encodeToRlp(transaction);
     Uint8List rawDataHash = Cryptor.keccak256round(payload, round: 1);
-    MsgSignature signature = TideWallet().sign(
+    MsgSignature signature = await PaperWallet().sign(
         data: rawDataHash,
         changeIndex: changeIndex ?? 0,
         keyIndex: keyIndex ?? 0);
@@ -35,7 +35,7 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
   }
 
   @override
-  EthereumTransaction prepareTransaction(
+  Future<EthereumTransaction> prepareTransaction(
     bool publish,
     String to,
     Decimal amount,
@@ -49,7 +49,7 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
     List<UnspentTxOut>? unspentTxOuts = const [],
     String? changeAddress,
     int? keyIndex,
-  }) {
+  }) async {
     EthereumTransaction transaction = EthereumTransaction.prepareTransaction(
       from: changeAddress!,
       to: to.contains(':') ? to.split(':')[1] : to,
@@ -62,7 +62,7 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
       signature: MsgSignature(BigInt.zero, BigInt.zero, chainId),
       fee: gasLimit * gasPrice, // in wei
     );
-    return _signTransaction(transaction);
+    return await _signTransaction(transaction);
   }
 
   @override

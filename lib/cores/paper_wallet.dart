@@ -4,26 +4,27 @@ import 'dart:typed_data';
 import 'package:bip32/bip32.dart' as bip32;
 import 'package:web3dart/web3dart.dart';
 import 'package:convert/convert.dart';
-// import 'package:bitcoins/bitcoins.dart' as bitcoins;
 
+import '../models/user.model.dart';
 import '../models/credential.model.dart';
+import '../database/entity/user.dart';
+import '../database/db_operator.dart';
 import '../helpers/logger.dart';
 import '../helpers/cryptor.dart';
 import '../helpers/rlp.dart' as rlp;
 
 import 'signer.dart';
-import 'user.dart';
 
-class PaperWallet {
+class PaperWalletCore {
   static const String EXT_PATH = "m/84'/3324'/0'";
   static const int EXT_CHANGEINDEX = 0;
   static const int EXT_KEYINDEX = 0;
 
-  static final PaperWallet _instance = PaperWallet._internal();
-  factory PaperWallet() {
+  static final PaperWalletCore _instance = PaperWalletCore._internal();
+  factory PaperWalletCore() {
     return _instance;
   }
-  PaperWallet._internal();
+  PaperWalletCore._internal();
 
   Uint8List _getNonce(Uint8List userIdentifierBuffer) {
     const int cafeca = 0xcafeca;
@@ -132,25 +133,31 @@ class PaperWallet {
 
   String walletToJson({required Wallet wallet}) => wallet.toJson();
 
-  Uint8List getPubKey(
-    Wallet wallet,
-    int changeIndex,
-    int keyIndex, {
+  Future<Uint8List> getPubKey({
+    int changeIndex = 0,
+    int keyIndex = 0,
     String path = EXT_PATH,
     bool compressed = true,
-  }) {
-    List<int> seed = _magicSeed(wallet.privateKey.privateKey);
-    Uint8List bytes = Uint8List.fromList(seed);
-    bip32.BIP32 root = bip32.BIP32.fromSeed(bytes);
-    bip32.BIP32 child = root.derivePath("$path/$changeIndex/$keyIndex");
-    Uint8List publicKey = child.publicKey;
-    Log.debug('compressed publicKey: ${hex.encode(publicKey)}');
+  }) async {
+    UserEntity? _user = await DBOperator().userDao.findUser();
+    if (_user != null) {
+      String password = _getPassword(User.fromUserEntity(_user));
+      Wallet wallet = jsonToWallet(_user.keystore, password);
+      List<int> seed = _magicSeed(wallet.privateKey.privateKey);
+      Uint8List bytes = Uint8List.fromList(seed);
+      bip32.BIP32 root = bip32.BIP32.fromSeed(bytes);
+      bip32.BIP32 child = root.derivePath("$path/$changeIndex/$keyIndex");
+      Uint8List publicKey = child.publicKey;
+      Log.debug('compressed publicKey: ${hex.encode(publicKey)}');
 
-    if (!compressed) {
-      // TODO: Maybe we don't need uncompressed public key
-      throw UnimplementedError('Implement on decorator');
+      if (!compressed) {
+        // TODO: Maybe we don't need uncompressed public key
+        throw UnimplementedError('Implement on decorator');
+      }
+      return publicKey;
+    } else {
+      throw Exception('User not found');
     }
-    return publicKey;
   }
 
   // see: https://iancoleman.io/bip39
@@ -178,17 +185,25 @@ class PaperWallet {
     return pub.toBase58();
   }
 
-  MsgSignature sign(
-      {required Wallet wallet,
-      required Uint8List data,
-      required int changeIndex,
-      required int keyIndex}) {
-    Uint8List key = _getPrivKey(
-      wallet,
-      changeIndex,
-      keyIndex,
-    );
-    MsgSignature signature = Signer().sign(data, key);
-    return signature;
+  Future<MsgSignature> sign({
+    required String thirdPartyId,
+    required Uint8List data,
+    int changeIndex = 0,
+    int keyIndex = 0,
+  }) async {
+    UserEntity? _user = await DBOperator().userDao.findUser();
+    if (_user != null && _user.thirdPartyId == thirdPartyId) {
+      String password = _getPassword(User.fromUserEntity(_user));
+      Wallet wallet = jsonToWallet(_user.keystore, password);
+      Uint8List key = _getPrivKey(
+        wallet,
+        changeIndex,
+        keyIndex,
+      );
+      MsgSignature signature = Signer().sign(data, key);
+      return signature;
+    } else {
+      throw Exception('Something went wrong');
+    }
   }
 }

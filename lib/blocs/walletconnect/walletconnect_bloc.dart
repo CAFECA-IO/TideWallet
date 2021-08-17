@@ -7,7 +7,7 @@ import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../cores/tidewallet.dart';
+import '../../cores/paper_wallet.dart';
 import '../../cores/walletconnect/core.dart';
 import '../../cores/typeddata.dart';
 import '../../cores/signer.dart';
@@ -203,8 +203,8 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
             final lst =
                 hex.decode(event.request.params![0].replaceAll('0x', ''));
             final data = Cryptor.keccak256round(lst, round: 1);
-            final MsgSignature signature =
-                TideWallet().sign(data: data, changeIndex: 0, keyIndex: 0);
+            final MsgSignature signature = await PaperWalletCore()
+                .sign(data: data, changeIndex: 0, keyIndex: 0);
             result = '0x' +
                 signature.r.toRadixString(16) +
                 signature.s.toRadixString(16) +
@@ -213,8 +213,8 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
 
           case 'eth_signTypedData':
             final data = TypedData.sign(json.decode(event.request.params![1]));
-            final MsgSignature signature =
-                TideWallet().sign(data: data, changeIndex: 0, keyIndex: 0);
+            final MsgSignature signature = await PaperWalletCore()
+                .sign(data: data, changeIndex: 0, keyIndex: 0);
             result = result = '0x' +
                 signature.r.toRadixString(16) +
                 signature.s.toRadixString(16) +

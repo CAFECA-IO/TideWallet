@@ -5,19 +5,19 @@ import '../cores/user.dart';
 
 class UserRepository {
   Future<bool> createUser(String userIdentifier) async {
-    bool result = await User.createUser(userIdentifier);
+    bool result = await UserCore().createUser(userIdentifier);
     return result;
   }
 
   Future<bool> createUserWithSeed(String userIdentifier, Uint8List seed) async {
-    bool result = await User.createUserWithSeed(userIdentifier, seed);
+    bool result = await UserCore().createUserWithSeed(userIdentifier, seed);
     return result;
   }
 
   Future<bool> checkUser() async {
-    bool result = await User.checkUser();
+    bool result = await UserCore().checkUser();
     return result;
   }
 
-  Future<bool> deleteUser() => User.deleteUser();
+  Future<bool> deleteUser() => UserCore().deleteUser();
 }

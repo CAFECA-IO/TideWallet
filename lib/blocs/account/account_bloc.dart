@@ -49,11 +49,11 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
     AccountEvent event,
   ) async* {
     if (event is OverView) {
-      List<Account> accounts = _repo.getAllAccounts();
+      Map data = await _repo.getOverview();
       yield AccountLoaded(
-          totalBalanceInFiat: totalBalanceInFiat,
-          accounts: accounts,
-          fiat: fiat);
+          totalBalanceInFiat: data['totalBalanceInFiat'],
+          accounts: data['accounts'],
+          fiat: data['fiat']);
     }
     if (event is UpdateAccounts) {
       yield AccountLoaded(

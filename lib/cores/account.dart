@@ -22,6 +22,12 @@ import '../helpers/prefer_manager.dart';
 
 class AccountCore {
   static int syncInteral = 24 * 60 * 60 * 1000; // milliseconds
+  static final AccountCore _instance = AccountCore._internal();
+  factory AccountCore() {
+    return _instance;
+  }
+  AccountCore._internal();
+
   PublishSubject<AccountMessage> messenger = PublishSubject<AccountMessage>();
   PrefManager _prefManager = PrefManager();
   bool _isInit = false;

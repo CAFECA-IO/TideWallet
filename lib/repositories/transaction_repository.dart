@@ -5,7 +5,7 @@ import 'package:rxdart/subjects.dart';
 import 'package:decimal/decimal.dart';
 import 'package:convert/convert.dart';
 
-import '../cores/tidewallet.dart';
+import '../cores/paper_wallet.dart';
 import '../cores/account.dart';
 import '../models/account.model.dart';
 import '../models/transaction.model.dart';
@@ -234,7 +234,7 @@ class TransactionRepository {
           utxoAmount += utxo.amount; // in currency uint
           Log.btc('utxoAmount: $utxoAmount');
           Log.btc('utxo.amount: ${utxo.amount}');
-          utxo.publickey = TideWallet().getPubKey(
+          utxo.publickey = await PaperWalletCore().getPubKey(
               changeIndex: utxo.changeIndex, keyIndex: utxo.keyIndex);
           _utxos.add(utxo);
           if (utxoAmount > (amount + fee)) {
