@@ -4,6 +4,9 @@ import 'package:decimal/decimal.dart';
 import '../models/investment.model.dart';
 import '../models/account.model.dart';
 
+import '../database/entity/user.dart';
+import '../database/db_operator.dart';
+
 import '../helpers/utils.dart';
 
 class InvestmentCore {
@@ -16,7 +19,8 @@ class InvestmentCore {
 
   InvestmentCore._internal();
 
-  Future<List<InvestAccount>> getInvestmentList(String usrId) async {
+  Future<List<InvestAccount>> getInvestmentList() async {
+    UserEntity user = (await DBOperator().userDao.findUser())!;
     // ++ fromDB 2021/3/16 Emily
     await Future.delayed(Duration(milliseconds: 500));
 

@@ -28,13 +28,13 @@ class TransactionStatusBloc
         });
         if (index < 0) return;
         Account account = msg.value[index];
-        this.add(UpdateAccount(_addUSD(account)));
+        this.add(UpdateAccount(account));
       }
       if (msg.evt == ACCOUNT_EVT.OnUpdateTransactions) {
         Account account = msg.value['account'];
         if (account.id != this._repo.account.id) return;
         List<Transaction> transactions = msg.value['transactions'];
-        this.add(UpdateTransactionList(_addUSD(account), transactions));
+        this.add(UpdateTransactionList(account, transactions));
       }
 
       if (msg.evt == ACCOUNT_EVT.OnUpdateTransaction) {
@@ -44,10 +44,6 @@ class TransactionStatusBloc
         this.add(UpdateTransaction(transaction));
       }
     });
-  }
-
-  Account _addUSD(Account acc) {
-    return acc.copyWith(inFiat: _traderRepo.calculateToFiat(acc).toString());
   }
 
   @override

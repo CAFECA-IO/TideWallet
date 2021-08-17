@@ -28,8 +28,7 @@ class InvestBloc extends Bloc<InvestEvent, InvestState> {
     InvestEvent event,
   ) async* {
     if (event is GetInvestments) {
-      List<InvestAccount> investAccounts =
-          await _repo.getInvestmentList(this._userRepo.user.id);
+      List<InvestAccount> investAccounts = await _repo.getInvestmentList();
       yield ListInvestments(investAccounts: investAccounts);
     }
     if (event is UpdateInvestAccountList) {

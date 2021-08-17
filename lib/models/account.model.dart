@@ -42,7 +42,7 @@ class Account {
   final String imgPath;
   final String? contract;
 
-  String? inFiat;
+  Decimal? inFiat;
   final ACCOUNT accountType;
   final String shareAccountSymbol;
   final int shareAccountDecimals;
@@ -105,7 +105,7 @@ class Account {
     int? decimals,
     String? exchangeRate,
     String? imgPath,
-    String? inFiat,
+    Decimal? inFiat,
     ACCOUNT? accountType,
     String? shareAccountSymbol,
     int? shareAccountDecimals,

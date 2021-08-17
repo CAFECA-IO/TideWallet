@@ -70,6 +70,16 @@ class Trader {
     return this._fiats[index];
   }
 
+  Decimal calculateToFiat(Account _account, Fiat fiat) {
+    int index =
+        this._cryptos.indexWhere((c) => c.currencyId == _account.currencyId);
+    if (index < 0) return Decimal.zero;
+
+    return this._cryptos[index].exchangeRate *
+        Decimal.tryParse(_account.balance)! *
+        fiat.exchangeRate;
+  }
+
   Decimal calculateToUSD(Account _account) {
     int index =
         this._cryptos.indexWhere((c) => c.currencyId == _account.currencyId);

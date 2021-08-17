@@ -111,7 +111,6 @@ class MyApp extends StatelessWidget {
             BlocProvider<AccountBloc>(
               create: (BuildContext context) => AccountBloc(
                 Provider.of<AccountRepository>(context, listen: false),
-                Provider.of<TraderRepository>(context, listen: false),
               ),
             ),
             BlocProvider<InvestPlanBloc>(

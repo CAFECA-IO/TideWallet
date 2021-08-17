@@ -37,7 +37,7 @@ class AccountItem extends StatelessWidget {
                 style: TextStyle(
                     color: !_account.publish ? _testnetColor : Colors.black)),
             Text(
-                '≈ ${Formatter.formatDecimal((Decimal.tryParse(_account.inFiat!)! / fiat.exchangeRate).toString(), decimalLength: 2)} ${fiat.name}',
+                '≈ ${Formatter.formatDecimal(_account.inFiat!.toString(), decimalLength: 2)} ${fiat.name}',
                 style: Theme.of(context).textTheme.subtitle2!.copyWith(
                     color: !_account.publish ? _testnetColor : Colors.black))
           ],

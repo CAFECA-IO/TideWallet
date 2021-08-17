@@ -7,15 +7,17 @@ abstract class AccountEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class GetAccountList extends AccountEvent {
+class OverView extends AccountEvent {
   @override
   List<Object> get props => [];
 }
 
 class UpdateAccounts extends AccountEvent {
   final List<Account> accounts;
-
-  UpdateAccounts(this.accounts);
+  final String totalBalanceInFiat;
+  final Fiat? fiat;
+  UpdateAccounts(
+      {required this.totalBalanceInFiat, required this.accounts, this.fiat});
 }
 
 class CleanAccounts extends AccountEvent {

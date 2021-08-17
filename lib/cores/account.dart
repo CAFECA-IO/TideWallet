@@ -1,4 +1,7 @@
+import 'package:decimal/decimal.dart';
 import 'package:rxdart/rxdart.dart';
+
+import 'trader.dart';
 
 import '../constants/account_config.dart';
 import '../constants/endpoint.dart';
@@ -15,25 +18,101 @@ import '../database/entity/user.dart';
 import '../database/entity/currency.dart';
 import '../helpers/http_agent.dart';
 import '../helpers/logger.dart';
+import '../helpers/prefer_manager.dart';
 
 class AccountCore {
   static int syncInteral = 24 * 60 * 60 * 1000; // milliseconds
   PublishSubject<AccountMessage> messenger = PublishSubject<AccountMessage>();
+  PrefManager _prefManager = PrefManager();
   bool _isInit = false;
   bool _debugMode = false;
   List<AccountService> _services = [];
   Map<String, List<Account>> _accounts = {};
+  Map _preferDisplay = {};
   List<DisplayCurrency> settingOptions = [];
+
+  bool get debugMode => this._debugMode;
 
   Map<String, List<Account>> get accounts {
     return _accounts;
   }
 
+  Map get preferDisplay => this._preferDisplay;
+
+  Future<Map?> getSeletedDisplay() {
+    return this._prefManager.getSeletedDisplay();
+  }
+
   List<Account>? getAccountsByShareAccountId(String shareAccountId) =>
       this._accounts[shareAccountId];
 
-  List<Account> getAllAccounts() =>
-      this._accounts.values.reduce((currList, currs) => currList + currs);
+  List<Account> displayFilter(List<Account> accounts) {
+    if (this.debugMode)
+      return accounts
+          .where((acc) =>
+              acc.type == 'currency' ||
+              (this.preferDisplay[acc.currencyId] != null &&
+                  this.preferDisplay[acc.currencyId] == true))
+          .toList();
+    else
+      return accounts
+          .where((acc) =>
+              (acc.type == 'currency' && acc.publish) ||
+              (this.preferDisplay[acc.currencyId] != null &&
+                  this.preferDisplay[acc.currencyId] == true))
+          .toList();
+  }
+
+// ++ need check
+  Future<bool> addToken(Account account, Token token) async {
+    AccountService _ethService = getService(account.id);
+
+    return (_ethService as EthereumService)
+        .addToken(account.blockchainId, token);
+  }
+
+  Future toggleDisplay(Account account, bool value) async {
+    final result = await this
+        ._prefManager
+        .setSelectedDisplay(account.shareAccountId, account.currencyId, value);
+    this._preferDisplay = result;
+
+    if (value == true) {
+      AccountService _service =
+          AccountCore().getService(account.shareAccountId);
+      _service.synchro(force: true);
+    } else {
+      AccountMessage msg = AccountMessage(
+          evt: ACCOUNT_EVT.ToggleDisplayCurrency, value: account.currencyId);
+
+      AccountCore().messenger.add(msg);
+    }
+
+    return this._preferDisplay;
+  }
+
+  List<Account> getAllAccounts() {
+    List<Account> accounts =
+        this._accounts.values.reduce((currList, currs) => currList + currs);
+    accounts
+      ..sort((a, b) => a.accountType.index.compareTo(b.accountType.index));
+    return displayFilter(accounts);
+  }
+
+  Future<Map> getOverview() async {
+    Fiat fiat = await Trader().getSelectedFiat();
+    Decimal totalBalanceInFiat = Decimal.zero;
+    for (Account account in this.getAllAccounts()) {
+      account.inFiat = Trader().calculateToFiat(account, fiat);
+      totalBalanceInFiat += account.inFiat!;
+    }
+
+    return {
+      "account": this.getAllAccounts(),
+      "fiat": fiat,
+      'totalBalanceInFiat': totalBalanceInFiat
+    };
+  }
 
   static final AccountCore _instance = AccountCore._internal();
   factory AccountCore() => _instance;
@@ -77,13 +156,19 @@ class AccountCore {
     }
   }
 
-  Future init({required bool debugMode}) async {
-    this._isInit = true;
-    this._debugMode = debugMode;
-    await _initAccounts();
+  Future init({bool? debugMode}) async {
+    if (debugMode != null && debugMode != this._debugMode) {
+      this._debugMode = debugMode;
+      this._prefManager.setDebugMode(debugMode);
+      this._isInit = false;
+    }
+    if (!this._isInit) {
+      await _initAccounts();
+    }
   }
 
   _initAccounts() async {
+    this._isInit = true;
     UserEntity user = (await DBOperator().userDao.findUser())!;
     final int timestamp = DateTime.now().millisecondsSinceEpoch;
 
@@ -212,15 +297,17 @@ class AccountCore {
 
     List l = res.data ?? [];
     List<AccountEntity> accs = [];
-    Log.debug('_addAccount AccountDatas: $l');
 
     UserEntity user = (await DBOperator().userDao.findUser())!;
     Log.debug('_addAccount user.userId: ${user.userId}');
 
     for (var d in l) {
       final String id = d['account_id'];
+      Log.debug('_addAccount AccountData: $d');
       AccountEntity acc = AccountEntity.fromAccountJson(d, id, user.userId);
       await DBOperator().accountDao.insertAccount(acc);
+      Log.debug(
+          '_addAccount AccountEntity, id: ${acc.id}, blockchainId: ${acc.blockchainId}, currencyId: ${acc.currencyId}, balance: ${acc.balance}');
 
       accs.add(acc);
     }
@@ -258,5 +345,4 @@ class AccountCore {
   // Future<String> getReceivingAddress(Currency curr) async {
   //   return await this._services.getReceivingAddress();
   // }
-
 }

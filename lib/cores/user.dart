@@ -14,25 +14,32 @@ import '../models/auth.model.dart';
 import '../models/api_response.mode.dart';
 // import '../services/fcm_service.dart';
 
-import 'tidewallet.dart';
+import 'paper_wallet.dart';
 
 class User {
-  final String _id;
+  String? _id;
   final String _thirdPartyId;
   final String _installId;
   final int _timestamp;
   String? _userSecret;
   Uint8List? _seed;
+  Wallet? _wallet;
 
-  String get id => this._id;
+  String get id => this._id!;
   String get thirdPartyId => this._thirdPartyId;
   String get installId => this._installId;
   int get timestamp => this._timestamp;
   String get userSecret => this._userSecret!;
   Uint8List get seed => this._seed!;
+  Wallet get wallet => this._wallet!;
+
+  set userId(String userId) => this._id = userId;
+  set userSecret(String userSecret) => this._userSecret = userSecret;
+  set seed(Uint8List seed) => this._seed = seed;
+  set wallet(Wallet wallet) => this._wallet = wallet;
 
   User({
-    required String id,
+    String? id,
     required String thirdPartyId,
     required String installId,
     required int timestamp,
@@ -53,62 +60,65 @@ class User {
 
   PrefManager _prefManager = PrefManager();
 
-  static Future<List> checkUser() async {
+  static Future<bool> checkUser() async {
     UserEntity? user = await DBOperator().userDao.findUser();
     if (user != null) {
       User _user = User.fromUserEntity(user);
       _user._initUser();
-      return [true, _user];
+      return true;
     }
-    return [false];
+    return false;
   }
 
-  static Future<List> createUser(String userIdentifier) async {
+  static Future<bool> createUser(String userIdentifier) async {
     Log.debug('createUser: $userIdentifier');
 
     String installId = await PrefManager().getInstallationId();
     Log.debug('installId: $installId');
-
-    final List<String> user = await getUser(userIdentifier);
-    final String userId = user[0];
-    final String userSecret = user[1];
     int timestamp = DateTime.now().millisecondsSinceEpoch;
     User _user = User(
-        id: userId,
         thirdPartyId: userIdentifier,
         installId: installId,
-        timestamp: timestamp,
-        userSecret: userSecret);
+        timestamp: timestamp);
 
-    Wallet wallet = await compute(TideWallet().createWallet, _user);
+    final List<String> user = await _user._getUser(userIdentifier);
+    _user.userId = user[0];
+    _user.userSecret = user[1];
 
-    bool success = await _user._registerUser(wallet: wallet);
+    _user.wallet = PaperWallet().createWallet(_user);
 
-    return [success, _user];
+    bool success = await _user._registerUser();
+
+    return success;
   }
 
-  static Future<List> createUserWithSeed(
+  static Future<bool> createUserWithSeed(
       String userIdentifier, Uint8List seed) async {
     String installId = await PrefManager().getInstallationId();
-
-    final List<String> user = await getUser(userIdentifier);
-    final String userId = user[0];
     int timestamp = DateTime.now().millisecondsSinceEpoch;
     User _user = User(
-        id: userId,
         thirdPartyId: userIdentifier,
         installId: installId,
         timestamp: timestamp,
         seed: seed);
+    final List<String> user = await _user._getUser(userIdentifier);
 
-    Wallet wallet = await compute(TideWallet().createWalletWithSeed, _user);
+    _user.userId = user[0];
+    _user.wallet = PaperWallet().createWalletWithSeed(_user);
 
-    bool success = await _user._registerUser(wallet: wallet);
+    bool success = await _user._registerUser();
 
-    return [success, _user];
+    return success;
   }
 
-  static Future<List<String>> getUser(userIdentifier) async {
+  Future<void> _initUser() async {
+    AuthItem? item = await _prefManager.getAuthItem();
+    if (item != null) {
+      HTTPAgent().setToken(item.token);
+    }
+  }
+
+  Future<List<String>> _getUser(userIdentifier) async {
     String userId;
     String userSecret;
 
@@ -125,12 +135,10 @@ class User {
     }
   }
 
-  Future<bool> _registerUser({
-    required Wallet wallet,
-  }) async {
+  Future<bool> _registerUser() async {
     // String? fcmToken = await FCM().getToken();
     String extendPublicKey =
-        await compute(TideWallet().extendedPublicKey, wallet);
+        PaperWallet().getExtendedPublicKey(wallet: this.wallet);
     final Map payload = {
       "wallet_name":
           "TideWallet3", // -- we dont provide user to set wallet anymore
@@ -150,7 +158,7 @@ class User {
       Log.info('_registerUser tokenSecret: ${res.data["tokenSecret"]}');
       // -- debugInfo
 
-      String keystore = await compute(TideWallet().keystore, wallet);
+      String keystore = PaperWallet().walletToJson(wallet: this.wallet);
 
       UserEntity userEntity = UserEntity(
           userId: this.id,
@@ -163,13 +171,6 @@ class User {
     }
 
     return res.success;
-  }
-
-  Future<void> _initUser() async {
-    AuthItem? item = await _prefManager.getAuthItem();
-    if (item != null) {
-      HTTPAgent().setToken(item.token);
-    }
   }
 
   static Future<bool> deleteUser() async {

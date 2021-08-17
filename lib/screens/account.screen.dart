@@ -4,14 +4,12 @@ import 'package:provider/provider.dart';
 
 import '../blocs/account/account_bloc.dart';
 import '../blocs/fiat/fiat_bloc.dart';
+import '../models/account.model.dart';
 import '../widgets/header.dart';
 import '../widgets/account_item.dart';
-import '../models/account.model.dart';
-import '../repositories/trader_repository.dart';
-import '../repositories/account_repository.dart';
 import '../helpers/i18n.dart';
+import 'toggle_currency.screen.dart';
 import 'transaction_list.screen.dart';
-import '../screens/toggle_currency.screen.dart';
 
 final t = I18n.t;
 
@@ -27,15 +25,10 @@ class AccountScreen extends StatefulWidget {
 
 class _AccountScreenState extends State<AccountScreen> {
   late AccountBloc _bloc;
-  late AccountRepository _repo;
-  late TraderRepository _traderRepo;
 
   @override
   didChangeDependencies() {
-    _repo = Provider.of<AccountRepository>(context);
-    _traderRepo = Provider.of<TraderRepository>(context);
-
-    _bloc = AccountBloc(_repo, _traderRepo)..add(GetAccountList());
+    _bloc = Provider.of<AccountBloc>(context)..add(OverView());
     super.didChangeDependencies();
   }
 
