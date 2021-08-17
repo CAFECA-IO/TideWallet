@@ -32,7 +32,7 @@ import './screens/terms.screen.dart';
 import './screens/add_investment.screen.dart';
 import './screens/scan.screen.dart';
 import './screens/recover_mnemonic.screen.dart';
-import './screens/toggle_currency.screen.dart';
+import 'screens/toggle_token.screen.dart';
 import './blocs/fiat/fiat_bloc.dart';
 import './blocs/account/account_bloc.dart';
 import './blocs/delegate.dart';
@@ -165,7 +165,7 @@ MaterialApp _material = MaterialApp(
     TermsScreen.routeName: (context) => TermsScreen(),
     ScanScreen.routeName: (context) => ScanScreen(),
     RecoverMemonicScreen.routeName: (context) => RecoverMemonicScreen(),
-    ToggleCurrencyScreen.routeName: (context) => ToggleCurrencyScreen(),
+    ToggleTokenScreen.routeName: (context) => ToggleTokenScreen(),
   },
   localizationsDelegates: [
     const I18nDelegate(),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../screens/toggle_currency.screen.dart';
 
+import '../screens/toggle_token.screen.dart';
 import '../screens/account.screen.dart';
 import '../screens/scan_address.screen.dart';
 import '../screens/wallet_connect.screen.dart';
@@ -52,7 +52,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
         case FeedbackScreen.routeName:
         case TermsScreen.routeName:
         case RecoverMemonicScreen.routeName:
-        case ToggleCurrencyScreen.routeName:
+        case ToggleTokenScreen.routeName:
           leading = GestureDetector(
             behavior: HitTestBehavior.translucent,
             child: ImageIcon(

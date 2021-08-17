@@ -12,8 +12,6 @@ import '../cores/account.dart';
 class AccountRepository {
   PublishSubject<AccountMessage> get listener => AccountCore().messenger;
 
-  List<DisplayCurrency> get displayCurrencies => AccountCore().settingOptions;
-
   AccountRepository() {
     AccountCore().setMessenger();
   }
@@ -32,18 +30,16 @@ class AccountRepository {
     return AccountCore().getAccountsByShareAccountId(accountId)!;
   }
 
-  Future<bool> addToken(Account account, Token token) =>
-      AccountCore().addToken(account, token);
+  Future<List<DisplayToken>> getDisplayTokens() =>
+      AccountCore().getDisplayTokens();
+
+  Future toggleDisplayToken(DisplayToken token) =>
+      AccountCore().toggleDisplayToken(token);
 
   close() {
     AccountCore().messenger.add(
           AccountMessage(evt: ACCOUNT_EVT.ClearAll),
         );
-    AccountCore().messenger.add(
-          AccountMessage(evt: ACCOUNT_EVT.ClearAll),
-        );
     AccountCore().close();
   }
-
-  Future<Map?> getSeletedDisplay() => AccountCore().getSeletedDisplay();
 }

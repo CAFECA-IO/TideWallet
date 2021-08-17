@@ -43,6 +43,34 @@ class CurrencyEntity {
       this.blockchainId,
       this.totalSupply});
 
+  CurrencyEntity copyWith({
+    String? currencyId,
+    String? name,
+    String? symbol,
+    bool? publish,
+    int? decimals,
+    String? type,
+    String? image,
+    String? exchangeRate,
+    String? contract,
+    String? blockchainId,
+    String? totalSupply,
+  }) {
+    return CurrencyEntity(
+      currencyId: currencyId ?? this.currencyId,
+      name: name ?? this.name,
+      symbol: symbol ?? this.symbol,
+      publish: publish ?? this.publish,
+      decimals: decimals ?? this.decimals,
+      type: type ?? this.type,
+      image: image ?? this.image,
+      exchangeRate: exchangeRate ?? this.exchangeRate,
+      contract: contract ?? this.contract,
+      blockchainId: blockchainId ?? this.blockchainId,
+      totalSupply: totalSupply ?? this.totalSupply,
+    );
+  }
+
   CurrencyEntity.fromJson(Map json)
       : this.currencyId = json['currency_id'] ?? json['token_id'],
         this.name = json['name'],

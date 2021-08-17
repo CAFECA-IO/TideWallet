@@ -20,7 +20,7 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
       {int? changeIndex, int? keyIndex}) async {
     Uint8List payload = encodeToRlp(transaction);
     Uint8List rawDataHash = Cryptor.keccak256round(payload, round: 1);
-    MsgSignature signature = await PaperWallet().sign(
+    MsgSignature signature = await PaperWalletCore().sign(
         data: rawDataHash,
         changeIndex: changeIndex ?? 0,
         keyIndex: keyIndex ?? 0);

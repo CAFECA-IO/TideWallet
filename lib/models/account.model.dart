@@ -11,8 +11,7 @@ enum ACCOUNT_EVT {
   OnUpdateAccounts,
   OnUpdateTransactions,
   OnUpdateTransaction,
-  ClearAll,
-  ToggleDisplayCurrency
+  ClearAll
 }
 
 class Account {
@@ -231,7 +230,7 @@ class Fiat {
         exchangeRate = Decimal.parse(entity.rate);
 }
 
-class DisplayCurrency extends Equatable {
+class DisplayToken extends Equatable {
   final bool editable;
   final bool opened;
   final String symbol;
@@ -241,7 +240,7 @@ class DisplayCurrency extends Equatable {
   final String contract;
   final String blockchainId;
 
-  DisplayCurrency({
+  DisplayToken({
     this.editable = false,
     this.opened = false,
     required this.symbol,
@@ -252,7 +251,7 @@ class DisplayCurrency extends Equatable {
     required this.blockchainId,
   });
 
-  DisplayCurrency copyWith({
+  DisplayToken copyWith({
     bool? opened,
     bool? editable,
     String? symbol,
@@ -262,7 +261,7 @@ class DisplayCurrency extends Equatable {
     String? contract,
     String? blockchainId,
   }) {
-    return DisplayCurrency(
+    return DisplayToken(
         opened: opened ?? this.opened,
         editable: editable ?? this.editable,
         symbol: symbol ?? this.symbol,
@@ -273,7 +272,7 @@ class DisplayCurrency extends Equatable {
         blockchainId: blockchainId ?? this.blockchainId);
   }
 
-  DisplayCurrency.fromCurrencyEntity(CurrencyEntity entity)
+  DisplayToken.fromCurrencyEntity(CurrencyEntity entity)
       : opened = false,
         editable = false,
         symbol = entity.symbol,

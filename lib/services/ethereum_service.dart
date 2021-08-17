@@ -74,10 +74,10 @@ class EthereumService extends AccountServiceDecorator {
     }
   }
 
-  Future<bool> addToken(String blockchainId, Token tk) async {
+  Future<bool> addToken(DisplayToken token) async {
     APIResponse res = await HTTPAgent().post(
         Endpoint.url +
-            '/wallet/blockchain/$blockchainId/contract/${tk.contract}',
+            '/wallet/blockchain/${token.blockchainId}/contract/${token.contract}',
         {});
     if (res.success == false) return false;
 
@@ -93,7 +93,7 @@ class EthereumService extends AccountServiceDecorator {
 
         await DBOperator().currencyDao.insertCurrency(
               CurrencyEntity.fromJson(
-                {...tks[index], 'icon': tk.imgUrl, 'currency_id': id},
+                {...tks[index], 'icon': token.icon, 'currency_id': id},
               ),
             );
         Log.info(id);

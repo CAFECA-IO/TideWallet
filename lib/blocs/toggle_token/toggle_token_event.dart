@@ -12,8 +12,8 @@ class InitTokens extends ToggletokenEvent {
 }
 
 class ToggleToken extends ToggletokenEvent {
-  final DisplayCurrency currency;
+  final DisplayToken currency;
   final bool value;
-  
+
   ToggleToken(this.currency, this.value);
 }

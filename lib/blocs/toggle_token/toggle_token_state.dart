@@ -10,11 +10,11 @@ abstract class ToggleTokenState extends Equatable {
 class ToggleTokenInitial extends ToggleTokenState {}
 
 class ToggleTokenLoaded extends ToggleTokenState {
-  final List<DisplayCurrency> list;
+  final List<DisplayToken> list;
 
   ToggleTokenLoaded(this.list);
 
-  ToggleTokenLoaded copyWith(List<DisplayCurrency> list) =>
+  ToggleTokenLoaded copyWith(List<DisplayToken> list) =>
       ToggleTokenLoaded(this.list);
 
   @override

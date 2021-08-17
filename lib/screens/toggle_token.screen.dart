@@ -8,13 +8,13 @@ import '../blocs/toggle_token/toggle_token_bloc.dart';
 import '../widgets/appBar.dart';
 import '../helpers/i18n.dart';
 
-class ToggleCurrencyScreen extends StatefulWidget {
+class ToggleTokenScreen extends StatefulWidget {
   @override
-  _ToggleCurrencyScreenState createState() => _ToggleCurrencyScreenState();
+  _ToggleTokenScreenState createState() => _ToggleTokenScreenState();
   static const routeName = '/toggle-currency';
 }
 
-class _ToggleCurrencyScreenState extends State<ToggleCurrencyScreen> {
+class _ToggleTokenScreenState extends State<ToggleTokenScreen> {
   late ToggleTokenBloc _bloc;
   final t = I18n.t;
 
@@ -25,7 +25,7 @@ class _ToggleCurrencyScreenState extends State<ToggleCurrencyScreen> {
     super.didChangeDependencies();
   }
 
-  _toggle(DisplayCurrency dc, bool value) {
+  _toggle(DisplayToken dc, bool value) {
     _bloc.add(ToggleToken(dc, value));
   }
 
@@ -34,7 +34,7 @@ class _ToggleCurrencyScreenState extends State<ToggleCurrencyScreen> {
     return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: GeneralAppbar(
-          routeName: ToggleCurrencyScreen.routeName,
+          routeName: ToggleTokenScreen.routeName,
           title: t('add_currency'),
         ),
         body: BlocBuilder<ToggleTokenBloc, ToggleTokenState>(
@@ -61,7 +61,7 @@ class _ToggleCurrencyScreenState extends State<ToggleCurrencyScreen> {
 }
 
 class ToggleItem extends StatelessWidget {
-  final DisplayCurrency _dc;
+  final DisplayToken _dc;
   final Function _toggle;
 
   ToggleItem(this._dc, this._toggle);

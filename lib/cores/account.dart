@@ -28,14 +28,17 @@ class AccountCore {
   }
   AccountCore._internal();
 
-  PublishSubject<AccountMessage> messenger = PublishSubject<AccountMessage>();
-  PrefManager _prefManager = PrefManager();
+  PublishSubject<AccountMessage>? _messenger;
+  set messenger(PublishSubject<AccountMessage>? messenger) =>
+      this._messenger = messenger ?? PublishSubject<AccountMessage>();
+  PublishSubject<AccountMessage> get messenger => this._messenger!;
+
   bool _isInit = false;
   bool _debugMode = false;
+  PrefManager _prefManager = PrefManager();
   List<AccountService> _services = [];
   Map<String, List<Account>> _accounts = {};
-  Map _preferDisplay = {};
-  List<DisplayCurrency> settingOptions = [];
+  List<DisplayToken> _displayTokens = [];
 
   bool get debugMode => this._debugMode;
 
@@ -43,10 +46,39 @@ class AccountCore {
     return _accounts;
   }
 
-  Map get preferDisplay => this._preferDisplay;
+  Map _preferDisplayToken = {};
+  Map get preferDisplayToken => this._preferDisplayToken;
 
-  Future<Map?> getSeletedDisplay() {
-    return this._prefManager.getSeletedDisplay();
+  Future<List<DisplayToken>> getDisplayTokens() async {
+    final selected = await this._prefManager.getSeletedDisplayToken();
+    if (selected != null) {
+      _displayTokens = _displayTokens.map((opt) {
+        if (selected[opt.currencyId] == true) {
+          return opt.copyWith(opened: true);
+        } else {
+          return opt;
+        }
+      }).toList();
+    }
+    return _displayTokens;
+  }
+
+  Future toggleDisplayToken(DisplayToken token) async {
+    Account account = this
+        .getAllAccounts()
+        .where((acc) => acc.blockchainId == token.blockchainId)
+        .first;
+
+    final result = await this._prefManager.setSelectedDisplay(
+        account.shareAccountId, token.currencyId, token.opened);
+    this._preferDisplayToken = result;
+
+    EthereumService _service =
+        AccountCore().getService(account.shareAccountId) as EthereumService;
+    if (token.opened) {
+      await _service.addToken(token);
+    }
+    _service.synchro(force: true);
   }
 
   List<Account>? getAccountsByShareAccountId(String shareAccountId) =>
@@ -57,44 +89,16 @@ class AccountCore {
       return accounts
           .where((acc) =>
               acc.type == 'currency' ||
-              (this.preferDisplay[acc.currencyId] != null &&
-                  this.preferDisplay[acc.currencyId] == true))
+              (this.preferDisplayToken[acc.currencyId] != null &&
+                  this.preferDisplayToken[acc.currencyId] == true))
           .toList();
     else
       return accounts
           .where((acc) =>
               (acc.type == 'currency' && acc.publish) ||
-              (this.preferDisplay[acc.currencyId] != null &&
-                  this.preferDisplay[acc.currencyId] == true))
+              (this.preferDisplayToken[acc.currencyId] != null &&
+                  this.preferDisplayToken[acc.currencyId] == true))
           .toList();
-  }
-
-// ++ need check
-  Future<bool> addToken(Account account, Token token) async {
-    AccountService _ethService = getService(account.id);
-
-    return (_ethService as EthereumService)
-        .addToken(account.blockchainId, token);
-  }
-
-  Future toggleDisplay(Account account, bool value) async {
-    final result = await this
-        ._prefManager
-        .setSelectedDisplay(account.shareAccountId, account.currencyId, value);
-    this._preferDisplay = result;
-
-    if (value == true) {
-      AccountService _service =
-          AccountCore().getService(account.shareAccountId);
-      _service.synchro(force: true);
-    } else {
-      AccountMessage msg = AccountMessage(
-          evt: ACCOUNT_EVT.ToggleDisplayCurrency, value: account.currencyId);
-
-      AccountCore().messenger.add(msg);
-    }
-
-    return this._preferDisplay;
   }
 
   List<Account> getAllAccounts() {
@@ -120,11 +124,6 @@ class AccountCore {
     };
   }
 
-  static final AccountCore _instance = AccountCore._internal();
-  factory AccountCore() => _instance;
-
-  AccountCore._internal();
-
   bool get isInit => _isInit;
 
   setBitcoinAccountService() {
@@ -149,16 +148,18 @@ class AccountCore {
           List data = res.data;
           tokens = [];
           for (var d in data) {
-            tokens.add(CurrencyEntity.fromJson(d));
+            CurrencyEntity currencyEntity = CurrencyEntity.fromJson(d)
+                .copyWith(blockchainId: chain.blockchainId);
+            tokens.add(currencyEntity);
           }
           await DBOperator().currencyDao.insertCurrencies(tokens);
         }
       }
-      List<DisplayCurrency> dcs = [];
+      List<DisplayToken> dcs = [];
       for (CurrencyEntity t in tokens) {
-        dcs.add(DisplayCurrency.fromCurrencyEntity(t));
+        dcs.add(DisplayToken.fromCurrencyEntity(t));
       }
-      this.settingOptions.addAll(dcs);
+      this._displayTokens.addAll(dcs);
     }
   }
 
@@ -191,6 +192,7 @@ class AccountCore {
     final accounts = await this.getAccounts(update);
 
     if (update) {
+      this._displayTokens = [];
       final updateUser = user.copyWith(lastSyncTime: timestamp);
       await DBOperator().userDao.insertUser(updateUser);
     }
@@ -259,7 +261,7 @@ class AccountCore {
     });
     this._services = [];
     this._accounts = {};
-    this.settingOptions = [];
+    this._displayTokens = [];
   }
 
   Future<bool> checkAccountExist() async {

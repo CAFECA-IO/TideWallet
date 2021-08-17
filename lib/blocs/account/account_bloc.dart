@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:decimal/decimal.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 
@@ -30,10 +29,6 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
 
       if (msg.evt == ACCOUNT_EVT.ClearAll) {
         this.add(CleanAccounts());
-      }
-
-      if (msg.evt == ACCOUNT_EVT.ToggleDisplayCurrency) {
-        this.add(ToggleDisplay(msg.value));
       }
     });
   }
@@ -66,13 +61,6 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
       List<Account> empty = [];
       yield AccountLoaded(
           totalBalanceInFiat: '0', accounts: [], fiat: state.fiat);
-    }
-
-    if (event is ToggleDisplay) {
-      yield AccountLoaded(
-          totalBalanceInFiat: event.totalBalanceInFiat,
-          accounts: event.accounts,
-          fiat: event.fiat ?? state.fiat);
     }
   }
 }

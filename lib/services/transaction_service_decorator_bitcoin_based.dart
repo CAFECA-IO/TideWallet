@@ -59,7 +59,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
       Uint8List rawData = transaction.getRawDataToSign(index);
       Uint8List rawDataHash = Uint8List.fromList(Cryptor.sha256round(rawData));
       UnspentTxOut utxo = transaction.inputs[index].utxo;
-      MsgSignature sig = await PaperWallet().sign(
+      MsgSignature sig = await PaperWalletCore().sign(
           data: rawDataHash,
           changeIndex: utxo.changeIndex,
           keyIndex: utxo.keyIndex);

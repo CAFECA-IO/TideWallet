@@ -8,7 +8,7 @@ import '../models/account.model.dart';
 import '../widgets/header.dart';
 import '../widgets/account_item.dart';
 import '../helpers/i18n.dart';
-import 'toggle_currency.screen.dart';
+import 'toggle_token.screen.dart';
 import 'transaction_list.screen.dart';
 
 final t = I18n.t;
@@ -78,12 +78,7 @@ class _AccountScreenState extends State<AccountScreen> {
         Positioned(
           child: InkWell(
             onTap: () {
-              // Currency currency = _currencies[_currencies.indexWhere(
-              //     (curr) => curr.blockchainId.toUpperCase() == '8000025B')];
-              // Navigator.of(context).pushNamed(AddCurrencyScreen.routeName,
-              //     arguments: {"account": currency});
-
-              Navigator.of(context).pushNamed(ToggleCurrencyScreen.routeName);
+              Navigator.of(context).pushNamed(ToggleTokenScreen.routeName);
             },
             child: Container(
               child: Text(
