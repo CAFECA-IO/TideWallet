@@ -474,6 +474,8 @@ class AccountCore {
     late Account shareAccount;
     late Decimal balance; // TODO
     late Transaction _transaction; // TODO
+    String? _tokenTransactionAddress; // TODO
+    String? _tokenTransactionAmount; // TODO
     if (account.type == 'token')
       shareAccount = this._accounts[account.shareAccountId]![0];
     else
@@ -485,6 +487,7 @@ class AccountCore {
             await (service as BitcoinService).getUnspentTxOut(account.id);
         txSvc = BitcoinTransactionService(TransactionServiceBased());
         _transaction = await txSvc.prepareTransaction(
+          thirdPartyId,
           account.publish,
           to,
           Converter.toCurrencySmallestUnit(amount, account.decimals),
@@ -499,7 +502,37 @@ class AccountCore {
         break;
       case ACCOUNT.ETH:
       case ACCOUNT.CFC:
+        if (account.type == 'token') {
+          // ERC20
+          _tokenTransactionAmount = amount.toString();
+          _tokenTransactionAddress = to;
+          message = (service as EthereumService).tokenTxMessage(
+              to: to,
+              amount: amount.toString(),
+              message: message,
+              decimals: account.decimals);
+          balance = Decimal.parse(account.balance) - amount; // currency unint
+          amount = Decimal.zero;
+          to = account.contract!;
+        } else {
+          balance = Decimal.parse(account.balance) - amount - fee!;
+        }
+        int nonce = await (service as EthereumService)
+            .getNonce(account.blockchainId, await getReceivingAddress(id));
         txSvc = EthereumTransactionService(TransactionServiceBased());
+        _transaction = await txSvc.prepareTransaction(
+            thirdPartyId,
+            account
+                .publish, // ++ debugInfo, isMainnet required not publish, null-safety
+            to,
+            Converter.toCurrencySmallestUnit(amount, account.decimals),
+            message: message,
+            nonce: nonce,
+            gasPrice: Converter.toCurrencySmallestUnit(
+                gasPrice!, shareAccount.decimals),
+            gasLimit: gasLimit,
+            chainId: account.chainId,
+            changeAddress: await getReceivingAddress(id));
         break;
       case ACCOUNT.XRP:
       default:
@@ -520,10 +553,25 @@ class AccountCore {
     TransactionEntity tx = TransactionEntity.fromTransaction(
         account,
         _sentTransaction,
-        amount.toString(),
+        account.type == "token" ? _tokenTransactionAmount! : amount.toString(),
         fee.toString(),
         gasPrice.toString(),
-        to);
+        account.type == "token" ? _tokenTransactionAddress! : to);
     await DBOperator().transactionDao.insertTransaction(tx);
+
+    if (account.type == "token") {
+      accountEntity =
+          await DBOperator().accountDao.findAccount(account.shareAccountId);
+      Log.warning(
+          'PublishTransaction _updateAccount id: ${account.shareAccountId}');
+
+      updateAccountEntity = accountEntity!.copyWith(
+          balance: (Decimal.parse(accountEntity.balance) - fee!).toString());
+      await DBOperator().accountDao.insertAccount(updateAccountEntity);
+
+      tx = TransactionEntity.fromTransaction(account, _sentTransaction, '0',
+          fee.toString(), gasPrice.toString(), _tokenTransactionAddress);
+      await DBOperator().transactionDao.insertTransaction(tx);
+    }
   }
 }

@@ -25,7 +25,7 @@ class SwapRepository {
   }
 
   Future<List> swap(
-      Uint8List privKey,
+      String thirdPartyId,
       Account sellAccount,
       String sellAmount,
       Account buyAccount,
@@ -47,11 +47,13 @@ class SwapRepository {
     Decimal fee = gasPrice * gasLimit;
     TransactionService _transactionService =
         EthereumTransactionService(TransactionServiceBased());
-    Transaction transaction = _transactionService.prepareTransaction(
+
+    Transaction transaction = await _transactionService.prepareTransaction(
+        thirdPartyId,
         sellAccount.publish,
         to,
         Converter.toEthSmallestUnit(_sellAmount),
-        rlp.toBuffer(swapData),
+        message: swapData,
         nonce: nonce,
         gasPrice: Converter.toEthSmallestUnit(gasPrice),
         gasLimit: gasLimit,
