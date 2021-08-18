@@ -28,7 +28,6 @@ class Account {
   final int numberOfUsedExternalKey;
   final int numberOfUsedInternalKey;
   final int? lastSyncTime;
-  final String keystore;
   final String network;
   final int blockchainCoinType;
   final int chainId;
@@ -43,40 +42,34 @@ class Account {
 
   Decimal? inFiat;
   final ACCOUNT accountType;
-  final String shareAccountSymbol;
-  final int shareAccountDecimals;
-  final String shareAccountAmount;
 
-  Account(
-      {required this.id,
-      required this.shareAccountId,
-      required this.userId,
-      required this.blockchainId,
-      required this.currencyId,
-      required this.purpose,
-      required this.accountCoinType,
-      required this.accountIndex,
-      required this.curveType,
-      required this.balance,
-      required this.numberOfUsedExternalKey,
-      required this.numberOfUsedInternalKey,
-      required this.lastSyncTime,
-      required this.keystore,
-      required this.network,
-      required this.blockchainCoinType,
-      required this.chainId,
-      required this.name,
-      required this.symbol,
-      required this.type,
-      required this.publish,
-      required this.contract,
-      required this.decimals,
-      required this.exchangeRate,
-      required this.imgPath,
-      required this.accountType,
-      required this.shareAccountSymbol,
-      required this.shareAccountDecimals,
-      required this.shareAccountAmount});
+  Account({
+    required this.id,
+    required this.shareAccountId,
+    required this.userId,
+    required this.blockchainId,
+    required this.currencyId,
+    required this.purpose,
+    required this.accountCoinType,
+    required this.accountIndex,
+    required this.curveType,
+    required this.balance,
+    required this.numberOfUsedExternalKey,
+    required this.numberOfUsedInternalKey,
+    required this.lastSyncTime,
+    required this.network,
+    required this.blockchainCoinType,
+    required this.chainId,
+    required this.name,
+    required this.symbol,
+    required this.type,
+    required this.publish,
+    required this.contract,
+    required this.decimals,
+    required this.exchangeRate,
+    required this.imgPath,
+    required this.accountType,
+  });
 
   Account copyWith({
     String? id,
@@ -92,7 +85,6 @@ class Account {
     int? numberOfUsedExternalKey,
     int? numberOfUsedInternalKey,
     int? lastSyncTime,
-    String? keystore,
     String? network,
     int? blockchainCoinType,
     int? chainId,
@@ -126,7 +118,6 @@ class Account {
       numberOfUsedInternalKey:
           numberOfUsedInternalKey ?? this.numberOfUsedInternalKey,
       lastSyncTime: lastSyncTime ?? this.lastSyncTime,
-      keystore: keystore ?? this.keystore,
       network: network ?? this.network,
       blockchainCoinType: blockchainCoinType ?? this.blockchainCoinType,
       chainId: chainId ?? this.chainId,
@@ -139,9 +130,6 @@ class Account {
       exchangeRate: exchangeRate ?? this.exchangeRate,
       imgPath: imgPath ?? this.imgPath,
       accountType: accountType ?? this.accountType,
-      shareAccountSymbol: shareAccountSymbol ?? this.shareAccountSymbol,
-      shareAccountDecimals: shareAccountDecimals ?? this.shareAccountDecimals,
-      shareAccountAmount: shareAccountAmount ?? this.shareAccountAmount,
     );
   }
 
@@ -169,13 +157,9 @@ class Account {
         numberOfUsedExternalKey = entity.numberOfUsedExternalKey ?? 0,
         numberOfUsedInternalKey = entity.numberOfUsedInternalKey ?? 0,
         lastSyncTime = entity.lastSyncTime,
-        keystore = entity.keystore,
         blockchainCoinType = entity.blockchainCoinType,
         exchangeRate = entity.exchangeRate ?? "0",
-        accountType = type,
-        shareAccountSymbol = sharedEntity.symbol,
-        shareAccountDecimals = sharedEntity.decimals,
-        shareAccountAmount = sharedEntity.balance;
+        accountType = type;
 }
 
 class AccountMessage {

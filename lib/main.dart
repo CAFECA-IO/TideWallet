@@ -13,24 +13,24 @@ import './repositories/transaction_repository.dart';
 import './repositories/user_repository.dart';
 import './repositories/trader_repository.dart';
 import './repositories/invest_repository.dart';
-import './repositories/swap_repository.dart';
+// import './repositories/swap_repository.dart';
 import './repositories/local_auth_repository.dart';
 import './screens/landing.screen.dart';
 import '../screens/authenticate.screen.dart';
 import '../screens/welcome.screen.dart';
 import './screens/home.screen.dart';
-import './screens/wallet_connect.screen.dart';
-import './screens/create_transaction.screen.dart';
-import './screens/transaction_preview.screen.dart';
-import './screens/scan_address.screen.dart';
 import './screens/transaction_list.screen.dart';
-import './screens/transaction_detail.screen.dart';
-import './screens/receive.screen.dart';
 import './screens/setting_fiat.screen.dart';
 import './screens/feedback.screen.dart';
 import './screens/terms.screen.dart';
-import './screens/add_investment.screen.dart';
-import './screens/scan.screen.dart';
+// import './screens/transaction_detail.screen.dart';
+// import './screens/receive.screen.dart';
+// import './screens/wallet_connect.screen.dart';
+// import './screens/create_transaction.screen.dart';
+// import './screens/transaction_preview.screen.dart';
+// import './screens/scan_address.screen.dart';
+// import './screens/add_investment.screen.dart';
+// import './screens/scan.screen.dart';
 import './screens/recover_mnemonic.screen.dart';
 import 'screens/toggle_token.screen.dart';
 import './blocs/fiat/fiat_bloc.dart';
@@ -39,9 +39,9 @@ import './blocs/delegate.dart';
 import './blocs/user/user_bloc.dart';
 import './blocs/toggle_token/toggle_token_bloc.dart';
 import './blocs/transaction/transaction_bloc.dart';
-import './blocs/invest_plan/invest_plan_bloc.dart';
 import './blocs/local_auth/local_auth_bloc.dart';
-import './blocs/invest/invest_bloc.dart';
+// import './blocs/invest_plan/invest_plan_bloc.dart';
+// import './blocs/invest/invest_bloc.dart';
 import './helpers/i18n.dart';
 import 'constants/endpoint.dart';
 import 'theme.dart';
@@ -73,18 +73,18 @@ class MyApp extends StatelessWidget {
           Provider<AccountRepository>(
             create: (_) => AccountRepository(),
           ),
-          Provider<TransactionRepository>(
-            create: (_) => TransactionRepository(),
-          ),
+          // Provider<TransactionRepository>(
+          //   create: (_) => TransactionRepository(),
+          // ),
           Provider<TraderRepository>(
             create: (_) => TraderRepository(),
           ),
           Provider<InvestRepository>(
             create: (_) => InvestRepository(),
           ),
-          Provider<SwapRepository>(
-            create: (_) => SwapRepository(),
-          ),
+          // Provider<SwapRepository>(
+          //   create: (_) => SwapRepository(),
+          // ),
           Provider<LocalAuthRepository>(
             create: (_) => LocalAuthRepository(),
           )
@@ -103,22 +103,22 @@ class MyApp extends StatelessWidget {
                 Provider.of<TraderRepository>(context, listen: false),
               ),
             ),
-            BlocProvider<InvestBloc>(
-              create: (BuildContext context) => InvestBloc(
-                  Provider.of<InvestRepository>(context, listen: false),
-                  Provider.of<UserRepository>(context, listen: false)),
-            ),
+            // BlocProvider<InvestBloc>(
+            //   create: (BuildContext context) => InvestBloc(
+            //       Provider.of<InvestRepository>(context, listen: false),
+            //       Provider.of<UserRepository>(context, listen: false)),
+            // ),
             BlocProvider<AccountBloc>(
               create: (BuildContext context) => AccountBloc(
                 Provider.of<AccountRepository>(context, listen: false),
               ),
             ),
-            BlocProvider<InvestPlanBloc>(
-              create: (BuildContext context) => InvestPlanBloc(
-                Provider.of<InvestRepository>(context, listen: false),
-                Provider.of<TraderRepository>(context, listen: false),
-              ),
-            ),
+            // BlocProvider<InvestPlanBloc>(
+            //   create: (BuildContext context) => InvestPlanBloc(
+            //     Provider.of<InvestRepository>(context, listen: false),
+            //     Provider.of<TraderRepository>(context, listen: false),
+            //   ),
+            // ),
             BlocProvider<FiatBloc>(
               create: (BuildContext context) => FiatBloc(
                 Provider.of<TraderRepository>(context, listen: false),
@@ -152,20 +152,20 @@ MaterialApp _material = MaterialApp(
     WelcomeScreen.routeName: (context) => WelcomeScreen(),
     AuthenticateScreen.routeName: (context) => AuthenticateScreen(),
     HomeScreen.routeName: (context) => HomeScreen(),
-    CreateTransactionScreen.routeName: (context) => CreateTransactionScreen(),
-    TransactionPreviewScreen.routeName: (context) => TransactionPreviewScreen(),
-    ScanAddressScreen.routeName: (conte) => ScanAddressScreen(),
     TransactionListScreen.routeName: (context) => TransactionListScreen(),
-    TransactionDetailScreen.routeName: (context) => TransactionDetailScreen(),
-    AddInvestmentScreen.routeName: (context) => AddInvestmentScreen(),
-    ReceiveScreen.routeName: (context) => ReceiveScreen(),
     SettingFiatScreen.routeName: (context) => SettingFiatScreen(),
-    WalletConnectScreen.routeName: (context) => WalletConnectScreen(),
-    FeedbackScreen.routeName: (context) => FeedbackScreen(),
     TermsScreen.routeName: (context) => TermsScreen(),
-    ScanScreen.routeName: (context) => ScanScreen(),
+    FeedbackScreen.routeName: (context) => FeedbackScreen(),
     RecoverMemonicScreen.routeName: (context) => RecoverMemonicScreen(),
     ToggleTokenScreen.routeName: (context) => ToggleTokenScreen(),
+    // WalletConnectScreen.routeName: (context) => WalletConnectScreen(),
+    // ReceiveScreen.routeName: (context) => ReceiveScreen(),
+    // ScanScreen.routeName: (context) => ScanScreen(),
+    // CreateTransactionScreen.routeName: (context) => CreateTransactionScreen(),
+    // TransactionPreviewScreen.routeName: (context) => TransactionPreviewScreen(),
+    // ScanAddressScreen.routeName: (conte) => ScanAddressScreen(),
+    // TransactionDetailScreen.routeName: (context) => TransactionDetailScreen(),
+    // AddInvestmentScreen.routeName: (context) => AddInvestmentScreen(),
   },
   localizationsDelegates: [
     const I18nDelegate(),

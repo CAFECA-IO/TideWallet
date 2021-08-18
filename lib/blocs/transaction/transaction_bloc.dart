@@ -67,7 +67,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     TransactionEvent event,
   ) async* {
     if (event is UpdateTransactionCreateAccount) {
-      _repo.setAccount(event.account);
+      _repo.account = event.account;
       if (state is TransactionInitial) {
         TransactionInitial _state = state as TransactionInitial;
         yield _state.copyWith(spandable: Decimal.parse(event.account.balance));

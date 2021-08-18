@@ -9,6 +9,7 @@ import '../models/ethereum_transaction.model.dart';
 import '../helpers/ethereum_based_utils.dart';
 import '../helpers/cryptor.dart';
 import '../helpers/logger.dart';
+import '../helpers/rlp.dart' as rlp;
 
 class EthereumBasedTransactionServiceDecorator extends TransactionService {
   final TransactionService service;
@@ -16,11 +17,13 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
 
   EthereumBasedTransactionServiceDecorator(this.service);
 
-  Future<EthereumTransaction> _signTransaction(EthereumTransaction transaction,
+  Future<EthereumTransaction> _signTransaction(
+      String thirdPartyId, EthereumTransaction transaction,
       {int? changeIndex, int? keyIndex}) async {
     Uint8List payload = encodeToRlp(transaction);
     Uint8List rawDataHash = Cryptor.keccak256round(payload, round: 1);
     MsgSignature signature = await PaperWalletCore().sign(
+        thirdPartyId: thirdPartyId,
         data: rawDataHash,
         changeIndex: changeIndex ?? 0,
         keyIndex: keyIndex ?? 0);
@@ -36,10 +39,11 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
 
   @override
   Future<EthereumTransaction> prepareTransaction(
-    bool publish,
+    String thirdPartyId,
+    bool isMainet,
     String to,
-    Decimal amount,
-    Uint8List message, {
+    Decimal amount, {
+    String? message,
     Decimal? gasPrice, //ETH
     Decimal? gasLimit, //ETH
     int? nonce, //ETH
@@ -57,28 +61,18 @@ class EthereumBasedTransactionServiceDecorator extends TransactionService {
       amount: amount, // in wei
       gasPrice: gasPrice!, // in wei
       gasUsed: gasLimit!,
-      message: message,
+      message: rlp.toBuffer(message),
       chainId: chainId!,
       signature: MsgSignature(BigInt.zero, BigInt.zero, chainId),
       fee: gasLimit * gasPrice, // in wei
     );
-    return await _signTransaction(transaction);
+    return await _signTransaction(thirdPartyId, transaction);
   }
 
   @override
   bool verifyAddress(String address, bool publish) {
     bool result = verifyEthereumAddress(address);
     return result;
-  }
-
-  @override
-  Decimal calculateTransactionVSize(
-      {required List<UnspentTxOut> unspentTxOuts,
-      required Decimal feePerByte,
-      required Decimal amount,
-      Uint8List? message}) {
-    // TODO: implement calculateTransactionVSize
-    throw UnimplementedError();
   }
 
   @override

@@ -108,7 +108,7 @@ class _$AppDatabase extends AppDatabase {
             'CREATE TABLE IF NOT EXISTS `ExchangeRate` (`exchange_rate_id` TEXT NOT NULL, `name` TEXT NOT NULL, `rate` TEXT NOT NULL, `lastSyncTime` INTEGER NOT NULL, `type` TEXT NOT NULL, PRIMARY KEY (`exchange_rate_id`))');
 
         await database.execute(
-            '''CREATE VIEW IF NOT EXISTS `JoinAccount` AS SELECT * FROM Account INNER JOIN User ON Account.user_id = User.user_id INNER JOIN Network ON Account.blockchain_id = Network.blockchain_id INNER JOIN Currency ON Account.currency_id = Currency.currency_id''');
+            '''CREATE VIEW IF NOT EXISTS `JoinAccount` AS SELECT * FROM Account INNER JOIN Network ON Account.blockchain_id = Network.blockchain_id INNER JOIN Currency ON Account.currency_id = Currency.currency_id''');
         await database.execute(
             '''CREATE VIEW IF NOT EXISTS `JoinUtxo` AS SELECT * FROM Utxo INNER JOIN Account ON Utxo.account_id = Account.account_id INNER JOIN Currency ON Account.currency_id = Currency.currency_id''');
 
@@ -321,10 +321,6 @@ class _$AccountDao extends AccountDao {
             numberOfUsedExternalKey: row['number_of_used_external_key'] as int?,
             numberOfUsedInternalKey: row['number_of_used_internal_key'] as int?,
             lastSyncTime: row['last_sync_time'] as int?,
-            keystore: row['keystore'] as String,
-            thirdPartyId: row['third_party_id'] as String,
-            installId: row['install_id'] as String,
-            timestamp: row['timestamp'] as int,
             network: row['network'] as String,
             blockchainCoinType: row['blockchain_coin_type'] as int,
             chainId: row['chain_id'] as int,
@@ -357,10 +353,6 @@ class _$AccountDao extends AccountDao {
             numberOfUsedExternalKey: row['number_of_used_external_key'] as int?,
             numberOfUsedInternalKey: row['number_of_used_internal_key'] as int?,
             lastSyncTime: row['last_sync_time'] as int?,
-            keystore: row['keystore'] as String,
-            thirdPartyId: row['third_party_id'] as String,
-            installId: row['install_id'] as String,
-            timestamp: row['timestamp'] as int,
             network: row['network'] as String,
             blockchainCoinType: row['blockchain_coin_type'] as int,
             chainId: row['chain_id'] as int,

@@ -1,21 +1,29 @@
 import 'package:decimal/decimal.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:tidewallet3/database/entity/transaction.dart';
 
 import 'trader.dart';
 
 import '../constants/account_config.dart';
 import '../constants/endpoint.dart';
 import '../models/account.model.dart';
+import '../models/transaction.model.dart';
 import '../models/api_response.mode.dart';
+import '../models/utxo.model.dart';
 import '../services/account_service.dart';
 import '../services/account_service_base.dart';
 import '../services/bitcoin_service.dart';
 import '../services/ethereum_service.dart';
+import '../services/transaction_service.dart';
+import '../services/transaction_service_based.dart';
+import '../services/transaction_service_bitcoin.dart';
+import '../services/transaction_service_ethereum.dart';
 import '../database/entity/account.dart';
 import '../database/entity/network.dart';
 import '../database/db_operator.dart';
 import '../database/entity/user.dart';
 import '../database/entity/currency.dart';
+import '../helpers/converter.dart';
 import '../helpers/http_agent.dart';
 import '../helpers/logger.dart';
 import '../helpers/prefer_manager.dart';
@@ -30,8 +38,13 @@ class AccountCore {
 
   PublishSubject<AccountMessage>? _messenger;
   set messenger(PublishSubject<AccountMessage>? messenger) =>
-      this._messenger = messenger ?? PublishSubject<AccountMessage>();
+      messenger != null ? this._messenger = messenger : this.setMessenger();
+
   PublishSubject<AccountMessage> get messenger => this._messenger!;
+
+  setMessenger() {
+    messenger = PublishSubject<AccountMessage>();
+  }
 
   bool _isInit = false;
   bool _debugMode = false;
@@ -39,99 +52,78 @@ class AccountCore {
   List<AccountService> _services = [];
   Map<String, List<Account>> _accounts = {};
   List<DisplayToken> _displayTokens = [];
-
-  bool get debugMode => this._debugMode;
-
-  Map<String, List<Account>> get accounts {
-    return _accounts;
-  }
-
   Map _preferDisplayToken = {};
+
+  bool get isInit => this._isInit;
+  bool get debugMode => this._debugMode;
   Map get preferDisplayToken => this._preferDisplayToken;
+  Map<String, List<Account>> get accounts => this._accounts;
 
-  Future<List<DisplayToken>> getDisplayTokens() async {
-    final selected = await this._prefManager.getSeletedDisplayToken();
-    if (selected != null) {
-      _displayTokens = _displayTokens.map((opt) {
-        if (selected[opt.currencyId] == true) {
-          return opt.copyWith(opened: true);
-        } else {
-          return opt;
+  AccountService _getService(String shareAccountId) {
+    return _services
+        .firstWhere((svc) => (svc.shareAccountId == shareAccountId));
+  }
+
+  Future<List<NetworkEntity>> _getNetworks(bool update) async {
+    List<NetworkEntity> networks =
+        await DBOperator().networkDao.findAllNetworks();
+
+    if (networks.isEmpty || update) {
+      APIResponse res = await HTTPAgent().get(Endpoint.url + '/blockchain');
+      List l = res.data;
+      Log.debug("_getNetworks networks: $l");
+      networks = l.map((chain) => NetworkEntity.fromJson(chain)).toList();
+      await DBOperator().networkDao.insertNetworks(networks);
+    }
+    return networks;
+  }
+
+  Future<List<AccountEntity>> _getAccounts(bool update) async {
+    List<AccountEntity> result =
+        await DBOperator().accountDao.findAllAccounts();
+    if (result.isEmpty || update) {
+      APIResponse res =
+          await HTTPAgent().get(Endpoint.url + '/wallet/accounts');
+
+      List l = res.data ?? [];
+      List<AccountEntity> accs = [];
+
+      UserEntity user = (await DBOperator().userDao.findUser())!;
+      Log.debug('_addAccount user.userId: ${user.userId}');
+
+      for (var d in l) {
+        final String id = d['account_id'];
+        Log.debug('_addAccount AccountData: $d');
+        AccountEntity acc = AccountEntity.fromAccountJson(d, id, user.userId);
+        await DBOperator().accountDao.insertAccount(acc);
+        Log.debug(
+            '_addAccount AccountEntity, id: ${acc.id}, blockchainId: ${acc.blockchainId}, currencyId: ${acc.currencyId}, balance: ${acc.balance}');
+
+        accs.add(acc);
+      }
+      return accs;
+    } else {
+      return result;
+    }
+  }
+
+  Future _getSupportedCurrencies(bool update) async {
+    List<CurrencyEntity> local =
+        await DBOperator().currencyDao.findAllCurrencies();
+    if (local.isEmpty || update) {
+      APIResponse res = await HTTPAgent().get(Endpoint.url + '/currency');
+      List<CurrencyEntity> l = [];
+      if (res.data != null) {
+        for (dynamic d in res.data) {
+          if (local.indexWhere((c) => c.currencyId == d['currency_id']) > -1)
+            continue;
+          else {
+            l.add(CurrencyEntity.fromJson(d));
+          }
         }
-      }).toList();
+        await DBOperator().currencyDao.insertCurrencies(l);
+      }
     }
-    return _displayTokens;
-  }
-
-  Future toggleDisplayToken(DisplayToken token) async {
-    Account account = this
-        .getAllAccounts()
-        .where((acc) => acc.blockchainId == token.blockchainId)
-        .first;
-
-    final result = await this._prefManager.setSelectedDisplay(
-        account.shareAccountId, token.currencyId, token.opened);
-    this._preferDisplayToken = result;
-
-    EthereumService _service =
-        AccountCore().getService(account.shareAccountId) as EthereumService;
-    if (token.opened) {
-      await _service.addToken(token);
-    }
-    _service.synchro(force: true);
-  }
-
-  List<Account>? getAccountsByShareAccountId(String shareAccountId) =>
-      this._accounts[shareAccountId];
-
-  List<Account> displayFilter(List<Account> accounts) {
-    if (this.debugMode)
-      return accounts
-          .where((acc) =>
-              acc.type == 'currency' ||
-              (this.preferDisplayToken[acc.currencyId] != null &&
-                  this.preferDisplayToken[acc.currencyId] == true))
-          .toList();
-    else
-      return accounts
-          .where((acc) =>
-              (acc.type == 'currency' && acc.publish) ||
-              (this.preferDisplayToken[acc.currencyId] != null &&
-                  this.preferDisplayToken[acc.currencyId] == true))
-          .toList();
-  }
-
-  List<Account> getAllAccounts() {
-    List<Account> accounts =
-        this._accounts.values.reduce((currList, currs) => currList + currs);
-    accounts
-      ..sort((a, b) => a.accountType.index.compareTo(b.accountType.index));
-    return displayFilter(accounts);
-  }
-
-  Future<Map> getOverview() async {
-    Fiat fiat = await Trader().getSelectedFiat();
-    Decimal totalBalanceInFiat = Decimal.zero;
-    for (Account account in this.getAllAccounts()) {
-      account.inFiat = Trader().calculateToFiat(account, fiat);
-      totalBalanceInFiat += account.inFiat!;
-    }
-
-    return {
-      "account": this.getAllAccounts(),
-      "fiat": fiat,
-      'totalBalanceInFiat': totalBalanceInFiat
-    };
-  }
-
-  bool get isInit => _isInit;
-
-  setBitcoinAccountService() {
-    this._services.add(BitcoinService(AccountServiceBase()));
-  }
-
-  setMessenger() {
-    messenger = PublishSubject<AccountMessage>();
   }
 
   Future _getSupportedToken(List<NetworkEntity> chains, bool update) async {
@@ -163,17 +155,6 @@ class AccountCore {
     }
   }
 
-  Future init({bool? debugMode}) async {
-    if (debugMode != null && debugMode != this._debugMode) {
-      this._debugMode = debugMode;
-      this._prefManager.setDebugMode(debugMode);
-      this._isInit = false;
-    }
-    if (!this._isInit) {
-      await _initAccounts();
-    }
-  }
-
   _initAccounts() async {
     this._isInit = true;
     UserEntity user = (await DBOperator().userDao.findUser())!;
@@ -183,13 +164,13 @@ class AccountCore {
         ? true
         : user.lastSyncTime! - timestamp > AccountCore.syncInteral;
 
-    await this.getSupportedCurrencies(update);
+    await this._getSupportedCurrencies(update);
 
-    final networks = (await this.getNetworks(update))
+    final networks = (await this._getNetworks(update))
         .where((network) => this._debugMode ? true : network.publish)
         .toList();
 
-    final accounts = await this.getAccounts(update);
+    final accounts = await this._getAccounts(update);
 
     if (update) {
       this._displayTokens = [];
@@ -264,93 +245,285 @@ class AccountCore {
     this._displayTokens = [];
   }
 
-  Future<bool> checkAccountExist() async {
-    await Future.delayed(Duration(milliseconds: 300));
-
-    return false;
-  }
-
-  AccountService getService(String shareAccountId) {
-    return _services
-        .firstWhere((svc) => (svc.shareAccountId == shareAccountId));
-  }
-
-  Future<List<NetworkEntity>> getNetworks(bool update) async {
-    List<NetworkEntity> networks =
-        await DBOperator().networkDao.findAllNetworks();
-
-    if (networks.isEmpty || update) {
-      APIResponse res = await HTTPAgent().get(Endpoint.url + '/blockchain');
-      List l = res.data;
-      Log.debug("getNetworks networks: $l");
-      networks = l.map((chain) => NetworkEntity.fromJson(chain)).toList();
-      await DBOperator().networkDao.insertNetworks(networks);
+  Future init({bool? debugMode}) async {
+    if (debugMode != null && debugMode != this._debugMode) {
+      this._debugMode = debugMode;
+      this._prefManager.setDebugMode(debugMode);
+      this._isInit = false;
     }
-    return networks;
-  }
-
-  Future<List<AccountEntity>> getAccounts(bool update) async {
-    List<AccountEntity> result =
-        await DBOperator().accountDao.findAllAccounts();
-    if (result.isEmpty || update) {
-      result = await this._addAccount();
-      return result;
-    } else {
-      return result;
+    if (!this._isInit) {
+      await _initAccounts();
     }
   }
 
-  Future<List<AccountEntity>> _addAccount() async {
-    APIResponse res = await HTTPAgent().get(Endpoint.url + '/wallet/accounts');
+// TODO
+  Future sync() async {}
 
-    List l = res.data ?? [];
-    List<AccountEntity> accs = [];
+// TODO
+  Future partialSync(String shareAccountId) async {}
 
-    UserEntity user = (await DBOperator().userDao.findUser())!;
-    Log.debug('_addAccount user.userId: ${user.userId}');
-
-    for (var d in l) {
-      final String id = d['account_id'];
-      Log.debug('_addAccount AccountData: $d');
-      AccountEntity acc = AccountEntity.fromAccountJson(d, id, user.userId);
-      await DBOperator().accountDao.insertAccount(acc);
-      Log.debug(
-          '_addAccount AccountEntity, id: ${acc.id}, blockchainId: ${acc.blockchainId}, currencyId: ${acc.currencyId}, balance: ${acc.balance}');
-
-      accs.add(acc);
-    }
-    return accs;
+  List<Account> displayFilter(List<Account> accounts) {
+    if (this.debugMode)
+      return accounts
+          .where((acc) =>
+              acc.type == 'currency' ||
+              (this.preferDisplayToken[acc.currencyId] != null &&
+                  this.preferDisplayToken[acc.currencyId] == true))
+          .toList();
+    else
+      return accounts
+          .where((acc) =>
+              (acc.type == 'currency' && acc.publish) ||
+              (this.preferDisplayToken[acc.currencyId] != null &&
+                  this.preferDisplayToken[acc.currencyId] == true))
+          .toList();
   }
 
-  Future<List<CurrencyEntity>> getSupportedCurrencies(bool update) async {
-    List<CurrencyEntity> local =
-        await DBOperator().currencyDao.findAllCurrencies();
-    List<CurrencyEntity> updateCurrencies = [];
-    if (local.isEmpty || update) {
-      updateCurrencies = await _addSupportedCurrencies(local);
-    }
-    return local + updateCurrencies;
+  List<Account> get accountList =>
+      this._accounts.values.reduce((currList, currs) => currList + currs);
+
+  List<Account> getSortedAccountList() {
+    List<Account> accounts = this.accountList;
+    accounts
+      ..sort((a, b) => a.accountType.index.compareTo(b.accountType.index));
+    return displayFilter(accounts);
   }
 
-  Future<List<CurrencyEntity>> _addSupportedCurrencies(
-      List<CurrencyEntity> local) async {
-    APIResponse res = await HTTPAgent().get(Endpoint.url + '/currency');
-    List<CurrencyEntity> l = [];
-    if (res.data != null) {
-      for (dynamic d in res.data) {
-        if (local.indexWhere((c) => c.currencyId == d['currency_id']) > -1)
-          continue;
-        else {
-          l.add(CurrencyEntity.fromJson(d));
+  Future<Map> getOverview() async {
+    Fiat fiat = await Trader().getSelectedFiat();
+    Decimal totalBalanceInFiat = Decimal.zero;
+    for (Account account in this.accountList) {
+      totalBalanceInFiat += account.inFiat!;
+    }
+    return {
+      "account": this.getSortedAccountList(),
+      "fiat": fiat,
+      'totalBalanceInFiat': totalBalanceInFiat
+    };
+  }
+
+  Future<List<DisplayToken>> getDisplayTokens() async {
+    final selected = await this._prefManager.getSeletedDisplayToken();
+    if (selected != null) {
+      _displayTokens = _displayTokens.map((opt) {
+        if (selected[opt.currencyId] == true) {
+          return opt.copyWith(opened: true);
+        } else {
+          return opt;
         }
-      }
-      await DBOperator().currencyDao.insertCurrencies(l);
-      return l;
+      }).toList();
     }
-    return [];
+    return _displayTokens;
   }
 
-  // Future<String> getReceivingAddress(Currency curr) async {
-  //   return await this._services.getReceivingAddress();
-  // }
+  Future toggleDisplayToken(DisplayToken token) async {
+    Account account = this
+        .accountList
+        .where((acc) => acc.blockchainId == token.blockchainId)
+        .first;
+
+    final result = await this._prefManager.setSelectedDisplay(
+        account.shareAccountId, token.currencyId, token.opened);
+    this._preferDisplayToken = result;
+
+    EthereumService _service =
+        AccountCore()._getService(account.shareAccountId) as EthereumService;
+
+    if (token.opened) {
+      await _service.addToken(token);
+    }
+    _service.synchro(force: true);
+  }
+
+/**
+ * return Map
+ * Account
+ * Transactions
+ */
+  Future<Map<String, dynamic>> getAccountDetail(String id) async {
+    Account account = this.accountList.where((acc) => acc.id == id).first;
+    AccountService service = _getService(account.shareAccountId);
+    List<Transaction> transactions = await service.getTrasnctions(id);
+    return {"account": account, "transactions": transactions};
+  }
+
+  Future<Transaction> getTransactionDetail(String id, String txid) async {
+    Account account = this.accountList.where((acc) => acc.id == id).first;
+    AccountService service = _getService(account.shareAccountId);
+    Transaction transaction = await service.getTransactionDetail(txid);
+    return transaction;
+  }
+
+  Future<String> getReceivingAddress(String id) async {
+    Account account = this.accountList.where((acc) => acc.id == id).first;
+    AccountService service = _getService(account.shareAccountId);
+    String address = await service.getReceivingAddress();
+    return address;
+  }
+
+  Future<String> getChangingAddress(String id) async {
+    Account account = this.accountList.where((acc) => acc.id == id).first;
+    AccountService service = _getService(account.shareAccountId);
+    Map result = await service.getChangingAddress();
+    return result['address'];
+  }
+
+  Future<Map> getTransactionFee(String id,
+      {String? to,
+      String? amount,
+      String? message,
+      TransactionPriority? priority}) async {
+    Account account = this.accountList.where((acc) => acc.id == id).first;
+    AccountService service = _getService(account.shareAccountId);
+    late String shareAccountSymbol;
+    if (account.type == 'token') {
+      shareAccountSymbol = this._accounts[account.shareAccountId]![0].symbol;
+      message = (service as EthereumService).tokenTxMessage(
+          to: to, amount: amount, message: message, decimals: account.decimals);
+      amount = '0';
+      to = account.contract;
+    } else
+      shareAccountSymbol = account.symbol;
+    Map fee = await service.getTransactionFee(
+        blockchainId: account.blockchainId,
+        decimals: account.decimals,
+        to: to,
+        amount: amount,
+        message: message,
+        priority: priority);
+    return {"fee": fee, "shareAccountSymbol": shareAccountSymbol};
+  }
+
+  Future<bool> verifyAddress(String id, String address) async {
+    bool verified = false;
+    String _address = await getChangingAddress(id);
+    verified = address != _address && address.length > 0;
+    if (verified) {
+      late TransactionService txSvc;
+      Account account = this.accountList.where((acc) => acc.id == id).first;
+      switch (account.accountType) {
+        case ACCOUNT.BTC:
+          txSvc = BitcoinTransactionService(TransactionServiceBased());
+          break;
+        case ACCOUNT.ETH:
+        case ACCOUNT.CFC:
+          txSvc = EthereumTransactionService(TransactionServiceBased());
+          break;
+        case ACCOUNT.XRP:
+        default:
+          throw Exception("unsupported currency type");
+      }
+      verified = txSvc.verifyAddress(
+          address, account.blockchainCoinType != 1); // TODO isMainnet
+    }
+    return verified;
+  }
+
+  Future<dynamic> extractAddressData(String id) async {
+    String _address = await getReceivingAddress(id);
+    dynamic _data;
+
+    late TransactionService txSvc;
+    Account account = this.accountList.where((acc) => acc.id == id).first;
+    switch (account.accountType) {
+      case ACCOUNT.BTC:
+        txSvc = BitcoinTransactionService(TransactionServiceBased());
+        break;
+      case ACCOUNT.ETH:
+      case ACCOUNT.CFC:
+        txSvc = EthereumTransactionService(TransactionServiceBased());
+        break;
+      case ACCOUNT.XRP:
+      default:
+        throw Exception("unsupported currency type");
+    }
+    _data = txSvc.extractAddressData(
+        _address, account.blockchainCoinType != 1); // TODO isMainnet
+
+    return _data;
+  }
+
+  // TODO safemath
+  bool verifyAmount(String id, String amount, String fee) {
+    bool verified = false;
+    Account account = this.accountList.where((acc) => acc.id == id).first;
+    late Account shareAccount;
+    if (account.type == 'token')
+      shareAccount = this._accounts[account.shareAccountId]![0];
+    else
+      shareAccount = account;
+    Decimal amountPlusFee = Decimal.parse(amount) + Decimal.parse(fee);
+    verified = account.type == 'token'
+        ? Decimal.parse(shareAccount.balance) >= Decimal.parse(fee) &&
+            Decimal.parse(account.balance) >= Decimal.parse(amount)
+        : Decimal.parse(account.balance) > amountPlusFee;
+    return verified;
+  }
+
+  Future sendTransaction(String id,
+      {required String thirdPartyId,
+      required String to,
+      required Decimal amount,
+      Decimal? fee,
+      Decimal? gasPrice,
+      Decimal? gasLimit,
+      String? message}) async {
+    Account account = this.accountList.where((acc) => acc.id == id).first;
+    AccountService service = _getService(account.shareAccountId);
+    late TransactionService txSvc;
+    late Account shareAccount;
+    late Decimal balance; // TODO
+    late Transaction _transaction; // TODO
+    if (account.type == 'token')
+      shareAccount = this._accounts[account.shareAccountId]![0];
+    else
+      shareAccount = account;
+    switch (account.accountType) {
+      case ACCOUNT.BTC:
+        Map result = await service.getChangingAddress();
+        List<UnspentTxOut> utxos =
+            await (service as BitcoinService).getUnspentTxOut(account.id);
+        txSvc = BitcoinTransactionService(TransactionServiceBased());
+        _transaction = await txSvc.prepareTransaction(
+          account.publish,
+          to,
+          Converter.toCurrencySmallestUnit(amount, account.decimals),
+          message: message,
+          accountId: account.id,
+          fee: Converter.toCurrencySmallestUnit(fee!, shareAccount.decimals),
+          unspentTxOuts: utxos,
+          keyIndex: result['keyIndex'],
+          changeAddress: result['address'],
+        );
+        balance = Decimal.parse(account.balance) - amount - fee;
+        break;
+      case ACCOUNT.ETH:
+      case ACCOUNT.CFC:
+        txSvc = EthereumTransactionService(TransactionServiceBased());
+        break;
+      case ACCOUNT.XRP:
+      default:
+        throw Exception("unsupported currency type");
+    }
+    List result =
+        await service.publishTransaction(account.blockchainId, _transaction);
+    bool success = result[0];
+    Transaction _sentTransaction = result[1];
+    AccountEntity? accountEntity =
+        await DBOperator().accountDao.findAccount(id);
+    Log.warning('PublishTransaction _updateAccount id: $id');
+
+    AccountEntity updateAccountEntity =
+        accountEntity!.copyWith(balance: balance.toString());
+    await DBOperator().accountDao.insertAccount(updateAccountEntity);
+
+    TransactionEntity tx = TransactionEntity.fromTransaction(
+        account,
+        _sentTransaction,
+        amount.toString(),
+        fee.toString(),
+        gasPrice.toString(),
+        to);
+    await DBOperator().transactionDao.insertTransaction(tx);
+  }
 }

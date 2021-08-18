@@ -46,7 +46,7 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
   @override
   void didChangeDependencies() {
     this._bloc = BlocProvider.of<InvestPlanBloc>(context)
-      ..add(InvestPlanInitialed(AccountCore().getAllAccounts()[0],
+      ..add(InvestPlanInitialed(AccountCore().accountList[0],
           InvestStrategy.Climb, InvestAmplitude.Normal, InvestPercentage.Low));
     super.didChangeDependencies();
   }
@@ -127,9 +127,8 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
                     ),
                     ItemPicker(
                       title: t('invest_account'),
-                      items: AccountCore().getAllAccounts(),
-                      selectedItem:
-                          _account ?? AccountCore().getAllAccounts()[0],
+                      items: AccountCore().accountList,
+                      selectedItem: _account ?? AccountCore().accountList[0],
                       onTap: () {},
                       notifyParent: ({required int index, dynamic value}) {
                         _bloc.add(AccountSelected(value));

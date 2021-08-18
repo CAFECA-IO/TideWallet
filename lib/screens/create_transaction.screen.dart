@@ -55,7 +55,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
     _gasController = TextEditingController();
     _gasPriceController = TextEditingController();
     this._repo = Provider.of<TransactionRepository>(context);
-    this._repo.setAccount(_account);
+    this._repo.account = _account;
     _fiatBloc = BlocProvider.of<FiatBloc>(context);
     _bloc = BlocProvider.of<TransactionBloc>(context)
       ..add(UpdateTransactionCreateAccount(this._account));

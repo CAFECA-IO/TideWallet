@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:decimal/decimal.dart';
-import 'package:tidewallet3/helpers/logger.dart';
 
 import '../constants/endpoint.dart';
 import '../constants/account_config.dart';
 import '../cores/account.dart';
+import '../cores/trader.dart';
 import '../database/db_operator.dart';
 import '../database/entity/account.dart';
 import '../database/entity/currency.dart';
@@ -14,6 +14,7 @@ import '../helpers/http_agent.dart';
 import '../models/account.model.dart';
 import '../models/api_response.mode.dart';
 import '../models/transaction.model.dart';
+import '../helpers/logger.dart';
 import 'account_service.dart';
 
 class AccountServiceBase extends AccountService {
@@ -52,8 +53,14 @@ class AccountServiceBase extends AccountService {
   }
 
   @override
-  Future<Map<TransactionPriority, Decimal>> getTransactionFee(
-      String blockchainId) async {
+  Future<Map> getTransactionFee({
+    required String blockchainId,
+    required int decimals,
+    String? to,
+    String? amount,
+    String? message,
+    TransactionPriority? priority,
+  }) async {
     throw UnimplementedError('Implement on decorator');
   }
 
@@ -123,8 +130,12 @@ class AccountServiceBase extends AccountService {
 
     List<Account> accs = [];
 
+    Fiat fiat = await Trader().getSelectedFiat();
+
     for (JoinAccount jacc in jaccs) {
-      accs.add(Account.fromJoinAccount(jacc, jaccs[0], this._base));
+      Account acc = Account.fromJoinAccount(jacc, jaccs[0], this._base);
+      acc = acc.copyWith(inFiat: Trader().calculateToFiat(acc, fiat));
+      accs.add(acc);
     }
 
     AccountCore().accounts[this._shareAccountId] = accs;
@@ -152,6 +163,17 @@ class AccountServiceBase extends AccountService {
     }
   }
 
+  Future<Transaction> getTransactionDetail(String txid) async {
+    APIResponse res =
+        await HTTPAgent().get(Endpoint.url + '/wallet/account/tx/$txid');
+    if (res.success) {
+      Transaction transaction = Transaction.fromJson(res.data);
+      return transaction;
+    } else {
+      throw Exception(res.message);
+    }
+  }
+
   Future<List<TransactionEntity>> _getTransactions(Account account) async {
     APIResponse res = await HTTPAgent()
         .get(Endpoint.url + '/wallet/account/txs/${account.id}');
@@ -168,29 +190,33 @@ class AccountServiceBase extends AccountService {
     return this._loadTransactions(account.id);
   }
 
-  Future<List<TransactionEntity>> _loadTransactions(String currencyId) async {
+  Future<List<TransactionEntity>> _loadTransactions(String id) async {
     List<TransactionEntity> transactions =
-        await DBOperator().transactionDao.findAllTransactionsById(currencyId);
+        await DBOperator().transactionDao.findAllTransactionsById(id);
+    List<TransactionEntity> txNull = [];
+    List<TransactionEntity> txReady = [];
+    transactions.forEach((t) {
+      t.timestamp == null ? txNull.add(t) : txReady.add(t);
+    });
+    txReady.sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
+    return (txNull + txReady);
+  }
 
-    List<TransactionEntity> _transactions1 = transactions
-        .where((transaction) => transaction.timestamp == null)
-        .toList();
-    List<TransactionEntity> _transactions2 = transactions
-        .where((transaction) => transaction.timestamp != null)
-        .toList()
-          ..sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
-
-    return (_transactions1 + _transactions2);
+  Future<List<Transaction>> getTrasnctions(String id) async {
+    List<TransactionEntity> txEntities = await this._loadTransactions(id);
+    List<Transaction> txs =
+        txEntities.map((e) => Transaction.fromTransactionEntity(e)).toList();
+    return txs;
   }
 
   @override
-  Future<List> getChangingAddress(String shareAccountId) {
+  Future<String> getReceivingAddress() {
     throw UnimplementedError('Implement on decorator');
   }
 
   @override
-  Future<List> getReceivingAddress(String shareAccountId) {
-    throw UnimplementedError('Implement on decorator');
+  Future<Map> getChangingAddress() {
+    throw UnimplementedError();
   }
 
   @override

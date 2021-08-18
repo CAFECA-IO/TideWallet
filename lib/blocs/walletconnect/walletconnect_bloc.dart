@@ -134,7 +134,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
         // check to use the right chain
         // Log.info('*** chainId $chainId ${selected.network} __ ${selected.chainId}');
 
-        this._txRepo.setAccount(selected);
+        this._txRepo.account = selected;
         session.chainId = chainId;
         session.networkId = chainId;
         String address = await getReceivingAddress();

@@ -11,16 +11,12 @@ abstract class TransactionService {
 
   bool verifyAddress(String address, bool publish);
   dynamic extractAddressData(String address, bool publish);
-  Decimal calculateTransactionVSize(
-      {required List<UnspentTxOut> unspentTxOuts,
-      required Decimal feePerByte,
-      required Decimal amount,
-      Uint8List? message});
-  Transaction prepareTransaction(
-    bool publish,
+  Future<Transaction> prepareTransaction(
+    String thirdPartyId,
+    bool isMainet,
     String to,
-    Decimal amount,
-    Uint8List message, {
+    Decimal amount, {
+    String? message,
     Decimal? fee,
     Decimal? gasPrice,
     Decimal? gasLimit,

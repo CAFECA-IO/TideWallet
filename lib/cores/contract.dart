@@ -8,11 +8,6 @@ import '../constants/account_config.dart';
 import '../models/account.model.dart';
 import '../helpers/converter.dart';
 import '../helpers/rlp.dart' as rlp;
-import '../services/account_service.dart';
-import '../services/transaction_service.dart';
-import '../services/transaction_service_based.dart';
-import '../services/transaction_service_bitcoin.dart';
-import '../services/transaction_service_ethereum.dart';
 
 enum ContractFunction { deposit, withdraw, transfer, swap, donate }
 
@@ -43,31 +38,8 @@ class ContractCore {
 
   ContractCore._internal();
 
-  Future<dynamic> _extractAddressData(Account account) async {
-    dynamic _data;
-    AccountService _service = AccountCore().getService(account.shareAccountId);
-    String _address =
-        (await _service.getReceivingAddress(account.shareAccountId))[0];
-    switch (account.accountType) {
-      case ACCOUNT.BTC:
-        TransactionService _transactionService =
-            BitcoinTransactionService(TransactionServiceBased());
-        _data = _transactionService.extractAddressData(
-            _address, account.publish)[1];
-        break;
-      case ACCOUNT.ETH:
-      case ACCOUNT.CFC:
-        TransactionService _transactionService =
-            EthereumTransactionService(TransactionServiceBased());
-        _data =
-            _transactionService.extractAddressData(_address, account.publish);
-        break;
-      case ACCOUNT.XRP:
-        // TODO: Handle this case.
-        break;
-    }
-    return _data;
-  }
+  Future<dynamic> _extractAddressData(Account account) =>
+      AccountCore().extractAddressData(account.id);
 
   /*
   swap 1 BTC to 29.35 ETH to 0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8

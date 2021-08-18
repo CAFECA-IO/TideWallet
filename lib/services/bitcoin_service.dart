@@ -24,11 +24,11 @@ class BitcoinService extends AccountServiceDecorator {
     this.syncInterval = 10 * 60 * 1000;
     // this.path = "m/44'/0'/0'";
   }
-  late int _numberOfUsedExternalKey;
-  late int _numberOfUsedInternalKey;
-  late int _lastSyncTimestamp;
-  late Map<TransactionPriority, Decimal> _fee;
-  late int _timestamp; // fetch transactionFee timestamp;
+  int? _numberOfUsedExternalKey;
+  int? _numberOfUsedInternalKey;
+  int? _lastSyncTimestamp;
+  Map<TransactionPriority, Decimal>? _fee;
+  int? _feeTimestamp; // fetch transactionFee timestamp;
 
   @override
   void init(String id, ACCOUNT base, {int? interval}) {
@@ -52,60 +52,130 @@ class BitcoinService extends AccountServiceDecorator {
     this.service.stop();
   }
 
-  @override
-  Future<Map<TransactionPriority, Decimal>> getTransactionFee(
+  Decimal calculateTransactionVSize({
+    required List<UnspentTxOut> unspentTxOuts,
+    required Decimal feePerByte,
+    required Decimal amount,
+    Uint8List? message,
+    SegwitType segwitType = SegwitType.nativeSegWit, // ++ TODO 2021/8/18
+  }) {
+    Decimal unspentAmount = Decimal.zero;
+    int headerWeight;
+    int inputWeight;
+    int outputWeight;
+    if (segwitType == SegwitType.nativeSegWit) {
+      headerWeight = 3 * 10 + 12;
+      inputWeight = 3 * 41 + 151;
+      outputWeight = 3 * 31 + 31;
+    } else if (segwitType == SegwitType.segWit) {
+      headerWeight = 3 * 10 + 12;
+      inputWeight = 3 * 76 + 210;
+      outputWeight = 3 * 32 + 32;
+    } else {
+      headerWeight = 3 * 10 + 10;
+      inputWeight = 3 * 148 + 148;
+      outputWeight = 3 * 34 + 34;
+    }
+    int numberOfTxIn = 0;
+    int numberOfTxOut = message != null ? 2 : 1;
+    int vsize =
+        0; // 3 * base_size(excluding witnesses) + total_size(including witnesses)
+    for (UnspentTxOut utxo in unspentTxOuts) {
+      ++numberOfTxIn;
+      unspentAmount += utxo.amount;
+      vsize = ((headerWeight +
+              (inputWeight * numberOfTxIn) +
+              (outputWeight * numberOfTxOut) +
+              3) ~/
+          4);
+      Decimal fee = Decimal.fromInt(vsize) * feePerByte;
+      if (unspentAmount == (amount + fee)) break;
+
+      if (unspentAmount > (amount + fee)) {
+        numberOfTxOut = 3;
+        vsize = ((headerWeight +
+                (inputWeight * numberOfTxIn) +
+                (outputWeight * numberOfTxOut) +
+                3) ~/
+            4);
+        Decimal fee = Decimal.fromInt(vsize) * feePerByte;
+        if (unspentAmount >= (amount + fee)) break;
+      }
+    }
+    Decimal fee = Decimal.fromInt(vsize) * feePerByte;
+    return fee;
+  }
+
+  Future<Map<TransactionPriority, Decimal>> getFeePerUnit(
       String blockchainId) async {
-    // TODO getSyncFeeAutomatically
     if (_fee == null ||
-        DateTime.now().millisecondsSinceEpoch - _timestamp >
+        DateTime.now().millisecondsSinceEpoch - _feeTimestamp! >
             this.AVERAGE_FETCH_FEE_TIME) {
       APIResponse response =
           await HTTPAgent().get('${Endpoint.url}/blockchain/$blockchainId/fee');
       if (response.success) {
         Map<String, dynamic> data = response.data; // FEE will return String
-
         _fee = {
           TransactionPriority.slow: Decimal.parse(data['slow']),
           TransactionPriority.standard: Decimal.parse(data['standard']),
           TransactionPriority.fast: Decimal.parse(data['fast']),
         };
-
-        _timestamp = DateTime.now().millisecondsSinceEpoch;
+        _feeTimestamp = DateTime.now().millisecondsSinceEpoch;
+        return _fee!;
       } else {
-        // TODO fee = null 前面會出錯
+        throw Exception(response.message);
       }
+    } else {
+      return _fee!;
     }
-
-    return _fee;
   }
 
   @override
-  Future<List> getChangingAddress(String currencyId) async {
-    APIResponse response = await HTTPAgent()
-        .get('${Endpoint.url}/wallet/account/address/$currencyId/change');
+  Future<Map> getTransactionFee({
+    required String blockchainId,
+    required int decimals,
+    String? to,
+    String? amount,
+    String? message,
+    TransactionPriority? priority,
+  }) async {
+    Map<TransactionPriority, Decimal> feePerUnit =
+        await this.getFeePerUnit(blockchainId);
+    List<UnspentTxOut> utxos = await this.getUnspentTxOut(id);
+    Decimal feeUint = this.calculateTransactionVSize(
+        unspentTxOuts: utxos,
+        feePerByte: feePerUnit[priority]!,
+        amount: Decimal.parse(amount ?? '0'));
+    return {
+      "feePerUnit": {...feePerUnit},
+      "unit": feeUint
+    };
+  }
+
+  Future<Map> getChangingAddress() async {
+    APIResponse response = await HTTPAgent().get(
+        '${Endpoint.url}/wallet/account/address/${this.shareAccountId}/change');
     if (response.success) {
       Map data = response.data;
       String _address = data['address'];
       _numberOfUsedInternalKey = data['key_index'];
-      return [_address, _numberOfUsedInternalKey];
+      return {"address": _address, "keyIndex": _numberOfUsedInternalKey};
     } else {
-      //TODO
-      return ['error', 0];
+      throw Exception(response.message);
     }
   }
 
   @override
-  Future<List> getReceivingAddress(String currencyId) async {
-    APIResponse response = await HTTPAgent()
-        .get('${Endpoint.url}/wallet/account/address/$currencyId/receive');
+  Future<String> getReceivingAddress() async {
+    APIResponse response = await HTTPAgent().get(
+        '${Endpoint.url}/wallet/account/address/${this.shareAccountId}/receive');
     if (response.success) {
       Map data = response.data;
       String address = data['address'];
       _numberOfUsedExternalKey = data['key_index'];
-      return [address, _numberOfUsedExternalKey];
+      return address;
     } else {
-      //TODO
-      return ['error', 0];
+      throw Exception('Some went wrong');
     }
   }
 

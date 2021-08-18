@@ -53,7 +53,7 @@ class TransactionStatusBloc
     if (event is UpdateAccount) {
       if (state.account == null) {
         Log.debug('event.account: ${event.account}');
-        _repo.setAccount(event.account);
+        _repo.account = event.account;
 
         final List<Transaction> transactions = await _repo.getTransactions();
         Log.debug('transactions: $transactions');

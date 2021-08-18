@@ -75,6 +75,19 @@ class Transaction {
     this.message,
   }) : _address = address;
 
+  Transaction.fromJson(Map json) {
+    this.txId = json['txid'];
+    this.status = json['status'];
+    this.confirmations = json['confirmations'];
+    this.amount = json['amount'];
+    this.direction = json['direction'];
+    this.timestamp = json['timestamp'];
+    this.sourceAddresses = json['source_addresses'];
+    this.destinationAddresses = json['destination_addresses'];
+    this.fee = json['fee'];
+    this.message = json['message'];
+  }
+
   Transaction.fromTransactionEntity(TransactionEntity entity) {
     id = entity.transactionId;
     txId = entity.txId;

@@ -17,16 +17,26 @@ abstract class AccountService {
   Future start();
   void stop();
 
-  Future<List> getReceivingAddress(String shareAccountId);
-  Future<List> getChangingAddress(String shareAccountId);
-  Future<Map<TransactionPriority, Decimal>> getTransactionFee(
-      String blockchainId);
+  Future<String> getReceivingAddress();
+  Future<Map> getChangingAddress();
+
+  Future<Map> getTransactionFee({
+    required String blockchainId,
+    required int decimals,
+    String? to,
+    String? amount,
+    String? message,
+    TransactionPriority? priority,
+  });
 
   Future<List> publishTransaction(String blockchainId, Transaction transaction);
 
-  Future updateTransaction(String accountId, Map payload);
+  Future updateTransaction(String id, Map payload);
 
-  Future updateAccount(String accountId, Map payload);
+  Future updateAccount(String id, Map payload);
 
   Future synchro({bool? force});
+
+  Future<List<Transaction>> getTrasnctions(String id);
+  Future<Transaction> getTransactionDetail(String txid);
 }

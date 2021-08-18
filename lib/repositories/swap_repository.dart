@@ -37,7 +37,7 @@ class SwapRepository {
     EthereumService _accountService =
         AccountCore().getService(sellAccount.shareAccountId) as EthereumService;
     String address =
-        (await _accountService.getReceivingAddress(sellAccount.id))[0];
+        (await AccountCore().getReceivingAddress(sellAccount.id))[0];
     int nonce =
         await _accountService.getNonce(sellAccount.blockchainId, address);
     Decimal _sellAmount = Decimal.tryParse(sellAmount)!;

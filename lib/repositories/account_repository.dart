@@ -24,17 +24,13 @@ class AccountRepository {
 
   Future<Map> getOverview() => AccountCore().getOverview();
 
-  List<Account> getAllAccounts() => AccountCore().getAllAccounts();
-
-  List<Account> getAccounts(String accountId) {
-    return AccountCore().getAccountsByShareAccountId(accountId)!;
-  }
-
   Future<List<DisplayToken>> getDisplayTokens() =>
       AccountCore().getDisplayTokens();
 
   Future toggleDisplayToken(DisplayToken token) =>
       AccountCore().toggleDisplayToken(token);
+
+  List<Account> getAllAccounts() => AccountCore().accountList;
 
   close() {
     AccountCore().messenger.add(

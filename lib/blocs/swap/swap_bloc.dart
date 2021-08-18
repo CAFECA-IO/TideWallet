@@ -40,7 +40,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     if (event is InitSwap) {
       Account sellAccount = event.sellAccount;
       List<Account> targets = AccountCore()
-          .getAllAccounts()
+          .accountList
           .where((curr) => curr.id != event.sellAccount.id)
           .toList();
       Account buyAccount = targets[0];
@@ -73,7 +73,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       SwapLoaded _state = state as SwapLoaded;
       Account sellAccount = event.sellAccount;
       List<Account> targets = AccountCore()
-          .getAllAccounts()
+          .accountList
           .where((curr) => curr.id != event.sellAccount.id)
           .toList();
       Account buyAccount = _state.buyAccount!;
@@ -144,7 +144,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
       Decimal gasLimit = Decimal.tryParse(result['gasLimit'])!;
 
       List<Account> targets = AccountCore()
-          .getAllAccounts()
+          .accountList
           .where((curr) => curr.id != _state.buyAccount!.id)
           .toList();
 
@@ -220,7 +220,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     if (event is SwapConfirmed) {
       SwapLoaded _state = state as SwapLoaded;
       // ++ error handle if buyAmoumt is too high need to update SwapUI => exchangeRate, and expected buyAmount 2021/3/19 Emily
-      _transactionRepo.setAccount(_state.sellAccount!);
+      _transactionRepo.account = _state.sellAccount!;
 
       // List result = await _swapRepo.swap(
       //   (await _transactionRepo.getPrivKey(event.password, 0, 0)),

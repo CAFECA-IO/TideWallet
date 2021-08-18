@@ -9,18 +9,22 @@ import '../models/transaction.model.dart';
 
 class TransactionServiceBased extends TransactionService {
   @override
-  Transaction prepareTransaction(
-      bool publish, String to, Decimal amount, Uint8List message,
-      {Decimal? fee,
-      Decimal? gasPrice,
-      Decimal? gasLimit,
-      int? nonce,
-      int? chainId,
-      String? accountId,
-      List<UnspentTxOut>? unspentTxOuts,
-      String? changeAddress,
-      int? keyIndex,
-      Uint8List? privKey}) {
+  Future<Transaction> prepareTransaction(
+    String thirdPartyId,
+    bool isMainet,
+    String to,
+    Decimal amount, {
+    String? message,
+    Decimal? fee,
+    Decimal? gasPrice,
+    Decimal? gasLimit,
+    int? nonce,
+    int? chainId,
+    String? accountId,
+    List<UnspentTxOut>? unspentTxOuts,
+    String? changeAddress,
+    int? keyIndex,
+  }) {
     // TODO: implement prepareTransaction
     throw UnimplementedError();
   }
@@ -28,16 +32,6 @@ class TransactionServiceBased extends TransactionService {
   @override
   bool verifyAddress(String address, bool publish) {
     // TODO: implement verifyAddress
-    throw UnimplementedError();
-  }
-
-  @override
-  Decimal calculateTransactionVSize(
-      {required List<UnspentTxOut> unspentTxOuts,
-      required Decimal feePerByte,
-      required Decimal amount,
-      Uint8List? message}) {
-    // TODO: implement calculateTransactionVSize
     throw UnimplementedError();
   }
 

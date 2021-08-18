@@ -31,7 +31,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
           yield ScannedWalletConnect(result);
         else if (prefix.toLowerCase() == 'ethereum') {
           try {
-            account = AccountCore().getAllAccounts().firstWhere((account) =>
+            account = AccountCore().accountList.firstWhere((account) =>
                 account.type.toLowerCase() == 'account' &&
                 account.symbol.toLowerCase() == 'eth' &&
                 account.publish);
@@ -44,7 +44,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
             yield ErrorFormat();
         } else if (prefix.toLowerCase() == 'bitcoin') {
           try {
-            account = AccountCore().getAllAccounts().firstWhere((account) =>
+            account = AccountCore().accountList.firstWhere((account) =>
                 account.type.toLowerCase() == 'account' &&
                 account.symbol.toLowerCase() == 'btc' &&
                 account.publish);
@@ -57,7 +57,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
             yield ErrorFormat();
         } else if (prefix.toLowerCase() == 'bitcointestnet') {
           try {
-            account = AccountCore().getAllAccounts().firstWhere((account) =>
+            account = AccountCore().accountList.firstWhere((account) =>
                 account.type.toLowerCase() == 'account' &&
                 account.symbol.toLowerCase() == 'btc' &&
                 !account.publish);

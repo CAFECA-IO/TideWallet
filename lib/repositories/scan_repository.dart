@@ -17,7 +17,7 @@ class ScanRepository {
     try {
       result = _ethTxSvc.verifyAddress(data, true);
       if (result)
-        return AccountCore().getAllAccounts().firstWhere((account) =>
+        return AccountCore().accountList.firstWhere((account) =>
             account.type.toLowerCase() == 'account' &&
             account.symbol.toLowerCase() == 'eth');
     } catch (e) {
@@ -27,7 +27,7 @@ class ScanRepository {
     try {
       result = _btcTxSvc.verifyAddress(data, true);
       if (result)
-        return AccountCore().getAllAccounts().firstWhere((account) =>
+        return AccountCore().accountList.firstWhere((account) =>
             account.type.toLowerCase() == 'account' &&
             account.symbol.toLowerCase() == 'btc' &&
             !account.publish);
@@ -38,7 +38,7 @@ class ScanRepository {
     try {
       result = _btcTxSvc.verifyAddress(data, false);
       if (result)
-        return AccountCore().getAllAccounts().firstWhere((account) =>
+        return AccountCore().accountList.firstWhere((account) =>
             account.type.toLowerCase() == 'account' &&
             account.symbol.toLowerCase() == 'btc' &&
             account.publish);

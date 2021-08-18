@@ -58,7 +58,7 @@ class _SwapScreenState extends State<SwapScreen> {
         Account account = argument['account'];
         _swapBloc.add(InitSwap(account));
       } else {
-        List<Account> _currencies = AccountCore().getAllAccounts();
+        List<Account> _currencies = AccountCore().accountList;
         Account _curr = _currencies.firstWhere(
             (curr) =>
                 Decimal.tryParse(curr.balance) != null &&

@@ -49,7 +49,8 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     return verified;
   }
 
-  Future<Transaction> _signTransaction(BitcoinTransaction transaction) async {
+  Future<Transaction> _signTransaction(
+      String thirdPartyId, BitcoinTransaction transaction) async {
     Log.btc('_unsignTransaction: ${transaction.serializeTransaction}');
     Log.btc(
         '_unsignTransaction hex: ${hex.encode(transaction.serializeTransaction)}');
@@ -60,6 +61,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
       Uint8List rawDataHash = Uint8List.fromList(Cryptor.sha256round(rawData));
       UnspentTxOut utxo = transaction.inputs[index].utxo;
       MsgSignature sig = await PaperWalletCore().sign(
+          thirdPartyId: thirdPartyId,
           data: rawDataHash,
           changeIndex: utxo.changeIndex,
           keyIndex: utxo.keyIndex);
@@ -81,11 +83,12 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
   }
 
   @override
-  BitcoinTransaction prepareTransaction(
-    bool publish,
+  Future<BitcoinTransaction> prepareTransaction(
+    String thirdPartyId,
+    bool isMainet,
     String to,
-    Decimal amount,
-    Uint8List? message, {
+    Decimal amount, {
+    String? message,
     Uint8List? privKey,
     Decimal? gasPrice,
     Decimal? gasLimit,
@@ -96,15 +99,15 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     List<UnspentTxOut>? unspentTxOuts,
     int? keyIndex,
     String? changeAddress,
-  }) {
+  }) async {
     BitcoinTransaction transaction = BitcoinTransaction.prepareTransaction(
-        publish, this.segwitType, amount, fee!, message);
+        isMainet, this.segwitType, amount, fee!, rlp.toBuffer(message));
     // to
     if (to.contains(':')) {
       to = to.split(':')[1];
     }
     // output
-    List result = extractAddressData(to, publish);
+    List result = extractAddressData(to, isMainet);
     List<int> script = _addressDataToScript(result[0], result[1]);
     transaction.addOutput(amount, to, script);
     // input
@@ -112,6 +115,8 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     Decimal utxoAmount = Decimal.zero;
     for (UnspentTxOut utxo in unspentTxOuts) {
       if (utxo.locked || !(utxo.amount > Decimal.zero)) continue;
+      utxo.publickey = await PaperWalletCore()
+          .getPubKey(changeIndex: utxo.changeIndex, keyIndex: utxo.keyIndex);
       transaction.addInput(utxo, HashType.SIGHASH_ALL);
       utxoAmount += utxo.amountInSmallestUint;
     }
@@ -124,7 +129,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     Decimal change = utxoAmount - amount - fee;
     Log.debug('prepareTransaction change: $change');
     if (change > Decimal.zero) {
-      List result = extractAddressData(changeAddress!, publish);
+      List result = extractAddressData(changeAddress!, isMainet);
       List<int> script = _addressDataToScript(result[0], result[1]);
       transaction.addOutput(change, changeAddress, script);
     }
@@ -140,7 +145,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
       transaction.addData(msgData);
     }
     BitcoinTransaction signedTransaction =
-        _signTransaction(transaction) as BitcoinTransaction;
+        _signTransaction(thirdPartyId, transaction) as BitcoinTransaction;
 
     // Add ChangeUtxo
     if (change > Decimal.zero) {
@@ -168,59 +173,6 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
     }
 
     return signedTransaction;
-  }
-
-  Decimal calculateTransactionVSize({
-    required List<UnspentTxOut> unspentTxOuts,
-    required Decimal feePerByte,
-    required Decimal amount,
-    Uint8List? message,
-  }) {
-    Decimal unspentAmount = Decimal.zero;
-    int headerWeight;
-    int inputWeight;
-    int outputWeight;
-    if (this.segwitType == SegwitType.nativeSegWit) {
-      headerWeight = 3 * 10 + 12;
-      inputWeight = 3 * 41 + 151;
-      outputWeight = 3 * 31 + 31;
-    } else if (this.segwitType == SegwitType.segWit) {
-      headerWeight = 3 * 10 + 12;
-      inputWeight = 3 * 76 + 210;
-      outputWeight = 3 * 32 + 32;
-    } else {
-      headerWeight = 3 * 10 + 10;
-      inputWeight = 3 * 148 + 148;
-      outputWeight = 3 * 34 + 34;
-    }
-    int numberOfTxIn = 0;
-    int numberOfTxOut = message != null ? 2 : 1;
-    int vsize =
-        0; // 3 * base_size(excluding witnesses) + total_size(including witnesses)
-    for (UnspentTxOut utxo in unspentTxOuts) {
-      ++numberOfTxIn;
-      unspentAmount += utxo.amount;
-      vsize = ((headerWeight +
-              (inputWeight * numberOfTxIn) +
-              (outputWeight * numberOfTxOut) +
-              3) ~/
-          4);
-      Decimal fee = Decimal.fromInt(vsize) * feePerByte;
-      if (unspentAmount == (amount + fee)) break;
-
-      if (unspentAmount > (amount + fee)) {
-        numberOfTxOut = 3;
-        vsize = ((headerWeight +
-                (inputWeight * numberOfTxIn) +
-                (outputWeight * numberOfTxOut) +
-                3) ~/
-            4);
-        Decimal fee = Decimal.fromInt(vsize) * feePerByte;
-        if (unspentAmount >= (amount + fee)) break;
-      }
-    }
-    Decimal fee = Decimal.fromInt(vsize) * feePerByte;
-    return fee;
   }
 
   Uint8List _addressDataToScript(

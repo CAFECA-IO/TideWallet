@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:convert/convert.dart';
 import 'package:decimal/decimal.dart';
 
@@ -12,6 +13,11 @@ import '../constants/account_config.dart';
 import '../constants/endpoint.dart';
 import '../helpers/logger.dart';
 import '../helpers/http_agent.dart';
+import '../helpers/utils.dart';
+import '../helpers/cryptor.dart';
+import '../helpers/rlp.dart' as rlp;
+import '../helpers/converter.dart';
+
 import '../cores/account.dart';
 import '../database/db_operator.dart';
 import '../database/entity/account.dart';
@@ -23,12 +29,23 @@ class EthereumService extends AccountServiceDecorator {
     this.syncInterval = 15000;
     // this.path = "m/44'/60'/0'";
   }
-  late String _address;
-  late Map<TransactionPriority, Decimal> _fee;
-  late int _gasLimit;
-  late int _feeTimestamp; // fetch transactionFee timestamp;
-  // int _gasLimitTimestamp; // fetch estimatedGas timestamp;
+  String? _address;
+  Map<TransactionPriority, Decimal>? _fee;
+  int? _gasLimit;
+  int? _feeTimestamp;
   int _nonce = 0;
+
+  String get address => this._address!;
+  Map<TransactionPriority, Decimal> get fee => this._fee!;
+  int get gasLimit => this._gasLimit!;
+  int get feeTimestamp => this._feeTimestamp!;
+  int get nonce => this._nonce;
+
+  set address(String address) => this._address = address;
+  set fee(Map<TransactionPriority, Decimal> fee) => this._fee = fee;
+  set gasLimit(int gasLimit) => this._gasLimit = gasLimit;
+  set feeTimestamp(int feeTimestamp) => this._feeTimestamp = feeTimestamp;
+  set nonce(int nonce) => this._nonce = nonce;
 
   @override
   void init(String id, ACCOUNT base, {int? interval}) {
@@ -133,10 +150,32 @@ class EthereumService extends AccountServiceDecorator {
     }
   }
 
+  String tokenTxMessage({
+    String? to,
+    String? amount,
+    required int decimals,
+    String? message,
+  }) {
+    List<int> erc20Func = Cryptor.keccak256round(
+        utf8.encode('transfer(address,uint256)'),
+        round: 1);
+    message = '0x' +
+        hex.encode(erc20Func.take(4).toList() +
+            hex.decode((to ?? "").substring(2).padLeft(64, '0')) +
+            hex.decode(hex
+                .encode(encodeBigInt(BigInt.parse(
+                    Converter.toCurrencySmallestUnit(
+                            Decimal.parse(amount ?? "0"), decimals)
+                        .toString())))
+                .padLeft(64, '0')) +
+            rlp.toBuffer(message));
+    return message;
+  }
+
   Future<Decimal> estimateGasLimit(String blockchainId, String from, String to,
       String amount, String message) async {
-    if (message == '0x' && _gasLimit != null)
-      return Decimal.fromInt(_gasLimit);
+    if (message == '0x' && this._gasLimit != null)
+      return Decimal.fromInt(this._gasLimit!);
     else {
       Map<String, dynamic> payload = {
         "fromAddress": from,
@@ -149,23 +188,21 @@ class EthereumService extends AccountServiceDecorator {
       Log.debug(payload);
       if (response.success) {
         Map<String, dynamic> data = response.data;
-        _gasLimit = int.parse(data['gasLimit']);
-        Log.warning('_gasLimit: $_gasLimit');
+        this._gasLimit = int.parse(data['gasLimit']);
+        Log.warning('this._gasLimit: $this._gasLimit');
       } else {
-        // TODO
-        // _gasLimit = 21000;
-        throw Exception(response.message);
+        // throw Exception(response.message);
+        Log.debug(response.message);
+        this._gasLimit = 9000;
       }
-      return Decimal.fromInt(_gasLimit);
+      return Decimal.fromInt(this._gasLimit!);
     }
   }
 
-  @override
-  Future<Map<TransactionPriority, Decimal>> getTransactionFee(
+  Future<Map<TransactionPriority, Decimal>> getFeePerUnit(
       String blockchainId) async {
-    // TODO getSyncFeeAutomatically
     if (_fee == null ||
-        DateTime.now().millisecondsSinceEpoch - _feeTimestamp >
+        DateTime.now().millisecondsSinceEpoch - _feeTimestamp! >
             this.AVERAGE_FETCH_FEE_TIME) {
       APIResponse response =
           await HTTPAgent().get('${Endpoint.url}/blockchain/$blockchainId/fee');
@@ -177,37 +214,60 @@ class EthereumService extends AccountServiceDecorator {
           TransactionPriority.fast: Decimal.parse(data['fast']),
         };
         _feeTimestamp = DateTime.now().millisecondsSinceEpoch;
+        return _fee!;
       } else {
-        // TODO fee = null 前面會出錯
+        throw Exception(response.message);
       }
+    } else {
+      return _fee!;
     }
-    return _fee;
   }
 
   @override
-  Future<List> getReceivingAddress(String currencyId) async {
-    if (this._address == null) {
-      APIResponse response = await HTTPAgent()
-          .get('${Endpoint.url}/wallet/account/address/$currencyId/receive');
+  Future<Map> getTransactionFee({
+    required String blockchainId,
+    required int decimals,
+    String? to,
+    String? amount,
+    String? message,
+    TransactionPriority? priority,
+  }) async {
+    Map<TransactionPriority, Decimal> feePerUnit =
+        await this.getFeePerUnit(blockchainId);
+    Decimal feeUint = await this.estimateGasLimit(
+        blockchainId,
+        await this.getReceivingAddress(),
+        to ?? "",
+        amount ?? "0",
+        message ?? "0x");
+    return {
+      "feePerUnit": {...feePerUnit},
+      "unit": feeUint
+    };
+  }
+
+  @override
+  Future<String> getReceivingAddress() async {
+    if (this._address != null) {
+      return this._address!;
+    } else {
+      APIResponse response = await HTTPAgent().get(
+          '${Endpoint.url}/wallet/account/address/${this.shareAccountId}/receive');
       if (response.success) {
-        Map data = response.data;
-        String address = data['address'];
+        String address = response.data['address'];
         this._address = address;
 
         Log.debug('_address: ${this._address}');
-        return [this._address, null];
+        return address;
       } else {
-        //TODO
-        return ['error', 0];
+        throw Exception(response.message);
       }
     }
-    Log.debug('_address: ${this._address}');
-    return [this._address, null];
   }
 
   @override
-  Future<List> getChangingAddress(String currencyId) async {
-    return await getReceivingAddress(currencyId);
+  Future<Map> getChangingAddress() async {
+    return {"address": getReceivingAddress()};
   }
 
   @override

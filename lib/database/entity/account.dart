@@ -141,7 +141,7 @@ class AccountEntity {
 }
 
 @DatabaseView(
-    'SELECT * FROM Account INNER JOIN User ON Account.user_id = User.user_id INNER JOIN Network ON Account.blockchain_id = Network.blockchain_id INNER JOIN Currency ON Account.currency_id = Currency.currency_id',
+    'SELECT * FROM Account INNER JOIN Network ON Account.blockchain_id = Network.blockchain_id INNER JOIN Currency ON Account.currency_id = Currency.currency_id',
     viewName: 'JoinAccount')
 class JoinAccount {
   final String id;
@@ -181,18 +181,6 @@ class JoinAccount {
 
   @ColumnInfo(name: 'last_sync_time')
   final int? lastSyncTime;
-
-  //user
-  final String keystore;
-
-  @ColumnInfo(name: 'third_party_id') // apple/google Id
-  final String thirdPartyId;
-
-  @ColumnInfo(name: 'install_id')
-  final String installId;
-
-  final int timestamp;
-  //user
 
   // network
   final String network;
@@ -234,10 +222,6 @@ class JoinAccount {
     required this.numberOfUsedExternalKey,
     required this.numberOfUsedInternalKey,
     required this.lastSyncTime,
-    required this.keystore,
-    required this.thirdPartyId,
-    required this.installId,
-    required this.timestamp,
     required this.network,
     required this.blockchainCoinType,
     required this.chainId,

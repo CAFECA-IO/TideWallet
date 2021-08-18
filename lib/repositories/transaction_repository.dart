@@ -10,13 +10,7 @@ import '../cores/account.dart';
 import '../models/account.model.dart';
 import '../models/transaction.model.dart';
 import '../models/utxo.model.dart';
-import '../services/account_service.dart';
-import '../services/bitcoin_service.dart';
-import '../services/transaction_service.dart';
-import '../services/transaction_service_based.dart';
-import '../services/transaction_service_bitcoin.dart';
-import '../services/transaction_service_ethereum.dart';
-import '../services/ethereum_service.dart';
+
 import '../constants/account_config.dart';
 import '../helpers/cryptor.dart';
 import '../helpers/utils.dart';
@@ -29,187 +23,39 @@ import '../database/entity/account.dart';
 import '../helpers/logger.dart';
 
 class TransactionRepository {
-  late Account _account;
-  late AccountService _accountService;
-  late TransactionService _transactionService;
-  late String? _address;
-  late String _tokenTransactionAddress;
-  late String _tokenTransactionAmount;
+  Account? _account;
+  String? _address;
+  String? _tokenTransactionAddress;
+  String? _tokenTransactionAmount;
   PublishSubject<AccountMessage> get listener => AccountCore().messenger;
 
   TransactionRepository();
 
-  void setAccount(Account account) async {
-    this._account = account;
-    _accountService = AccountCore().getService(this._account.shareAccountId);
-    _address =
-        (await _accountService.getChangingAddress(_account.shareAccountId))[0];
+  set account(Account account) => this._account = account;
+  Account get account => this._account!;
 
-    switch (this._account.accountType) {
-      case ACCOUNT.BTC:
-        _transactionService =
-            BitcoinTransactionService(TransactionServiceBased());
-        break;
-      case ACCOUNT.ETH:
-      case ACCOUNT.CFC:
-        _transactionService =
-            EthereumTransactionService(TransactionServiceBased());
-        break;
-      case ACCOUNT.XRP:
-        // TODO: Handle this case.
-        break;
-    }
-  }
+  bool verifyAmount(String amount, String fee) =>
+      AccountCore().verifyAmount(this.account.id, amount, fee);
 
-  Account get account => this._account;
+  Future<bool> verifyAddress(String address) =>
+      AccountCore().verifyAddress(this.account.id, address);
 
-  bool verifyAmount(Decimal amount, {Decimal? fee}) {
-    bool result =
-        Decimal.parse(_account.balance) - amount - fee! >= Decimal.zero;
-    if (this._account.type == 'token') {
-      result = Decimal.parse(_account.balance) - amount >= Decimal.zero &&
-          Decimal.parse(_account.shareAccountAmount) - fee >= Decimal.zero;
-    }
+  Future<Map> getAccountDetail() =>
+      AccountCore().getAccountDetail(this.account.id);
 
-    Log.debug('verifyAmount: $result');
-    return result;
-  }
+  Future<String> getReceivingAddress() =>
+      AccountCore().getReceivingAddress(this.account.id);
 
-  Future<List<Transaction>> getTransactions() async {
-    List<TransactionEntity> transactions = await DBOperator()
-        .transactionDao
-        .findAllTransactionsById(this._account.id);
+  Future<Map> getTransactionFee(
+          {String? address,
+          String? amount,
+          String? message,
+          TransactionPriority? priority}) =>
+      AccountCore().getTransactionFee(this.account.id,
+          to: address, amount: amount, message: message, priority: priority);
 
-    List<TransactionEntity> _transactions1 = transactions
-        .where((transaction) => transaction.timestamp == null)
-        .toList();
-    List<TransactionEntity> _transactions2 = transactions
-        .where((transaction) => transaction.timestamp != null)
-        .toList()
-          ..sort((a, b) => b.timestamp!.compareTo(a.timestamp!));
-
-    List<Transaction> txs = (_transactions1 + _transactions2)
-        .map((tx) => Transaction.fromTransactionEntity(tx))
-        .toList();
-    return txs;
-  }
-
-  Future<String> getReceivingAddress() async {
-    // TEST: is BackendAddress correct?
-    List result = await _accountService.getReceivingAddress(this._account.id);
-    String address = result[0];
-
-    return address;
-  }
-
-  Future getGasPrice() async {
-    Map<TransactionPriority, Decimal> _fee =
-        await _accountService.getTransactionFee(this._account.blockchainId);
-
-    return _fee;
-  }
-
-  Future<List<dynamic>> getTransactionFee(
-      {String? address, Decimal? amount, String? message}) async {
-    Map<TransactionPriority, Decimal> _fee =
-        await _accountService.getTransactionFee(this._account.blockchainId);
-
-    // TODO if (message = null)
-    Decimal? _gasLimit;
-    switch (this._account.accountType) {
-      case ACCOUNT.BTC:
-        BitcoinService _svc = _accountService as BitcoinService;
-
-        List<UnspentTxOut> unspentTxOuts =
-            await _svc.getUnspentTxOut(_account.id);
-        Map<TransactionPriority, Decimal> fee = {
-          TransactionPriority.slow:
-              _transactionService.calculateTransactionVSize(
-            unspentTxOuts: unspentTxOuts,
-            amount: amount!,
-            feePerByte: _fee[TransactionPriority.slow]!,
-            message: rlp.toBuffer(message ?? Uint8List(0)),
-          ),
-          TransactionPriority.standard:
-              _transactionService.calculateTransactionVSize(
-            unspentTxOuts: unspentTxOuts,
-            amount: amount,
-            feePerByte: _fee[TransactionPriority.standard]!,
-            message: rlp.toBuffer(message ?? Uint8List(0)),
-          ),
-          TransactionPriority.fast:
-              _transactionService.calculateTransactionVSize(
-            unspentTxOuts: unspentTxOuts,
-            amount: amount,
-            feePerByte: _fee[TransactionPriority.fast]!,
-            message: rlp.toBuffer(message ?? Uint8List(0)),
-          ),
-        };
-        return [fee];
-      case ACCOUNT.ETH:
-      case ACCOUNT.CFC:
-        EthereumService _svc = _accountService as EthereumService;
-        if (this._address == null) {
-          _address = (await _accountService.getChangingAddress(_account.id))[0];
-        }
-        String to = address!.contains(':') ? address.split(':')[1] : address;
-        String from =
-            _address!.contains(':') ? _address!.split(':')[1] : _address!;
-        if (this._account.type.toLowerCase() == 'token') {
-          // ERC20
-          Log.debug('ETH this._account.decimals: ${this._account.decimals}');
-          List<int> erc20Func = Cryptor.keccak256round(
-              utf8.encode('transfer(address,uint256)'),
-              round: 1);
-          message = '0x' +
-              hex.encode(erc20Func.take(4).toList() +
-                  hex.decode(to.substring(2).padLeft(64, '0')) +
-                  hex.decode(hex
-                      .encode(encodeBigInt(BigInt.parse(
-                          Converter.toCurrencySmallestUnit(
-                                  amount!, _account.decimals)
-                              .toString())))
-                      .padLeft(64, '0')) +
-                  rlp.toBuffer(message ?? Uint8List(0)));
-          Log.debug('ETH erc20Func: $erc20Func');
-
-          amount = Decimal.zero;
-          to = this._account.contract!;
-        }
-        try {
-          _gasLimit = await _svc.estimateGasLimit(
-              this._account.blockchainId,
-              from,
-              to,
-              amount.toString(),
-              '0x' +
-                  hex.encode(
-                      message == null ? Uint8List(0) : rlp.toBuffer(message)));
-        } catch (e) {
-          _gasLimit = null;
-        }
-
-        return [_fee, _gasLimit, message];
-      case ACCOUNT.XRP:
-        // TODO: Handle this case.
-        return [_fee];
-      default:
-        return [_fee, _gasLimit];
-    }
-  }
-
-  Future<bool> verifyAddress(String address) async {
-    bool verified = false;
-    if (this._address == null) {
-      _address = (await _accountService.getChangingAddress(_account.id))[0];
-    }
-    verified = address != _address && address.length > 0;
-    if (verified) {
-      verified =
-          _transactionService.verifyAddress(address, this.account.publish);
-    }
-    return verified;
-  }
+  Future sendTransaction(Transaction transaction) =>
+      AccountCore().sendTransaction(this.account.id, transaction);
 
   Future<List> prepareTransaction(String to, Decimal amount,
       {Decimal? fee,
@@ -370,28 +216,6 @@ class TransactionRepository {
         // TODO: Handle this case.
         break;
     }
-  }
-
-  Future<Account> _updateAccount(String id, String balance) async {
-    AccountEntity? account = await DBOperator().accountDao.findAccount(id);
-    Log.warning('PublishTransaction _updateAccount id: $id');
-
-    AccountEntity updateAccount = account!.copyWith(balance: balance);
-
-    await DBOperator().accountDao.insertAccount(updateAccount);
-
-    List<JoinAccount> entities = await DBOperator()
-        .accountDao
-        .findJoinedAccountsByShareAccountId(account.shareAccountId);
-    JoinAccount entity = entities.firstWhere((v) => v.id == id);
-
-    Account newAccount =
-        Account.fromJoinAccount(entity, entities[0], this._account.accountType);
-
-    AccountMessage currMsg =
-        AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: [newAccount]);
-    listener.add(currMsg);
-    return newAccount;
   }
 
   _updateTransaction(String id, Account account, Transaction transaction,
