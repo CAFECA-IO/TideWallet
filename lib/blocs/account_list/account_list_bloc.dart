@@ -17,9 +17,8 @@ class AccountListBloc extends Bloc<AccountListEvent, AccountListState> {
       : super(AccountInitial(totalBalanceInFiat: '0', accounts: [])) {
     this._repo.listener.listen((msg) {
       if (msg.evt == ACCOUNT_EVT.OnUpdateAccount) {
-        String totalBalanceInFiat = msg.value["totalBalanceInFiat"];
+        String totalBalanceInFiat = msg.value["totalBalanceInFiat"].toString();
         List<Account> accounts = msg.value["accounts"];
-        // Fiat? fiat = msg.value["fiat"];
 
         this.add(UpdateAccounts(
             totalBalanceInFiat: totalBalanceInFiat, accounts: accounts));
@@ -44,12 +43,13 @@ class AccountListBloc extends Bloc<AccountListEvent, AccountListState> {
     if (event is OverView) {
       Map data = await _repo.getOverview();
       yield AccountLoaded(
-          totalBalanceInFiat: data['totalBalanceInFiat'],
+          totalBalanceInFiat: data['totalBalanceInFiat'].toString(),
           accounts: data['accounts']);
     }
     if (event is UpdateAccounts) {
       yield AccountLoaded(
-          totalBalanceInFiat: event.totalBalanceInFiat,
+          totalBalanceInFiat:
+              event.totalBalanceInFiat ?? state.totalBalanceInFiat,
           accounts: event.accounts);
     }
 

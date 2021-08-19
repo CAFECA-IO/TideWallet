@@ -24,8 +24,7 @@ class TransactionRepository {
   Transaction get transaction => this._transaction!;
 
   Future<Map> getAccountDetail(String accountId) async {
-    final Map accountDetail =
-        await AccountCore().getAccountDetail(this.account.id);
+    final Map accountDetail = await AccountCore().getAccountDetail(accountId);
     Account account = accountDetail["account"];
     Account shareAccount = accountDetail["shareAccount"];
     this.account = account;

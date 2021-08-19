@@ -72,20 +72,14 @@ class _SettingFiatScreenState extends State<SettingFiatScreen> {
       ),
       body: BlocBuilder<FiatBloc, FiatState>(
         builder: (context, state) {
-          final int len = 20;
-
           if (state is FiatLoaded) {
-            final List<Fiat?> l =
-                List<Fiat?>.filled(len - state.list.length, null);
-            List<Fiat?> ls = state.list + l;
-
+            List<Fiat> ls = state.list;
             return Container(
               padding: const EdgeInsets.only(left: 20.0),
               child: ListView.builder(
                 itemCount: ls.length,
                 itemBuilder: (BuildContext ctx, int index) {
-                  bool _selected =
-                      ls[index] != null && ls[index]!.name == state.fiat.name;
+                  bool _selected = ls[index].name == state.fiat.name;
                   return _fiatField(ls[index], selected: _selected);
                 },
               ),

@@ -136,7 +136,9 @@ class EthereumService extends AccountServiceDecorator {
 
         AccountMessage currMsg = AccountMessage(
             evt: ACCOUNT_EVT.OnUpdateAccount,
-            value: AccountCore().accounts[this.service.shareAccountId]);
+            value: {
+              "accounts": AccountCore().accounts[this.service.shareAccountId]
+            });
 
         AccountCore().messenger.add(msg);
         AccountCore().messenger.add(currMsg);

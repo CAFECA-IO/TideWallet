@@ -74,9 +74,9 @@ class MyApp extends StatelessWidget {
           Provider<AccountRepository>(
             create: (_) => AccountRepository(),
           ),
-          // Provider<TransactionRepository>(
-          //   create: (_) => TransactionRepository(),
-          // ),
+          Provider<TransactionRepository>(
+            create: (_) => TransactionRepository(),
+          ),
           Provider<TraderRepository>(
             create: (_) => TraderRepository(),
           ),
@@ -156,6 +156,7 @@ MaterialApp _material = MaterialApp(
   theme: myThemeData,
   routes: {
     '/': (context) => LandingScreen(),
+    LandingScreen.routeName: (context) => LandingScreen(),
     WelcomeScreen.routeName: (context) => WelcomeScreen(),
     AuthenticateScreen.routeName: (context) => AuthenticateScreen(),
     HomeScreen.routeName: (context) => HomeScreen(),

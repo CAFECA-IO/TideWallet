@@ -61,6 +61,12 @@ class AccountCore {
   Map<String, List<Account>> get accounts => this._accounts;
 
   AccountService _getService(String shareAccountId) {
+    Log.debug('_getService shareAccountId: $shareAccountId');
+
+    for (AccountService svc in this._services) {
+      Log.debug('_getService svc.shareAccountId: ${svc.shareAccountId}');
+      Log.debug('_getService svc.base: ${svc.base}');
+    }
     return _services
         .firstWhere((svc) => (svc.shareAccountId == shareAccountId));
   }
@@ -299,7 +305,7 @@ class AccountCore {
       totalBalanceInFiat += account.inFiat;
     }
     return {
-      "account": this.getSortedAccountList(),
+      "accounts": this.getSortedAccountList(),
       'totalBalanceInFiat': totalBalanceInFiat
       // "fiat": fiat,
     };

@@ -141,7 +141,7 @@ class BitcoinService extends AccountServiceDecorator {
   }) async {
     Map<TransactionPriority, Decimal> feePerUnit =
         await this.getFeePerUnit(blockchainId);
-    List<UnspentTxOut> utxos = await this.getUnspentTxOut(id);
+    List<UnspentTxOut> utxos = await this.getUnspentTxOut(shareAccountId);
     Decimal feeUint = this.calculateTransactionVSize(
         unspentTxOuts: utxos,
         feePerByte: feePerUnit[priority]!,

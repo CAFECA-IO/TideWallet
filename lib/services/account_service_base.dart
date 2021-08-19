@@ -18,14 +18,14 @@ import '../helpers/logger.dart';
 import 'account_service.dart';
 
 class AccountServiceBase extends AccountService {
-  late ACCOUNT _base;
-  late String _shareAccountId;
-  late int _syncInterval;
+  ACCOUNT? _base;
+  String? _shareAccountId;
+  int? _syncInterval;
   int? _lastSyncTimestamp;
 
-  get base => this._base;
-  get lastSyncTimestamp => this._lastSyncTimestamp!;
-  get shareAccountId => this._shareAccountId;
+  ACCOUNT get base => this._base!;
+  int get lastSyncTimestamp => this._lastSyncTimestamp!;
+  String get shareAccountId => this._shareAccountId!;
 
   AccountServiceBase();
 
@@ -38,9 +38,9 @@ class AccountServiceBase extends AccountService {
 
   @override
   Future start() async {
-    Log.debug('start this._shareAccountId: ${this._shareAccountId}');
+    Log.debug('start this.shareAccountId: ${this.shareAccountId}');
     AccountEntity? _acc =
-        await DBOperator().accountDao.findAccount(this._shareAccountId);
+        await DBOperator().accountDao.findAccount(this.shareAccountId);
     Log.debug(
         "start _acc.id: ${_acc?.id}, _acc.shareAccountId: ${_acc?.shareAccountId}, _acc.blockchainId: ${_acc?.blockchainId}, _acc.currencyId: ${_acc?.currencyId},  _acc.balance: ${_acc?.balance}");
     await this._pushResult();
@@ -67,9 +67,9 @@ class AccountServiceBase extends AccountService {
   Future<List<AccountEntity>> getData() async {
     List<AccountEntity> accounts = [];
     AccountEntity? accountEntity =
-        await DBOperator().accountDao.findAccount(this._shareAccountId);
+        await DBOperator().accountDao.findAccount(this.shareAccountId);
     APIResponse res = await HTTPAgent()
-        .get(Endpoint.url + '/wallet/account/${this._shareAccountId}');
+        .get(Endpoint.url + '/wallet/account/${this.shareAccountId}');
     final acc = res.data;
 
     if (acc != null && accountEntity != null) {
@@ -84,7 +84,7 @@ class AccountServiceBase extends AccountService {
           await DBOperator().currencyDao.findAllCurrencies();
       tks.forEach((token) async {
         AccountEntity _tokenAccount = AccountEntity.fromAccountJson(
-            token, this._shareAccountId, accountEntity.userId);
+            token, this.shareAccountId, accountEntity.userId);
         accounts.add(_tokenAccount);
         int index =
             _currs.indexWhere((_curr) => _curr.currencyId == token['token_id']);
@@ -111,7 +111,7 @@ class AccountServiceBase extends AccountService {
     int now = DateTime.now().millisecondsSinceEpoch;
 
     if (this._lastSyncTimestamp == null ||
-        now - this._lastSyncTimestamp! > this._syncInterval ||
+        now - this._lastSyncTimestamp! > this.syncInterval ||
         force == true) {
       this._lastSyncTimestamp = now;
       List<AccountEntity> accounts = await this.getData();
@@ -125,7 +125,7 @@ class AccountServiceBase extends AccountService {
   Future _pushResult() async {
     List<JoinAccount> jaccs = await DBOperator()
         .accountDao
-        .findJoinedAccountsByShareAccountId(this._shareAccountId);
+        .findJoinedAccountsByShareAccountId(this.shareAccountId);
     if (jaccs.isEmpty) return;
 
     List<Account> accs = [];
@@ -133,16 +133,18 @@ class AccountServiceBase extends AccountService {
     Fiat fiat = await Trader().getSelectedFiat();
 
     for (JoinAccount jacc in jaccs) {
-      Account acc = Account.fromJoinAccount(jacc, jaccs[0], this._base);
+      Account acc = Account.fromJoinAccount(jacc, jaccs[0], this.base);
       acc.inFiat = await Trader().calculateToFiat(acc, fiat: fiat);
       accs.add(acc);
     }
 
-    AccountCore().accounts[this._shareAccountId] = accs;
+    AccountCore().accounts[this.shareAccountId] = accs;
+    Map data = await AccountCore().getOverview();
 
     AccountMessage currMsg = AccountMessage(
-        evt: ACCOUNT_EVT.OnUpdateAccount,
-        value: AccountCore().accounts[this._shareAccountId]);
+      evt: ACCOUNT_EVT.OnUpdateAccount,
+      value: data,
+    );
 
     AccountCore().messenger.add(currMsg);
   }

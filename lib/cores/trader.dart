@@ -63,7 +63,10 @@ class Trader {
   Future<Fiat> getSelectedFiat() async {
     String? symbol = await this._prefManager.getSeletedFiat();
 
-    if (symbol == null) return this._fiats[0];
+    if (symbol == null) {
+      if (this._fiats.isEmpty) await getFiatList();
+      return this._fiats[0];
+    }
 
     int index = this._fiats.indexWhere((f) => f.name == symbol);
 

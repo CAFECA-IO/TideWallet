@@ -4,7 +4,7 @@ import './account_service.dart';
 
 abstract class AccountServiceDecorator extends AccountService {
   final AccountService service;
-  String get id => this.service.shareAccountId!;
+  String get shareAccountId => this.service.shareAccountId!;
 
   AccountServiceDecorator(this.service);
 

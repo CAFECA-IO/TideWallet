@@ -14,10 +14,8 @@ part 'account_detail_state.dart';
 
 class AccountDetailBloc extends Bloc<AccountDetailEvent, AccountDetailState> {
   late TransactionRepository _repo;
-  late StreamSubscription? _subscription;
 
   AccountDetailBloc(this._repo) : super(AccountDetailInitial()) {
-    _subscription?.cancel();
     this._repo.listener.listen((msg) {
       if (msg.evt == ACCOUNT_EVT.OnUpdateAccount) {
         int index = msg.value.indexWhere((Account account) {

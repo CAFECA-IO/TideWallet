@@ -14,10 +14,9 @@ class OverView extends AccountListEvent {
 
 class UpdateAccounts extends AccountListEvent {
   final List<Account> accounts;
-  final String totalBalanceInFiat;
+  final String? totalBalanceInFiat;
   final Fiat? fiat;
-  UpdateAccounts(
-      {required this.totalBalanceInFiat, required this.accounts, this.fiat});
+  UpdateAccounts({this.totalBalanceInFiat, required this.accounts, this.fiat});
 }
 
 class CleanAccounts extends AccountListEvent {
