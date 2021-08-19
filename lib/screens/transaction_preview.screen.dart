@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 
-import './transaction_list.screen.dart';
+import 'account_detial.screen.dart';
+
 import '../models/transaction.model.dart';
 import '../models/account.model.dart';
-import '../repositories/user_repository.dart';
-import '../repositories/local_auth_repository.dart';
 import '../blocs/local_auth/local_auth_bloc.dart';
 import '../blocs/transaction/transaction_bloc.dart';
 import '../widgets/appBar.dart';
@@ -28,9 +26,9 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
   late TransactionBloc _bloc;
   late LocalAuthBloc _localBloc;
   late Account _account;
+  late Account _shareAccount;
   late Transaction _transaction;
   late String _feeToFiat;
-  late UserRepository _userRepo;
   final t = I18n.t;
 
   @override
@@ -38,12 +36,13 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
     Map<String, dynamic> arg =
         ModalRoute.of(context)!.settings.arguments! as Map<String, dynamic>;
     _account = arg["account"];
+    _shareAccount = arg["shareAccount"];
     _transaction = arg["transaction"];
     _feeToFiat = arg["feeToFiat"];
 
     _bloc = BlocProvider.of<TransactionBloc>(context);
-    _userRepo = Provider.of<UserRepository>(context, listen: false);
-    _localBloc = LocalAuthBloc(LocalAuthRepository());
+    _localBloc = BlocProvider.of<LocalAuthBloc>(context);
+
     super.didChangeDependencies();
   }
 
@@ -75,7 +74,7 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
             DialogController.dismiss(context);
             await Future(() {
               Navigator.of(context).popUntil((route) =>
-                  route.settings.name == TransactionListScreen.routeName);
+                  route.settings.name == AccountDetailScreen.routeName);
             });
           }
         },
@@ -134,8 +133,8 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
                     ),
                     SizedBox(height: 7),
                     Align(
-                      child: Text(
-                          "${_transaction.fee} ${_account.shareAccountSymbol}"),
+                      child:
+                          Text("${_transaction.fee} ${_shareAccount.symbol}"),
                       alignment: Alignment.centerLeft,
                     ),
                     SizedBox(height: 4),

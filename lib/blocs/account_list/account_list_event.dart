@@ -1,18 +1,18 @@
-part of 'account_bloc.dart';
+part of 'account_list_bloc.dart';
 
 @immutable
-abstract class AccountEvent extends Equatable {
-  const AccountEvent();
+abstract class AccountListEvent extends Equatable {
+  const AccountListEvent();
   @override
   List<Object> get props => [];
 }
 
-class OverView extends AccountEvent {
+class OverView extends AccountListEvent {
   @override
   List<Object> get props => [];
 }
 
-class UpdateAccounts extends AccountEvent {
+class UpdateAccounts extends AccountListEvent {
   final List<Account> accounts;
   final String totalBalanceInFiat;
   final Fiat? fiat;
@@ -20,12 +20,12 @@ class UpdateAccounts extends AccountEvent {
       {required this.totalBalanceInFiat, required this.accounts, this.fiat});
 }
 
-class CleanAccounts extends AccountEvent {
+class CleanAccounts extends AccountListEvent {
   @override
   List<Object> get props => [];
 }
 
-class ToggleDisplay extends AccountEvent {
+class ToggleDisplay extends AccountListEvent {
   final String currencyId;
 
   ToggleDisplay(this.currencyId);

@@ -2,33 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
-import '../blocs/account/account_bloc.dart';
+import '../blocs/account_list/account_list_bloc.dart';
 import '../blocs/fiat/fiat_bloc.dart';
 import '../models/account.model.dart';
 import '../widgets/header.dart';
 import '../widgets/account_item.dart';
 import '../helpers/i18n.dart';
 import 'toggle_token.screen.dart';
-import 'transaction_list.screen.dart';
+import 'account_detial.screen.dart';
 
 final t = I18n.t;
 
-class AccountScreen extends StatefulWidget {
+class AccountListScreen extends StatefulWidget {
   final Function jumpTo;
   static const routeName = '/account';
 
-  AccountScreen(this.jumpTo);
+  AccountListScreen(this.jumpTo);
 
   @override
-  _AccountScreenState createState() => _AccountScreenState();
+  _AccountListScreenState createState() => _AccountListScreenState();
 }
 
-class _AccountScreenState extends State<AccountScreen> {
-  late AccountBloc _bloc;
+class _AccountListScreenState extends State<AccountListScreen> {
+  late AccountListBloc _bloc;
 
   @override
   didChangeDependencies() {
-    _bloc = Provider.of<AccountBloc>(context)..add(OverView());
+    _bloc = Provider.of<AccountListBloc>(context)..add(OverView());
     super.didChangeDependencies();
   }
 
@@ -36,7 +36,7 @@ class _AccountScreenState extends State<AccountScreen> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        BlocBuilder<AccountBloc, AccountState>(
+        BlocBuilder<AccountListBloc, AccountListState>(
           bloc: _bloc,
           builder: (context, state) {
             return Container(
@@ -60,8 +60,8 @@ class _AccountScreenState extends State<AccountScreen> {
                                 acc,
                                 () {
                                   Navigator.of(context).pushNamed(
-                                      TransactionListScreen.routeName,
-                                      arguments: {"account": acc});
+                                      AccountDetailScreen.routeName,
+                                      arguments: {"accountId": acc.id});
                                 },
                                 fiat: fiatState.fiat,
                               ),

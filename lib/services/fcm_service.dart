@@ -8,7 +8,7 @@ import 'bitcoin_service.dart';
 import '../cores/account.dart';
 import '../models/account.model.dart';
 import '../models/fcm.modal.dart';
-import '../screens/transaction_list.screen.dart';
+import '../screens/account_detial.screen.dart';
 
 enum FCM_LOCAL_EVENT { UNLOCK_APP }
 
@@ -120,7 +120,7 @@ class FCM {
             .accounts[msg.accountId]!
             .firstWhere((currency) => currency.currencyId == msg.currencyId);
 
-        this._navigator.currentState!.pushNamed(TransactionListScreen.routeName,
+        this._navigator.currentState!.pushNamed(AccountDetailScreen.routeName,
             arguments: {"account": account});
       }
     }

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../screens/toggle_token.screen.dart';
-import '../screens/account.screen.dart';
+import '../screens/account_list.screen.dart';
 import '../screens/scan_address.screen.dart';
 import '../screens/wallet_connect.screen.dart';
-import '../screens/transaction_list.screen.dart';
+import '../screens/account_detial.screen.dart';
 import '../screens/transaction_preview.screen.dart';
-import '../screens/create_transaction.screen.dart';
+import '../screens/transaction.screen.dart';
 import '../screens/transaction_detail.screen.dart';
 import '../screens/settings.screen.dart';
 import '../screens/add_investment.screen.dart';
@@ -40,11 +40,11 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
       Widget leading = SizedBox();
       switch (routeName) {
         case WalletConnectScreen.routeName:
-        case CreateTransactionScreen.routeName:
+        case TransactionScreen.routeName:
         case TransactionPreviewScreen.routeName:
         case ScanAddressScreen.routeName:
         case ScanScreen.routeName:
-        case TransactionListScreen.routeName:
+        case AccountDetailScreen.routeName:
         case TransactionDetailScreen.routeName:
         case AddInvestmentScreen.routeName:
         case ReceiveScreen.routeName:
@@ -66,7 +66,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
                 },
           );
           break;
-        // case AccountScreen.routeName:
+        // case AccountListScreen.routeName:
         // case SwapScreen.routeName:
         // case InvestmentScreen.routeName:
         //   leading = GestureDetector(
@@ -155,7 +155,7 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
         //   }).toList();
 
         //   break;
-        // case AccountScreen.routeName:
+        // case AccountListScreen.routeName:
         // case SwapScreen.routeName:
         // case InvestmentScreen.routeName:
         //   _actions = [
@@ -193,8 +193,8 @@ class GeneralAppbar extends StatelessWidget with PreferredSizeWidget {
     bool showBackground() {
       if (routeName == ScanAddressScreen.routeName) return false;
       if (routeName == ScanScreen.routeName) return false;
-      if (routeName == TransactionListScreen.routeName) return false;
-      if (routeName == AccountScreen.routeName) return false;
+      if (routeName == AccountDetailScreen.routeName) return false;
+      if (routeName == AccountListScreen.routeName) return false;
       if (routeName == SettingsScreen.routeName) return false;
       if (routeName == InvestmentScreen.routeName) return false;
       // if (routeName == CreditCardScreen.routeName) return false;

@@ -19,14 +19,13 @@ class FiatBloc extends Bloc<FiatEvent, FiatState> {
     if (event is GetFiatList) {
       List<Fiat> res = await _repo.getFiatList();
       Fiat selected = await _repo.getSelectedFiat();
-      _repo.setFiat = selected;
 
       yield FiatLoaded(list: res, fiat: selected);
     }
 
     if (event is SwitchFiat) {
       FiatLoaded _state = state as FiatLoaded;
-      await _repo.changeSelectedFiat(event.fiat);
+      await _repo.setSelectedFiat(event.fiat);
 
       yield _state.copyWith(fiat: event.fiat) as FiatState;
     }

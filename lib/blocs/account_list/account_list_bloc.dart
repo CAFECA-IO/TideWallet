@@ -7,24 +7,22 @@ import '../../repositories/account_repository.dart';
 
 import '../../models/account.model.dart';
 
-part 'account_event.dart';
-part 'account_state.dart';
+part 'account_list_event.dart';
+part 'account_list_state.dart';
 
-class AccountBloc extends Bloc<AccountEvent, AccountState> {
+class AccountListBloc extends Bloc<AccountListEvent, AccountListState> {
   AccountRepository _repo;
 
-  AccountBloc(this._repo)
+  AccountListBloc(this._repo)
       : super(AccountInitial(totalBalanceInFiat: '0', accounts: [])) {
     this._repo.listener.listen((msg) {
       if (msg.evt == ACCOUNT_EVT.OnUpdateAccount) {
         String totalBalanceInFiat = msg.value["totalBalanceInFiat"];
         List<Account> accounts = msg.value["accounts"];
-        Fiat? fiat = msg.value["fiat"];
+        // Fiat? fiat = msg.value["fiat"];
 
         this.add(UpdateAccounts(
-            totalBalanceInFiat: totalBalanceInFiat,
-            accounts: accounts,
-            fiat: fiat));
+            totalBalanceInFiat: totalBalanceInFiat, accounts: accounts));
       }
 
       if (msg.evt == ACCOUNT_EVT.ClearAll) {
@@ -40,27 +38,23 @@ class AccountBloc extends Bloc<AccountEvent, AccountState> {
   }
 
   @override
-  Stream<AccountState> mapEventToState(
-    AccountEvent event,
+  Stream<AccountListState> mapEventToState(
+    AccountListEvent event,
   ) async* {
     if (event is OverView) {
       Map data = await _repo.getOverview();
       yield AccountLoaded(
           totalBalanceInFiat: data['totalBalanceInFiat'],
-          accounts: data['accounts'],
-          fiat: data['fiat']);
+          accounts: data['accounts']);
     }
     if (event is UpdateAccounts) {
       yield AccountLoaded(
           totalBalanceInFiat: event.totalBalanceInFiat,
-          accounts: event.accounts,
-          fiat: event.fiat ?? state.fiat);
+          accounts: event.accounts);
     }
 
     if (event is CleanAccounts) {
-      List<Account> empty = [];
-      yield AccountLoaded(
-          totalBalanceInFiat: '0', accounts: [], fiat: state.fiat);
+      yield AccountLoaded(totalBalanceInFiat: '0', accounts: []);
     }
   }
 }

@@ -70,14 +70,33 @@ class Trader {
     return this._fiats[index];
   }
 
-  Decimal calculateToFiat(Account _account, Fiat fiat) {
+  Future<Decimal> calculateToFiat(Account account, {Fiat? fiat}) async {
+    late Fiat _fiat;
+    if (fiat != null)
+      _fiat = fiat;
+    else
+      _fiat = await getSelectedFiat();
     int index =
-        this._cryptos.indexWhere((c) => c.currencyId == _account.currencyId);
+        this._cryptos.indexWhere((c) => c.currencyId == account.currencyId);
     if (index < 0) return Decimal.zero;
 
     return this._cryptos[index].exchangeRate *
-        Decimal.tryParse(_account.balance)! *
-        fiat.exchangeRate;
+        Decimal.tryParse(account.balance)! *
+        _fiat.exchangeRate;
+  }
+
+  Future<Decimal> calculateAmountToFiat(Account account, Decimal amount,
+      {Fiat? fiat}) async {
+    late Fiat _fiat;
+    if (fiat != null)
+      _fiat = fiat;
+    else
+      _fiat = await getSelectedFiat();
+    int index =
+        this._cryptos.indexWhere((c) => c.currencyId == account.currencyId);
+    if (index < 0) return Decimal.zero;
+
+    return calculateAmountToUSD(account, amount) / _fiat.exchangeRate;
   }
 
   Decimal calculateToUSD(Account _account) {

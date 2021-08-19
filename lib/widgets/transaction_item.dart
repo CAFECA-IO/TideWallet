@@ -23,7 +23,7 @@ class TransactionItem extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pushNamed(TransactionDetailScreen.routeName,
-            arguments: {"account": account, "transaction": transaction});
+            arguments: {"accountId": account.id, "txid": transaction.txId});
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12.0),

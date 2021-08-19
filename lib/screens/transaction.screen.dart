@@ -20,15 +20,14 @@ import '../helpers/i18n.dart';
 import '../helpers/formatter.dart';
 import '../helpers/logger.dart';
 
-class CreateTransactionScreen extends StatefulWidget {
+class TransactionScreen extends StatefulWidget {
   static const routeName = '/create-transaction';
 
   @override
-  _CreateTransactionScreenState createState() =>
-      _CreateTransactionScreenState();
+  _TransactionScreenState createState() => _TransactionScreenState();
 }
 
-class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
+class _TransactionScreenState extends State<TransactionScreen> {
   late TransactionBloc _bloc;
   late FiatBloc _fiatBloc;
   final t = I18n.t;
@@ -39,6 +38,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
   late TextEditingController _gasPriceController;
   late TransactionRepository _repo;
   late Account _account;
+  late Account _shareAccount;
   late String? _address;
   final _form = GlobalKey<FormState>();
   bool _isSelected = false;
@@ -50,6 +50,8 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
     Log.debug(arg);
     _account = arg["account"];
     _address = arg["address"];
+    _shareAccount = arg["shareAccount"];
+
     _addressController = TextEditingController();
     _amountController = TextEditingController();
     _gasController = TextEditingController();
@@ -83,7 +85,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
     return Scaffold(
       appBar: GeneralAppbar(
         title: t('send_coin'),
-        routeName: CreateTransactionScreen.routeName,
+        routeName: TransactionScreen.routeName,
         leadingFunc: () {
           _bloc.add(ResetAddress());
           Navigator.of(context).pop();
@@ -285,7 +287,7 @@ class _CreateTransactionScreenState extends State<CreateTransactionScreen> {
                             style: Theme.of(context).textTheme.headline3,
                           ),
                           Text(
-                            '${state.fee == null || state.fee.toString().isEmpty ? "loading..." : (Formatter.formatDecimal(state.fee.toString()) + " " + _repo.account.shareAccountSymbol)}',
+                            '${state.fee == null || state.fee.toString().isEmpty ? "loading..." : (Formatter.formatDecimal(state.fee.toString()) + " " + _repo.shareAccount.symbol)}',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                         ],

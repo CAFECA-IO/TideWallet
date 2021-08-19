@@ -92,8 +92,8 @@ class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
         yield InvestLoading(_accountRepo.accountList);
         Investment investment = await _repo.generateInvestment(_state.account,
             _state.strategy, _state.amplitude, _state.investAmount);
-        investment.feeToFiat =
-            _traderRepo.calculateAmountToFiat(_state.account, investment.fee);
+        investment.feeToFiat = await _traderRepo.calculateAmountToFiat(
+            _state.account, investment.fee);
         yield _state.copyWith(investment: investment);
       }
       if (event is CreateInvestPlan) {

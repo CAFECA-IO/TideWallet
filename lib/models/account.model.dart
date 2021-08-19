@@ -40,8 +40,11 @@ class Account {
   final String imgPath;
   final String? contract;
 
-  Decimal? inFiat;
+  Decimal? _inFiat;
   final ACCOUNT accountType;
+
+  set inFiat(Decimal inFiat) => this._inFiat = inFiat;
+  Decimal get inFiat => this._inFiat!;
 
   Account({
     required this.id,

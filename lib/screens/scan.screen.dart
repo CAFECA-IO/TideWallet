@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../blocs/scan/scan_bloc.dart';
 import '../repositories/scan_repository.dart';
-import '../screens/create_transaction.screen.dart';
+import 'transaction.screen.dart';
 import '../screens/wallet_connect.screen.dart';
 import '../widgets/appBar.dart';
 import '../widgets/qrcode_view.dart';
@@ -47,7 +47,7 @@ class _ScanScreenState extends State<ScanScreen> {
               .pushNamed(WalletConnectScreen.routeName, arguments: state.uri);
         } else if (state is ScannedAddress) {
           Navigator.of(context).pop();
-          Navigator.of(context).pushNamed(CreateTransactionScreen.routeName,
+          Navigator.of(context).pushNamed(TransactionScreen.routeName,
               arguments: {"account": state.account, "address": state.address});
         }
       },

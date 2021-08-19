@@ -7,6 +7,8 @@ import '../models/transaction.model.dart';
 
 class TransactionRepository {
   Account? _account;
+  Account? _shareAccount;
+  Transaction? _transaction;
 
   PublishSubject<AccountMessage> get listener => AccountCore().messenger;
 
@@ -15,14 +17,41 @@ class TransactionRepository {
   set account(Account account) => this._account = account;
   Account get account => this._account!;
 
+  set shareAccount(Account account) => this._shareAccount = account;
+  Account get shareAccount => this._shareAccount!;
+
+  set transaction(Transaction transaction) => this._transaction = transaction;
+  Transaction get transaction => this._transaction!;
+
+  Future<Map> getAccountDetail(String accountId) async {
+    final Map accountDetail =
+        await AccountCore().getAccountDetail(this.account.id);
+    Account account = accountDetail["account"];
+    Account shareAccount = accountDetail["shareAccount"];
+    this.account = account;
+    this.shareAccount = shareAccount;
+
+    return accountDetail;
+  }
+
+  Future<Map<String, dynamic>> getTransactionDetail(
+      String accountId, String txid) async {
+    final Map<String, dynamic> transactionDetail =
+        await AccountCore().getTransactionDetail(accountId, txid);
+    Account account = transactionDetail["account"];
+    Account shareAccount = transactionDetail["shareAccount"];
+    Transaction transaction = transactionDetail["transaction"];
+    this.account = account;
+    this.shareAccount = shareAccount;
+    this.transaction = transaction;
+    return transactionDetail;
+  }
+
   bool verifyAmount(String amount, String fee) =>
       AccountCore().verifyAmount(this.account.id, amount, fee);
 
   Future<bool> verifyAddress(String address) =>
       AccountCore().verifyAddress(this.account.id, address);
-
-  Future<Map> getAccountDetail() =>
-      AccountCore().getAccountDetail(this.account.id);
 
   Future<String> getReceivingAddress() =>
       AccountCore().getReceivingAddress(this.account.id);

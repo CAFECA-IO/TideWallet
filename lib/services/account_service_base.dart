@@ -134,7 +134,7 @@ class AccountServiceBase extends AccountService {
 
     for (JoinAccount jacc in jaccs) {
       Account acc = Account.fromJoinAccount(jacc, jaccs[0], this._base);
-      acc = acc.copyWith(inFiat: Trader().calculateToFiat(acc, fiat));
+      acc.inFiat = await Trader().calculateToFiat(acc, fiat: fiat);
       accs.add(acc);
     }
 

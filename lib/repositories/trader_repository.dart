@@ -6,35 +6,24 @@ import '../cores/trader.dart';
 class TraderRepository {
   Trader _trader = Trader();
 
-  late Fiat _selectedFiat;
-  get selectedFiat => this._selectedFiat;
-  set setFiat(_fiat) => this._selectedFiat = _fiat;
-
   Future<List<Fiat>> getFiatList() => _trader.getFiatList();
 
   Future<Fiat> getSelectedFiat() => _trader.getSelectedFiat();
 
-  Decimal calculateToFiat(Account _curr) {
-    return _trader.calculateToUSD(_curr) / _selectedFiat.exchangeRate;
+  Future<Decimal> calculateToFiat(Account acc) => _trader.calculateToFiat(acc);
+
+  Future<Decimal> calculateAmountToFiat(Account acc, Decimal amount) =>
+      _trader.calculateAmountToFiat(acc, amount);
+
+  Decimal calculateToUSD(Account acc) {
+    return _trader.calculateToUSD(acc);
   }
 
-  Decimal calculateToUSD(Account _curr) {
-    return _trader.calculateToUSD(_curr);
+  Decimal calculateAmountToUSD(Account acc, Decimal amount) {
+    return _trader.calculateAmountToUSD(acc, amount);
   }
 
-  Decimal calculateAmountToUSD(Account _curr, Decimal _amount) {
-    return _trader.calculateAmountToUSD(_curr, _amount);
-  }
-
-  Decimal calculateAmountToFiat(Account _curr, Decimal _amount) {
-    return _trader.calculateAmountToUSD(_curr, _amount) /
-        _selectedFiat.exchangeRate;
-  }
-
-  Future changeSelectedFiat(Fiat fiat) async {
-    this._selectedFiat = fiat;
-    await this._trader.setSelectedFiat(fiat);
-  }
+  Future setSelectedFiat(Fiat fiat) => this._trader.setSelectedFiat(fiat);
 
   Map<String, Decimal> getSwapRateAndAmount(
       Account _sellCurr, Account _buyCurr, Decimal _amount) {

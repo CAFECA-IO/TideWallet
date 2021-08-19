@@ -290,16 +290,18 @@ class AccountCore {
     return displayFilter(accounts);
   }
 
+  // Future<Fiat> getSelectedFiat() => Trader().getSelectedFiat();
+
   Future<Map> getOverview() async {
-    Fiat fiat = await Trader().getSelectedFiat();
+    // Fiat fiat = await getSelectedFiat();
     Decimal totalBalanceInFiat = Decimal.zero;
     for (Account account in this.accountList) {
-      totalBalanceInFiat += account.inFiat!;
+      totalBalanceInFiat += account.inFiat;
     }
     return {
       "account": this.getSortedAccountList(),
-      "fiat": fiat,
       'totalBalanceInFiat': totalBalanceInFiat
+      // "fiat": fiat,
     };
   }
 
@@ -343,16 +345,35 @@ class AccountCore {
  */
   Future<Map<String, dynamic>> getAccountDetail(String id) async {
     Account account = this.accountList.where((acc) => acc.id == id).first;
+    late Account shareAccount;
+    if (account.type == 'token')
+      shareAccount = this._accounts[account.shareAccountId]![0];
+    else
+      shareAccount = account;
     AccountService service = _getService(account.shareAccountId);
     List<Transaction> transactions = await service.getTrasnctions(id);
-    return {"account": account, "transactions": transactions};
+    return {
+      "account": account,
+      "shareAccount": shareAccount,
+      "transactions": transactions
+    };
   }
 
-  Future<Transaction> getTransactionDetail(String id, String txid) async {
+  Future<Map<String, dynamic>> getTransactionDetail(
+      String id, String txid) async {
     Account account = this.accountList.where((acc) => acc.id == id).first;
+    late Account shareAccount;
+    if (account.type == 'token')
+      shareAccount = this._accounts[account.shareAccountId]![0];
+    else
+      shareAccount = account;
     AccountService service = _getService(account.shareAccountId);
     Transaction transaction = await service.getTransactionDetail(txid);
-    return transaction;
+    return {
+      "account": account,
+      "shareAccount": shareAccount,
+      "transaction": transaction
+    };
   }
 
   Future<String> getReceivingAddress(String id) async {
