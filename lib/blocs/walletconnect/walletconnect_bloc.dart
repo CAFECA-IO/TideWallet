@@ -148,10 +148,10 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
         );
       }
 
-      if (event is ApproveWC) {
-        connector.approveSession(session);
-        gasPrice = await _txRepo.getGasPrice();
-      }
+      // if (event is ApproveWC) {
+      //   connector.approveSession(session);
+      //   gasPrice = await _txRepo.getGasPrice();
+      // }
 
       if (event is ConnectWC) {
         yield _state.copyWith(status: WC_STATUS.CONNECTED);
@@ -173,52 +173,52 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
 
         switch (event.request.method) {
           case 'eth_sendTransaction':
-            final param = event.request.params![0];
+            // final param = event.request.params![0];
 
-            Decimal amount = hexStringToDecimal(param['value']) /
-                Decimal.fromInt(pow(10, 18) as int);
-            Decimal gasPrice = hexStringToDecimal(param['gasPrice']) /
-                Decimal.fromInt(pow(10, 18) as int);
-            Decimal gasLimit = hexStringToDecimal(param['gas']);
+            // Decimal amount = hexStringToDecimal(param['value']) /
+            //     Decimal.fromInt(pow(10, 18) as int);
+            // Decimal gasPrice = hexStringToDecimal(param['gasPrice']) /
+            //     Decimal.fromInt(pow(10, 18) as int);
+            // Decimal gasLimit = hexStringToDecimal(param['gas']);
 
-            final txRes = await _txRepo.prepareTransaction(
-              param['to'],
-              amount,
-              fee: gasPrice * gasLimit,
-              gasPrice: gasPrice,
-              gasLimit: gasLimit,
-              message: param['data'],
-            );
+            // final txRes = await _txRepo.prepareTransaction(
+            //   param['to'],
+            //   amount,
+            //   fee: gasPrice * gasLimit,
+            //   gasPrice: gasPrice,
+            //   gasLimit: gasLimit,
+            //   message: param['data'],
+            // );
 
-            List publishRes =
-                await _txRepo.publishTransaction(txRes[0], txRes[1]);
-            if (publishRes[0] == true) {
-              result = publishRes[1].txId;
-            }
+            // List publishRes =
+            //     await _txRepo.publishTransaction(txRes[0], txRes[1]);
+            // if (publishRes[0] == true) {
+            //   result = publishRes[1].txId;
+            // }
 
             break;
           case 'personal_sign':
             // TODO:
             // final addressRequested = event.request.params[1];
-            final lst =
-                hex.decode(event.request.params![0].replaceAll('0x', ''));
-            final data = Cryptor.keccak256round(lst, round: 1);
-            final MsgSignature signature = await PaperWalletCore()
-                .sign(data: data, changeIndex: 0, keyIndex: 0);
-            result = '0x' +
-                signature.r.toRadixString(16) +
-                signature.s.toRadixString(16) +
-                signature.v.toRadixString(16);
+            // final lst =
+            //     hex.decode(event.request.params![0].replaceAll('0x', ''));
+            // final data = Cryptor.keccak256round(lst, round: 1);
+            // final MsgSignature signature = await PaperWalletCore()
+            //     .sign(data: data, changeIndex: 0, keyIndex: 0);
+            // result = '0x' +
+            //     signature.r.toRadixString(16) +
+            //     signature.s.toRadixString(16) +
+            //     signature.v.toRadixString(16);
             break;
 
           case 'eth_signTypedData':
-            final data = TypedData.sign(json.decode(event.request.params![1]));
-            final MsgSignature signature = await PaperWalletCore()
-                .sign(data: data, changeIndex: 0, keyIndex: 0);
-            result = result = '0x' +
-                signature.r.toRadixString(16) +
-                signature.s.toRadixString(16) +
-                signature.v.toRadixString(16);
+            // final data = TypedData.sign(json.decode(event.request.params![1]));
+            // final MsgSignature signature = await PaperWalletCore()
+            //     .sign(data: data, changeIndex: 0, keyIndex: 0);
+            // result = result = '0x' +
+            //     signature.r.toRadixString(16) +
+            //     signature.s.toRadixString(16) +
+            //     signature.v.toRadixString(16);
             break;
           default:
             throw (ERROR_MISSING.METHOD);

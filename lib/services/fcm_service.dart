@@ -110,30 +110,30 @@ class FCM {
 
   applyEvent(FCMMsg msg, {bool navigate = false}) async {
     if (msg.event == FCM_EVENT.TRANSACTION_NEW) {
-      AccountService svc = AccountCore().getService(msg.accountId);
-      await svc.updateTransaction(msg.currencyId, msg.payload);
-      await svc.updateAccount(msg.currencyId, msg.payload);
-      // await svc.updateCurrency(msg.currencyId, {'balance': '100'});
+      // AccountService svc = AccountCore().getService(msg.accountId);
+      // await svc.updateTransaction(msg.currencyId, msg.payload);
+      // await svc.updateAccount(msg.currencyId, msg.payload);
+      // // await svc.updateCurrency(msg.currencyId, {'balance': '100'});
 
-      if (navigate) {
-        Account account = AccountCore()
-            .accounts[msg.accountId]!
-            .firstWhere((currency) => currency.currencyId == msg.currencyId);
+      // if (navigate) {
+      //   Account account = AccountCore()
+      //       .accounts[msg.accountId]!
+      //       .firstWhere((currency) => currency.currencyId == msg.currencyId);
 
-        this._navigator.currentState!.pushNamed(AccountDetailScreen.routeName,
-            arguments: {"account": account});
-      }
+      //   this._navigator.currentState!.pushNamed(AccountDetailScreen.routeName,
+      //       arguments: {"account": account});
+      // }
     }
 
     if (msg.event == FCM_EVENT.UTXO) {
-      AccountService svc = AccountCore().getService(msg.accountId);
+      // AccountService svc = AccountCore().getService(msg.accountId);
 
-      if (svc is BitcoinService) {
-        // svc.updateUTXO(msg.currencyId, msg.payload);
-      } else {
-        // TODO: For Dash Or Litcoin?
+      // if (svc is BitcoinService) {
+      //   // svc.updateUTXO(msg.currencyId, msg.payload);
+      // } else {
+      //   // TODO: For Dash Or Litcoin?
 
-      }
+      // }
     }
   }
 

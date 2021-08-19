@@ -54,10 +54,10 @@ class _SignTransactionState extends State<SignTransaction> {
     Decimal fee = hexStringToDecimal(gasPrice) *
         hexStringToDecimal(widget.param['gas']) /
         Decimal.fromInt(pow(10, 18) as int);
-    Decimal amountInFiat =
-        _traderRepo.calculateAmountToFiat(widget.currency, amount) /
-            Decimal.fromInt(pow(10, 18) as int);
-    Decimal feeInFiat = _traderRepo.calculateAmountToFiat(widget.currency, fee);
+    // Decimal amountInFiat =
+    //     _traderRepo.calculateAmountToFiat(widget.currency, amount) /
+    //         Decimal.fromInt(pow(10, 18) as int);
+    // Decimal feeInFiat = _traderRepo.calculateAmountToFiat(widget.currency, fee);
 
     bool able = (Decimal.tryParse(widget.currency.balance)! *
                 Decimal.fromInt(pow(10, 18) as int) -
@@ -118,8 +118,8 @@ class _SignTransactionState extends State<SignTransaction> {
                         '- ${amount / Decimal.fromInt(pow(10, 18) as int)} ETH',
                         style: Theme.of(context).textTheme.headline1,
                       ),
-                      Text(
-                          '(\$ ${Formatter.formatDecimal(amountInFiat.toString())} $fiat)')
+                      // Text(
+                      //     '(\$ ${Formatter.formatDecimal(amountInFiat.toString())} $fiat)')
                     ],
                   ),
                 ),
@@ -140,8 +140,8 @@ class _SignTransactionState extends State<SignTransaction> {
                       ),
                       Spacer(),
                       Text(' $fee ETH'),
-                      Text(
-                          '(\$ ${Formatter.formatDecimal(feeInFiat.toString())} $fiat)')
+                      // Text(
+                      //     '(\$ ${Formatter.formatDecimal(feeInFiat.toString())} $fiat)')
                     ],
                   ),
                 ),
@@ -159,8 +159,8 @@ class _SignTransactionState extends State<SignTransaction> {
                             .headline1!
                             .copyWith(fontSize: 18),
                       ),
-                      Text(
-                          '\$ ${Formatter.formatDecimal((amountInFiat + feeInFiat).toString())} $fiat')
+                      // Text(
+                      //     '\$ ${Formatter.formatDecimal((amountInFiat + feeInFiat).toString())} $fiat')
                     ],
                   ),
                 ),
