@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
-import '../cores/account.dart';
 import '../models/account.model.dart';
 import '../blocs/swap/swap_bloc.dart';
 import '../repositories/swap_repository.dart';
@@ -58,7 +57,7 @@ class _SwapScreenState extends State<SwapScreen> {
         Account account = argument['account'];
         _swapBloc.add(InitSwap(account));
       } else {
-        List<Account> _currencies = AccountCore().accountList;
+        List<Account> _currencies = _swapRepo.accountList;
         Account _curr = _currencies.firstWhere(
             (curr) =>
                 Decimal.tryParse(curr.balance) != null &&

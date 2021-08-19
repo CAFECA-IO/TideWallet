@@ -12,13 +12,9 @@ import '../cores/account.dart';
 class AccountRepository {
   PublishSubject<AccountMessage> get listener => AccountCore().messenger;
 
-  AccountRepository() {
-    AccountCore().setMessenger();
-  }
+  AccountRepository();
 
   Future coreInit({bool? debugMode}) async {
-    AccountCore().setMessenger();
-
     await AccountCore().init(debugMode: debugMode);
   }
 
@@ -30,7 +26,8 @@ class AccountRepository {
   Future toggleDisplayToken(DisplayToken token) =>
       AccountCore().toggleDisplayToken(token);
 
-  List<Account> getAllAccounts() => AccountCore().accountList;
+  List<Account> get accountList => AccountCore().accountList;
+  Map<String, List<Account>> get accountMap => AccountCore().accounts;
 
   close() {
     AccountCore().messenger.add(

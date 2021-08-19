@@ -1,42 +1,45 @@
 part of 'invest_plan_bloc.dart';
 
 abstract class InvestPlanState extends Equatable {
-  const InvestPlanState();
+  final List<Account> accountList;
+  const InvestPlanState(this.accountList);
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [this.accountList];
 }
 
 class InvestPlanInitial extends InvestPlanState {
-  InvestPlanInitial();
+  InvestPlanInitial(List<Account> accountList) : super(accountList);
 }
 
 class InvestLoading extends InvestPlanState {
-  InvestLoading();
+  InvestLoading(List<Account> accountList) : super(accountList);
 }
 
 class InvestSuccess extends InvestPlanState {
-  InvestSuccess();
+  InvestSuccess(List<Account> accountList) : super(accountList);
 }
 
 class InvestFail extends InvestPlanState {
-  InvestFail();
+  InvestFail(List<Account> accountList) : super(accountList);
 }
 
 class InvestPlanStatus extends InvestPlanState {
+  final List<Account> accountList;
   Account account;
   final InvestStrategy strategy;
   final InvestAmplitude amplitude;
   final InvestPercentage percentage;
   final Decimal investAmount;
   final Investment? investment;
-  InvestPlanStatus(
+  InvestPlanStatus(this.accountList,
       {required this.account,
       required this.strategy,
       required this.amplitude,
       required this.percentage,
       required this.investAmount,
-      this.investment});
+      this.investment})
+      : super(accountList);
 
   InvestPlanState copyWith(
       {Account? account,
@@ -45,7 +48,7 @@ class InvestPlanStatus extends InvestPlanState {
       InvestPercentage? percentage,
       Decimal? investAmount,
       Investment? investment}) {
-    return InvestPlanStatus(
+    return InvestPlanStatus(this.accountList,
         account: account ?? this.account,
         strategy: strategy ?? this.strategy,
         amplitude: amplitude ?? this.amplitude,
@@ -55,6 +58,13 @@ class InvestPlanStatus extends InvestPlanState {
   }
 
   @override
-  List<Object> get props =>
-      [account, strategy, amplitude, percentage, investAmount, investment!];
+  List<Object> get props => [
+        accountList,
+        account,
+        strategy,
+        amplitude,
+        percentage,
+        investAmount,
+        investment!
+      ];
 }

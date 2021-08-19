@@ -1,19 +1,9 @@
-import 'dart:typed_data';
-
 import 'package:decimal/decimal.dart';
-import '../cores/swap.dart';
-import '../models/account.model.dart';
-import '../models/transaction.model.dart';
+
 import '../cores/account.dart';
 import '../cores/contract.dart';
-import '../services/account_service.dart';
-import '../services/transaction_service.dart';
-import '../services/transaction_service_based.dart';
-import '../services/transaction_service_ethereum.dart';
-import '../services/ethereum_service.dart';
-import '../helpers/rlp.dart' as rlp;
-import '../helpers/converter.dart';
-import '../helpers/logger.dart'; // --
+import '../cores/swap.dart';
+import '../models/account.model.dart';
 
 class SwapRepository {
   SwapRepository();
@@ -24,7 +14,9 @@ class SwapRepository {
         sellAmount: sellAmount, buyAmount: buyAmount);
   }
 
-  Future<List> swap(
+  List<Account> get accountList => AccountCore().accountList;
+
+  Future swap(
       String thirdPartyId,
       Account sellAccount,
       String sellAmount,
@@ -34,33 +26,20 @@ class SwapRepository {
       Decimal gasPrice,
       Decimal gasLimit) async {
     // ++ Get sellAccount's cfc Account to do the transaction
-    EthereumService _accountService =
-        AccountCore().getService(sellAccount.shareAccountId) as EthereumService;
-    String address =
-        (await AccountCore().getReceivingAddress(sellAccount.id))[0];
-    int nonce =
-        await _accountService.getNonce(sellAccount.blockchainId, address);
+
     Decimal _sellAmount = Decimal.tryParse(sellAmount)!;
     Decimal _buyAmount = Decimal.tryParse(buyAmount)!;
     String swapData = await ContractCore()
         .swapData(sellAccount, _sellAmount, buyAccount, _buyAmount);
     Decimal fee = gasPrice * gasLimit;
-    TransactionService _transactionService =
-        EthereumTransactionService(TransactionServiceBased());
 
-    Transaction transaction = await _transactionService.prepareTransaction(
-        thirdPartyId,
-        sellAccount.publish,
-        to,
-        Converter.toEthSmallestUnit(_sellAmount),
+    return AccountCore().sendTransaction(sellAccount.id,
+        thirdPartyId: thirdPartyId,
+        to: to,
+        amount: _sellAmount,
         message: swapData,
-        nonce: nonce,
-        gasPrice: Converter.toEthSmallestUnit(gasPrice),
+        fee: fee,
         gasLimit: gasLimit,
-        fee: Converter.toEthSmallestUnit(fee),
-        chainId: sellAccount.chainId,
-        changeAddress: address);
-    Decimal balance = Decimal.parse(sellAccount.balance) - _sellAmount - fee;
-    return [transaction, balance];
+        gasPrice: gasPrice);
   }
 }

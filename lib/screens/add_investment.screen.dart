@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../cores/account.dart';
-
 import '../models/investment.model.dart';
 import '../models/account.model.dart';
 
@@ -46,8 +44,10 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
   @override
   void didChangeDependencies() {
     this._bloc = BlocProvider.of<InvestPlanBloc>(context)
-      ..add(InvestPlanInitialed(AccountCore().accountList[0],
-          InvestStrategy.Climb, InvestAmplitude.Normal, InvestPercentage.Low));
+      ..add(InvestPlanInitialed(
+          strategy: InvestStrategy.Climb,
+          amplitude: InvestAmplitude.Normal,
+          percentage: InvestPercentage.Low));
     super.didChangeDependencies();
   }
 
@@ -127,8 +127,8 @@ class _AddInvestmentScreenState extends State<AddInvestmentScreen> {
                     ),
                     ItemPicker(
                       title: t('invest_account'),
-                      items: AccountCore().accountList,
-                      selectedItem: _account ?? AccountCore().accountList[0],
+                      items: state.accountList,
+                      selectedItem: state.accountList[0],
                       onTap: () {},
                       notifyParent: ({required int index, dynamic value}) {
                         _bloc.add(AccountSelected(value));

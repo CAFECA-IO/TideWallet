@@ -34,17 +34,18 @@ class AccountCore {
   factory AccountCore() {
     return _instance;
   }
-  AccountCore._internal();
 
-  PublishSubject<AccountMessage>? _messenger;
-  set messenger(PublishSubject<AccountMessage>? messenger) =>
-      messenger != null ? this._messenger = messenger : this.setMessenger();
+  late PublishSubject<AccountMessage> _messenger;
 
-  PublishSubject<AccountMessage> get messenger => this._messenger!;
+  AccountCore._internal() {
+    this.setMessenger();
+  }
 
   setMessenger() {
-    messenger = PublishSubject<AccountMessage>();
+    _messenger = PublishSubject<AccountMessage>();
   }
+
+  PublishSubject<AccountMessage> get messenger => this._messenger;
 
   bool _isInit = false;
   bool _debugMode = false;

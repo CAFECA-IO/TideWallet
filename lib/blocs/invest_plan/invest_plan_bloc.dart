@@ -5,10 +5,9 @@ import 'package:decimal/decimal.dart';
 import 'package:equatable/equatable.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../cores/account.dart';
-
 import '../../repositories/trader_repository.dart';
 import '../../repositories/invest_repository.dart';
+import '../../repositories/account_repository.dart';
 
 import '../../models/account.model.dart';
 import '../../models/investment.model.dart';
@@ -20,9 +19,11 @@ part 'invest_plan_state.dart';
 
 class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
   final InvestRepository _repo;
+  final AccountRepository _accountRepo;
   final TraderRepository _traderRepo;
 
-  InvestPlanBloc(this._repo, this._traderRepo) : super(InvestPlanInitial());
+  InvestPlanBloc(this._repo, this._accountRepo, this._traderRepo)
+      : super(InvestPlanInitial(_accountRepo.accountList));
 
   @override
   Stream<Transition<InvestPlanEvent, InvestPlanState>> transformEvents(
@@ -43,11 +44,17 @@ class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
     InvestPlanEvent event,
   ) async* {
     if (event is InvestPlanInitialed) {
-      Decimal investAmount = Decimal.tryParse(event.account.balance) ??
+      late Account account;
+      if (event.account != null)
+        account = event.account!;
+      else
+        account = _accountRepo.accountMap[0]![0];
+
+      Decimal investAmount = Decimal.tryParse(account.balance) ??
           Decimal.zero * Decimal.tryParse(event.percentage.value)!;
-      Log.debug('event.account.name: ${event.account.name}');
-      yield InvestPlanStatus(
-          account: event.account,
+      Log.debug('account.name: ${account.name}');
+      yield InvestPlanStatus(_accountRepo.accountList,
+          account: account,
           strategy: event.strategy,
           amplitude: event.amplitude,
           percentage: event.percentage,
@@ -82,7 +89,7 @@ class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
       }
       if (event is GenerateInvestPlan) {
         // TOOD
-        yield InvestLoading();
+        yield InvestLoading(_accountRepo.accountList);
         Investment investment = await _repo.generateInvestment(_state.account,
             _state.strategy, _state.amplitude, _state.investAmount);
         investment.feeToFiat =
@@ -91,16 +98,19 @@ class InvestPlanBloc extends Bloc<InvestPlanEvent, InvestPlanState> {
       }
       if (event is CreateInvestPlan) {
         // TOOD
-        yield InvestLoading();
+        yield InvestLoading(_accountRepo.accountList);
         bool result =
             await _repo.createInvestment(_state.account, _state.investment!);
         if (result)
-          yield InvestSuccess();
+          yield InvestSuccess(_accountRepo.accountList);
         else
-          yield InvestFail();
+          yield InvestFail(_accountRepo.accountList);
       }
     } else
-      this.add(InvestPlanInitialed(AccountCore().accounts[0]![0],
-          InvestStrategy.Climb, InvestAmplitude.Normal, InvestPercentage.Low));
+      this.add(InvestPlanInitialed(
+          account: _accountRepo.accountMap[0]![0],
+          strategy: InvestStrategy.Climb,
+          amplitude: InvestAmplitude.Normal,
+          percentage: InvestPercentage.Low));
   }
 }

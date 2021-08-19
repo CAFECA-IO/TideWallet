@@ -8,12 +8,15 @@ abstract class InvestPlanEvent extends Equatable {
 }
 
 class InvestPlanInitialed extends InvestPlanEvent {
-  final Account account;
+  final Account? account;
   final InvestStrategy strategy;
   final InvestAmplitude amplitude;
   final InvestPercentage percentage;
   InvestPlanInitialed(
-      this.account, this.strategy, this.amplitude, this.percentage);
+      {this.account,
+      required this.strategy,
+      required this.amplitude,
+      required this.percentage});
 }
 
 class AccountSelected extends InvestPlanEvent {
