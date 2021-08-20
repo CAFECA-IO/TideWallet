@@ -57,7 +57,6 @@ class _TransactionScreenState extends State<TransactionScreen> {
     _gasController = TextEditingController();
     _gasPriceController = TextEditingController();
     this._repo = Provider.of<TransactionRepository>(context);
-    this._repo.account = _account;
     _fiatBloc = BlocProvider.of<FiatBloc>(context);
     _bloc = BlocProvider.of<TransactionBloc>(context)
       ..add(UpdateTransactionCreateAccount(this._account));
@@ -183,7 +182,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                       Container(
                         child: Align(
                           child: Text(
-                            '${t('balance')}: ${state.spandable != null ? (Formatter.formatDecimal(_repo.account.balance.toString()) + " " + _repo.account.symbol) : "loading..."}',
+                            '${t('balance')}: ${state.spandable != null ? (Formatter.formatDecimal(_account.balance.toString()) + " " + _account.symbol) : "loading..."}',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                           alignment: Alignment.centerRight,
@@ -241,7 +240,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                                           RegExp(r'(^\d*\.?\d*)$')),
                                     ],
                                     labelText:
-                                        '${t('custom')} Gas Price (${_repo.account.symbol})',
+                                        '${t('custom')} Gas Price (${_account.symbol})',
                                     autovalidate: AutovalidateMode.disabled,
                                     controller: _gasPriceController,
                                     onChanged: (String v) {
@@ -287,7 +286,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                             style: Theme.of(context).textTheme.headline3,
                           ),
                           Text(
-                            '${state.fee == null || state.fee.toString().isEmpty ? "loading..." : (Formatter.formatDecimal(state.fee.toString()) + " " + _repo.shareAccount.symbol)}',
+                            '${state.fee == null || state.fee.toString().isEmpty ? "loading..." : (Formatter.formatDecimal(state.fee.toString()) + " " + _shareAccount.symbol)}',
                             style: Theme.of(context).textTheme.bodyText2,
                           ),
                         ],
@@ -300,7 +299,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                         ),
                       ),
                       Spacer(),
-                      _repo.account.accountType == ACCOUNT.ETH
+                      _account.accountType == ACCOUNT.ETH
                           ? Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [

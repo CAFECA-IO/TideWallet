@@ -3,13 +3,19 @@ part of 'transaction_bloc.dart';
 enum TransactionFormError { addressInvalid, amountInsufficient, none }
 
 abstract class TransactionState extends Equatable {
-  const TransactionState();
+  final Account? account;
+  const TransactionState(this.account);
 
   @override
   List<Object> get props => [];
 }
 
+class TransactionPrepare extends TransactionState {
+  TransactionPrepare() : super(null);
+}
+
 class TransactionInitial extends TransactionState {
+  final Account account;
   final String? address;
   final Decimal? amount;
   final Decimal? spandable;
@@ -25,7 +31,7 @@ class TransactionInitial extends TransactionState {
 
   static const defaultValid = [false, false];
 
-  TransactionInitial(
+  TransactionInitial(Account account,
       {this.address,
       this.amount,
       this.spandable,
@@ -37,7 +43,9 @@ class TransactionInitial extends TransactionState {
       this.estimatedTime = "10~30",
       this.rules = defaultValid,
       this.error = TransactionFormError.none,
-      this.message});
+      this.message})
+      : this.account = account,
+        super(account);
 
   TransactionState copyWith({
     String? address,
@@ -53,7 +61,7 @@ class TransactionInitial extends TransactionState {
     TransactionFormError? error,
     String? message,
   }) {
-    return TransactionInitial(
+    return TransactionInitial(this.account,
         address: address ?? this.address,
         amount: amount ?? this.amount,
         spandable: spandable ?? this.spandable,
@@ -85,8 +93,14 @@ class TransactionInitial extends TransactionState {
       ];
 }
 
-class CreateTransactionFail extends TransactionState {}
+class CreateTransactionFail extends TransactionState {
+  CreateTransactionFail() : super(null);
+}
 
-class TransactionSent extends TransactionState {}
+class TransactionSent extends TransactionState {
+  TransactionSent() : super(null);
+}
 
-class TransactionPublishing extends TransactionState {}
+class TransactionPublishing extends TransactionState {
+  TransactionPublishing() : super(null);
+}

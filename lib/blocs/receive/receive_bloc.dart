@@ -19,7 +19,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   ) async* {
     if (event is GetReceivingAddress) {
       yield AddressLoading(event.account, '');
-      String address = await _repo.getReceivingAddress();
+      String address = await _repo.getReceivingAddress(event.account.id);
       yield AddressLoaded(event.account, address);
     }
   }

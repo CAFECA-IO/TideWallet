@@ -220,7 +220,7 @@ class SwapBloc extends Bloc<SwapEvent, SwapState> {
     if (event is SwapConfirmed) {
       SwapLoaded _state = state as SwapLoaded;
       // ++ error handle if buyAmoumt is too high need to update SwapUI => exchangeRate, and expected buyAmount 2021/3/19 Emily
-      _transactionRepo.account = _state.sellAccount!;
+      // _transactionRepo.account = _state.sellAccount!;
 
       // List result = await _swapRepo.swap(
       //   (await _transactionRepo.getPrivKey(event.password, 0, 0)),

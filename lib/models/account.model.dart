@@ -8,7 +8,7 @@ import '../constants/account_config.dart';
 
 enum ACCOUNT_EVT {
   OnUpdateAccount,
-  OnUpdateAccounts,
+  OnUpdateCurrency,
   OnUpdateTransactions,
   OnUpdateTransaction,
   ClearAll

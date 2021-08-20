@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
+import 'blocs/transaction_detail/transaction_detail_bloc.dart';
 import 'repositories/account_repository.dart';
 import 'repositories/transaction_repository.dart';
 import 'repositories/user_repository.dart';
@@ -116,6 +117,11 @@ class MyApp extends StatelessWidget {
             ),
             BlocProvider<AccountDetailBloc>(
               create: (BuildContext context) => AccountDetailBloc(
+                Provider.of<AccountRepository>(context, listen: false),
+              ),
+            ),
+            BlocProvider<TransactionDetailBloc>(
+              create: (BuildContext context) => TransactionDetailBloc(
                 Provider.of<TransactionRepository>(context, listen: false),
               ),
             ),

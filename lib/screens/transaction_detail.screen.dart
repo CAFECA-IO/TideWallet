@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
-import '../blocs/account_detail/account_detail_bloc.dart';
+import '../blocs/transaction_detail/transaction_detail_bloc.dart';
 import '../theme.dart';
 import '../helpers/logger.dart';
 import '../helpers/i18n.dart';
@@ -13,8 +13,7 @@ import '../models/transaction.model.dart';
 import '../widgets/appBar.dart';
 import '../widgets/dash_line_divider.dart';
 import '../widgets/copy_tool_tip.dart';
-import '../repositories/transaction_repository.dart';
-import '../repositories/trader_repository.dart';
+
 import '../constants/account_config.dart';
 
 class TransactionDetailScreen extends StatefulWidget {
@@ -29,7 +28,7 @@ class TransactionDetailScreen extends StatefulWidget {
 
 class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
   final t = I18n.t;
-  late AccountDetailBloc _bloc;
+  late TransactionDetailBloc _bloc;
 
   @override
   void didChangeDependencies() {
@@ -38,7 +37,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
     String _accountId = arg["accountId"];
     String txid = arg["txid"];
 
-    _bloc = Provider.of<AccountDetailBloc>(context)
+    _bloc = Provider.of<TransactionDetailBloc>(context)
       ..add(GetTransactionDetial(_accountId, txid)); // TODO GetTransactionList
     super.didChangeDependencies();
   }
@@ -81,9 +80,10 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
         title: t('transaction_detail'),
         routeName: TransactionDetailScreen.routeName,
       ),
-      body: BlocBuilder<AccountDetailBloc, AccountDetailState>(
+      body: BlocBuilder<TransactionDetailBloc, TransactionDetailState>(
           bloc: _bloc,
           builder: (context, state) {
+            print(state);
             if (state is TransactionLoaded) {
               return Container(
                 padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),

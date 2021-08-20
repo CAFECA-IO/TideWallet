@@ -77,9 +77,9 @@ class Transaction {
 
   Transaction.fromJson(Map json) {
     this.txId = json['txid'];
-    this.status = json['status'].status == 'pending'
+    this.status = json['status'] == 'pending'
         ? TransactionStatus.pending
-        : json['status'].status == 'success'
+        : json['status'] == 'success'
             ? TransactionStatus.success
             : TransactionStatus.fail;
     this.confirmations = json['confirmations'];

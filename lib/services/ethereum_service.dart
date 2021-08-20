@@ -135,8 +135,6 @@ class EthereumService extends AccountServiceDecorator {
                 Account.fromJoinAccount(c).copyWith(accountType: this.base))
             .toList();
 
-        AccountMessage msg =
-            AccountMessage(evt: ACCOUNT_EVT.OnUpdateAccount, value: cs[0]);
         AccountCore().accounts[this.service.shareAccountId] = cs;
 
         AccountMessage currMsg = AccountMessage(
@@ -145,7 +143,6 @@ class EthereumService extends AccountServiceDecorator {
               "accounts": AccountCore().accounts[this.service.shareAccountId]
             });
 
-        AccountCore().messenger.add(msg);
         AccountCore().messenger.add(currMsg);
         return true;
       } else {

@@ -428,6 +428,24 @@ class _$CurrencyDao extends CurrencyDao {
   }
 
   @override
+  Future<CurrencyEntity?> findCurrency(String currencyId) async {
+    return _queryAdapter.query('SELECT * FROM Currency where currency_id = ?1',
+        mapper: (Map<String, Object?> row) => CurrencyEntity(
+            currencyId: row['currency_id'] as String,
+            name: row['name'] as String,
+            symbol: row['symbol'] as String,
+            currencyPublish: (row['currency_publish'] as int) != 0,
+            decimals: row['decimals'] as int,
+            type: row['type'] as String,
+            image: row['image'] as String?,
+            exchangeRate: row['exchange_rate'] as String,
+            contract: row['contract'] as String?,
+            blockchainId: row['blockchain_id'] as String?,
+            totalSupply: row['total_supply'] as String?),
+        arguments: [currencyId]);
+  }
+
+  @override
   Future<List<CurrencyEntity>> findAllTokensByBlockchainId(String id) async {
     return _queryAdapter.queryList(
         'SELECT * FROM Currency where blockchain_id = ?1',

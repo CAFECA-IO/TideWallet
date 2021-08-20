@@ -6,64 +6,34 @@ import '../models/account.model.dart';
 import '../models/transaction.model.dart';
 
 class TransactionRepository {
-  Account? _account;
-  Account? _shareAccount;
-  Transaction? _transaction;
-
   PublishSubject<AccountMessage> get listener => AccountCore().messenger;
 
   TransactionRepository();
 
-  set account(Account account) => this._account = account;
-  Account get account => this._account!;
-
-  set shareAccount(Account account) => this._shareAccount = account;
-  Account get shareAccount => this._shareAccount!;
-
-  set transaction(Transaction transaction) => this._transaction = transaction;
-  Transaction get transaction => this._transaction!;
-
-  Future<Map> getAccountDetail(String accountId) async {
-    final Map accountDetail = await AccountCore().getAccountDetail(accountId);
-    Account account = accountDetail["account"];
-    Account shareAccount = accountDetail["shareAccount"];
-    this.account = account;
-    this.shareAccount = shareAccount;
-
-    return accountDetail;
-  }
-
   Future<Map<String, dynamic>> getTransactionDetail(
-      String accountId, String txid) async {
-    final Map<String, dynamic> transactionDetail =
-        await AccountCore().getTransactionDetail(accountId, txid);
-    Account account = transactionDetail["account"];
-    Account shareAccount = transactionDetail["shareAccount"];
-    Transaction transaction = transactionDetail["transaction"];
-    this.account = account;
-    this.shareAccount = shareAccount;
-    this.transaction = transaction;
-    return transactionDetail;
-  }
+          String accountId, String txid) =>
+      AccountCore().getTransactionDetail(accountId, txid);
 
-  bool verifyAmount(String amount, String fee) =>
-      AccountCore().verifyAmount(this.account.id, amount, fee);
+  bool verifyAmount(String id, String amount, String fee) =>
+      AccountCore().verifyAmount(id, amount, fee);
 
-  Future<bool> verifyAddress(String address) =>
-      AccountCore().verifyAddress(this.account.id, address);
+  Future<bool> verifyAddress(String id, String address) =>
+      AccountCore().verifyAddress(id, address);
 
-  Future<String> getReceivingAddress() =>
-      AccountCore().getReceivingAddress(this.account.id);
+  Future<String> getReceivingAddress(
+    String id,
+  ) =>
+      AccountCore().getReceivingAddress(id);
 
-  Future<Map> getTransactionFee(
+  Future<Map> getTransactionFee(String id,
           {String? address,
           String? amount,
           String? message,
           TransactionPriority? priority}) =>
-      AccountCore().getTransactionFee(this.account.id,
+      AccountCore().getTransactionFee(id,
           to: address, amount: amount, message: message, priority: priority);
 
-  Future sendTransaction(
+  Future sendTransaction(String id,
           {required String thirdPartyId,
           required String to,
           required Decimal amount,
@@ -71,7 +41,7 @@ class TransactionRepository {
           Decimal? gasPrice,
           Decimal? gasLimit,
           String? message}) =>
-      AccountCore().sendTransaction(this.account.id,
+      AccountCore().sendTransaction(id,
           thirdPartyId: thirdPartyId,
           to: to,
           amount: amount,

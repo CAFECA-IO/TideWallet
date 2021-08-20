@@ -92,22 +92,21 @@ class AccountServiceBase extends AccountService {
             id: token['account_token_id'],
             currencyId: token['token_id'],
             balance: token['balance']);
-        accounts.add(_tokenAccount);
+
         int index =
             _currs.indexWhere((_curr) => _curr.currencyId == token['token_id']);
         Log.debug('getData index: $index');
         if (index < 0) {
           APIResponse res = await HTTPAgent().get(Endpoint.url +
               '/blockchain/${token['blockchain_id']}/token/${token['token_id']}');
-          Log.debug('getData res: $res');
 
-          if (res.data != null) {
-            Map token = res.data;
-            await DBOperator()
-                .currencyDao
-                .insertCurrency(CurrencyEntity.fromJson(token));
-          }
+          if (!res.success) throw Exception('API Error');
+          await DBOperator()
+              .currencyDao
+              .insertCurrency(CurrencyEntity.fromJson(res.data));
+          Log.debug('getData res: $res');
         }
+        accounts.add(_tokenAccount);
       });
 
       return accounts;

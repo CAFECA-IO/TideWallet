@@ -13,6 +13,9 @@ abstract class CurrencyDao {
   @Query('SELECT * FROM Currency')
   Future<List<CurrencyEntity>> findAllCurrencies();
 
+  @Query('SELECT * FROM Currency where currency_id = :currencyId')
+  Future<CurrencyEntity?> findCurrency(String currencyId);
+
   @Query('SELECT * FROM Currency where blockchain_id = :id')
   Future<List<CurrencyEntity>> findAllTokensByBlockchainId(String id);
 }

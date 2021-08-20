@@ -12,20 +12,9 @@ class GetAccountDetail extends AccountDetailEvent {
   GetAccountDetail(this.accountId);
 }
 
-class GetTransactionDetial extends AccountDetailEvent {
-  final String accountId;
-  final String txid;
-  GetTransactionDetial(this.accountId, this.txid);
-}
-
 class UpdateAccount extends AccountDetailEvent {
   final Account account;
   UpdateAccount(this.account);
-}
-
-class GetTransactionList extends AccountDetailEvent {
-  final Account account;
-  GetTransactionList(this.account);
 }
 
 class UpdateTransactionList extends AccountDetailEvent {

@@ -28,15 +28,3 @@ class AccountDetailLoaded extends AccountDetailState {
   @override
   List<Object> get props => [account, shareAccount, transactions];
 }
-
-class TransactionLoaded extends AccountDetailState {
-  final Account account;
-  final Account shareAccount;
-  final Transaction transaction;
-  TransactionLoaded(this.account, this.shareAccount, this.transaction,
-      {List<Transaction>? transactions})
-      : super(account, shareAccount, transactions);
-
-  @override
-  List<Object> get props => [account, shareAccount, transaction];
-}

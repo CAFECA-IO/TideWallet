@@ -47,7 +47,7 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
   WalletConnectBloc(this._accountRepo, this._txRepo)
       : super(WalletConnectInitial());
 
-  getReceivingAddress() => _txRepo.getReceivingAddress();
+  getReceivingAddress() => _txRepo.getReceivingAddress(this.selected.id);
 
   @override
   Stream<Transition<WalletConnectEvent, WalletConnectState>> transformEvents(
@@ -134,7 +134,6 @@ class WalletConnectBloc extends Bloc<WalletConnectEvent, WalletConnectState> {
         // check to use the right chain
         // Log.info('*** chainId $chainId ${selected.network} __ ${selected.chainId}');
 
-        this._txRepo.account = selected;
         session.chainId = chainId;
         session.networkId = chainId;
         String address = await getReceivingAddress();

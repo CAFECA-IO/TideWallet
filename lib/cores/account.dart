@@ -86,6 +86,8 @@ class AccountCore {
   Future<List<AccountEntity>> _getAccounts(bool update) async {
     List<AccountEntity> result =
         await DBOperator().accountDao.findAllAccounts();
+    Log.debug('_addAccount DBResult: $result');
+
     if (result.isEmpty || update) {
       APIResponse res =
           await HTTPAgent().get(Endpoint.url + '/wallet/accounts');
@@ -94,16 +96,12 @@ class AccountCore {
       List<AccountEntity> accs = [];
 
       UserEntity user = (await DBOperator().userDao.findUser())!;
-      Log.debug('_addAccount user.userId: ${user.userId}');
 
       for (var d in l) {
         final String id = d['account_id'];
         Log.debug('_addAccount AccountData: $d');
         AccountEntity acc = AccountEntity.fromAccountJson(d, id, user.userId);
         await DBOperator().accountDao.insertAccount(acc);
-        Log.debug(
-            '_addAccount AccountEntity, id: ${acc.id}, blockchainId: ${acc.blockchainId}, currencyId: ${acc.currencyId}, balance: ${acc.balance}');
-
         accs.add(acc);
       }
       return accs;
@@ -182,14 +180,13 @@ class AccountCore {
             .map((entity) => Account.fromJoinAccount(entity))
             .toList();
     Log.debug('accounts: $accounts');
+
     for (Account account in accounts) {
+      await _getSupportedToken(account.blockchainId, update);
       Log.debug(
           'account.symbol: ${account.symbol}, account.blockchainCoinType: ${account.blockchainCoinType}, account.id: ${account.id}');
       Log.verbose('account.type: ${account.type}');
       if (account.type != "currency") continue;
-      Log.verbose('this.debugMode: ${this.debugMode}');
-      Log.verbose('account.chainPublish: ${account.chainPublish}');
-      Log.verbose('account.currencyPublish: ${account.currencyPublish}');
       // if (!this.debugMode && !account.chainPublish) continue;
       late AccountService service;
 
@@ -219,7 +216,6 @@ class AccountCore {
       this._services.add(service);
       service.init(account.shareAccountId, account.accountType);
       await service.start();
-      await _getSupportedToken(account.blockchainId, update);
     }
 
     this._isInit = true;
@@ -353,8 +349,7 @@ class AccountCore {
 
   List<Account> getSortedAccountList() {
     List<Account> accounts = this.accountList;
-    Log.debug('getSortedAccountList this._accounts: ${this._accounts}');
-    Log.debug('getSortedAccountList accounts: $accounts');
+
     accounts
       ..sort((a, b) => a.accountType.index.compareTo(b.accountType.index));
     return displayFilter(accounts);

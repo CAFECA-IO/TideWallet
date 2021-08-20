@@ -25,6 +25,9 @@ class AccountRepository {
   List<Account> get accountList => AccountCore().accountList;
   Map<String, List<Account>> get accountMap => AccountCore().accounts;
 
+  Future<Map> getAccountDetail(String accountId) =>
+      AccountCore().getAccountDetail(accountId);
+
   close() {
     AccountCore().messenger.add(
           AccountMessage(evt: ACCOUNT_EVT.ClearAll),

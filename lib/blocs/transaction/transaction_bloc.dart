@@ -22,12 +22,12 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   late Map<TransactionPriority, Decimal>? _gasPrice;
   late Decimal? _gasLimit;
 
-  TransactionBloc(this._repo, this._traderRepo) : super(TransactionInitial()) {
+  TransactionBloc(this._repo, this._traderRepo) : super(TransactionPrepare()) {
     _subscription?.cancel();
     this._repo.listener.listen((msg) {
       if (msg.evt == ACCOUNT_EVT.OnUpdateAccount) {
-        int index = msg.value.indexWhere(
-            (Account account) => account.id == this._repo.account.id);
+        int index = msg.value
+            .indexWhere((Account account) => account.id == state.account!.id);
 
         if (index >= 0) {
           Account account = msg.value[index];
@@ -67,12 +67,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     TransactionEvent event,
   ) async* {
     if (event is UpdateTransactionCreateAccount) {
-      _repo.account = event.account;
       if (state is TransactionInitial) {
         TransactionInitial _state = state as TransactionInitial;
         yield _state.copyWith(spandable: Decimal.parse(event.account.balance));
       } else {
-        yield TransactionInitial(
+        yield TransactionInitial(event.account,
             spandable: Decimal.parse(event.account.balance));
       }
     }
@@ -90,8 +89,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       );
     }
     if (event is ScanQRCode) {
-      bool verifiedAddress = await _repo
-          .verifyAddress(event.address); // TODO Account add publish property
+      bool verifiedAddress = await _repo.verifyAddress(_state.account.id,
+          event.address); // TODO Account add publish property
       List<bool> _rules = [verifiedAddress, _state.rules[1]];
       Log.debug(_rules);
       yield _state.copyWith(
@@ -100,7 +99,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       );
     }
     if (event is ValidAddress) {
-      bool verifiedAddress = await _repo.verifyAddress(event.address);
+      bool verifiedAddress =
+          await _repo.verifyAddress(_state.account.id, event.address);
       List<bool> _rules = [verifiedAddress, _state.rules[1]];
       Log.debug(_rules);
       yield _state.copyWith(
