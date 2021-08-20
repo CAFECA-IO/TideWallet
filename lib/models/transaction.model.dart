@@ -77,14 +77,27 @@ class Transaction {
 
   Transaction.fromJson(Map json) {
     this.txId = json['txid'];
-    this.status = json['status'];
+    this.status = json['status'].status == 'pending'
+        ? TransactionStatus.pending
+        : json['status'].status == 'success'
+            ? TransactionStatus.success
+            : TransactionStatus.fail;
     this.confirmations = json['confirmations'];
-    this.amount = json['amount'];
-    this.direction = json['direction'];
+    this.amount = Decimal.parse(json['amount']);
+    this.direction = this.direction = json['direction'] == 'move'
+        ? TransactionDirection.moved
+        : json['direction'] == 'send'
+            ? TransactionDirection.sent
+            : json['direction'] == 'receive'
+                ? TransactionDirection.received
+                : TransactionDirection.unknown;
     this.timestamp = json['timestamp'];
     this.sourceAddresses = json['source_addresses'];
     this.destinationAddresses = json['destination_addresses'];
-    this.fee = json['fee'];
+    this._address = (direction == TransactionDirection.received)
+        ? json['source_addresses']
+        : json['destination_addresses'];
+    this.fee = Decimal.parse(json['fee']);
     this.message = json['message'];
   }
 

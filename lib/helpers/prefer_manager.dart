@@ -82,11 +82,11 @@ class PrefManager {
     return selected;
   }
 
-  Future<Map<String, bool>> setSelectedDisplay(
+  Future<Map<String, dynamic>> setSelectedDisplay(
       String accountId, String currencyId, bool value) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String selected = prefs.getString(SELECTED_DISPLAY) ?? '{}';
-    Map<String, bool> _map = json.decode(selected);
+    Map<String, dynamic> _map = json.decode(selected);
 
     _map[currencyId] = value;
     prefs.setString(SELECTED_DISPLAY, json.encode(_map));

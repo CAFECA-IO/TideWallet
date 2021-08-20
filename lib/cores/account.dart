@@ -337,14 +337,13 @@ class AccountCore {
       return accounts
           .where((acc) =>
               acc.type == 'currency' ||
-              (this.preferDisplayToken[acc.currencyId] != null &&
-                  this.preferDisplayToken[acc.currencyId] == true))
+              this.preferDisplayToken[acc.currencyId] == true)
           .toList();
     else
       return accounts
           .where((acc) =>
               (acc.type == 'currency' && acc.currencyPublish) ||
-              (this.preferDisplayToken[acc.currencyId] != null &&
+              (this.preferDisplayToken[acc.currencyId] == null ||
                   this.preferDisplayToken[acc.currencyId] == true))
           .toList();
   }
@@ -358,7 +357,7 @@ class AccountCore {
     Log.debug('getSortedAccountList accounts: $accounts');
     accounts
       ..sort((a, b) => a.accountType.index.compareTo(b.accountType.index));
-    // return displayFilter(accounts);
+    return displayFilter(accounts);
     return accounts;
   }
 

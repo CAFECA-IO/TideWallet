@@ -115,10 +115,14 @@ class EthereumService extends AccountServiceDecorator {
             );
         Log.info(id);
 
-        final v = AccountEntity.fromAccountJson(
-            tks[index],
-            this.service.shareAccountId,
-            AccountCore().accounts[this.service.shareAccountId]![0].userId);
+        AccountEntity? _mainAccount =
+            await DBOperator().accountDao.findAccount(this.shareAccountId);
+        if (_mainAccount == null) throw Exception('mainAccount not exist');
+
+        final v = _mainAccount.copyWith(
+            id: tks[index]['account_token_id'],
+            currencyId: tks[index]['token_id'],
+            balance: tks[index]['balance']);
 
         await DBOperator().accountDao.insertAccount(v);
 
