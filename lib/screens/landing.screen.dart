@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tidewallet3/helpers/logger.dart';
 
 import '../database/db_operator.dart';
 import '../blocs/user/user_bloc.dart';
@@ -34,10 +35,9 @@ class _LandingScreenState extends State<LandingScreen> {
 
   @override
   void didChangeDependencies() async {
-    Map<String, bool>? arg =
-        ModalRoute.of(context)!.settings.arguments as Map<String, bool>?;
-    if (arg != null && arg["debugMode"] != null) {
-      this._debugMode = arg["debugMode"]!;
+    dynamic arg = ModalRoute.of(context)!.settings.arguments;
+    if (arg != null) {
+      this._debugMode = arg["debugMode"];
     }
 
     if (_isInit) {
@@ -46,6 +46,7 @@ class _LandingScreenState extends State<LandingScreen> {
     }
     _bloc = BlocProvider.of<UserBloc>(context)
       ..add(UserCheck(debugMode: this._debugMode));
+    Log.debug('LandingScreen _isInit: ${this._isInit}');
 
     super.didChangeDependencies();
   }

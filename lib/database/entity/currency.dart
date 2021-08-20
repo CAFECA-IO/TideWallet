@@ -17,7 +17,8 @@ class CurrencyEntity {
 
   final String type;
 
-  final bool publish;
+  @ColumnInfo(name: 'currency_publish')
+  final bool currencyPublish;
 
   final int decimals;
 
@@ -34,7 +35,7 @@ class CurrencyEntity {
       {required this.currencyId,
       required this.name,
       required this.symbol,
-      required this.publish,
+      required this.currencyPublish,
       required this.decimals,
       required this.type,
       required this.image,
@@ -47,7 +48,7 @@ class CurrencyEntity {
     String? currencyId,
     String? name,
     String? symbol,
-    bool? publish,
+    bool? currencyPublish,
     int? decimals,
     String? type,
     String? image,
@@ -60,7 +61,7 @@ class CurrencyEntity {
       currencyId: currencyId ?? this.currencyId,
       name: name ?? this.name,
       symbol: symbol ?? this.symbol,
-      publish: publish ?? this.publish,
+      currencyPublish: currencyPublish ?? this.currencyPublish,
       decimals: decimals ?? this.decimals,
       type: type ?? this.type,
       image: image ?? this.image,
@@ -81,7 +82,7 @@ class CurrencyEntity {
             : json['type'] == 1
                 ? 'currency'
                 : 'token',
-        this.publish = json['publish'],
+        this.currencyPublish = json['publish'],
         this.image = json['icon'],
         this.contract = json['contract'],
         this.blockchainId = json['blockchain_id'],

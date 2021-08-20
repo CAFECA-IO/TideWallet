@@ -34,17 +34,21 @@ class Account {
   final String name;
   final String symbol;
   final String type;
-  final bool publish;
+  final bool currencyPublish;
+  final bool chainPublish;
   final int decimals;
   final String exchangeRate;
   final String imgPath;
   final String? contract;
 
   Decimal? _inFiat;
-  final ACCOUNT accountType;
+  ACCOUNT? _accountType;
 
   set inFiat(Decimal inFiat) => this._inFiat = inFiat;
   Decimal get inFiat => this._inFiat!;
+
+  set accountType(ACCOUNT accountType) => this._accountType = accountType;
+  ACCOUNT get accountType => this._accountType!;
 
   Account({
     required this.id,
@@ -66,13 +70,14 @@ class Account {
     required this.name,
     required this.symbol,
     required this.type,
-    required this.publish,
+    required this.chainPublish,
+    required this.currencyPublish,
     required this.contract,
     required this.decimals,
     required this.exchangeRate,
     required this.imgPath,
-    required this.accountType,
-  });
+    ACCOUNT? accountType,
+  }) : this._accountType = accountType;
 
   Account copyWith({
     String? id,
@@ -94,7 +99,8 @@ class Account {
     String? name,
     String? symbol,
     String? type,
-    bool? publish,
+    bool? chainPublish,
+    bool? currencyPublish,
     String? contract,
     int? decimals,
     String? exchangeRate,
@@ -127,7 +133,8 @@ class Account {
       name: name ?? this.name,
       symbol: symbol ?? this.symbol,
       type: type ?? this.type,
-      publish: publish ?? this.publish,
+      chainPublish: chainPublish ?? this.chainPublish,
+      currencyPublish: currencyPublish ?? this.currencyPublish,
       contract: contract ?? this.contract,
       decimals: decimals ?? this.decimals,
       exchangeRate: exchangeRate ?? this.exchangeRate,
@@ -136,8 +143,7 @@ class Account {
     );
   }
 
-  Account.fromJoinAccount(
-      JoinAccount entity, JoinAccount sharedEntity, ACCOUNT type)
+  Account.fromJoinAccount(JoinAccount entity)
       : id = entity.id,
         shareAccountId = entity.shareAccountId,
         accountCoinType = entity.accountCoinType,
@@ -150,7 +156,8 @@ class Account {
         blockchainId = entity.blockchainId,
         network = entity.network,
         chainId = entity.chainId,
-        publish = entity.publish,
+        chainPublish = entity.chainPublish,
+        currencyPublish = entity.currencyPublish,
         contract = entity.contract,
         currencyId = entity.currencyId,
         decimals = entity.decimals,
@@ -161,8 +168,7 @@ class Account {
         numberOfUsedInternalKey = entity.numberOfUsedInternalKey ?? 0,
         lastSyncTime = entity.lastSyncTime,
         blockchainCoinType = entity.blockchainCoinType,
-        exchangeRate = entity.exchangeRate ?? "0",
-        accountType = type;
+        exchangeRate = entity.exchangeRate ?? "0";
 }
 
 class AccountMessage {

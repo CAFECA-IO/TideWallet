@@ -2,8 +2,6 @@ import 'package:decimal/decimal.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tidewallet3/database/entity/transaction.dart';
 
-import 'trader.dart';
-
 import '../constants/account_config.dart';
 import '../constants/endpoint.dart';
 import '../models/account.model.dart';
@@ -133,33 +131,98 @@ class AccountCore {
     }
   }
 
-  Future _getSupportedToken(List<NetworkEntity> chains, bool update) async {
-    for (NetworkEntity chain in chains) {
-      List<CurrencyEntity> tokens = await DBOperator()
-          .currencyDao
-          .findAllTokensByBlockchainId(chain.blockchainId);
+  Future _getSupportedToken(String blockchainId, bool update) async {
+    List<CurrencyEntity> tokens = await DBOperator()
+        .currencyDao
+        .findAllTokensByBlockchainId(blockchainId);
 
-      if (tokens.isEmpty || update) {
-        APIResponse res = await HTTPAgent().get(Endpoint.url +
-            '/blockchain/${chain.blockchainId}/token?type=TideWallet');
+    if (tokens.isEmpty || update) {
+      APIResponse res = await HTTPAgent().get(
+          Endpoint.url + '/blockchain/$blockchainId/token?type=TideWallet');
 
-        if (res.data != null) {
-          List data = res.data;
-          tokens = [];
-          for (var d in data) {
-            CurrencyEntity currencyEntity = CurrencyEntity.fromJson(d)
-                .copyWith(blockchainId: chain.blockchainId);
-            tokens.add(currencyEntity);
-          }
-          await DBOperator().currencyDao.insertCurrencies(tokens);
+      if (res.data != null) {
+        List data = res.data;
+        tokens = [];
+        for (var d in data) {
+          CurrencyEntity currencyEntity =
+              CurrencyEntity.fromJson(d).copyWith(blockchainId: blockchainId);
+          tokens.add(currencyEntity);
         }
+        await DBOperator().currencyDao.insertCurrencies(tokens);
       }
-      List<DisplayToken> dcs = [];
-      for (CurrencyEntity t in tokens) {
-        dcs.add(DisplayToken.fromCurrencyEntity(t));
-      }
-      this._displayTokens.addAll(dcs);
     }
+    List<DisplayToken> dcs = [];
+    for (CurrencyEntity t in tokens) {
+      dcs.add(DisplayToken.fromCurrencyEntity(t));
+    }
+    this._displayTokens.addAll(dcs);
+  }
+
+  startAccountService() async {
+    this.close();
+    final UserEntity user = (await DBOperator().userDao.findUser())!;
+    final int timestamp = DateTime.now().millisecondsSinceEpoch;
+    final bool update = user.lastSyncTime == null
+        ? true
+        : user.lastSyncTime! - timestamp > AccountCore.syncInteral;
+    await this._getSupportedCurrencies(update);
+    await this._getNetworks(update);
+    await this._getAccounts(update);
+
+    if (update) {
+      this._displayTokens = [];
+      final updateUser = user.copyWith(lastSyncTime: timestamp);
+      await DBOperator().userDao.insertUser(updateUser);
+    }
+    List<AccountEntity> accountEntities =
+        await DBOperator().accountDao.findAllAccounts();
+    Log.debug('accountEntities: $accountEntities');
+    List<Account> accounts =
+        (await DBOperator().accountDao.findAllJoinedAccount())
+            .map((entity) => Account.fromJoinAccount(entity))
+            .toList();
+    Log.debug('accounts: $accounts');
+    for (Account account in accounts) {
+      Log.debug(
+          'account.symbol: ${account.symbol}, account.blockchainCoinType: ${account.blockchainCoinType}, account.id: ${account.id}');
+      Log.verbose('account.type: ${account.type}');
+      if (account.type != "currency") continue;
+      Log.verbose('this.debugMode: ${this.debugMode}');
+      Log.verbose('account.chainPublish: ${account.chainPublish}');
+      Log.verbose('account.currencyPublish: ${account.currencyPublish}');
+      // if (!this.debugMode && !account.chainPublish) continue;
+      late AccountService service;
+
+      Log.verbose('account.blockchainCoinType: ${account.blockchainCoinType}');
+      switch (account.blockchainCoinType) {
+        case 0:
+        case 1:
+        case 145:
+          service = BitcoinService(AccountServiceBase());
+          account.accountType = ACCOUNT.BTC;
+          break;
+        case 60:
+        case 603:
+          service = EthereumService(AccountServiceBase());
+          account.accountType = ACCOUNT.ETH;
+          break;
+        // case 3324:
+        case 8017:
+          service = EthereumService(AccountServiceBase());
+          account.accountType = ACCOUNT.CFC;
+          break;
+        default:
+          continue;
+      }
+      Log.verbose('service: $service');
+      Log.verbose(' account.accountType: ${account.accountType}');
+      this._services.add(service);
+      service.init(account.shareAccountId, account.accountType);
+      await service.start();
+      await _getSupportedToken(account.blockchainId, update);
+    }
+
+    this._isInit = true;
   }
 
   _initAccounts() async {
@@ -174,7 +237,7 @@ class AccountCore {
     await this._getSupportedCurrencies(update);
 
     final networks = (await this._getNetworks(update))
-        .where((network) => this._debugMode ? true : network.publish)
+        .where((network) => this._debugMode ? true : network.chainPublish)
         .toList();
 
     final accounts = await this._getAccounts(update);
@@ -199,7 +262,7 @@ class AccountCore {
           if (this._debugMode) {
             return;
           } else {
-            if (!networks[blockIndex].publish) {
+            if (!networks[blockIndex].chainPublish) {
               svc.stop();
               this._services.remove(svc);
               this._accounts.remove(accounts[i].shareAccountId);
@@ -236,10 +299,10 @@ class AccountCore {
           this._services.add(svc);
           svc.init(accounts[i].shareAccountId, base);
           await svc.start();
+          await this._getSupportedToken(accounts[i].blockchainId, update);
         }
       }
     }
-    await this._getSupportedToken(networks, update);
   }
 
   close() {
@@ -259,7 +322,7 @@ class AccountCore {
       this._isInit = false;
     }
     if (!this._isInit) {
-      await _initAccounts();
+      await this.startAccountService();
     }
   }
 
@@ -280,7 +343,7 @@ class AccountCore {
     else
       return accounts
           .where((acc) =>
-              (acc.type == 'currency' && acc.publish) ||
+              (acc.type == 'currency' && acc.currencyPublish) ||
               (this.preferDisplayToken[acc.currencyId] != null &&
                   this.preferDisplayToken[acc.currencyId] == true))
           .toList();
@@ -291,22 +354,28 @@ class AccountCore {
 
   List<Account> getSortedAccountList() {
     List<Account> accounts = this.accountList;
+    Log.debug('getSortedAccountList this._accounts: ${this._accounts}');
+    Log.debug('getSortedAccountList accounts: $accounts');
     accounts
       ..sort((a, b) => a.accountType.index.compareTo(b.accountType.index));
-    return displayFilter(accounts);
+    // return displayFilter(accounts);
+    return accounts;
   }
 
   // Future<Fiat> getSelectedFiat() => Trader().getSelectedFiat();
-
-  Future<Map> getOverview() async {
-    // Fiat fiat = await getSelectedFiat();
+  String getUserBalance() {
     Decimal totalBalanceInFiat = Decimal.zero;
     for (Account account in this.accountList) {
       totalBalanceInFiat += account.inFiat;
     }
+    return totalBalanceInFiat.toString();
+  }
+
+  Map getOverview() {
+    // Fiat fiat = await getSelectedFiat();
     return {
       "accounts": this.getSortedAccountList(),
-      'totalBalanceInFiat': totalBalanceInFiat
+      'totalBalanceInFiat': this.getUserBalance()
       // "fiat": fiat,
     };
   }
@@ -516,7 +585,7 @@ class AccountCore {
         txSvc = BitcoinTransactionService(TransactionServiceBased());
         _transaction = await txSvc.prepareTransaction(
           thirdPartyId,
-          account.publish,
+          account.currencyPublish,
           to,
           Converter.toCurrencySmallestUnit(amount, account.decimals),
           message: message,
@@ -551,7 +620,7 @@ class AccountCore {
         _transaction = await txSvc.prepareTransaction(
             thirdPartyId,
             account
-                .publish, // ++ debugInfo, isMainnet required not publish, null-safety
+                .currencyPublish, // ++ debugInfo, isMainnet required not publish, null-safety
             to,
             Converter.toCurrencySmallestUnit(amount, account.decimals),
             message: message,

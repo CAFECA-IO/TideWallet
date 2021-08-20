@@ -30,7 +30,7 @@ class ScanRepository {
         return AccountCore().accountList.firstWhere((account) =>
             account.type.toLowerCase() == 'account' &&
             account.symbol.toLowerCase() == 'btc' &&
-            !account.publish);
+            !account.currencyPublish);
     } catch (e) {
       return null;
     }
@@ -41,7 +41,7 @@ class ScanRepository {
         return AccountCore().accountList.firstWhere((account) =>
             account.type.toLowerCase() == 'account' &&
             account.symbol.toLowerCase() == 'btc' &&
-            account.publish);
+            account.currencyPublish);
     } catch (e) {
       return null;
     }

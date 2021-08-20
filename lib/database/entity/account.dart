@@ -190,6 +190,9 @@ class JoinAccount {
 
   @ColumnInfo(name: 'chain_id')
   final int chainId;
+
+  @ColumnInfo(name: 'chain_publish')
+  final bool chainPublish;
   // network
 
   // currency
@@ -199,7 +202,8 @@ class JoinAccount {
 
   final String type;
 
-  final bool publish;
+  @ColumnInfo(name: 'currency_publish')
+  final bool currencyPublish;
 
   final int decimals;
 
@@ -228,7 +232,8 @@ class JoinAccount {
     required this.name,
     required this.symbol,
     required this.type,
-    required this.publish,
+    required this.chainPublish,
+    required this.currencyPublish,
     required this.contract,
     required this.decimals,
     required this.exchangeRate,

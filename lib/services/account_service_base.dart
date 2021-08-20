@@ -22,10 +22,14 @@ class AccountServiceBase extends AccountService {
   String? _shareAccountId;
   int? _syncInterval;
   int? _lastSyncTimestamp;
+  Timer? _timer;
 
   ACCOUNT get base => this._base!;
   int get lastSyncTimestamp => this._lastSyncTimestamp!;
   String get shareAccountId => this._shareAccountId!;
+
+  Timer get timer => this._timer!;
+  set timer(Timer timer) => this._timer = timer;
 
   AccountServiceBase();
 
@@ -39,6 +43,7 @@ class AccountServiceBase extends AccountService {
   @override
   Future start() async {
     Log.debug('start this.shareAccountId: ${this.shareAccountId}');
+
     AccountEntity? _acc =
         await DBOperator().accountDao.findAccount(this.shareAccountId);
     Log.debug(
@@ -49,7 +54,7 @@ class AccountServiceBase extends AccountService {
 
   @override
   void stop() {
-    this.timer?.cancel();
+    this.timer.cancel();
   }
 
   @override
@@ -83,15 +88,19 @@ class AccountServiceBase extends AccountService {
       List<CurrencyEntity> _currs =
           await DBOperator().currencyDao.findAllCurrencies();
       tks.forEach((token) async {
-        AccountEntity _tokenAccount = AccountEntity.fromAccountJson(
-            token, this.shareAccountId, accountEntity.userId);
+        AccountEntity _tokenAccount = _mainAccount.copyWith(
+            id: token['account_token_id'],
+            currencyId: token['token_id'],
+            balance: token['balance']);
         accounts.add(_tokenAccount);
         int index =
             _currs.indexWhere((_curr) => _curr.currencyId == token['token_id']);
-
+        Log.debug('getData index: $index');
         if (index < 0) {
           APIResponse res = await HTTPAgent().get(Endpoint.url +
               '/blockchain/${token['blockchain_id']}/token/${token['token_id']}');
+          Log.debug('getData res: $res');
+
           if (res.data != null) {
             Map token = res.data;
             await DBOperator()
@@ -133,13 +142,14 @@ class AccountServiceBase extends AccountService {
     Fiat fiat = await Trader().getSelectedFiat();
 
     for (JoinAccount jacc in jaccs) {
-      Account acc = Account.fromJoinAccount(jacc, jaccs[0], this.base);
+      Account acc =
+          Account.fromJoinAccount(jacc).copyWith(accountType: this.base);
       acc.inFiat = await Trader().calculateToFiat(acc, fiat: fiat);
       accs.add(acc);
     }
 
     AccountCore().accounts[this.shareAccountId] = accs;
-    Map data = await AccountCore().getOverview();
+    Map data = AccountCore().getOverview();
 
     AccountMessage currMsg = AccountMessage(
       evt: ACCOUNT_EVT.OnUpdateAccount,

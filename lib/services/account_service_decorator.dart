@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import '../models/transaction.model.dart';
 
 import './account_service.dart';
 
 abstract class AccountServiceDecorator extends AccountService {
   final AccountService service;
-  String get shareAccountId => this.service.shareAccountId!;
+  String get shareAccountId => this.service.shareAccountId;
+  Timer get timer => this.service.timer;
+  set timer(Timer timer) => this.service.timer = timer;
 
   AccountServiceDecorator(this.service);
 

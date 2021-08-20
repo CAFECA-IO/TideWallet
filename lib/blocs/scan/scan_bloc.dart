@@ -34,7 +34,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
             account = AccountCore().accountList.firstWhere((account) =>
                 account.type.toLowerCase() == 'account' &&
                 account.symbol.toLowerCase() == 'eth' &&
-                account.publish);
+                account.currencyPublish);
           } catch (e) {
             account = null;
           }
@@ -47,7 +47,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
             account = AccountCore().accountList.firstWhere((account) =>
                 account.type.toLowerCase() == 'account' &&
                 account.symbol.toLowerCase() == 'btc' &&
-                account.publish);
+                account.currencyPublish);
           } catch (e) {
             account = null;
           }
@@ -60,7 +60,7 @@ class ScanBloc extends Bloc<ScanEvent, ScanState> {
             account = AccountCore().accountList.firstWhere((account) =>
                 account.type.toLowerCase() == 'account' &&
                 account.symbol.toLowerCase() == 'btc' &&
-                !account.publish);
+                !account.currencyPublish);
           } catch (e) {
             account = null;
           }

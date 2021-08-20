@@ -21,6 +21,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   Stream<UserState> mapEventToState(
     UserEvent event,
   ) async* {
+    Log.debug("UserBloc event: $event");
+
     if (event is UserInit) {
       yield UserLoading();
       await _accountRepo.coreInit(debugMode: this._debugMode);

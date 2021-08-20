@@ -11,7 +11,8 @@ class NetworkEntity {
   @ColumnInfo(name: 'blockchain_coin_type')
   final int blockchainCoinType;
 
-  final bool publish;
+  @ColumnInfo(name: 'chain_publish')
+  final bool chainPublish;
 
   @ColumnInfo(name: 'chain_id')
   final int chainId;
@@ -20,7 +21,7 @@ class NetworkEntity {
       {required this.blockchainId,
       required this.network,
       required this.blockchainCoinType,
-      required this.publish,
+      required this.chainPublish,
       required this.chainId});
 
   @override
@@ -30,11 +31,11 @@ class NetworkEntity {
           runtimeType == other.runtimeType &&
           blockchainId == other.blockchainId &&
           network == other.network &&
-          publish == other.publish;
+          chainPublish == other.chainPublish;
 
   @override
   int get hashCode =>
-      blockchainId.hashCode ^ network.hashCode ^ publish.hashCode;
+      blockchainId.hashCode ^ network.hashCode ^ chainPublish.hashCode;
 
   NetworkEntity.fromJson(Map json)
       : this.blockchainId = json['blockchain_id'],
@@ -42,5 +43,5 @@ class NetworkEntity {
         this.blockchainCoinType = json['coin_type'],
         this.chainId = json[
             'network_id'], // ++ backedn api 2021/08/12 => TODO: Change 'network_id' to 'chain_id'
-        this.publish = json['publish'];
+        this.chainPublish = json['publish'];
 }

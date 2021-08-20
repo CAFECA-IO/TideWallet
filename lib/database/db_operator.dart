@@ -1,3 +1,5 @@
+import 'package:tidewallet3/helpers/logger.dart';
+
 import 'dao/account_dao.dart';
 import 'dao/transaction_dao.dart';
 import 'dao/user_dao.dart';
@@ -8,11 +10,17 @@ import 'dao/network_dao.dart';
 import 'dao/exchange_rate_dao.dart';
 
 class DBOperator {
-  late AppDatabase database;
+  AppDatabase? _database;
   bool _isInit = false;
   static const DB_NAME = 'tidewallet.db';
+  factory DBOperator() => instance;
+
+  static final DBOperator instance = DBOperator._privateConstructor();
 
   DBOperator._privateConstructor();
+
+  set database(AppDatabase database) => this._database = database;
+  AppDatabase get database => this._database!;
 
   UserDao get userDao => database.userDao;
   AccountDao get accountDao => database.accountDao;
@@ -22,12 +30,10 @@ class DBOperator {
   UtxoDao get utxoDao => database.utxoDao;
   ExchangeRateDao get exchangeRateDao => database.exchangeRateDao;
 
-  factory DBOperator() => instance;
-
-  static final DBOperator instance = DBOperator._privateConstructor();
-
   init({bool inMemory = false}) async {
+    Log.debug("DBOperator isInit: ${this._isInit}");
     if (_isInit) return;
+    Log.debug("DBOperator isInit: ${this._isInit}");
 
     AppDatabase db;
     if (inMemory) {

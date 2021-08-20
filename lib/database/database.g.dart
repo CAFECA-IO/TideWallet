@@ -97,11 +97,11 @@ class _$AppDatabase extends AppDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Account` (`id` TEXT NOT NULL, `share_account_id` TEXT NOT NULL, `user_id` TEXT NOT NULL, `blockchain_id` TEXT NOT NULL, `currency_id` TEXT NOT NULL, `purpose` INTEGER NOT NULL, `account_coin_type` INTEGER NOT NULL, `account_index` INTEGER NOT NULL, `curve_type` INTEGER NOT NULL, `balance` TEXT NOT NULL, `number_of_used_external_key` INTEGER, `number_of_used_internal_key` INTEGER, `last_sync_time` INTEGER, FOREIGN KEY (`user_id`) REFERENCES `User` (`user_id`) ON UPDATE NO ACTION ON DELETE CASCADE, FOREIGN KEY (`blockchain_id`) REFERENCES `Network` (`blockchain_id`) ON UPDATE NO ACTION ON DELETE CASCADE, FOREIGN KEY (`currency_id`) REFERENCES `Currency` (`currency_id`) ON UPDATE NO ACTION ON DELETE CASCADE, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Currency` (`currency_id` TEXT NOT NULL, `blockchain_id` TEXT, `contract` TEXT, `name` TEXT NOT NULL, `symbol` TEXT NOT NULL, `type` TEXT NOT NULL, `publish` INTEGER NOT NULL, `decimals` INTEGER NOT NULL, `exchange_rate` TEXT NOT NULL, `total_supply` TEXT, `image` TEXT, PRIMARY KEY (`currency_id`))');
+            'CREATE TABLE IF NOT EXISTS `Currency` (`currency_id` TEXT NOT NULL, `blockchain_id` TEXT, `contract` TEXT, `name` TEXT NOT NULL, `symbol` TEXT NOT NULL, `type` TEXT NOT NULL, `currency_publish` INTEGER NOT NULL, `decimals` INTEGER NOT NULL, `exchange_rate` TEXT NOT NULL, `total_supply` TEXT, `image` TEXT, PRIMARY KEY (`currency_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `_Transaction` (`transaction_id` TEXT NOT NULL, `account_id` TEXT NOT NULL, `tx_id` TEXT NOT NULL, `source_address` TEXT NOT NULL, `destinction_address` TEXT NOT NULL, `timestamp` INTEGER, `confirmation` INTEGER NOT NULL, `gas_price` TEXT, `gas_used` INTEGER, `fee` TEXT NOT NULL, `note` TEXT, `status` TEXT NOT NULL, `direction` TEXT NOT NULL, `amount` TEXT NOT NULL, PRIMARY KEY (`transaction_id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Network` (`blockchain_id` TEXT NOT NULL, `network` TEXT NOT NULL, `blockchain_coin_type` INTEGER NOT NULL, `publish` INTEGER NOT NULL, `chain_id` INTEGER NOT NULL, PRIMARY KEY (`blockchain_id`))');
+            'CREATE TABLE IF NOT EXISTS `Network` (`blockchain_id` TEXT NOT NULL, `network` TEXT NOT NULL, `blockchain_coin_type` INTEGER NOT NULL, `chain_publish` INTEGER NOT NULL, `chain_id` INTEGER NOT NULL, PRIMARY KEY (`blockchain_id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `Utxo` (`utxo_id` TEXT NOT NULL, `account_id` TEXT NOT NULL, `tx_id` TEXT NOT NULL, `vout` INTEGER NOT NULL, `type` TEXT NOT NULL, `amount` TEXT NOT NULL, `chain_index` INTEGER NOT NULL, `key_index` INTEGER NOT NULL, `script` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `locked` INTEGER NOT NULL, `sequence` INTEGER NOT NULL, `address` TEXT NOT NULL, FOREIGN KEY (`account_id`) REFERENCES `Account` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE, PRIMARY KEY (`utxo_id`))');
         await database.execute(
@@ -327,7 +327,8 @@ class _$AccountDao extends AccountDao {
             name: row['name'] as String,
             symbol: row['symbol'] as String,
             type: row['type'] as String,
-            publish: (row['publish'] as int) != 0,
+            chainPublish: (row['chain_publish'] as int) != 0,
+            currencyPublish: (row['currency_publish'] as int) != 0,
             contract: row['contract'] as String?,
             decimals: row['decimals'] as int,
             exchangeRate: row['exchange_rate'] as String?,
@@ -359,7 +360,8 @@ class _$AccountDao extends AccountDao {
             name: row['name'] as String,
             symbol: row['symbol'] as String,
             type: row['type'] as String,
-            publish: (row['publish'] as int) != 0,
+            chainPublish: (row['chain_publish'] as int) != 0,
+            currencyPublish: (row['currency_publish'] as int) != 0,
             contract: row['contract'] as String?,
             decimals: row['decimals'] as int,
             exchangeRate: row['exchange_rate'] as String?,
@@ -393,7 +395,7 @@ class _$CurrencyDao extends CurrencyDao {
                   'name': item.name,
                   'symbol': item.symbol,
                   'type': item.type,
-                  'publish': item.publish ? 1 : 0,
+                  'currency_publish': item.currencyPublish ? 1 : 0,
                   'decimals': item.decimals,
                   'exchange_rate': item.exchangeRate,
                   'total_supply': item.totalSupply,
@@ -415,7 +417,7 @@ class _$CurrencyDao extends CurrencyDao {
             currencyId: row['currency_id'] as String,
             name: row['name'] as String,
             symbol: row['symbol'] as String,
-            publish: (row['publish'] as int) != 0,
+            currencyPublish: (row['currency_publish'] as int) != 0,
             decimals: row['decimals'] as int,
             type: row['type'] as String,
             image: row['image'] as String?,
@@ -433,7 +435,7 @@ class _$CurrencyDao extends CurrencyDao {
             currencyId: row['currency_id'] as String,
             name: row['name'] as String,
             symbol: row['symbol'] as String,
-            publish: (row['publish'] as int) != 0,
+            currencyPublish: (row['currency_publish'] as int) != 0,
             decimals: row['decimals'] as int,
             type: row['type'] as String,
             image: row['image'] as String?,
@@ -629,7 +631,7 @@ class _$NetworkDao extends NetworkDao {
                   'blockchain_id': item.blockchainId,
                   'network': item.network,
                   'blockchain_coin_type': item.blockchainCoinType,
-                  'publish': item.publish ? 1 : 0,
+                  'chain_publish': item.chainPublish ? 1 : 0,
                   'chain_id': item.chainId
                 });
 
@@ -648,7 +650,7 @@ class _$NetworkDao extends NetworkDao {
             blockchainId: row['blockchain_id'] as String,
             network: row['network'] as String,
             blockchainCoinType: row['blockchain_coin_type'] as int,
-            publish: (row['publish'] as int) != 0,
+            chainPublish: (row['chain_publish'] as int) != 0,
             chainId: row['chain_id'] as int));
   }
 

@@ -17,7 +17,7 @@ class AccountListBloc extends Bloc<AccountListEvent, AccountListState> {
       : super(AccountInitial(totalBalanceInFiat: '0', accounts: [])) {
     this._repo.listener.listen((msg) {
       if (msg.evt == ACCOUNT_EVT.OnUpdateAccount) {
-        String totalBalanceInFiat = msg.value["totalBalanceInFiat"].toString();
+        String totalBalanceInFiat = msg.value["totalBalanceInFiat"];
         List<Account> accounts = msg.value["accounts"];
 
         this.add(UpdateAccounts(
@@ -41,9 +41,9 @@ class AccountListBloc extends Bloc<AccountListEvent, AccountListState> {
     AccountListEvent event,
   ) async* {
     if (event is OverView) {
-      Map data = await _repo.getOverview();
+      Map data = _repo.getOverview();
       yield AccountLoaded(
-          totalBalanceInFiat: data['totalBalanceInFiat'].toString(),
+          totalBalanceInFiat: data['totalBalanceInFiat'],
           accounts: data['accounts']);
     }
     if (event is UpdateAccounts) {

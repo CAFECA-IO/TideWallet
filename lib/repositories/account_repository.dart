@@ -12,7 +12,7 @@ class AccountRepository {
     await AccountCore().init(debugMode: debugMode);
   }
 
-  Future<Map> getOverview() => AccountCore().getOverview();
+  Map getOverview() => AccountCore().getOverview();
 
   // Future<Fiat> getSelectedFiat() => AccountCore().getSelectedFiat();
 

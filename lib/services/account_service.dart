@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:decimal/decimal.dart';
-
 import '../constants/account_config.dart';
 import '../models/transaction.model.dart';
 
@@ -10,8 +8,10 @@ abstract class AccountService {
   int syncInterval = 10 * 10 * 1000;
   ACCOUNT? base;
   int? lastSyncTimestamp;
-  String? shareAccountId;
-  Timer? timer;
+
+  String get shareAccountId;
+  Timer get timer;
+  set timer(Timer timer);
 
   void init(String id, ACCOUNT base, {int interval});
   Future start();
