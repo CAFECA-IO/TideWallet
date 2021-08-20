@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
+import 'blocs/receive/receive_bloc.dart';
 import 'blocs/transaction_detail/transaction_detail_bloc.dart';
 import 'repositories/account_repository.dart';
 import 'repositories/transaction_repository.dart';
@@ -122,6 +123,11 @@ class MyApp extends StatelessWidget {
             ),
             BlocProvider<TransactionDetailBloc>(
               create: (BuildContext context) => TransactionDetailBloc(
+                Provider.of<TransactionRepository>(context, listen: false),
+              ),
+            ),
+            BlocProvider<ReceiveBloc>(
+              create: (BuildContext context) => ReceiveBloc(
                 Provider.of<TransactionRepository>(context, listen: false),
               ),
             ),

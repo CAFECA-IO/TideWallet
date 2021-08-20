@@ -23,7 +23,7 @@ class AccountDetailBloc extends Bloc<AccountDetailEvent, AccountDetailState> {
           return account.id == state.account!.id;
         });
         if (index < 0) return;
-        Account account = msg.value[index];
+        Account account = accounts[index];
         this.add(UpdateAccount(account));
       }
       if (msg.evt == ACCOUNT_EVT.OnUpdateTransactions) {

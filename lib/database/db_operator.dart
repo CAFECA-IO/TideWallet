@@ -33,7 +33,6 @@ class DBOperator {
   init({bool inMemory = false}) async {
     Log.debug("DBOperator isInit: ${this._isInit}");
     if (_isInit) return;
-    Log.debug("DBOperator isInit: ${this._isInit}");
 
     AppDatabase db;
     if (inMemory) {

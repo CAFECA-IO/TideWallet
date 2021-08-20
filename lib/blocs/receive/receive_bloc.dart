@@ -11,14 +11,14 @@ part 'receive_state.dart';
 
 class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   late TransactionRepository _repo;
-  ReceiveBloc(this._repo) : super(ReceiveInitial(null, null));
+  ReceiveBloc(this._repo) : super(ReceiveInitial());
 
   @override
   Stream<ReceiveState> mapEventToState(
     ReceiveEvent event,
   ) async* {
     if (event is GetReceivingAddress) {
-      yield AddressLoading(event.account, '');
+      yield AddressLoading(event.account);
       String address = await _repo.getReceivingAddress(event.account.id);
       yield AddressLoaded(event.account, address);
     }

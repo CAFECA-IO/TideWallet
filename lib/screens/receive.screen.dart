@@ -11,7 +11,7 @@ import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/loading_dialog.dart';
 import '../widgets/buttons/secondary_button.dart';
 import '../helpers/i18n.dart';
-import '../repositories/transaction_repository.dart';
+
 import '../blocs/receive/receive_bloc.dart';
 import '../constants/account_config.dart';
 
@@ -23,22 +23,20 @@ class ReceiveScreen extends StatefulWidget {
 
 class _ReceiveScreenState extends State<ReceiveScreen> {
   final t = I18n.t;
-  late TransactionRepository _repo;
+
   late ReceiveBloc _bloc;
-  late Account _account;
-  String _address = '';
-  bool _isCalled = false;
+
+  Account? _account;
+  String? _address;
 
   @override
   void didChangeDependencies() {
     Map<String, Account> arg =
         ModalRoute.of(context)!.settings.arguments as Map<String, Account>;
-    _account = arg["account"]!;
-    _repo = Provider.of<TransactionRepository>(context);
-    if (!_isCalled) {
-      _bloc = ReceiveBloc(_repo)..add(GetReceivingAddress(_account));
-      _isCalled = true;
-    }
+    _account = arg["account"];
+    _bloc = Provider.of<ReceiveBloc>(context)
+      ..add(GetReceivingAddress(_account!));
+
     super.didChangeDependencies();
   }
 
@@ -64,9 +62,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
             }
             if (state is AddressLoaded) {
               DialogController.dismiss(context);
-              setState(() {
-                _address = state.address!;
-              });
+              _address = state.address;
             }
           },
           child: Container(
@@ -78,7 +74,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
               children: [
                 Container(
                   child: Text(
-                    '${t('remit')} ${_account.symbol.toUpperCase()}',
+                    '${t('remit')} ${_account!.symbol.toUpperCase()}',
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
                 ),
@@ -86,7 +82,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
                 Container(
                   height: 40,
                   child: Text(
-                    _account.accountType == ACCOUNT.BTC
+                    _account!.accountType == ACCOUNT.BTC
                         ? t('btc_receving_address_hint')
                         : '',
                     style: Theme.of(context).textTheme.subtitle2,
@@ -95,7 +91,7 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
                 SizedBox(height: 20),
                 Container(
                   child: QrImage(
-                    data: _address,
+                    data: _address != null ? _address! : t('dialog_loading'),
                     version: QrVersions.auto,
                     size: width * 0.7,
                   ),
@@ -107,7 +103,9 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
                       horizontal: width * 0.035, vertical: 20),
                   padding: EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                   color: MyColors.secondary_11,
-                  child: Center(child: Text(_address)),
+                  child: Center(
+                      child: Text(
+                          _address != null ? _address! : t('dialog_loading'))),
                 ),
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: width * 0.1),
