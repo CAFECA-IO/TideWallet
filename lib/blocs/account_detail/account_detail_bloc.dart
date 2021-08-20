@@ -46,13 +46,15 @@ class AccountDetailBloc extends Bloc<AccountDetailEvent, AccountDetailState> {
   Stream<AccountDetailState> mapEventToState(
     AccountDetailEvent event,
   ) async* {
-    if (event is GetAccountDetail) {
-      final Map accountDetail = await _repo.getAccountDetail(event.accountId);
-      Account account = accountDetail["account"];
-      List<Transaction> transactions = accountDetail["transactions"];
-      Account shareAccount = accountDetail["shareAccount"];
+    if (state is AccountDetailInitial) {
+      if (event is GetAccountDetail) {
+        final Map accountDetail = await _repo.getAccountDetail(event.accountId);
+        Account account = accountDetail["account"];
+        List<Transaction> transactions = accountDetail["transactions"];
+        Account shareAccount = accountDetail["shareAccount"];
 
-      yield AccountDetailLoaded(account, shareAccount, transactions);
+        yield AccountDetailLoaded(account, shareAccount, transactions);
+      }
     }
     if (state is AccountDetailLoaded) {
       AccountDetailLoaded _state = state as AccountDetailLoaded;

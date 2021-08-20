@@ -59,7 +59,7 @@ class AccountCore {
   Map<String, List<Account>> get accounts => this._accounts;
 
   AccountService _getService(String shareAccountId) {
-    Log.debug('_getService shareAccountId: $shareAccountId');
+    Log.warning('_getService shareAccountId: $shareAccountId');
 
     return _services
         .firstWhere((svc) => (svc.shareAccountId == shareAccountId));

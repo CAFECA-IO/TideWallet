@@ -34,6 +34,8 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
     Map<String, Account> arg =
         ModalRoute.of(context)!.settings.arguments as Map<String, Account>;
     _account = arg["account"];
+    print("ReceiveScreen GetReceivingAddress");
+
     _bloc = Provider.of<ReceiveBloc>(context)
       ..add(GetReceivingAddress(_account!));
 

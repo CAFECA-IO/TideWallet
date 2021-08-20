@@ -17,10 +17,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   Stream<ReceiveState> mapEventToState(
     ReceiveEvent event,
   ) async* {
-    if (event is GetReceivingAddress) {
-      yield AddressLoading(event.account);
-      String address = await _repo.getReceivingAddress(event.account.id);
-      yield AddressLoaded(event.account, address);
+    if (state is ReceiveInitial) {
+      if (event is GetReceivingAddress) {
+        yield AddressLoading(event.account);
+        String address = await _repo.getReceivingAddress(event.account.id);
+        yield AddressLoaded(event.account, address);
+      }
     }
   }
 }
