@@ -95,11 +95,18 @@ class AccountCore {
 
       for (var d in l) {
         final String id = d['account_id'];
-        Log.debug('_addAccount AccountData: $d');
         AccountEntity acc = AccountEntity.fromAccountJson(d, id, user.userId);
         await DBOperator().accountDao.insertAccount(acc);
+        Log.debug('insertAccount AccountData: $d');
         accs.add(acc);
+
+        AccountEntity? test_1 =
+            await DBOperator().accountDao.findAccount(acc.id);
+        Log.debug('findAccount findAccount: $test_1');
       }
+      List<AccountEntity> test =
+          await DBOperator().accountDao.findAllAccounts();
+      Log.debug('findAllAccounts test: $test');
       return accs;
     } else {
       return result;
@@ -215,86 +222,6 @@ class AccountCore {
     }
 
     this._isInit = true;
-  }
-
-  _initAccounts() async {
-    this._isInit = true;
-    UserEntity user = (await DBOperator().userDao.findUser())!;
-    final int timestamp = DateTime.now().millisecondsSinceEpoch;
-
-    final bool update = user.lastSyncTime == null
-        ? true
-        : user.lastSyncTime! - timestamp > AccountCore.syncInteral;
-
-    await this._getSupportedCurrencies(update);
-
-    final networks = (await this._getNetworks(update))
-        .where((network) => this._debugMode ? true : network.chainPublish)
-        .toList();
-
-    final accounts = await this._getAccounts(update);
-
-    if (update) {
-      this._displayTokens = [];
-      final updateUser = user.copyWith(lastSyncTime: timestamp);
-      await DBOperator().userDao.insertUser(updateUser);
-    }
-
-    for (var i = 0; i < accounts.length; i++) {
-      if (accounts[i].id != accounts[i].shareAccountId) continue;
-      AccountService? svc;
-      int blockIndex = networks.indexWhere(
-          (chain) => chain.blockchainId == accounts[i].blockchainId);
-
-      if (blockIndex > -1) {
-        int srvIndex = this._services.indexWhere(
-            (svc) => svc.shareAccountId == accounts[i].shareAccountId);
-        if (srvIndex >= 0) {
-          svc = this._services[srvIndex];
-          if (this._debugMode) {
-            return;
-          } else {
-            if (!networks[blockIndex].chainPublish) {
-              svc.stop();
-              this._services.remove(svc);
-              this._accounts.remove(accounts[i].shareAccountId);
-              return;
-            }
-          }
-        }
-
-        ACCOUNT? base;
-        switch (networks[blockIndex].blockchainCoinType) {
-          case 0:
-          case 1:
-            svc = BitcoinService(AccountServiceBase());
-            base = ACCOUNT.BTC;
-            break;
-          case 60:
-          case 603:
-            svc = EthereumService(AccountServiceBase());
-            base = ACCOUNT.ETH;
-            break;
-          // case 3324:
-          case 8017:
-            svc = EthereumService(AccountServiceBase());
-            base = ACCOUNT.CFC;
-            break;
-          default:
-        }
-
-        if (svc != null &&
-            base != null &&
-            this._accounts[accounts[i].shareAccountId] == null) {
-          this._accounts[accounts[i].shareAccountId] = [];
-
-          this._services.add(svc);
-          svc.init(accounts[i].shareAccountId, base);
-          await svc.start();
-          await this._getSupportedToken(accounts[i].blockchainId, update);
-        }
-      }
-    }
   }
 
   close() {
