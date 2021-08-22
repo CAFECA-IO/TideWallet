@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 import '../blocs/transaction_detail/transaction_detail_bloc.dart';
+import '../repositories/transaction_repository.dart';
 import '../theme.dart';
 import '../helpers/logger.dart';
 import '../helpers/i18n.dart';
@@ -37,7 +38,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
     String _accountId = arg["accountId"];
     String txid = arg["txid"];
 
-    _bloc = Provider.of<TransactionDetailBloc>(context)
+    _bloc = TransactionDetailBloc(Provider.of<TransactionRepository>(context))
       ..add(GetTransactionDetial(_accountId, txid)); // TODO GetTransactionList
     super.didChangeDependencies();
   }
@@ -83,8 +84,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
       body: BlocBuilder<TransactionDetailBloc, TransactionDetailState>(
           bloc: _bloc,
           builder: (context, state) {
-            print(state);
-            if (state is TransactionLoaded) {
+            if (state is TransactionDetailLoaded) {
               return Container(
                 padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
                 margin: EdgeInsets.symmetric(vertical: 16.0),

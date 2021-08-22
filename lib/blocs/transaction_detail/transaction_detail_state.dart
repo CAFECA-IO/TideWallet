@@ -15,11 +15,15 @@ class TransactionDetailInitial extends TransactionDetailState {
   TransactionDetailInitial() : super(null, null, null);
 }
 
-class TransactionLoaded extends TransactionDetailState {
+class TransactionDetailLoading extends TransactionDetailState {
+  TransactionDetailLoading() : super(null, null, null);
+}
+
+class TransactionDetailLoaded extends TransactionDetailState {
   final Account account;
   final Account shareAccount;
   final Transaction transaction;
-  TransactionLoaded(
+  TransactionDetailLoaded(
     this.account,
     this.shareAccount,
     this.transaction,
