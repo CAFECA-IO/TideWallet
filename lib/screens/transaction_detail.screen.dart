@@ -12,6 +12,7 @@ import '../helpers/formatter.dart';
 import '../models/account.model.dart';
 import '../models/transaction.model.dart';
 import '../widgets/appBar.dart';
+import '../widgets/dialogs/loading_dialog.dart';
 import '../widgets/dash_line_divider.dart';
 import '../widgets/copy_tool_tip.dart';
 
@@ -260,7 +261,9 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                 ),
               );
             } else {
-              return SizedBox();
+              return Center(
+                child: LoadingDialog(),
+              );
             }
           }),
     );
