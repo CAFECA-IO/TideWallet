@@ -33,10 +33,10 @@ class _AccountDetailScreenState extends State<AccountDetailScreen> {
   void didChangeDependencies() {
     dynamic arg = ModalRoute.of(context)!.settings.arguments!;
     String accountId = arg["accountId"]!;
+
     _repo = Provider.of<AccountRepository>(context);
-
     _bloc = AccountDetailBloc(_repo)..add(GetAccountDetail(accountId));
-
+    print("AccountDetailScreen GetAccountDetail");
     super.didChangeDependencies();
   }
 

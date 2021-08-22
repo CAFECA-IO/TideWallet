@@ -33,6 +33,12 @@ class _AccountListScreenState extends State<AccountListScreen> {
   }
 
   @override
+  void dispose() {
+    _bloc.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [

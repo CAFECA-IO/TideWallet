@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:tidewallet3/repositories/transaction_repository.dart';
 
 import '../theme.dart';
 import '../models/account.model.dart';
@@ -28,17 +29,18 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
 
   Account? _account;
   String? _address;
+  bool _inInit = false;
 
   @override
   void didChangeDependencies() {
     Map<String, Account> arg =
         ModalRoute.of(context)!.settings.arguments as Map<String, Account>;
     _account = arg["account"];
-    print("ReceiveScreen GetReceivingAddress");
-
-    _bloc = Provider.of<ReceiveBloc>(context)
-      ..add(GetReceivingAddress(_account!));
-
+    if (!_inInit) {
+      _bloc = ReceiveBloc(Provider.of<TransactionRepository>(context))
+        ..add(GetReceivingAddress(_account!));
+      _inInit = true;
+    }
     super.didChangeDependencies();
   }
 
@@ -64,7 +66,9 @@ class _ReceiveScreenState extends State<ReceiveScreen> {
             }
             if (state is AddressLoaded) {
               DialogController.dismiss(context);
-              _address = state.address;
+              setState(() {
+                _address = state.address;
+              });
             }
           },
           child: Container(

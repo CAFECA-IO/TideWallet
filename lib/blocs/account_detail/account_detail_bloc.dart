@@ -59,7 +59,6 @@ class AccountDetailBloc extends Bloc<AccountDetailEvent, AccountDetailState> {
       AccountDetailLoaded _state = state as AccountDetailLoaded;
 
       if (event is UpdateAccount) {
-        Log.debug('event.account: ${event.account}');
         if (_state.account.symbol == event.account.symbol) {
           yield AccountDetailLoaded(
               event.account, _state.shareAccount, _state.transactions);
@@ -72,7 +71,6 @@ class AccountDetailBloc extends Bloc<AccountDetailEvent, AccountDetailState> {
         }
       }
       if (event is UpdateTransaction) {
-        Log.debug('event.transaction: ${event.transaction}');
         int index = _state.transactions
             .indexWhere((Transaction tx) => tx.txId == event.transaction.txId);
         List<Transaction> transactions = [..._state.transactions];
