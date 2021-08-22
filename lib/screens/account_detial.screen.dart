@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
+import '../repositories/account_repository.dart';
 import 'transaction.screen.dart';
 import 'receive.screen.dart';
 import '../models/account.model.dart';
@@ -26,15 +27,15 @@ class AccountDetailScreen extends StatefulWidget {
 class _AccountDetailScreenState extends State<AccountDetailScreen> {
   final t = I18n.t;
   late AccountDetailBloc _bloc;
+  late AccountRepository _repo;
 
   @override
   void didChangeDependencies() {
     dynamic arg = ModalRoute.of(context)!.settings.arguments!;
     String accountId = arg["accountId"]!;
-    print("AccountDetailScreen GetAccountDetail");
+    _repo = Provider.of<AccountRepository>(context);
 
-    _bloc = Provider.of<AccountDetailBloc>(context)
-      ..add(GetAccountDetail(accountId));
+    _bloc = AccountDetailBloc(_repo)..add(GetAccountDetail(accountId));
 
     super.didChangeDependencies();
   }

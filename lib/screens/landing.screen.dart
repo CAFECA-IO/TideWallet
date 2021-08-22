@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tidewallet3/helpers/logger.dart';
+import 'package:tidewallet3/widgets/version.dart';
 
 import '../database/db_operator.dart';
 import '../blocs/user/user_bloc.dart';
@@ -81,17 +82,31 @@ class _LandingScreenState extends State<LandingScreen> {
       },
       child: BlocBuilder<UserBloc, UserState>(
         builder: (context, state) {
-          if (state is UserAuthenticated) {
+          if (state is UserLoading) {
             return Scaffold(
               body: Container(
                 height: double.infinity,
                 width: double.infinity,
+                padding: EdgeInsets.fromLTRB(52.0, 100.0, 52.0, 60.0),
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     image: AssetImage('assets/images/welcome_bg.png'),
                     fit: BoxFit.cover,
                   ),
                 ),
+                child: Column(children: [
+                  Image.asset(
+                    'assets/images/logo_type.png',
+                    width: 107.0,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 30.0),
+                    child: Version(
+                      fontSize: 18.0,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ]),
               ),
             );
           }

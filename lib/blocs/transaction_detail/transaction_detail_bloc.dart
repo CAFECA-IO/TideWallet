@@ -20,6 +20,10 @@ class TransactionDetailBloc
     TransactionDetailEvent event,
   ) async* {
     if (event is GetTransactionDetial) {
+      if (state is TransactionLoaded) {
+        TransactionLoaded _state = state as TransactionLoaded;
+        if (_state.account.id == event.accountId) return;
+      }
       Map transactionDetail =
           await this._repo.getTransactionDetail(event.accountId, event.txid);
       Account account = transactionDetail["account"];

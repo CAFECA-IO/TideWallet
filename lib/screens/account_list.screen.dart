@@ -59,6 +59,8 @@ class _AccountListScreenState extends State<AccountListScreen> {
                               (Account acc) => AccountItem(
                                 acc,
                                 () {
+                                  print(
+                                      'acc symbol: ${acc.symbol}, acc id: ${acc.id}');
                                   Navigator.of(context).pushNamed(
                                       AccountDetailScreen.routeName,
                                       arguments: {"accountId": acc.id});
