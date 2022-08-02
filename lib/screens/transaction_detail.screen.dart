@@ -217,8 +217,21 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                           width: 8,
                         ),
                         GestureDetector(
-                          onTap: () => _launchURL(
-                              'https://blockexplorer.one/${_currency.symbol.toLowerCase()}/${_currency.network.toLowerCase()}/tx/${_transaction.txId}'),
+                          onTap: () {
+                            String network = _currency.network.toLowerCase();
+                            
+                            // TODO: CFC and use Titan Explorer
+                            if (network == 'bitcoin') {
+                              network = 'mainnet';
+                            } 
+
+                            if (network == 'bitcoin testnet') {
+                              network = 'testnet';
+                            }
+
+                             _launchURL(
+                              'https://blockexplorer.one/${_currency.symbol.toLowerCase()}/$network/tx/${_transaction.txId}');
+                          },
                           child: Text(
                             Formatter.formatAdddress(_transaction.txId),
                             style: Theme.of(context)
