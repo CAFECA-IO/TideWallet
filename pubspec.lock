@@ -936,13 +936,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.10.0-nullsafety.1"
-  statemachine:
-    dependency: transitive
-    description:
-      name: statemachine
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.6.2"
   stream_channel:
     dependency: transitive
     description:
