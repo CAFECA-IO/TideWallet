@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:alice/alice.dart';
-import '../constants/log_config.dart';
 
 import '../database/db_operator.dart';
 import './welcome.screen.dart';
@@ -11,8 +9,7 @@ import '../widgets/dialogs/loading_dialog.dart';
 import '../blocs/account_currency/account_currency_bloc.dart';
 import '../blocs/fiat/fiat_bloc.dart';
 import '../blocs/user/user_bloc.dart';
-import '../main.dart';
-import '../helpers/http_agent.dart';
+
 
 class LandingScreen extends StatefulWidget {
   static const routeName = 'landing-screen';
@@ -25,16 +22,10 @@ class _LandingScreenState extends State<LandingScreen> {
   UserBloc _bloc;
   FiatBloc _fiatBloc;
   AccountCurrencyBloc _accountBloc;
-  Alice alice;
 
   @override
   void initState() {
     super.initState();
-    if (Config.alice) {
-      alice = Alice(
-          showNotification: true, navigatorKey: navigatorKey, darkTheme: true);
-      HTTPAgent().setAlice(alice);
-    }
   }
 
   @override
