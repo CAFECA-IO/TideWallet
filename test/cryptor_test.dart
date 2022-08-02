@@ -46,13 +46,34 @@ void main() {
       expect(str, testString);
     });
 
-    // test("ripemd160 digest", () {
-    //   final ripemd160Data = Cryptor.ripemd160([1, 2, 3]);
-    //   final matcher = Cryptor.ripemd160Legacy([1, 2, 3]);
-    //   print(ripemd160Data);
-    //   print(matcher);
-    //   expect(ripemd160Data, matcher);
-    // });
+    test("ripemd160 digest", () {
+      final ripemd160Data = Cryptor.ripemd160([1, 2, 3]);
+      // final matcher = Cryptor.ripemd160Legacy([1, 2, 3]);
+      print(ripemd160Data);
+      // print(matcher);
+      expect(ripemd160Data, [
+        121,
+        249,
+        1,
+        218,
+        38,
+        9,
+        240,
+        32,
+        173,
+        173,
+        191,
+        46,
+        95,
+        104,
+        161,
+        108,
+        140,
+        63,
+        125,
+        87
+      ]);
+    });
 
     test("HMAC encrypt", () {
       final hmac = Cryptor.hmacEncrypt(result + iv, secret);
