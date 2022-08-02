@@ -25,6 +25,7 @@ class LandingScreen extends StatefulWidget {
 }
 
 class _LandingScreenState extends State<LandingScreen> {
+  final LocalAuthentication _localAuthentication = LocalAuthentication();
   bool _isInit = true;
   UserBloc _bloc;
   FiatBloc _fiatBloc;
@@ -103,12 +104,68 @@ class _LandingScreenState extends State<LandingScreen> {
             );
           }
           if (state is UserSuccess) {
-            return HomeScreen();
+            _authenticateUser().then(
+                (isAuthenticated) => isAuthenticated ? HomeScreen() : null);
           }
 
           return WelcomeScreen();
         },
       ),
     );
+  }
+
+  // To check if any type of biometric authentication
+  // hardware is available.
+  Future<bool> _isBiometricAvailable() async {
+    bool isAvailable = false;
+    try {
+      isAvailable = await _localAuthentication.canCheckBiometrics;
+    } on PlatformException catch (e) {
+      print(e);
+    }
+
+    if (!mounted) return isAvailable;
+
+    isAvailable
+        ? print('Biometric is available!')
+        : print('Biometric is unavailable.');
+
+    return isAvailable;
+  }
+
+  // To retrieve the list of biometric types
+  // (if available).
+  Future<void> _getListOfBiometricTypes() async {
+    List<BiometricType> listOfBiometrics;
+    try {
+      listOfBiometrics = await _localAuthentication.getAvailableBiometrics();
+    } on PlatformException catch (e) {
+      print(e);
+    }
+
+    if (!mounted) return;
+
+    print(listOfBiometrics);
+  }
+
+  // Process of authentication user using
+  // biometrics.
+  Future<bool> _authenticateUser() async {
+    bool isAuthenticated = false;
+    try {
+      isAuthenticated = await _localAuthentication.authenticate(
+        localizedReason:
+            "Please authenticate to view your transaction overview",
+        useErrorDialogs: true,
+        stickyAuth: true,
+      );
+    } on PlatformException catch (e) {
+      print(e);
+      return false;
+    }
+
+    if (!mounted) return false;
+
+    return isAuthenticated;
   }
 }
