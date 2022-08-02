@@ -33,7 +33,7 @@ class LocalAuthRepository {
   Future<bool> authenticateUser() async {
     bool isAuthenticated = false;
     try {
-      isAuthenticated = await _localAuthentication.authenticate(
+      isAuthenticated = await _localAuthentication.authenticateWithBiometrics(
         localizedReason:
             "Please authenticate to view your transaction overview",
         useErrorDialogs: true,
