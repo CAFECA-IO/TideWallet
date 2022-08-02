@@ -24,12 +24,15 @@ class ResetBloc extends Bloc<ResetEvent, ResetState> {
       if (!verified) {
         yield ResetError(RESET_ERROR.password);
       } else {
+        _accountRepository.close();
         final success = await _userRepo.deleteUser();
 
         if (success) {
-          _accountRepository.close();
-
           yield ResetSuccess();
+        } else {
+          _accountRepository.coreInit();
+
+          yield ResetError(RESET_ERROR.unknown);
         }
       }
     }
