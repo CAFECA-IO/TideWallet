@@ -220,7 +220,7 @@ class _InvestPlanPreviewState extends State<InvestPlanPreview> {
           ),
           Spacer(),
           BlocListener<VerifyPasswordBloc, VerifyPasswordState>(
-            bloc: _verifyPasswordBloc,
+            cubit: _verifyPasswordBloc,
             listener: (context, state) {
               if (state is PasswordVerified) {
                 this._bloc.add(CreateInvestPlan());

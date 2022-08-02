@@ -155,7 +155,7 @@ class _SwapConfirmState extends State<SwapConfirm> {
             ),
             // ++ add verifyPassword BLOC 2021/3/17 Emily
             BlocListener<VerifyPasswordBloc, VerifyPasswordState>(
-              bloc: _verifyPasswordBloc,
+              cubit: _verifyPasswordBloc,
               listener: (context, state) {
                 if (state is PasswordVerified) {
                   widget.confirmFunc(state.password);

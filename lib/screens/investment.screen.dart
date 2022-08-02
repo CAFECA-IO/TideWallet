@@ -47,7 +47,7 @@ class _InvestmentScreenState extends State<InvestmentScreen>
             children: <Widget>[
               Header(), // TODO do anotherHeader for investment
               BlocBuilder<InvestBloc, InvestState>(
-                bloc: _ivtBloc,
+                cubit: _ivtBloc,
                 builder: (_, state) {
                   if (state is InvestInitial) {
                     return Expanded(

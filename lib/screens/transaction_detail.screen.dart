@@ -70,7 +70,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
         routeName: TransactionDetailScreen.routeName,
       ),
       body: BlocBuilder<TransactionStatusBloc, TransactionStatusState>(
-          bloc: _bloc,
+          cubit: _bloc,
           builder: (context, state) {
             _transaction = state.transaction ?? _transaction;
             return Container(

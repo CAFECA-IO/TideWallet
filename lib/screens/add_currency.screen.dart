@@ -49,7 +49,7 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
         routeName: AddCurrencyScreen.routeName,
       ),
       body: BlocBuilder<AddCurrencyBloc, AddCurrencyState>(
-        bloc: _bloc,
+        cubit: _bloc,
         builder: (context, state) {
           Widget result = SizedBox();
           bool addable = (state is GetToken && state.result != null);
@@ -104,7 +104,7 @@ class _AddCurrencyScreenState extends State<AddCurrencyScreen> {
           }
 
           return BlocListener<AddCurrencyBloc, AddCurrencyState>(
-            bloc: _bloc,
+            cubit: _bloc,
             listenWhen: (prev, curr) => (prev != curr),
             listener: (context, state) {
               if (state is Loading) {

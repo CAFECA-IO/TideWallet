@@ -33,7 +33,7 @@ class _ScanWalletScreenState extends State<ScanWalletScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<RestoreWalletBloc, RestoreWalletState>(
-      bloc: _bloc,
+      cubit: _bloc,
       listener: (context, state) {
         if (state is PaperWalletSuccess) {
           Navigator.of(context).pop();
@@ -52,7 +52,7 @@ class _ScanWalletScreenState extends State<ScanWalletScreen> {
               scanCallback: this._scanResult,
             ),
             BlocBuilder<RestoreWalletBloc, RestoreWalletState>(
-              bloc: _bloc,
+              cubit: _bloc,
               builder: (context, state) {
                 if (state is PaperWalletFail) {
                   return Positioned(

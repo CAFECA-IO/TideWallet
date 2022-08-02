@@ -84,7 +84,7 @@ class _SwapScreenState extends State<SwapScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<SwapBloc, SwapState>(
-      bloc: _swapBloc,
+      cubit: _swapBloc,
       listener: (ctx, state) {
         Log.debug('state: ${state.props}'); // --
 
@@ -163,7 +163,7 @@ class _SwapScreenState extends State<SwapScreen> {
         }
       },
       child: BlocBuilder<SwapBloc, SwapState>(
-        bloc: _swapBloc,
+        cubit: _swapBloc,
         builder: (context, state) {
           if (state is SwapLoaded) {
             return Column(

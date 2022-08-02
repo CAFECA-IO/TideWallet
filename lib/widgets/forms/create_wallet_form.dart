@@ -36,7 +36,7 @@ class _CreateWalletFormState extends State<CreateWalletForm> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<CreateWalletBloc, CreateWalletState>(
-      bloc: _bloc,
+      cubit: _bloc,
       listener: (context, state) {
         CreateWalletCheck _state = state;
         if (_state.error != null && _state.error != CreateFormError.none) {
@@ -55,7 +55,7 @@ class _CreateWalletFormState extends State<CreateWalletForm> {
             default:
           }
           DialogController.show(context, ErrorDialog(_text), onDismiss: () {
-             _bloc.add(
+            _bloc.add(
               CleanCreateWalletError(),
             );
           });
@@ -67,7 +67,7 @@ class _CreateWalletFormState extends State<CreateWalletForm> {
         }
       },
       child: BlocBuilder<CreateWalletBloc, CreateWalletState>(
-          bloc: _bloc,
+          cubit: _bloc,
           builder: (BuildContext ctx, CreateWalletState state) {
             if (state is CreateWalletCheck) {
               return CheckingView(_bloc, state);

@@ -125,7 +125,11 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                 final tx = state.currentEvent.params[0];
 
                 if (tx['gasPrice'] == null) {
-                  tx['gasPrice'] = (_bloc.gasPrice[TransactionPriority.standard] * Decimal.fromInt(pow(10, 18))).toInt().toRadixString(16);
+                  tx['gasPrice'] =
+                      (_bloc.gasPrice[TransactionPriority.standard] *
+                              Decimal.fromInt(pow(10, 18)))
+                          .toInt()
+                          .toRadixString(16);
                 }
                 content = SignTransaction(
                     context: context,
@@ -192,7 +196,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
                     );
                   }
                 },
-                bloc: _verifyPasswordBloc,
+                cubit: _verifyPasswordBloc,
                 child: content,
               ),
             ).then(
@@ -209,7 +213,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
           }
         }
       },
-      bloc: _bloc,
+      cubit: _bloc,
       child: Scaffold(
         appBar: GeneralAppbar(
           title: 'TideWallet Connect',
@@ -220,7 +224,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
           },
         ),
         body: BlocBuilder<WalletConnectBloc, WalletConnectState>(
-          bloc: _bloc,
+          cubit: _bloc,
           builder: (context, state) {
             if (state is WalletConnectInitial) {
               return Stack(

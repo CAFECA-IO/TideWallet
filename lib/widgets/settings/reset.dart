@@ -50,18 +50,19 @@ class _ResetSettingState extends State<ResetSetting> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<ResetBloc, ResetState>(
-      bloc: _bloc,
+      cubit: _bloc,
       listener: (context, state) async {
         if (state is ResetError) {
           if (state.error == RESET_ERROR.password) {
             DialogController.show(context, ErrorDialog(t('error_password')));
-          } else if (state.error == RESET_ERROR.unknown){
+          } else if (state.error == RESET_ERROR.unknown) {
             DialogController.show(context, ErrorDialog(t('error_reset')));
           }
         }
 
         if (state is ResetSuccess) {
-          DialogController.showUnDissmissible(context, SuccessDialog(t('success_reset')));
+          DialogController.showUnDissmissible(
+              context, SuccessDialog(t('success_reset')));
 
           await Future.delayed(Duration(milliseconds: 500));
 
