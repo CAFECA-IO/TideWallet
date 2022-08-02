@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:pointycastle/export.dart';
 
 import 'package:bs58check/bs58check.dart';
 import 'package:sha3/sha3.dart';
-import 'package:bird_cryptography/bird_cryptography.dart' as bird;
+// import 'package:bird_cryptography/bird_cryptography.dart' as bird;
 // ignore: implementation_imports
 import 'package:crypto/src/sha256.dart' as SHA256;
 import 'package:convert/convert.dart';
@@ -32,10 +33,16 @@ class Cryptor {
     return hex.encode(keccak256round(hex.decode(data), round: 1));
   }
 
+  // static List<int> ripemd160Legacy(List<int> data) {
+  //   final bird.CryptographyHashes dartHashes = bird.CryptographyHashes.dart;
+  //   final bird.CryptographyHash ripemd160 = dartHashes.ripemd160();
+  //   List<int> ripemd160Data = ripemd160.digestRaw(Uint8List.fromList(data));
+  //   return ripemd160Data;
+  // }
+
   static List<int> ripemd160(List<int> data) {
-    final bird.CryptographyHashes dartHashes = bird.CryptographyHashes.dart;
-    final bird.CryptographyHash ripemd160 = dartHashes.ripemd160();
-    List<int> ripemd160Data = ripemd160.digestRaw(Uint8List.fromList(data));
+    final RIPEMD160Digest ripemd160 = RIPEMD160Digest();
+    List<int> ripemd160Data = ripemd160.process(Uint8List.fromList(data));
     return ripemd160Data;
   }
 
