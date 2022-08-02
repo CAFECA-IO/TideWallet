@@ -19,7 +19,7 @@ class TransactionServiceBased extends TransactionService {
       String accountcurrencyId,
       List<UnspentTxOut> unspentTxOuts,
       String changeAddress,
-      int changeIndex,
+      int keyIndex,
       Uint8List privKey}) {
     // TODO: implement prepareTransaction
     throw UnimplementedError();

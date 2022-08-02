@@ -87,8 +87,8 @@ class Transaction {
                 ? TransactionDirection.received
                 : TransactionDirection.unknown;
     _address = (direction == TransactionDirection.sent)
-        ? entity.destinctionAddress
-        : entity.sourceAddress;
+        ? entity.sourceAddress
+        : entity.destinctionAddress;
     confirmations = entity.confirmation;
     timestamp = entity.timestamp;
     message = hex.decode(stripHexPrefix(entity.note));
