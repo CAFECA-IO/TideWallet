@@ -59,6 +59,9 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
       UnspentTxOut utxo = transaction.inputs[index].utxo;
       MsgSignature sig = Signer().sign(rawDataHash, utxo.privatekey);
       Uint8List buffer = new Uint8List(64);
+      Log.btc('utxo txId: ${utxo.txId}');
+      Log.btc('utxo.amount: ${utxo.amount}');
+
       buffer.setRange(0, 32, encodeBigInt(sig.r));
       buffer.setRange(32, 64, encodeBigInt(sig.s));
       Uint8List signature = Signer()
@@ -147,7 +150,7 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
                   ? BitcoinTransactionType.SCRIPTHASH
                   : BitcoinTransactionType.PUBKEYHASH,
           amount: change,
-          chainIndex: _Index_InternalChain,
+          changeIndex: _Index_InternalChain,
           keyIndex: changeIndex,
           timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
           locked: false,

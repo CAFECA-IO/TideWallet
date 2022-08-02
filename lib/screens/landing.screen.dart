@@ -29,7 +29,6 @@ class _LandingScreenState extends State<LandingScreen> {
   UserBloc _bloc;
   FiatBloc _fiatBloc;
   AccountCurrencyBloc _accountBloc;
-
   Alice alice;
 
   @override

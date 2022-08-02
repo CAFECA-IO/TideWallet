@@ -146,7 +146,7 @@ void main() {
             data: Uint8List(0),
             amount: Decimal.parse('0.01156275'),
             address: 'tb1q8x0nw29tvc7zkgc24j2h28mt8mutewcq8zj59h',
-            chainIndex: 0,
+            changeIndex: 0,
             keyIndex: 0,
             timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
             locked: false,

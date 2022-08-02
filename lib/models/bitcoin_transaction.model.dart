@@ -273,8 +273,8 @@ class BitcoinTransaction extends Transaction {
       {int lockTime}) // in Satoshi
       : _segwitType = segwitType,
         this.note = note ?? Uint8List(0) {
-    _inputs = List<Input>();
-    _outputs = List<Output>();
+    _inputs = [];
+    _outputs = [];
     _segwitType = segwitType ?? SegwitType.nonSegWit;
     setVersion(publish ? 1 : 2);
     setlockTime(lockTime ?? 0);
@@ -486,6 +486,7 @@ class BitcoinTransaction extends Transaction {
       //  nLockTime:
       data.addAll(this._lockTime);
     }
+    Log.debug('data: ${hex.encode(data)}');
     return Uint8List.fromList(data);
   }
 

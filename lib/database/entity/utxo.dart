@@ -33,7 +33,7 @@ class UtxoEntity {
   final String amount; // TODO in smallest
 
   @ColumnInfo(name: 'chain_index')
-  final int chainIndex;
+  final int changeIndex;
 
   @ColumnInfo(name: 'key_index')
   final int keyIndex;
@@ -55,7 +55,7 @@ class UtxoEntity {
       this.vout,
       this.type,
       this.amount,
-      this.chainIndex,
+      this.changeIndex,
       this.keyIndex,
       this.script,
       this.timestamp,
@@ -69,8 +69,8 @@ class UtxoEntity {
         this.txId = _utxo.txId,
         this.vout = _utxo.vout,
         this.type = _utxo.type.value,
-        this.amount = _utxo.amount.toString(),
-        this.chainIndex = _utxo.chainIndex,
+        this.amount = _utxo.amountInSmallestUint.toString(),
+        this.changeIndex = _utxo.changeIndex,
         this.keyIndex = _utxo.keyIndex,
         this.script = hex.encode(_utxo.data),
         this.timestamp = _utxo.timestamp,
@@ -84,8 +84,9 @@ class UtxoEntity {
         this.txId = data['txid'],
         this.vout = data['vout'],
         this.type = data['type'],
-        this.amount = data['amount'],
-        this.chainIndex = data['chain_index'],
+        this.amount =
+            data['amount'], // in smallest unit ++ but should be currency unit
+        this.changeIndex = data['chain_index'],
         this.keyIndex = data['key_index'],
         this.script = data['script'],
         this.timestamp = data['timestamp'],
@@ -103,7 +104,7 @@ class UtxoEntity {
           vout == other.vout &&
           type == other.type &&
           amount == other.amount &&
-          chainIndex == other.chainIndex &&
+          changeIndex == other.changeIndex &&
           keyIndex == other.keyIndex &&
           script == other.script &&
           timestamp == other.timestamp &&
@@ -132,7 +133,7 @@ class JoinUtxo {
   final String amount; // TODO in smallest
 
   @ColumnInfo(name: 'chain_index')
-  final int chainIndex;
+  final int changeIndex;
 
   @ColumnInfo(name: 'key_index')
   final int keyIndex;
@@ -156,7 +157,7 @@ class JoinUtxo {
       this.vout,
       this.type,
       this.amount,
-      this.chainIndex,
+      this.changeIndex,
       this.keyIndex,
       this.script,
       this.timestamp,
@@ -172,7 +173,7 @@ class JoinUtxo {
         this.vout = _utxo.vout,
         this.type = _utxo.type.value,
         this.amount = _utxo.amount.toString(),
-        this.chainIndex = _utxo.chainIndex,
+        this.changeIndex = _utxo.changeIndex,
         this.keyIndex = _utxo.keyIndex,
         this.script = hex.encode(_utxo.script),
         this.timestamp = _utxo.timestamp,
