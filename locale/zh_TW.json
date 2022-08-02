@@ -159,5 +159,6 @@
   "exchange_rate": "Exchange rate",
   "exchange_details": "Exchange Details",
   "buy": "買進",
-  "sell": "賣出"
+  "sell": "賣出",
+  "authenticate": "authenticate"
 }

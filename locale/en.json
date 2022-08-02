@@ -186,5 +186,6 @@
   "exchange_rate": "Exchange rate",
   "exchange_details": "Exchange Details",
   "buy": "Buy",
-  "sell": "Sell"
+  "sell": "Sell",
+  "authenticate": "authenticate"
 }

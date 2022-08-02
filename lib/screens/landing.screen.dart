@@ -1,15 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:alice/alice.dart';
-import 'package:local_auth/local_auth.dart';
 import '../constants/log_config.dart';
 
 import '../database/db_operator.dart';
 import './welcome.screen.dart';
-import './home.screen.dart';
+import './authenticate.screen.dart';
 import '../widgets/dialogs/dialog_controller.dart';
 import '../widgets/dialogs/loading_dialog.dart';
 import '../blocs/account_currency/account_currency_bloc.dart';
@@ -25,7 +21,6 @@ class LandingScreen extends StatefulWidget {
 }
 
 class _LandingScreenState extends State<LandingScreen> {
-  final LocalAuthentication _localAuthentication = LocalAuthentication();
   bool _isInit = true;
   UserBloc _bloc;
   FiatBloc _fiatBloc;
@@ -35,7 +30,6 @@ class _LandingScreenState extends State<LandingScreen> {
   @override
   void initState() {
     super.initState();
-
     if (Config.alice) {
       alice = Alice(
           showNotification: true, navigatorKey: navigatorKey, darkTheme: true);
@@ -56,7 +50,6 @@ class _LandingScreenState extends State<LandingScreen> {
       _fiatBloc = BlocProvider.of<FiatBloc>(context);
       _isInit = false;
     }
-
     super.didChangeDependencies();
   }
 
@@ -75,7 +68,6 @@ class _LandingScreenState extends State<LandingScreen> {
         if (state is UserLoading) {
           DialogController.showUnDissmissible(context, LoadingDialog());
         }
-
         if (state is UserSuccess || state is UserFail) {
           DialogController.dismiss(context);
         }
@@ -104,68 +96,11 @@ class _LandingScreenState extends State<LandingScreen> {
             );
           }
           if (state is UserSuccess) {
-            _authenticateUser().then(
-                (isAuthenticated) => isAuthenticated ? HomeScreen() : null);
+            return AuthenticateScreen();
           }
-
           return WelcomeScreen();
         },
       ),
     );
-  }
-
-  // To check if any type of biometric authentication
-  // hardware is available.
-  Future<bool> _isBiometricAvailable() async {
-    bool isAvailable = false;
-    try {
-      isAvailable = await _localAuthentication.canCheckBiometrics;
-    } on PlatformException catch (e) {
-      print(e);
-    }
-
-    if (!mounted) return isAvailable;
-
-    isAvailable
-        ? print('Biometric is available!')
-        : print('Biometric is unavailable.');
-
-    return isAvailable;
-  }
-
-  // To retrieve the list of biometric types
-  // (if available).
-  Future<void> _getListOfBiometricTypes() async {
-    List<BiometricType> listOfBiometrics;
-    try {
-      listOfBiometrics = await _localAuthentication.getAvailableBiometrics();
-    } on PlatformException catch (e) {
-      print(e);
-    }
-
-    if (!mounted) return;
-
-    print(listOfBiometrics);
-  }
-
-  // Process of authentication user using
-  // biometrics.
-  Future<bool> _authenticateUser() async {
-    bool isAuthenticated = false;
-    try {
-      isAuthenticated = await _localAuthentication.authenticate(
-        localizedReason:
-            "Please authenticate to view your transaction overview",
-        useErrorDialogs: true,
-        stickyAuth: true,
-      );
-    } on PlatformException catch (e) {
-      print(e);
-      return false;
-    }
-
-    if (!mounted) return false;
-
-    return isAuthenticated;
   }
 }
