@@ -59,7 +59,7 @@ class _ThirdPartySignInFormState extends State<ThirdPartySignInForm> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<ThirdPartySignInBloc, ThirdPartySignInState>(
-      bloc: this._bloc,
+      cubit: this._bloc,
       listener: (context, state) {
         if (state is FailedSignInWithApple) {
           Navigator.of(context).pop();
