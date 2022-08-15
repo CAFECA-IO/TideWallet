@@ -38,6 +38,7 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
   TransactionRepository _txRepo;
   UserRepository _userRepo;
   VerifyPasswordBloc _verifyPasswordBloc;
+  String _uri;
   final t = I18n.t;
 
   _scanResult(String v) {
@@ -52,6 +53,11 @@ class _WalletConnectScreenState extends State<WalletConnectScreen> {
 
     _bloc = WalletConnectBloc(_accountRepo, _txRepo);
     _verifyPasswordBloc = VerifyPasswordBloc(_userRepo);
+    dynamic arg = ModalRoute.of(context).settings.arguments;
+    if (arg != null) {
+      _uri = arg;
+      this._bloc.add(ScanWC(_uri));
+    }
 
     super.didChangeDependencies();
   }
