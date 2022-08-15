@@ -72,7 +72,7 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
           }
           if (state is TransactionSent) {
             DialogController.dismiss(context);
-            await Future.delayed(Duration(milliseconds: 150), () {
+            await Future(() {
               Navigator.of(context).popUntil((route) =>
                   route.settings.name == TransactionListScreen.routeName);
             });

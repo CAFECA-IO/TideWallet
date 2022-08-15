@@ -30,7 +30,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             currency.accountType == this._repo.currency.accountType);
         if (index > 0) {
           Currency currency = msg.value[index];
-          Log.warning('currency amount: ${currency.amount}');
           this.add(UpdateTransactionCreateCurrency(currency));
         }
       }
@@ -86,7 +85,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       );
     }
     if (event is ScanQRCode) {
-      Log.debug("ValidAddress address: ${event.address}");
       bool verifiedAddress = await _repo
           .verifyAddress(event.address); // TODO Account add publish property
       List<bool> _rules = [verifiedAddress, _state.rules[1]];
@@ -118,12 +116,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
 
       amount = Decimal.tryParse(event.amount);
       if (_state.rules[0] && amount != null) {
-        // TODO TEST
-        Log.debug('event is VerifyAmount: ${event.amount}');
         result = await _repo.getTransactionFee(
             amount: amount, address: _state.address);
-        // TODO TEST
-        Log.debug('getTransactionFee result: $result');
         if (result.length == 1) {
           _gasPrice = result[0];
           fee = _gasPrice[TransactionPriority.standard];
@@ -174,7 +168,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       if (_state.rules[0] && _state.rules[1]) {
         result = await _repo.getTransactionFee(
             amount: _state.amount, address: _state.address);
-        Log.debug('getTransactionFee result: $result');
         if (result.length == 1) {
           _gasPrice = result[0];
           gasLimit = null;
@@ -189,7 +182,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           rule2 = _repo.verifyAmount(_state.amount, fee: fee);
           try {
             message = result[2];
-            Log.debug('getTransactionFee message: $message');
           } catch (e) {}
         }
         String feeToFiat =
@@ -242,20 +234,15 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     if (event is PublishTransaction) {
       yield TransactionPublishing();
       try {
-        Log.debug('PublishTransaction _state: ${_state.props}}'); //--
-
         List result = await _repo.prepareTransaction(
             event.password, _state.address, _state.amount,
             fee: _state.fee,
             gasPrice: _state.gasPrice,
             gasLimit: _state.gasLimit,
             message: _state.message);
-        Log.debug('PublishTransaction result: $result'); //--
-
         final publishResult =
             await _repo.publishTransaction(result[0], result[1]);
         bool success = publishResult[0];
-        Log.warning('PublishTransaction success: $success'); //--
         if (success)
           yield TransactionSent();
         else

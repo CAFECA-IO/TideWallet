@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:decimal/decimal.dart';
 import 'package:convert/convert.dart';
@@ -222,27 +223,23 @@ class TransactionRepository {
     //     'd130e96ae9f5ede60e33c5264d1e2beb03c54b5eb67d8d52773a408287178ccc'));
     // TEST (END)
     UserEntity user = await DBOperator().userDao.findUser();
-    web3dart.Wallet wallet = PaperWallet.jsonToWallet([user.keystore, pwd]);
-    List<int> seed = PaperWallet.magicSeed(wallet.privateKey.privateKey);
+    web3dart.Wallet wallet =
+        await compute(PaperWallet.jsonToWallet, [user.keystore, pwd]);
+    List<int> seed =
+        await compute(PaperWallet.magicSeed, wallet.privateKey.privateKey);
     return Uint8List.fromList(seed);
   }
 
   Future<Uint8List> getPubKey(String pwd, int changeIndex, int keyIndex) async {
     Uint8List seed = await _getSeed(pwd);
     Log.warning("getPubKey seed: ${hex.encode(seed)}");
-    return await PaperWallet.getPubKey(seed, changeIndex, keyIndex);
+    return PaperWallet.getPubKey(seed, changeIndex, keyIndex);
   }
 
   Future<Uint8List> getPrivKey(
       String pwd, int changeIndex, int keyIndex) async {
     Uint8List seed = await _getSeed(pwd);
-    Uint8List result =
-        await PaperWallet.getPrivKey(seed, changeIndex, keyIndex);
-    // result = await PaperWallet.getPrivKey(
-    //     Uint8List.fromList(hex.decode(
-    //         'd36777597b9c5cc58a64a4fb842a206bd86da50f276b783aae0cf87e5b058821')),
-    //     changeIndex,
-    //     keyIndex);
+    Uint8List result = PaperWallet.getPrivKey(seed, changeIndex, keyIndex);
     Log.warning("getPrivKey seed: ${hex.encode(seed)}");
     return result;
   }
@@ -256,12 +253,12 @@ class TransactionRepository {
         int keyIndex;
         List<UnspentTxOut> unspentTxOuts =
             await _svc.getUnspentTxOut(_currency.id);
+        Log.debug('unspentTxOuts: $unspentTxOuts');
         Decimal utxoAmount = Decimal.zero;
         Log.btc('amount + fee: ${amount + fee}');
         List<UnspentTxOut> _utxos = [];
         for (UnspentTxOut utxo in unspentTxOuts) {
           Log.btc('utxo.locked: ${utxo.locked}');
-
           if (utxo.locked || !(utxo.amount > Decimal.zero) || utxo.type == null)
             continue;
           utxoAmount += utxo.amount; // in currency uint
@@ -280,7 +277,6 @@ class TransactionRepository {
             break;
           } else if (utxoAmount == (amount + fee)) break;
         }
-        Log.btc('unspentTxOuts: $unspentTxOuts');
         Transaction transaction = _transactionService.prepareTransaction(
           this._currency.publish,
           to,

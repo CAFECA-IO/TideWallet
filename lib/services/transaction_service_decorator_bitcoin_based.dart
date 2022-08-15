@@ -158,6 +158,8 @@ class BitcoinBasedTransactionServiceDecorator extends TransactionService {
           decimals: this.currencyDecimals,
           address: changeAddress);
       signedTransaction.addChangeUtxo(changeUtxo);
+      Log.debug('changeUtxo txid: ${signedTransaction.txId}');
+      Log.debug('changeUtxo amount: $change');
     }
 
     return signedTransaction;
