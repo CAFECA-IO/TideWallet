@@ -187,5 +187,9 @@
   "exchange_details": "Exchange Details",
   "buy": "Buy",
   "sell": "Sell",
-  "authenticate": "authenticate"
+  "authenticate": "authenticate",
+  "create_wallet_with_apple_id": "Create wallet with AppleId",
+  "or": "Or",
+  "sign_in_with_apple_id": "Sign in with AppleID",
+  "sign_in_with_phone": "Sign in with Phone"
 }
