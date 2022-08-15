@@ -9,18 +9,17 @@ class PrimaryButton extends BaseButton {
       Color disableColor,
       Color borderColor,
       AssetImage iconImg,
+      Widget icon,
       Color textColor,
       EdgeInsetsGeometry padding,
       double fontSize})
-      : super(
-          _text,
-          _onPressed,
-          backgroundColor: backgroundColor ?? MyColors.primary_01,
-          disableColor: disableColor ?? MyColors.primary_02,
-          borderColor: borderColor ?? MyColors.primary_01,
-          iconImg: iconImg,
-          textColor: textColor,
-          padding: padding,
-          fontSize: fontSize
-        );
+      : super(_text, _onPressed,
+            backgroundColor: backgroundColor ?? MyColors.primary_01,
+            disableColor: disableColor ?? MyColors.primary_02,
+            borderColor: borderColor ?? MyColors.primary_01,
+            iconImg: iconImg,
+            textColor: textColor,
+            padding: padding,
+            fontSize: fontSize,
+            icon: icon);
 }

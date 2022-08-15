@@ -15,6 +15,7 @@ abstract class BaseButton extends StatelessWidget {
   final TextStyle textStyle;
   final double minWidth;
   final double borderRadius;
+  final Widget icon;
 
   BaseButton(this._text, this._onPressed,
       {this.iconImg,
@@ -28,7 +29,8 @@ abstract class BaseButton extends StatelessWidget {
       this.textStyle,
       this.minWidth,
       this.fontSize,
-      this.borderRadius});
+      this.borderRadius,
+      this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +65,9 @@ abstract class BaseButton extends StatelessWidget {
                         Theme.of(context).textTheme.button.color,
                     size: 20.0,
                   )
-                : SizedBox(width: 0),
+                : this.icon != null
+                    ? this.icon
+                    : SizedBox(width: 0),
             SizedBox(
               width: this.iconImg != null ? 14.0 : 0,
             ),
