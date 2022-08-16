@@ -6,14 +6,16 @@ import './transaction_list.screen.dart';
 import '../models/transaction.model.dart';
 import '../models/account.model.dart';
 import '../repositories/user_repository.dart';
-import '../blocs/verify_password/verify_password_bloc.dart';
+// import '../blocs/verify_password/verify_password_bloc.dart';
+import '../repositories/local_auth_repository.dart';
+import '../blocs/local_auth/local_auth_bloc.dart';
 import '../blocs/transaction/transaction_bloc.dart';
 import '../widgets/appBar.dart';
 import '../widgets/buttons/secondary_button.dart';
 import '../widgets/dialogs/error_dialog.dart';
 import '../widgets/dialogs/loading_dialog.dart';
 import '../widgets/dialogs/dialog_controller.dart';
-import '../widgets/dialogs/verify_password_dialog.dart';
+// import '../widgets/dialogs/verify_password_dialog.dart';
 import '../helpers/i18n.dart';
 
 class TransactionPreviewScreen extends StatefulWidget {
@@ -26,7 +28,7 @@ class TransactionPreviewScreen extends StatefulWidget {
 
 class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
   TransactionBloc _bloc;
-  VerifyPasswordBloc _verifyPasswordBloc;
+  LocalAuthBloc _localBloc;
   Currency _currency;
   Transaction _transaction;
   String _feeToFiat;
@@ -42,13 +44,14 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
 
     _bloc = BlocProvider.of<TransactionBloc>(context);
     _userRepo = Provider.of<UserRepository>(context, listen: false);
-    _verifyPasswordBloc = VerifyPasswordBloc(_userRepo);
+    _localBloc = LocalAuthBloc(LocalAuthRepository());
     super.didChangeDependencies();
   }
 
   @override
   void dispose() {
     super.dispose();
+    _localBloc.close();
   }
 
   @override
@@ -149,15 +152,15 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
                 ),
               ),
               Spacer(),
-              BlocListener<VerifyPasswordBloc, VerifyPasswordState>(
-                cubit: _verifyPasswordBloc,
+              BlocListener<LocalAuthBloc, LocalAuthState>(
+                cubit: _localBloc,
                 listener: (context, state) {
-                  if (state is PasswordVerified) {
-                    _bloc.add(PublishTransaction(state.password));
-                  }
-                  if (state is PasswordInvalid) {
-                    DialogController.show(
-                        context, ErrorDialog(t('error_password')));
+                  if (state is AuthenticationStatus) {
+                    if (state.isAuthenicated) {
+                      _bloc.add(PublishTransaction(_userRepo.getPassword()));
+                    } else {
+                      // ++ [Emily 4/1/2021]
+                    }
                   }
                 },
                 child: Container(
@@ -166,15 +169,7 @@ class _TransactionPreviewScreenState extends State<TransactionPreviewScreen> {
                   child: SecondaryButton(
                     "Confirm",
                     () {
-                      DialogController.showUnDissmissible(
-                        context,
-                        VerifyPasswordDialog((String password) {
-                          _verifyPasswordBloc.add(VerifyPassword(password));
-                          DialogController.dismiss(context);
-                        }, (String password) {
-                          DialogController.dismiss(context);
-                        }),
-                      );
+                      this._localBloc.add(Authenticate());
                     },
                     textColor: Theme.of(context).accentColor,
                     borderColor: Theme.of(context).accentColor,

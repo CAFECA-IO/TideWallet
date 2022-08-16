@@ -76,3 +76,5 @@ flutter packages pub run build_runner build // or flutter packages pub run build
 
 > ./doc/CurrencyScreen.drawio
 ![](./doc/CurrencyScreen.png)
+
+this is another version

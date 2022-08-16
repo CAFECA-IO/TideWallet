@@ -19,11 +19,11 @@ class VerifyPasswordBloc
   ) async* {
     if (event is VerifyPassword) {
       yield VerifyingPassword();
-      if (_repo.verifyPassword(event.password)) {
-        yield PasswordVerified(event.password);
-      } else {
-        yield PasswordInvalid();
-      }
+      // if (_repo.verifyPassword(event.password)) {
+      //   yield PasswordVerified(event.password);
+      // } else {
+      //   yield PasswordInvalid();
+      // }
     }
   }
 }

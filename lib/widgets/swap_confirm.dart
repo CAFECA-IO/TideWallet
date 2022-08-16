@@ -4,7 +4,8 @@ import 'package:provider/provider.dart';
 
 import '../blocs/verify_password/verify_password_bloc.dart';
 import '../repositories/user_repository.dart';
-
+import '../repositories/local_auth_repository.dart';
+import '../blocs/local_auth/local_auth_bloc.dart';
 import '../helpers/i18n.dart';
 import '../theme.dart';
 
@@ -32,13 +33,13 @@ class SwapConfirm extends StatefulWidget {
 }
 
 class _SwapConfirmState extends State<SwapConfirm> {
-  VerifyPasswordBloc _verifyPasswordBloc;
+  LocalAuthBloc _localBloc;
   UserRepository _userRepo;
 
   @override
   void didChangeDependencies() {
     this._userRepo = Provider.of<UserRepository>(context, listen: false);
-    this._verifyPasswordBloc = VerifyPasswordBloc(this._userRepo);
+    _localBloc = LocalAuthBloc(LocalAuthRepository());
 
     super.didChangeDependencies();
   }
@@ -154,33 +155,31 @@ class _SwapConfirmState extends State<SwapConfirm> {
               ),
             ),
             // ++ add verifyPassword BLOC 2021/3/17 Emily
-            BlocListener<VerifyPasswordBloc, VerifyPasswordState>(
-              cubit: _verifyPasswordBloc,
+            BlocListener<LocalAuthBloc, LocalAuthState>(
+              cubit: _localBloc,
               listener: (context, state) {
-                if (state is PasswordVerified) {
-                  widget.confirmFunc(state.password);
-                  Navigator.of(context).pop();
-                }
-                if (state is PasswordInvalid) {
-                  DialogController.show(
-                      context, ErrorDialog(t('error_password')));
+                if (state is AuthenticationStatus) {
+                  if (state.isAuthenicated) {
+                    widget.confirmFunc(_userRepo.getPassword());
+                    Navigator.of(context).pop();
+                  } else {
+                    DialogController.show(
+                        context,
+                        ErrorDialog(t(
+                            'error_password'))); // ++ change error message[Emily 4/1/2021]
+                  }
                 }
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(
                     horizontal: 20.0, vertical: 16.0),
                 width: double.infinity,
-                child: PrimaryButton('Confirm', () {
-                  DialogController.showUnDissmissible(
-                    context,
-                    VerifyPasswordDialog((String password) {
-                      _verifyPasswordBloc.add(VerifyPassword(password));
-                      DialogController.dismiss(context);
-                    }, (String password) {
-                      DialogController.dismiss(context);
-                    }),
-                  );
-                }),
+                child: PrimaryButton(
+                  'Confirm',
+                  () {
+                    this._localBloc.add(Authenticate());
+                  },
+                ),
               ),
             ),
           ],

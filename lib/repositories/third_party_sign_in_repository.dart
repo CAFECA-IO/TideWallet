@@ -25,13 +25,12 @@ class ThirdPartySignInRepository {
         ),
       );
       if (credential != null) result = true;
+      Log.debug('credential userIdentifier: ${credential.userIdentifier}');
     } catch (e) {
       errorCode = e.code;
       errorMessage = e.message;
       Log.debug(e.code);
     }
-
-    Log.debug('credential userIdentifier: ${credential.userIdentifier}');
     return [
       result,
       result ? credential?.userIdentifier : errorCode,

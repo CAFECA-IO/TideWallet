@@ -7,16 +7,18 @@ import '../models/investment.model.dart';
 import '../models/account.model.dart';
 
 import '../blocs/invest_plan/invest_plan_bloc.dart';
-import '../blocs/verify_password/verify_password_bloc.dart';
+// import '../blocs/verify_password/verify_password_bloc.dart';
+import '../blocs/local_auth/local_auth_bloc.dart';
 
+import '../repositories/local_auth_repository.dart';
 import '../repositories/user_repository.dart';
 import '../widgets/buttons/primary_button.dart';
 import '../widgets/buttons/secondary_button.dart';
 
 import '../helpers/i18n.dart';
-import 'dialogs/dialog_controller.dart';
-import 'dialogs/error_dialog.dart';
-import 'dialogs/verify_password_dialog.dart';
+// import 'dialogs/dialog_controller.dart';
+// import 'dialogs/error_dialog.dart';
+// import 'dialogs/verify_password_dialog.dart';
 
 class InvestPlanPreview extends StatefulWidget {
   final Currency currency;
@@ -32,7 +34,7 @@ class _InvestPlanPreviewState extends State<InvestPlanPreview> {
   final t = I18n.t;
 
   InvestPlanBloc _bloc;
-  VerifyPasswordBloc _verifyPasswordBloc;
+  LocalAuthBloc _localBloc;
   UserRepository _userRepo;
 
   @override
@@ -40,7 +42,7 @@ class _InvestPlanPreviewState extends State<InvestPlanPreview> {
     this._bloc = BlocProvider.of<InvestPlanBloc>(context);
     _userRepo = Provider.of<UserRepository>(context, listen: false);
 
-    this._verifyPasswordBloc = VerifyPasswordBloc(this._userRepo);
+    _localBloc = LocalAuthBloc(LocalAuthRepository());
 
     super.didChangeDependencies();
   }
@@ -219,29 +221,24 @@ class _InvestPlanPreviewState extends State<InvestPlanPreview> {
             ],
           ),
           Spacer(),
-          BlocListener<VerifyPasswordBloc, VerifyPasswordState>(
-            cubit: _verifyPasswordBloc,
+          BlocListener<LocalAuthBloc, LocalAuthState>(
+            cubit: _localBloc,
             listener: (context, state) {
-              if (state is PasswordVerified) {
-                this._bloc.add(CreateInvestPlan());
-                Navigator.of(context).pop();
-              }
-              if (state is PasswordInvalid) {
-                DialogController.show(
-                    context, ErrorDialog(t('error_password')));
+              if (state is AuthenticationStatus) {
+                if (state.isAuthenicated) {
+                  this._bloc.add(CreateInvestPlan(_userRepo.getPassword()));
+                  Navigator.of(context).pop();
+                } else {
+                  // ++ [Emily 4/1/2021]
+                }
               }
             },
-            child: PrimaryButton(t('authorize'), () {
-              DialogController.showUnDissmissible(
-                context,
-                VerifyPasswordDialog((String password) {
-                  _verifyPasswordBloc.add(VerifyPassword(password));
-                  DialogController.dismiss(context);
-                }, (String password) {
-                  DialogController.dismiss(context);
-                }),
-              );
-            }),
+            child: PrimaryButton(
+              t('authorize'),
+              () {
+                this._localBloc.add(Authenticate());
+              },
+            ),
           ),
           SizedBox(height: 10),
           SecondaryButton(

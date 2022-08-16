@@ -16,11 +16,13 @@ class PaperWallet {
 
   PaperWallet();
 
-  static Wallet createWallet(String pwd) {
-    Random rng = Random.secure();
+  static Wallet createWallet(Map<String, String> data) {
+    // data is String key, String password, String extend
 
-    Credentials random = EthPrivateKey.createRandom(rng);
-    Wallet wallet = Wallet.createNew(random, pwd, rng);
+    Random rng = Random.secure(); // ++ general from extend [Emily 04/01/2021]
+
+    Credentials credentials = EthPrivateKey.fromHex(data['key']);
+    Wallet wallet = Wallet.createNew(credentials, data['password'], rng);
     Log.info(wallet.toJson());
 
     return wallet;

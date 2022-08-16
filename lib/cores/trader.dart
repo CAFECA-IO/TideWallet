@@ -1,5 +1,4 @@
 import 'package:decimal/decimal.dart';
-
 import '../database/entity/exchage_rate.dart';
 import '../database/db_operator.dart';
 import '../helpers/http_agent.dart';
@@ -24,7 +23,7 @@ class Trader {
       ]);
 
       List fiats = rates[0].data;
-      List cryptos = rates[1].data;
+      List cryptos = rates[1].data.entries.map((e) => (e.value)).toList();
 
       await DBOperator().exchangeRateDao.insertExchangeRates([
         ...fiats.map(
